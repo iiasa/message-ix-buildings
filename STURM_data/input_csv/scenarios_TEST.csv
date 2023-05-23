@@ -1,5 +1,3 @@
-scenario_id,scenario_name,ssp,price_en,name_run_energy,s_floor,s_arch,s_ren_max,s_ren_min,s_int_new_shell,s_int_ren_shell,s_rate_switch_fuel_heat,s_ct_ren_fuel_heat,s_int_new_heat,s_int_new_dhw,s_int_ren_heat,s_int_ren_dhw,s_inv_new_shell,s_inv_new_heat,s_inv_new_dhw,s_inv_ren_shell,s_inv_ren_heat,s_inv_ren_dhw,s_hh_tenr
-1,NAV_Dem-NPi-ref,SSP2,price_en_message_engage_NPi.csv,ref,,,,,,,,,,,,,,,,,,,
-5,NAV_Dem-NPi-all,SSP2,price_en_message_engage_NPi.csv,tmp_low1,FLRD,MFH,REN_H,REN_H,BLDC_N,BLDC_R,ELEC,ELEC,ELEC,ELEC,ELEC,ELEC,,,,,,,
-6,NAV_Dem-15C-ref_u,SSP2,price_en_message_engage_NPi2020_600.csv,ref,,,,,,,,,,,,,,,,,,,
-10,NAV_Dem-15C-all_u,SSP2,price_en_message_engage_NPi2020_600.csv,tmp_low1,FLRD,MFH,REN_H,REN_H,BLDC_N,BLDC_R,ELEC,ELEC,ELEC,ELEC,ELEC,ELEC,,,,,,,
+scenario_id,scenario_name,pop_fut,floor
+1,NAV_Dem-NPi-ref,,
+2,NAV_Dem-NPi-all,ssp2,FLRD

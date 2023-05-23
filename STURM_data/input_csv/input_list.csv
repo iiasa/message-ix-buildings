@@ -1,0 +1,37 @@
+name_input,name_file,category,sector_specific,description
+shr_clim,pop_shr_climatic_zones,socio-economic,no,Population share by climatic zone
+pop_fut,pop,socio-economic,no,Population
+hh_size,hh_size,socio-economic,no,Household size
+floor,floor,activity,yes,Floorspace per capita
+hh_tenr,hh_tenr,socio-economic,yes,Household tenure
+shr_arch,bld_shr_arch,stock,yes,Housing type
+shr_mat,bld_share_mat,stock,yes,Share of permanent housing?
+bld_dyn_par,bld_dyn_param,activity,no,Building dynamics parameters (or building lifetime?)
+shr_acc_cool,bld_shr_access_cool,stock,yes,AC access
+shr_distr_heat,bld_shr_district_heat,stock,yes,Share district heating
+shr_fuel_heat_base,bld_share_fuel_heat,stock,yes,Share of buildings by fuel type
+r_new,,skip,,
+r_ren,,skip,,
+ct_ren_eneff,ct_ren_eneff2,categories,no,Renovation categories
+ct_ren_fuel_hea,ct_ren_fuel_heat_scen,categories,no,Energy efficiency transitions for renovations
+ct_fuel_excl_new,ct_fuel_excluded_new,categories,no,FUEL EXCLUDED
+ct_fuel_excl_ren,ct_fuel_excluded_ren,categories,no,FUEL EXCLUDED
+ct_fuel_excl_reg,ct_fuel_excluded_reg,categories,no,FUEL EXCLUDED (Fuel not used in specific regions)
+ren_rate,,skip,,
+ren_en_min,ren_rate_en_min,activity,no,Energy renovation rate low boundary
+ren_en_max,ren_rate_en_max,activity,no,Energy renovation rate high boundary
+rate_switch_fuel,rate_switch_fuel_heat,activity,no,Fuel switch rate
+mat_int,material_int,material,yes,Material intensities
+eff_heat_scen,eff_heat,energy,no,Heating system efficiency 
+eff_cool_scen,eff_cool,energy,no,Cooling system efficiency 
+eff_hotwater_scen,eff_hotwater,energy,yes,Hotwater system efficiency
+heat_floor,heat_floor,energy,yes,Share of heated floor area on total useful floor area
+heat_hours_scen,heat_operation_hours,energy,no,Heating hours per day
+ren_en_sav_scen,ren_energy_savings,energy,no,Energy demand reduction after renovation
+cool_data_scen,cool_operation_hours,energy,yes,"Data on cooling operation (Daily hours of operation of AC, share of cooled floorarea, daily hours of operation of fans, power of fans)"
+en_m2_sim_r,energy_sim_ref,energy,yes,"Energy demand data (energy demand intensity per m2 for heating, cooling, and number of days when cooling is required)"
+shr_need_cool,shr_need_cool,stock,yes,Share of the housing stock requiring cooling
+shr_need_heat,shr_need_heat,stock,yes,Share of the housing stock requiring heating
+en_cap_dhw,en_int_hotwater,energy,yes,Energy demand intesity per-cap for hot water
+bld_arch_age,?,skip,,Stock data for the base year
+bld_dyn_par,,skip,yes,Building lifetime

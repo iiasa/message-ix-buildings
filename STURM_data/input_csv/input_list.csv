@@ -1,9 +1,9 @@
 name_input,name_file,category,description
-shr_clim,pop_shr_climatic_zones,socioeconomics,Population share by climatic zone
-pop_fut,pop_ssp2,socioeconomics,Population
-hh_size,hh_size,socioeconomics,Household size
+shr_clim,pop_shr_climatic_zones,basic,Population share by climatic zone
+pop_fut,pop_ssp2,basic,Population
+hh_size,hh_size,basic,Household size
 floor,floor_ssp2,activity,Floorspace per capita
-hh_tenr,hh_tenr,socioeconomics,Household tenure
+hh_tenr,hh_tenr,basic,Household tenure
 shr_arch,bld_shr_arch,stock,Housing type
 shr_mat,bld_share_mat,stock,Share of permanent housing?
 bld_dyn_par,bld_dyn_param,activity,Building dynamics parameters (or building lifetime?)

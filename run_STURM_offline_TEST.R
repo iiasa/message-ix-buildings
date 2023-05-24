@@ -12,6 +12,7 @@ rout_path <- paste(getwd(),"/STURM_output/",sep="")
 
 prices<-read.csv(paste0(data_path,"input_prices_R12.csv"))
 scen <- "NAV_Dem-NPi-ref"
+scen <- "NAV_Dem-NPi-all"
 #scen <- "SDP_EI-NPi"
 #scen <- "NAV_Dem-NPi-tec"
 #clim_scen <- "BL"

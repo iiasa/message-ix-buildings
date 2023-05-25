@@ -1,4 +1,4 @@
-region_gea,urt,fuel_heat,shr_fuel
+region_gea,urt,fuel_heat,value
 AFR,urb,coal,0.236079161
 AFR,urb,oil,0.19502765
 AFR,urb,gas,9.46E-05

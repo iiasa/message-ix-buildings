@@ -1,4 +1,4 @@
-region_bld,ssp,clim,urt,inc_cl,mat,y2015,y2020,y2025,y2030,y2035,y2040,y2045,y2050,y2055,y2060,y2065,y2070,y2075,y2080,y2085,y2090,y2095,y2100
+region_bld,ssp,clim,urt,inc_cl,mat,2015,2020,2025,2030,2035,2040,2045,2050,2055,2060,2065,2070,2075,2080,2085,2090,2095,2100
 C-EEU-BGR,SSP2,Zone_4A Mixed Humid,rur,q1,perm,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
 C-EEU-BGR,SSP2,Zone_4A Mixed Humid,rur,q1,sub,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 C-EEU-BGR,SSP2,Zone_4A Mixed Humid,rur,q2,perm,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1

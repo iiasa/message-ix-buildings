@@ -18,7 +18,8 @@ fun_rename <- function(DF,name){ ## DF = dataframe; name = name to relabel the "
   if("data.frame"  %in% class(DF) == FALSE) stop(paste(deparse(substitute(DF)),'is not a data.frame'))
   if(length(grep("value", names(DF)))==0) stop(paste(deparse(substitute(DF)),'no columns named: value'))
   
-  DF_R <- DF %>% rename_with(~paste(name), .cols=value)
+  # DF_R <- DF %>% rename_with(~paste(name), .cols=value) # Works with only one "value" column per dataframe
+  DF_R <- DF %>% rename_with(~gsub("value", name, names(DF)), .cols = everything()) # works also with multiple "value1", "value2", etc. columns
   
   output = DF_R
 }

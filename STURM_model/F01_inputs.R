@@ -1,6 +1,4 @@
 
-## test
-
 ### TEMPORARY - GENERIC FUNCTIONS TO PROCESS DATA - MOVE TO DEDICATED SCRIPT
 
 # Function to convert dataframes to long format
@@ -20,7 +18,8 @@ fun_rename <- function(DF,name){ ## DF = dataframe; name = name to relabel the "
   if("data.frame"  %in% class(DF) == FALSE) stop(paste(deparse(substitute(DF)),'is not a data.frame'))
   if(length(grep("value", names(DF)))==0) stop(paste(deparse(substitute(DF)),'no columns named: value'))
   
-  DF_R <- DF %>% rename_with(~paste(name), .cols=value)
+  # DF_R <- DF %>% rename_with(~paste(name), .cols=value) # Works with only one "value" column per dataframe
+  DF_R <- DF %>% rename_with(~gsub("value", name, names(DF)), .cols = everything()) # works also with multiple "value1", "value2", etc. columns
   
   output = DF_R
 }
@@ -83,7 +82,7 @@ input_names <- input %>% select(name_input) %>% pull # Extract variable names
 
 # LOAD INPUT DATA
 d <- lapply(input_paths, read_csv)
-d <- setNames(d,input_files)
+d <- setNames(d,input_names)
 
 
 # PROCESS DATA (1) - Convert timeseries to long format
@@ -100,10 +99,10 @@ list2env(d, .GlobalEnv)
 # Temporary - Load special data separately (to be changed!)
 
 ## bld_dyn_par
-# Parameters:
-# dem_k, dem_lambda -> F06
-# l_new -> F04
-# l_ren -> F05
+# Parameters: # Xiaoyang: separate csv files with multiple variables
+# dem_k, dem_lambda -> F06 # Alessio
+# l_new -> F04 # Xiaoyang
+# l_ren -> F05 # Xiaoyang
 
 ## energy_sim_ref
 # separate heat/cool/days of cooling?

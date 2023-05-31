@@ -1,0 +1,7 @@
+mat,ssp,scenario,eneff_i,eneff_f,fuel_heat_f,y2020,y2025,y2030,y2035,y2040,y2045,y2050,y2055,y2060,y2065,y2070,y2075,y2080,y2085,y2090,y2095,y2100
+perm,nsp,nsp,s1,sr11_std,electricity,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+perm,nsp,nsp,s1,sr12_low,electricity,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+perm,nsp,nsp,s2,sr21_std,electricity,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+perm,nsp,nsp,s2,sr22_low,electricity,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+perm,nsp,nsp,s3,sr31_std,electricity,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+perm,nsp,nsp,s3,sr32_low,electricity,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1

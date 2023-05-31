@@ -1,0 +1,6 @@
+ssp,scenario,mat,fuel_heat,biomass_solid,coal,electricity,gas,oil
+nsp,LED,perm,biomass_solid,0,99999,0,99999,99999
+nsp,LED,perm,coal,99999,0,0,99999,99999
+nsp,LED,perm,electricity,99999,99999,0,99999,99999
+nsp,LED,perm,gas,99999,99999,0,0,99999
+nsp,LED,perm,oil,99999,99999,0,99999,0

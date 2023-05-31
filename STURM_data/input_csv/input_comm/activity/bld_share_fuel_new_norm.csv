@@ -1,0 +1,13 @@
+mat,ssp,scenario,eneff,fuel_heat,fuel_cool,y2020,y2025,y2030,y2035,y2040,y2045,y2050,y2055,y2060,y2065,y2070,y2075,y2080,y2085,y2090,y2095,y2100
+perm,nsp,nsp,s51_std,biomass_solid,electricity,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+perm,nsp,nsp,s51_std,coal,electricity,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+perm,nsp,nsp,s51_std,district_heat,electricity,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+perm,nsp,nsp,s51_std,electricity,electricity,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+perm,nsp,nsp,s51_std,gas,electricity,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+perm,nsp,nsp,s51_std,oil,electricity,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+perm,nsp,nsp,s52_low,biomass_solid,electricity,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+perm,nsp,nsp,s52_low,coal,electricity,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+perm,nsp,nsp,s52_low,district_heat,electricity,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+perm,nsp,nsp,s52_low,electricity,electricity,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+perm,nsp,nsp,s52_low,gas,electricity,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+perm,nsp,nsp,s52_low,oil,electricity,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0

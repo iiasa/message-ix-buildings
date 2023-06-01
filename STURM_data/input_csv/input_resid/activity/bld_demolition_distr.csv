@@ -1,4 +1,4 @@
-region_gea,mat,arch,bld_age,dem_k,dem_lambda
+region_gea,mat,arch,bld_age,dem_shape,dem_scale
 PAS,sub,inf,ns,1.88,41.23
 CPA,sub,inf,ns,2,33.85
 EEU,sub,inf,ns,2.5,73.26

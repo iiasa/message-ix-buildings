@@ -51,7 +51,7 @@ scen_pars <- names(scenarios)[!names(scenarios) %in% c("scenario_id", "scenario_
 scen_setup <- scenarios %>% 
   filter(scenario_name == run) %>%
   select(-c(scenario_id, scenario_name)) %>%
-  pivot_longer(cols = all_of(scen_pars), names_to = "name_input", values_to = "scenario")
+  pivot_longer(cols = all_of(scen_pars), names_to = "name_parameter", values_to = "scenario")
 
 
 # Input data: build vector of input file names for the current scenarios
@@ -68,7 +68,7 @@ input <- input %>%
 
 ### TEMPORARY ### EXCLUDE SPECIAL DATA FILES
 input <- input %>%
-  filter(!name_input %in% c("bld_dyn_par","cool_data_scen","en_m2_sim_r")) %>%
+  filter(!name_parameter %in% c("bld_dyn_par","cool_data_scen","en_m2_sim_r")) %>%
   filter(category != "categories")
 
 ### 
@@ -78,7 +78,7 @@ input <- input %>%
 # Extract data paths, file names and variable names
 input_paths <- input %>% select(path_file) %>% pull # Extract paths to input files
 input_files <- input %>% select(name_file) %>% pull # Extract file names
-input_names <- input %>% select(name_input) %>% pull # Extract variable names
+input_names <- input %>% select(name_parameter) %>% pull # Extract variable names
 
 # LOAD INPUT DATA
 d <- lapply(input_paths, read_csv)

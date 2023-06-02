@@ -1,3 +1,6 @@
+# Python runtime files
+__pycache__
+
 # Sphinx build outputs
 doc/_build
 

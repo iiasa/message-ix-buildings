@@ -10,6 +10,8 @@ Welcome to MESSAGEix-Buildings's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   testing
+
 Here is some description of MESSAGEix-Buildings.
 
 Indices and tables

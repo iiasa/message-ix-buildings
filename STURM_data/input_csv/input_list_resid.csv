@@ -1,37 +1,36 @@
 name_input_old,name_parameter,name_file,category,description
-shr_clim,,pop_shr_climatic_zones,basic,Population share by climatic zone
-pop_fut,,pop_ssp2,basic,Population
-hh_size,,hh_size,basic,Household size
-floor,,floor_resid_ssp2,activity,Floorspace per capita
-hh_tenr,,hh_tenr,stock,Household tenure
-shr_arch,,bld_shr_arch_resid,stock,Housing type
-shr_mat,,bld_share_mat_resid_ssp2,stock,Share of permanent housing?
+shr_clim,pop,pop_shr_climatic_zones,basic,Population share by climatic zone
+pop_fut,pop,pop_ssp2,basic,Population
+hh_size,hh_size,hh_size,basic,Household size
+floor,floor_cap,floor_resid_ssp2,activity,Floorspace per capita
+hh_tenr,hh_tenure,hh_tenr,stock,Household tenure
+shr_arch,shr_arch,bld_shr_arch_resid,stock,Housing type
+shr_mat,shr_mat,bld_share_mat_resid_ssp2,stock,Share of permanent housing?
 bld_dyn_par,,bld_dyn_param,activity,Building dynamics parameters (or building lifetime?)
-shr_acc_cool,,bld_shr_access_cool_resid_ssp2,stock,AC access
-shr_distr_heat,,bld_shr_district_heat_resid,stock,Share district heating
-shr_fuel_heat_base,,bld_share_fuel_heat_resid,stock,Share of buildings by fuel type
+shr_acc_cool,shr_acc_cool,bld_shr_access_cool_resid_ssp2,stock,AC access
+shr_distr_heat,shr_distr_heat,bld_shr_district_heat_resid,stock,Share district heating
+shr_fuel_heat_base,shr_fuel_heat_base,bld_share_fuel_heat_resid,stock,Share of buildings by fuel type
 r_new,,,skip,
 r_ren,,,skip,
-ct_ren_eneff,,ct_ren_eneff2,categories,Renovation categories
-ct_ren_fuel_hea,,ct_ren_fuel_heat_scen,categories,Energy efficiency transitions for renovations
-ct_fuel_excl_new,,ct_fuel_excluded_new,categories,FUEL EXCLUDED
-ct_fuel_excl_ren,,ct_fuel_excluded_ren,categories,FUEL EXCLUDED
-ct_fuel_excl_reg,,ct_fuel_excluded_reg,categories,FUEL EXCLUDED (Fuel not used in specific regions)
+ct_ren_eneff,ct_ren_eneff,ct_ren_eneff2,categories,Renovation categories
+ct_ren_fuel_hea,ct_ren_fuel_heat,ct_ren_fuel_heat_scen,categories,Energy efficiency transitions for renovations
+ct_fuel_excl_new,ct_fuel_excl_new,ct_fuel_excluded_new,categories,FUEL EXCLUDED
+ct_fuel_excl_ren,ct_fuel_excl_ren,ct_fuel_excluded_ren,categories,FUEL EXCLUDED
+ct_fuel_excl_reg,ct_fuel_excl_reg,ct_fuel_excluded_reg,categories,FUEL EXCLUDED (Fuel not used in specific regions)
 ren_rate,,,skip,
-ren_en_min,,ren_rate_en_min,activity,Energy renovation rate low boundary
-ren_en_max,,ren_rate_en_max_ssp2,activity,Energy renovation rate high boundary
-rate_switch_fuel,,rate_switch_fuel_heat_ssp2,activity,Fuel switch rate
-mat_int,,material_int_resid,material,Material intensities
-eff_heat_scen,,eff_heat_ssp2,energy,Heating system efficiency 
-eff_cool_scen,,eff_cool_ssp2,energy,Cooling system efficiency 
-eff_hotwater_scen,,eff_hotwater_resid,energy,Hotwater system efficiency
-heat_floor,,heat_floor_resid,energy,Share of heated floor area on total useful floor area
-heat_hours_scen,,heat_operation_hours_ssp2,energy,Heating hours per day
-ren_en_sav_scen,,ren_energy_savings_ssp2,energy,Energy demand reduction after renovation
+ren_en_min,rate_ren_low,ren_rate_en_min,activity,Energy renovation rate low boundary
+ren_en_max,rate_ren_high,ren_rate_en_max_ssp2,activity,Energy renovation rate high boundary
+rate_switch_fuel,rate_fuel_switch,rate_switch_fuel_heat_ssp2,activity,Fuel switch rate
+mat_int,mat_int,material_int_resid,material,Material intensities
+eff_heat_scen,eff_heat ,eff_heat_ssp2,energy,Heating system efficiency 
+eff_cool_scen,eff_cool,eff_cool_ssp2,energy,Cooling system efficiency 
+eff_hotwater_scen,eff_hotwater,eff_hotwater_resid,energy,Hotwater system efficiency
+heat_floor,shr_floor_heat,heat_floor_resid,energy,Share of heated floor area on total useful floor area
+heat_hours_scen,hours_heat,heat_operation_hours_ssp2,energy,Heating hours per day
+ren_en_sav_scen,en_sav_ren,ren_energy_savings_ssp2,energy,Energy demand reduction after renovation
 cool_data_scen,,cool_operation_hours_resid,energy,"Data on cooling operation (Daily hours of operation of AC, share of cooled floorarea, daily hours of operation of fans, power of fans)"
 en_m2_sim_r,,energy_sim_ref_resid,energy,"Energy demand data (energy demand intensity per m2 for heating, cooling, and number of days when cooling is required)"
-shr_need_cool,,shr_need_cool_resid,stock,Share of the housing stock requiring cooling
-shr_need_heat,,shr_need_heat_resid,stock,Share of the housing stock requiring heating
-en_cap_dhw,,en_int_resid_hotwater_SSP2_rev_2022-12-15,energy,Energy demand intesity per-cap for hot water
-bld_arch_age,,?,skip,Stock data for the base year
-bld_dyn_par,,,skip,Building lifetime
+shr_need_cool,shr_need_cool,shr_need_cool_resid,stock,Share of the housing stock requiring cooling
+shr_need_heat,shr_need_heat,shr_need_heat_resid,stock,Share of the housing stock requiring heating
+en_cap_dhw,en_int_hotwater,en_int_resid_hotwater_SSP2_rev_2022-12-15,energy,Energy demand intesity per-cap for hot water
+bld_arch_age,stock_arch_base,?,skip,Stock data for the base year

@@ -107,7 +107,7 @@ list2env(d, .GlobalEnv)
 ## energy_sim_ref
 # separate heat/cool/days of cooling?
 
-## cool operation:
+## cool operation / cool_operation_hours:
 # separate different parameters
 
 ## heat operation: already long format

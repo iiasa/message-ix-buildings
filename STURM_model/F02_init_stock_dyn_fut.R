@@ -8,21 +8,21 @@ fun_stock_init_fut <- function(sector,
                                yrs,
                                geo_data, geo_levels, geo_level,
                                bld_cases_eneff, bld_cases_fuel,
-                               pop_fut,
+                               pop,
                                hh_size, # used for residential
-                               floor, # used for commercial
+                               floor_cap, # used for commercial
                                ct_hh_inc,
                                ct_eneff, ct_fuel_comb,
-                               bld_arch_age,
+                               stock_arch_base,
                                shr_mat, shr_arch, shr_fuel_heat_base,shr_distr_heat,
-                               # eff_cool_scen, eff_heat_scen,eff_hotwater_scen,
-                               # ren_en_sav_scen,
-                               # heat_hours_scen, cool_data_scen, heat_floor, shr_acc_cool,
+                               # eff_cool, eff_heat,eff_hotwater,
+                               # en_sav_ren,
+                               # heat_hours, cool_data_scen, shr_floor_heat, shr_acc_cool,
                                # en_m2_sim_r, price_en 
                                ###MORE INPUTS TO BE ADDED FOR ENERGY!
                                # ... # different inputs for residential / commercial
                                # hh_size # residential
-                               # floor # commercial
+                               # floor_cap # commercial
                                report_var
                                ){
   
@@ -31,7 +31,7 @@ fun_stock_init_fut <- function(sector,
   
   # Total number of building units: (Residential: number of households (units) - Commercial: total floorspace (m2))
   if (sector == "resid") {
-    bld_units <- pop_fut %>% 
+    bld_units <- pop %>% 
       filter(year %in% yrs[-1]) %>% 
       left_join(hh_size) %>% 
       mutate(bld_units = round(1e6*pop/length(ct_hh_inc)/hh_size,rnd)) %>% # convert from million units to units
@@ -42,9 +42,9 @@ fun_stock_init_fut <- function(sector,
   }
 
   if (sector == "comm") {
-    bld_units <- pop_fut %>% 
+    bld_units <- pop %>% 
       filter(year %in% yrs[-1]) %>% 
-      left_join(floor) %>% 
+      left_join(floor_cap) %>% 
       mutate(bld_units = round(1e6*pop*floor_cap,rnd)) %>% # convert from million units to units
       # mutate(bld_units = round(pop*floor_cap,rnd)) %>% # million units
       select(-c(pop,floor_cap)) # %>%
@@ -72,8 +72,8 @@ fun_stock_init_fut <- function(sector,
     # Stock aggregated (mat level) - baseyear 
     stock_aggr_base <- geo_data %>%
       select_at(geo_levels) %>%
-      left_join(bld_arch_age) %>% 
-      group_by_at(setdiff(names(bld_arch_age), c("bld_age", "arch", "yr_con", "n_units_arch"))) %>% # Select all variables, except the ones specified
+      left_join(stock_arch_base) %>% 
+      group_by_at(setdiff(names(stock_arch_base), c("bld_age", "arch", "yr_con", "n_units_arch"))) %>% # Select all variables, except the ones specified
       summarise(n_units_aggr = sum(n_units_arch)) %>%
       ungroup()
     
@@ -109,8 +109,8 @@ fun_stock_init_fut <- function(sector,
     # Stock aggregated (mat level) - baseyear 
     stock_aggr_base <- geo_data %>%
       select_at(geo_levels) %>%
-      left_join(bld_arch_age) %>% 
-      group_by_at(setdiff(names(bld_arch_age), c("bld_age", "yr_con", "n_units_arch"))) %>% # Select all variables, except the ones specified
+      left_join(stock_arch_base) %>% 
+      group_by_at(setdiff(names(stock_arch_base), c("bld_age", "yr_con", "n_units_arch"))) %>% # Select all variables, except the ones specified
       summarise(n_units_aggr = sum(n_units_arch)) %>%
       ungroup()
     
@@ -137,7 +137,7 @@ fun_stock_init_fut <- function(sector,
   # initialize DF stock by vintage (baseyear) - detailed fuel level
   bld_det_age_i <- geo_data %>%
     select_at(geo_levels) %>%
-    left_join(bld_arch_age) %>% # baseyear results
+    left_join(stock_arch_base) %>% # baseyear results
     left_join(ct_eneff) %>% 
     left_join(ct_fuel_comb) %>% 
     left_join(shr_fuel_heat_base) %>%
@@ -186,12 +186,12 @@ fun_stock_init_fut <- function(sector,
  #                         yrs, 1,
  #                         bld_cases_fuel,
  #                         en_m2_sim_r,
- #                         eff_cool_scen, eff_heat_scen,
- #                         ren_en_sav_scen,
- #                         heat_hours_scen,heat_floor,
+ #                         eff_cool, eff_heat,
+ #                         en_sav_ren,
+ #                         heat_hours,shr_floor_heat,
  #                         cool_data_scen,
  #                         shr_acc_cool,
- #                         hh_size,floor,
+ #                         hh_size,floor_cap,
  #                         price_en)
  #  
  #  # Extract dataframes from list
@@ -206,14 +206,14 @@ fun_stock_init_fut <- function(sector,
  #    en_hh_hw_scen <- fun_hw_resid(yrs, 1,
  #                                  bld_cases_fuel,hh_size,
  #                                  #ct_fuel_dhw,
- #                                  eff_hotwater_scen, en_cap_dhw,
+ #                                  eff_hotwater, en_int_hotwater,
  #                                  en_m2_sim_r)
  #  }
  #  
  #  if(sector == "comm") {
  #    en_m2_hw_scen <- fun_hw_comm(yrs, 1,
  #                                   bld_cases_fuel, 
- #                                   eff_hotwater_scen,
+ #                                   eff_hotwater,
  #                                   en_m2_dhw)
  #  }
  # 
@@ -258,7 +258,7 @@ fun_stock_init_fut <- function(sector,
  #                                   n_units_eneff* (1-shr_need_heat), 
  #                                   n_units_fuel*shr_need_heat)) %>%
  #      left_join(hh_size) %>%
- #      left_join(floor) %>%
+ #      left_join(floor_cap) %>%
  #      #left_join(shr_acc_cool) %>%
  #      left_join(en_m2_scen_heat) %>%
  #      left_join(en_m2_scen_cool) %>%
@@ -290,7 +290,7 @@ fun_stock_init_fut <- function(sector,
  #                                   n_units_eneff* (1-shr_need_heat), 
  #                                   n_units_fuel*shr_need_heat)) %>%
  #      #left_join(hh_size) %>%
- #      #left_join(floor) %>%
+ #      #left_join(floor_cap) %>%
  #      #left_join(shr_acc_cool) %>%
  #      left_join(en_m2_scen_heat) %>%
  #      left_join(en_m2_scen_cool) %>%

@@ -20,6 +20,14 @@ homepage = "https://github.com/iiasa/message-ix-buildings"
 repository = "https://github.com/iiasa/message-ix-buildings"
 documentation = "https://docs.messageix.org/buildings/"
 
+[project.optional-dependencies]
+docs = [
+  "Sphinx",
+]
+tests = [
+  "pytest",
+]
+
 [tool.setuptools.packages]
 find = {}
 

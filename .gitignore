@@ -1,5 +1,14 @@
 # Python runtime files
 __pycache__
+.benchmarks
+.pytest_cache
+
+# Python packaging
+*.egg-info
+dist/
+
+# R runtime files
+.Rhistory
 
 # Sphinx build outputs
 doc/_build

@@ -18,11 +18,10 @@ At present, the package :mod:`message_ix_buildings` contains STURM only.
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
    :hidden:
 
    sturm
-   testing
+   dev
 
 Indices and tables
 ==================

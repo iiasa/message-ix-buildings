@@ -12,7 +12,7 @@ Welcome to MESSAGEix-Buildings's documentation!
 - CHILLED
 - :doc:`sturm`
 
-…and their integration with the MESSAGEix-GLOBIOM model family.
+…and their integration with the :doc:`MESSAGEix-GLOBIOM model family <message_ix_models:index>`.
 
 At present, the package :mod:`message_ix_buildings` contains STURM only.
 

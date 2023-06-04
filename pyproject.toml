@@ -1,0 +1,26 @@
+[build-system]
+requires = ["build", "setuptools-scm"]
+
+[project]
+dynamic = ["version"]
+name = "message-ix-buildings"
+authors = [
+  {name = "IIASA ECE Program"}
+]
+maintainers = [
+  {name = "Xiaoyang Zhong", email = "zhongx@iiasa.ac.at"},
+  {name = "Alessio Mastrucci", email = "mastrucc@iiasa.ac.at"},
+  {name = "Paul Natsuo Kishimoto", email = "kishimot@iiasa.ac.at"},
+  {name = "Fridolin Glatter", email = "glatter@iiasa.ac.at"},
+]
+readme = "README.rst"
+
+[project.urls]
+homepage = "https://github.com/iiasa/message-ix-buildings"
+repository = "https://github.com/iiasa/message-ix-buildings"
+documentation = "https://docs.messageix.org/buildings/"
+
+[tool.setuptools.packages]
+find = {}
+
+[tool.setuptools_scm]

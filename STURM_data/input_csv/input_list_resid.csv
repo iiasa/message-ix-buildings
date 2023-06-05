@@ -1,6 +1,5 @@
 name_input_old,name_parameter,name_file,category,description,F02,F04,F05
-shr_clim,pop,pop_shr_climatic_zones,basic,Population share by climatic zone,,,
-pop_fut,pop,pop_ssp2,basic,Population,"L11, 34, 45",,
+pop_fut,pop,pop_clim_ssp2,basic,Population,"L11, 34, 45",,
 hh_size,hh_size,hh_size,basic,Household size,,,
 floor,floor_cap,floor_resid_ssp2,activity,Floorspace per capita,"L13, 25, 47, 194, 261, 293","L17, 51","L25, 129"
 hh_tenr,hh_tenure,hh_tenr,stock,Household tenure,,,"L26, 46, 97 (2), 176, 177, 178"

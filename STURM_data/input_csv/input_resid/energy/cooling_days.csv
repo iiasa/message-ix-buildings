@@ -1,4 +1,4 @@
-region_bld,clim,urt,arch,eneff,n_days_cool
+region_bld,clim,urt,arch,eneff,value
 C-EEU-BGR,Zone_4A Mixed Humid,rur,inf,ns,36.27777778
 C-EEU-BGR,Zone_4A Mixed Humid,rur,mfh,s1,43.5625
 C-EEU-BGR,Zone_4A Mixed Humid,rur,mfh,s2,43.09027778

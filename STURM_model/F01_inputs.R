@@ -1,17 +1,17 @@
 
 ### TEMPORARY - GENERIC FUNCTIONS TO PROCESS DATA - MOVE TO DEDICATED SCRIPT
 
-# Function to convert dataframes to long format
-fun_toLong <- function(DF){ ## var_name excluded from inputs
-  if("data.frame"  %in% class(DF) == FALSE) stop(paste(deparse(substitute(DF)),'is not a data.frame'))
-  #if(class(var_name)!="character" | length(var_name)!= 1) stop(paste(deparse(substitute(var_name)),'is not a character unit vector. Please, provide a name in quotes.'))
-  if(length(grep("\\d{4}", names(DF)))>0){ # If column names contain years, convert to long format over years, otherwise return the same dataframe
-    DF_L <- pivot_longer(data=DF, values_to = "value", names_to = "year", cols=matches("\\d{4}")) %>%
-      mutate(year=as.integer(year))
-  } else {DF_L = DF}
-  
-  output = DF_L
-}
+# # Function to convert dataframes to long format
+# fun_toLong <- function(DF){ ## var_name excluded from inputs
+#   if("data.frame"  %in% class(DF) == FALSE) stop(paste(deparse(substitute(DF)),'is not a data.frame'))
+#   #if(class(var_name)!="character" | length(var_name)!= 1) stop(paste(deparse(substitute(var_name)),'is not a character unit vector. Please, provide a name in quotes.'))
+#   if(length(grep("\\d{4}", names(DF)))>0){ # If column names contain years, convert to long format over years, otherwise return the same dataframe
+#     DF_L <- pivot_longer(data=DF, values_to = "value", names_to = "year", cols=matches("\\d{4}")) %>%
+#       mutate(year=as.integer(year))
+#   } else {DF_L = DF}
+#   
+#   output = DF_L
+# }
 
 # Function to rename data inputs
 fun_rename <- function(DF,name){ ## DF = dataframe; name = name to relabel the "value" column
@@ -84,16 +84,15 @@ input_names <- input %>% select(name_parameter) %>% pull # Extract variable name
 d <- lapply(input_paths, read_csv)
 d <- setNames(d,input_names)
 
-
-# PROCESS DATA (1) - Convert timeseries to long format
-d <- lapply(d, fun_toLong)
+# # PROCESS DATA (1) - Convert timeseries to long format
+# d <- lapply(d, fun_toLong)
 
 # PROCESS DATA (2) - Rename "value" column with variable-specific name
 d <- Map(fun_rename, d, input_names) 
 # d <- mapply(fun_rename, d, input_names, SIMPLIFY = FALSE) # Alternative coding with mapply (same result)
 
-### TEMPORARY ### Extract dataframes to global environment
-list2env(d, .GlobalEnv)
+# ### TEMPORARY ### Extract dataframes to global environment
+# list2env(d, .GlobalEnv)
 
 
 # Temporary - Load special data separately (to be changed!)

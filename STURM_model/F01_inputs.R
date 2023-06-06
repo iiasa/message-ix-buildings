@@ -41,7 +41,6 @@ scenarios <- read_csv(paste0(path_in_csv, "scenarios_TEST.csv" ))
 
 
 
-
 ### F01 SCRIPT FROM HERE
 
 # Create vector of scenario-dependent parameters
@@ -115,9 +114,54 @@ d <- Map(fun_rename, d, input_names)
 #remove provisional inputs
 rm(input,scen_setup)
 
-## TODOs: 
-# - processing: from wide to long format
-# - work on parameters name: consistency between file names and parameter names
-# - check scenario/ssp columns
-# - check how to provide inputs: list2env or keep inside lists?
 
+### MODEL BUILDING ### MOVE TO SEPARATE SCRIPT?
+
+# Regions
+geo_data <- read_csv(paste0(path_in_csv,"/input_basic_geo/regions.csv"))  # First columns
+regions <- unlist(geo_data[,paste(geo_level)]) # Regions in the analysis
+regions_aggr <- sort(unique(unlist(geo_data[,paste(geo_level_aggr)]))) # Regions in the analysis - aggregated level
+
+# Climatic zones
+clim_zones <- read_csv(paste0(path_in_csv,"/input_basic_geo/climatic_zones.csv"))
+
+#Household categories
+urts <- c("rur","urb") # # Urban-Rural / Total. options: "rur", "urb", "tot"
+ct_hh_inc <- c("q1","q2","q3")  # Income classes
+ct_hh_tenr <- c("own", "rent") #c("ownns")
+
+#Building categories
+ct_bld_age <- read_csv(paste0(path_in_csv,"input_",sector,"/categories/ct_bld_age.csv")) # Vintage cohorts
+ct_bld <- read_csv(paste0(path_in_csv,"input_",sector,"/categories/ct_arch.csv"))
+ct_eneff <- read_csv(paste0(path_in_csv,"input_",sector,"/categories/ct_eneff.csv")) # Energy efficiency categories
+
+# Fuel type
+ct_fuel_comb <- read_csv(paste0(path_in_csv,"input_",sector,"/categories/ct_fuel.csv")) 
+ct_fuel_dhw <- read_csv(paste0(path_in_csv,"input_",sector,"/categories/ct_fuel_res.csv"))# fuels domestic hot water - Add solar thermal options
+
+
+# BUILDING CASES
+
+bld_cases_fuel <- expand.grid(geo_level = regions,
+                              urt = urts, inc_cl = ct_hh_inc, 
+                              #arch = ct_bld_arch, 
+                              stringsAsFactors = FALSE) %>%
+  rename_at("geo_level", ~paste0(geo_level)) %>% 
+  left_join(geo_data %>% select_at(geo_levels)) %>%
+  left_join(clim_zones, by=c(paste(geo_level), "urt")) %>%
+  left_join(ct_bld) %>%
+  left_join(ct_eneff, by="mat") %>%
+  #left_join(ct_access, by="mat") %>% # REMOVED in this version
+  inner_join(ct_fuel_comb, by=c("mat" = "mat")) %>%
+  # select(!!as.symbol(geo_level), scenario, urt, clim, inc_cl, arch, mat, eneff) %>% # Re-order the columns
+  arrange(!!as.symbol(geo_level), #scenario, 
+          urt, clim, inc_cl, arch, mat, eneff, 
+          #acc_heat, acc_cool, 
+          fuel_heat, fuel_cool) # Sort values ## used eneff (ordered categories)
+
+### BUILDING CASES at more aggregate level can be generated from bld_cases_fuel
+# bld_cases_arch <- bld_cases_fuel %>% select(-c(eneff, bld_age, fuel_heat, fuel_cool, mod_decision)) %>% distinct()
+bld_cases_eneff <- bld_cases_fuel %>% select(-c(fuel_heat, fuel_cool, mod_decision)) %>% distinct()
+
+# remove unused files
+rm(ct_bld,ct_bld_age,ct_eneff,ct_fuel_comb,ct_fuel_dhw,clim_zones)

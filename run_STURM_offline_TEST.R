@@ -33,6 +33,16 @@ sector=sect
 report_type = c("MESSAGE","STURM","NAVIGATE") # Available reports: c("MESSAGE","STURM","IRP","NGFS","NAVIGATE")
 report_var=c("energy","material") # Available report variables: c("energy","material","vintage","dle")
 
+# Regions settings
+geo_level <- "region_bld" # Level for analysis
+geo_level_aggr <- "region_gea" # Level for aggregation
+geo_levels <- c(geo_level, geo_level_aggr)
+
+# Temporal settings
+yrs <- seq(2015,2050,5)
+# yrs <- c(seq(2015,2060,5),seq(2070,2100,10))
+
+
 
 # # call STURM
 # sturm_scenarios <- run_scenario(run=scen, 

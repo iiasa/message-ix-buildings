@@ -15,12 +15,12 @@ run_scenario <- function(run, scenario_name, prices,
   # Track time
   start_time <- Sys.time()
   
-  # LOAD SETTINGS FOR SCENARIO RUNS
-  runs <- read_csv(file.path(path_in, "scenarios.csv"))
+  # # LOAD SETTINGS FOR SCENARIO RUNS (names Rfiles)
+  # runs <- read_csv(file.path(path_in, "scenarios.csv"))
   
   #### SCENARIO SETTINGS ####
-  r <- runs %>% filter(scenario_name == run) %>% select(scenario_id) %>% pull # scenario run
-  ssp_r <- paste0(runs[r,"ssp"]) # SSP
+  # r <- runs %>% filter(scenario_name == run) %>% select(scenario_id) %>% pull # scenario run
+  # ssp_r <- paste0(runs[r,"ssp"]) # SSP 
   
   # # Regions settings
   # geo_level <- "region_bld" # Level for analysis
@@ -35,14 +35,50 @@ run_scenario <- function(run, scenario_name, prices,
   # Unit conversion
   u_EJ_GWa <- 31.71
   
-  # LOAD INPUT DATA
-  print("Load data")
-  basename <- paste("data_input", ssp_r, run, yrs[length(yrs)], sector, sep="_")
-  load(file.path(path_in, paste0(basename, ".RData")))  # 2100
-  #load(paste0(path_in,"data_input_",r,"_",ssp_r,"_",run,"_2100.RData"), envir=.GlobalEnv) #2100
-  #load(paste0(path_in,"data_input_",r,"_",ssp_r,"_",run,"_2100.RData"), envir=environment()) #2100
-  print("Data loaded!")
+  # SOURCE MODEL FUNCTIONS
+  print("Load functions")
+  source(file.path(path_rcode, "B00_functions.R"))
+  source(file.path(path_rcode, "F03_energy_demand.R"))
+  source(file.path(path_rcode, "F04_constr_decision.R"))
+  # source(file.path(path_rcode, "F05_renov_decision.R"))
+  source(file.path(path_rcode, "F05_renov_switch_decision.R"))
+  source(file.path(path_rcode, "F02_init_stock_dyn_fut.R"))
+  source(file.path(path_rcode, "F06_stock_dyn_complete_rev.R"))
+  # source(file.path(path_rcode, "R00_report_basic.R"))
+  if ("STURM" %in% report_type) {source(file.path(path_rcode, "R00_report_basic.R"))}
+  if ("MESSAGE" %in% report_type) {source(file.path(path_rcode, "R01_report_MESSAGE.R"))}
+  if ("IRP" %in% report_type) {source(file.path(path_rcode, "R02_report_IRP.R"))}
+  if ("NGFS" %in% report_type) {source(file.path(path_rcode, "R03_report_NGFS.R"))}
+  source(file.path(path_rcode, "R05_report_NAVIGATE.R"))
+  print("Functions loaded!")
   
+  
+  # LOAD INPUT DATA 
+  
+  if(input_mode == "rdata") {
+    print("Load data - RData")
+    
+    basename <- paste("data_input", run, sector, sep="_")
+    # basename <- paste("data_input", ssp_r, run, yrs[length(yrs)], sector, sep="_") # Old name
+    load(file.path(path_in, paste0(basename, ".RData")))  # 2100
+    #load(paste0(path_in,"data_input_",r,"_",ssp_r,"_",run,"_2100.RData"), envir=.GlobalEnv) #2100
+    #load(paste0(path_in,"data_input_",r,"_",ssp_r,"_",run,"_2100.RData"), envir=environment()) #2100
+    
+    rm(basename)
+    
+    print("Data loaded!")
+  }
+  
+  if(input_mode== "csv") {
+    print("Load data - csv")
+    
+    # Source - input data
+    source(paste0(path_rcode,"F01_inputs.R"))
+    
+    print("Data loaded!")
+  }
+    
+    
   ## Energy prices (from MESSAGE)
   if(is.null(prices) == FALSE){
     price_en <- prices %>%
@@ -63,22 +99,7 @@ run_scenario <- function(run, scenario_name, prices,
       select_at(c(paste(geo_level),"year","fuel","price_en"))
   }
   
-  # SOURCE MODEL FUNCTIONS
-  print("Load functions")
-  source(file.path(path_rcode, "B00_functions.R"))
-  source(file.path(path_rcode, "F03_energy_demand.R"))
-  source(file.path(path_rcode, "F04_constr_decision.R"))
-  # source(file.path(path_rcode, "F05_renov_decision.R"))
-  source(file.path(path_rcode, "F05_renov_switch_decision.R"))
-  source(file.path(path_rcode, "F02_init_stock_dyn_fut.R"))
-  source(file.path(path_rcode, "F06_stock_dyn_complete_rev.R"))
-  # source(file.path(path_rcode, "R00_report_basic.R"))
-  if ("STURM" %in% report_type) {source(file.path(path_rcode, "R00_report_basic.R"))}
-  if ("MESSAGE" %in% report_type) {source(file.path(path_rcode, "R01_report_MESSAGE.R"))}
-  if ("IRP" %in% report_type) {source(file.path(path_rcode, "R02_report_IRP.R"))}
-  if ("NGFS" %in% report_type) {source(file.path(path_rcode, "R03_report_NGFS.R"))}
-  source(file.path(path_rcode, "R05_report_NAVIGATE.R"))
-  print("Functions loaded!")
+
   
   
   ### RESIDENTIAL SECTOR

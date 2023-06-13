@@ -42,7 +42,10 @@ geo_levels <- c(geo_level, geo_level_aggr)
 yrs <- seq(2015,2050,5)
 # yrs <- c(seq(2015,2060,5),seq(2070,2100,10))
 
-
+# # Input data type: 
+# Values allowed: "RData", "csv"
+input_mode == "csv"
+#input_mode == "rdata"
 
 # # call STURM
 # sturm_scenarios <- run_scenario(run=scen, 

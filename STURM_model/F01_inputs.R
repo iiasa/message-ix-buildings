@@ -28,7 +28,7 @@ fun_rename <- function(DF,name){ ## DF = dataframe; name = name to relabel the "
 # for(i in 1:length(d)){if(length(grep("value", names(d[[i]])))==0) {print(names(d)[i])}}
 
 
-### TEMPORARY ### MOVE PATH DEFINITION TO SCRIPT 00
+### TEMPORARY ### MOVE PATH DEFINITION TO SCRIPT 00 (run_)
 
 # PATH DATA INPUT FILES
 path_in_csv <- "./STURM_data/input_csv/"
@@ -80,13 +80,13 @@ input_files <- input %>% select(name_file) %>% pull # Extract file names
 input_names <- input %>% select(name_parameter) %>% pull # Extract variable names
 
 # LOAD INPUT DATA
-d <- lapply(input_paths, read_csv)
-d <- setNames(d,input_names)
+d <- lapply(input_paths, read_csv) # Load input data csv files into a list of dataframes
+d <- setNames(d,input_names) # rename the dataframes within the list based on the variable names
 
 # # PROCESS DATA (1) - Convert timeseries to long format
 # d <- lapply(d, fun_toLong)
 
-# PROCESS DATA (2) - Rename "value" column with variable-specific name
+# PROCESS DATA (2) - Rename the "value" column within each dataframe with variable-specific name
 d <- Map(fun_rename, d, input_names) 
 # d <- mapply(fun_rename, d, input_names, SIMPLIFY = FALSE) # Alternative coding with mapply (same result)
 

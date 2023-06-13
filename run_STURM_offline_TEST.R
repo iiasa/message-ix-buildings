@@ -44,8 +44,8 @@ yrs <- seq(2015,2050,5)
 
 # # Input data type: 
 # Values allowed: "RData", "csv"
-input_mode == "csv"
-#input_mode == "rdata"
+input_mode <- "csv"
+#input_mode <- "rdata"
 
 # # call STURM
 # sturm_scenarios <- run_scenario(run=scen, 

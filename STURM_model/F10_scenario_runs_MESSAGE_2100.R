@@ -113,13 +113,13 @@ run_scenario <- function(run, scenario_name, prices,
                                          yrs,
                                          geo_data, geo_levels, geo_level,
                                          bld_cases_eneff, bld_cases_fuel,
-                                         pop_fut,
-                                         hh_size, # used for residential
-                                         floor, # used for commercial
+                                         d$pop_fut,
+                                         d$hh_size, # used for residential
+                                         d$floor, # used for commercial
                                          ct_hh_inc,
                                          ct_eneff, ct_fuel_comb,
                                          bld_arch_age,
-                                         shr_mat, shr_arch, shr_fuel_heat_base,shr_distr_heat,
+                                         d$shr_mat, d$shr_arch, d$shr_fuel_heat_base, d$shr_distr_heat,
                                          # eff_cool_scen, eff_heat_scen,eff_hotwater_scen,
                                          # ren_en_sav_scen,
                                          # heat_hours_scen,cool_data_scen, heat_floor, shr_acc_cool,

@@ -1,0 +1,85 @@
+name_input_old,name_parameter,name_file,category,description,F02,F04,F05
+pop_fut,pop,pop_clim_ssp2,basic,Population,"L11, 34, 45",,
+hh_size,hh_size,hh_size,basic,Household size,,,
+floor,floor_cap,floor_resid_ssp2,activity,Floorspace per capita,"L13, 25, 47, 194, 261, 293","L17, 51","L25, 129"
+hh_tenr,hh_tenure,hh_tenr,stock,Household tenure,,,"L26, 46, 97 (2), 176, 177, 178"
+shr_arch,shr_arch,bld_shr_arch_resid,stock,Housing type,,,
+shr_mat,shr_mat,bld_share_mat_resid_ssp2,stock,Share of permanent housing?,,,
+bld_dyn_par,prob_dem,bld_demolition_distr_long,activity,Building dynamics parameters (or building lifetime?),,,
+shr_acc_cool,shr_acc_cool,bld_shr_access_cool_resid_ssp2,stock,AC access,,,
+shr_distr_heat,shr_distr_heat,bld_shr_district_heat_resid,stock,Share district heating,,,
+shr_fuel_heat_base,shr_fuel_heat_base,bld_share_fuel_heat_resid,stock,Share of buildings by fuel type,,,
+r_new,,,skip,,,,
+r_ren,,,skip,,,,
+ct_ren_eneff,ct_ren_eneff,ct_ren_eneff2,categories,Renovation categories,,,
+ct_ren_fuel_heat,ct_ren_fuel_heat,ct_ren_fuel_heat_scen,categories,Energy efficiency transitions for renovations,,,
+ct_fuel_excl_new,ct_fuel_excl_new,ct_fuel_excluded_new,categories,FUEL EXCLUDED,,,
+ct_fuel_excl_ren,ct_fuel_excl_ren,ct_fuel_excluded_ren,categories,FUEL EXCLUDED,,,
+ct_fuel_excl_reg,ct_fuel_excl_reg,ct_fuel_excluded_reg,categories,FUEL EXCLUDED (Fuel not used in specific regions),,,
+ren_rate,,,skip,,,,
+ren_en_min,rate_ren_low,ren_rate_en_min,activity,Energy renovation rate low boundary,,"L31, 188, 190 (2), 195",
+ren_en_max,rate_ren_high,ren_rate_en_max_ssp2,activity,Energy renovation rate high boundary,,"L31, 189, 191 (2), 195",
+rate_switch_fuel,rate_fuel_switch,rate_switch_fuel_heat_ssp2,activity,Fuel switch rate,,,
+mat_int,mat_int,material_int_resid,material,Material intensities,,,
+eff_heat_scen,eff_heat ,eff_heat_ssp2,energy,Heating system efficiency ,"L18, 189",,
+eff_cool_scen,eff_cool,eff_cool_ssp2,energy,Cooling system efficiency ,"L18, 189",,
+eff_hotwater_scen,eff_hotwater,eff_hotwater_resid,energy,Hotwater system efficiency,"L18, 209, 216",,
+heat_floor,shr_floor_heat,heat_floor_resid,energy,Share of heated floor area on total useful floor area,"L20, 191",,
+heat_hours_scen,hours_heat,heat_operation_hours_ssp2,energy,Heating hours per day,"L20, 191",,
+ren_en_sav_scen,en_sav_ren,ren_energy_savings_ssp2,energy,Energy demand reduction after renovation,"L19, 190",,
+cool_data_scen,,cool_operation_hours_resid,skip,"Data on cooling operation (Daily hours of operation of AC, share of cooled floorarea, daily hours of operation of fans, power of fans)",,,
+en_m2_sim_r,,energy_sim_ref_resid,skip,"Energy demand data (energy demand intensity per m2 for heating, cooling, and number of days when cooling is required)",,,
+shr_need_cool,shr_need_cool,shr_need_cool_resid,stock,Share of the housing stock requiring cooling,,,
+shr_need_heat,shr_need_heat,shr_need_heat_resid,stock,Share of the housing stock requiring heating,,,
+en_cap_dhw,en_int_hotwater,en_int_resid_hotwater_SSP2_rev_2022-12-15,energy,Energy demand intesity per-cap for hot water,L209,,
+bld_arch_age,stock_arch_base,?,skip,Stock data for the base year,"L16, 75, 76, 112, 113, 140",,
+,,,,,,,
+c_int_new_heat,cost_intang_new_heat,cost_int_new_heat.csv,,Intangible costs for new construction - heating system,,"L19, 39",
+c_int_new_shell,cost_intang_new_shell,cost_int_new_shell.csv,,Intangible costs for new construction - building shell,,"L19, 38",
+c_int_ren_heat,cost_intang_ren_heat,cost_int_ren_heat.csv,,Intangible costs for renovation - heating system,,,"L28, 81"
+c_int_ren_shell,cost_intang_ren_shell,cost_int_ren_shell.csv,,Intangible costs for renovation - building shell,,,"L28, 80, 90 (2)"
+c_inv_new_heat,cost_invest_new_heat,cost_inv_new_heat.csv,,Investment costs for new construction - heating system,,"L18, 34",
+c_inv_new_shell,cost_invest_new_shell,cost_inv_new_shell.csv,,Investment costs for new construction - building shell,,"L18, 33",
+c_inv_ren_heat,cost_invest_ren_heat,cost_inv_ren_heat.csv,,Investment costs for renovation - heating system,,,"L27, 77, "
+c_inv_ren_shell,cost_invest_ren_shell,cost_inv_ren_shell.csv,,Investment costs for renovation - building shell,,,"L12 (2), 15 (2), 27, 76"
+l_new,lifetime_new,bld_dyn_param.csv,,Lifetime expected for new construction decisions,,"L21, 42, 68, 69 (2), 70, 96",L88
+l_ren,lifetime_ren,bld_dyn_param.csv,,Lifetime expected for new construction decisions,,L44,"L30, 86, 130, 150, 170"
+r_new,discount_new,discount_rate_new.csv,,Discount rate for new construction decisions,,"L21, 67",
+r_ren,discount_ren,discount_rate_ren.csv,,Discount rate for renovation decisions,,,"L30, 148"
+nu_new,,NA,,Heterogeneity parameter in new construction decisions,,,
+nu_ren,,NA,,Heterogeneity parameter in renovation decisions,,,
+,,,,,,,
+shr_eneff_new,shr_eneff_new,,,,,,
+shr_fuel_new,shr_fuel_heat_new,,,,,"L139, 150",
+shr_eneff_ren,shr_eneff_ren,,,,,,
+shr_fuel_ren,shr_fuel_heat_ren,,,,,,"L231, 242"
+shr_fuel_sw,shr_fuel_heat_sw,,,,,,"L288, 299"
+,,,,,,,
+below are some new ones:,,,,,,,
+,,,,,,,
+c_int_new_heat_i,cost_intang_new_heat_i,,,,,"L39, 65",
+c_int_new_shell_i,cost_intang_new_shell_i,,,,,"L38, 64",
+c_inv_new_heat_i,cost_invest_new_heat_i,,,,,"L34, 58",
+c_inv_new_shell_i,cost_invest_new_shell_i,,,,,"L33, 57",
+,,,,,,,
+cost_int_hh,cost_intang_hh,,,,,"L63, 66, 70, 95","L142, 147, 150, 151, 169"
+cost_int_new_heat,cost_intang_new_heat,,,,,"L66, 81, 94",
+cost_int_new_shell,cost_intang_new_shell,,,,,"L66, 80, 94",
+cost_inv_hh,cost_invest_hh,,,,,"L60, 70, 87","L137, 150, 151, 168"
+cost_inv_new_heat,cost_invest_new_heat,,,,,"L60, 92",
+cost_inv_new_shell,cost_invest_new_shell,,,,,"L60, 92",
+,,,,,,,
+ren_rate,rate_ren,,,,,L190,
+ren_rate_calc,rate_ren_calc,,,,,"L187, 190, 191 (2), 196",
+ren_rate_i,rate_ren_i,,,,,"L184, 224 (2)",
+,,,,,,,
+ct_hh_tenr,ct_hh_tenure,,,,,,"L22, 46"
+,,,,,,,
+c_int_ren_heat_i,cost_intang_ren_heat_i,,,,,,"L81, 145"
+c_int_ren_shell_i,cost_intang_ren_shell_i,,,,,,"L80, 143"
+,,,,,,,
+c_inv_ren_heat_i,cost_invest_ren_heat_i,,,,,,"L77, 134"
+c_inv_ren_heat_unit,cost_invest_ren_heat_unit,,,,,,L7 (2)
+cost_inv_ren_heat,cost_invest_ren_heat,,,,,,"L8, 9, 135, 136, 137, 168"
+c_inv_ren_shell_i,cost_invest_ren_shell_i,,,,,,"L76, 132"
+cost_inv_ren_shell,cost_invest_ren_shell,,,,,,"L16, 17, 133, 137, 168"

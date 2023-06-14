@@ -1,4 +1,4 @@
-mat,eneff_f,fuel_heat_f,fuel_cool,fuel_excluded
+mat,eneff_f,fuel_heat_f,fuel_cool,value
 perm,sr11_std,coal,electricity,1
 perm,sr11_std,biomass_solid,electricity,1
 perm,sr12_low,coal,electricity,1

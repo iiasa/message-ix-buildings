@@ -1,4 +1,4 @@
-region_gea,mat,eneff,fuel_heat,fuel_cool,fuel_excluded
+region_gea,mat,eneff,fuel_heat,fuel_cool,value
 AFR,perm,s51_std,coal,electricity,1
 CPA,perm,s51_std,coal,electricity,1
 EEU,perm,s51_std,biomass_solid,electricity,1

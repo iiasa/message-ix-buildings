@@ -11,16 +11,16 @@
 fun_stock_dyn <- function(sector,
                           mod_arch, # mod_arch = "new", mod_arch = "stock"
                           yrs,i,
-                          run, ssp_r,
+                          run, #ssp_r, # removed ssp dimension
                           geo_level, geo_level_aggr,geo_levels,
                           bld_cases_fuel, bld_cases_eneff, 
                           ct_bld_age, ct_fuel_comb,
                           hh_size, # Not used for commercial
-                          floor,
+                          floor_cap,
                           stock_aggr, bld_det_age_i, #bld_det, 
                           #bld_eneff_age, # keep track of age
-                          bld_dyn_par,
-                          ren_en_min, ren_en_max, #ren_rate,
+                          prob_dem,
+                          #rate_ren_low, rate_ren_high, #ren_rate,
                           rate_switch_fuel,
                           #ms_new, ms_ren,
                           ms_new_i, ms_ren_i, ren_rate_i,
@@ -68,11 +68,12 @@ dem_det_age_i <- bld_det_age_i %>% filter(year == yrs[i-1]) %>%  # Stock from pr
   select(-year) %>%
   #mutate(age = yrs[i]-yr_con) %>% # Calculate age of buildings
   # left_join(b) %>% # Attach probability of demolition
-  left_join(bld_dyn_par %>% select(-c(p_dem_hist, p_ren_hist, ren_tau, ren_sd, l_new, l_ren))) %>% # Attach probability of demolition
-  mutate(pdem = pweibull(yrs[i]-yr_con, shape = dem_k, scale = dem_lambda) - pweibull(yrs[i-1]-yr_con, shape = dem_k, scale = dem_lambda)) %>% #CDF: difference between two consecutive time steps
+  left_join(prob_dem %>% pivot_wider(names_from="parameter",values_from = "prob_dem")) %>% 
+  #left_join(bld_dyn_par %>% select(-c(p_dem_hist, p_ren_hist, ren_tau, ren_sd, l_new, l_ren))) %>% # Attach probability of demolition
+  mutate(pdem = pweibull(yrs[i]-yr_con, shape = shape, scale = scale) - pweibull(yrs[i-1]-yr_con, shape = shape, scale = scale)) %>% #CDF: difference between two consecutive time steps
   mutate(n_dem = ifelse(n_units_fuel>0,round(pdem * n_units_fuel,rnd),0)) %>%
   rename(n_units_fuel_p = n_units_fuel) %>% # N. units are from the previous time-step
-  select(-c(dem_k, dem_lambda, n_yrs_nodem, pdem))
+  select(-c(shape, scale, pdem))
 
 # rm(b)
 
@@ -493,7 +494,7 @@ if ("sub" %in% unique(bld_cases_eneff$mat)){
 
 en_stock_i <- bld_cases_fuel %>%
   mutate(scenario = run) %>%
-  mutate(ssp = ssp_r) %>%
+  # mutate(ssp = ssp_r) %>%
   mutate(year= yrs[i]) %>%
   left_join(bld_det_i %>% select(-bld_age)) %>% # issue matching periods of construction when definition is different!
   #left_join(stock_fuel_i.df) %>%
@@ -522,7 +523,7 @@ if(sector == "resid"){
                                  n_units_eneff* (1-shr_need_heat), 
                                  n_units_fuel*shr_need_heat)) %>%
     left_join(hh_size) %>%
-    left_join(floor) %>%
+    left_join(floor_cap) %>%
     #left_join(shr_acc_cool) %>%
     left_join(en_m2_scen_heat) %>%
     left_join(en_m2_scen_cool) %>%
@@ -540,7 +541,8 @@ if(sector == "resid"){
     mutate(stock_M = n_units_fuel / 1e6) %>%
     filter(stock_M > 0 & !is.na(stock_M)) %>%
     select_at(c(geo_levels, paste(c("urt", "clim", "inc_cl", "arch", "mat", "eneff", "fuel_heat", "fuel_cool", 
-                                    "scenario", "ssp", "year", "stock_M", "floor_Mm2",  
+                                    "scenario", #"ssp", 
+                                    "year", "stock_M", "floor_Mm2",  
                                     #"floor_tot_heat_Mm2", "floor_tot_cool_Mm2",
                                     "heat_TJ", "cool_TJ", "cool_ac_TJ", "cool_fans_TJ", "hotwater_TJ", "other_uses_TJ"))))
 }
@@ -574,7 +576,8 @@ if(sector == "comm"){
     mutate(stock_M = n_units_fuel / 1e6) %>%
     filter(stock_M > 0 & !is.na(stock_M)) %>%
     select_at(c(geo_levels, paste(c("urt", "clim", "inc_cl", "arch", "mat", "eneff", "fuel_heat", "fuel_cool", 
-                                    "scenario", "ssp", "year", "stock_M", "floor_Mm2",  
+                                    "scenario", #"ssp", 
+                                    "year", "stock_M", "floor_Mm2",  
                                     #"floor_tot_heat_Mm2", "floor_tot_cool_Mm2",
                                     "heat_TJ", "cool_TJ", "cool_ac_TJ", "cool_fans_TJ", "hotwater_TJ", "other_uses_TJ"))))
 }
@@ -622,10 +625,10 @@ if("material" %in% report_var){
     # Calculate material stock
     mat_stock_i <- bld_cases_eneff %>%
       mutate(scenario = run) %>%
-      mutate(ssp = ssp_r) %>%
+      # mutate(ssp = ssp_r) %>%
       mutate(year= yrs[i]) %>%
       left_join(hh_size) %>%
-      left_join(floor) %>%
+      left_join(floor_cap) %>%
       left_join(bld_eneff_i) %>%
       left_join(dem_eneff_i) %>%
       left_join(new_eneff_i) %>%
@@ -650,7 +653,8 @@ if("material" %in% report_var){
     #                                 "mat_stock_Mt",
     #                                 "mat_demand_Mt", "mat_scrap_Mt")))) %>%
     group_by_at(c(geo_levels, 
-                  paste(c("urt", "clim", "inc_cl", "arch", "mat", "eneff", "material", "scenario", "ssp", "year")))) %>% #Drop yr_con dimension
+                  paste(c("urt", "clim", "inc_cl", "arch", "mat", "eneff", "material", "scenario", #"ssp", 
+                          "year")))) %>% #Drop yr_con dimension
     
     summarise(floor_tot_Mm2 = sum(floor_tot_Mm2),
               floor_new_Mm2 = sum(floor_new_Mm2), 
@@ -666,9 +670,9 @@ if("material" %in% report_var){
 
   mat_stock_i <- bld_cases_eneff %>%
     mutate(scenario = run) %>%
-    mutate(ssp = ssp_r) %>%
+    # mutate(ssp = ssp_r) %>%
     mutate(year= yrs[i]) %>%
-    #left_join(floor) %>%
+    #left_join(floor_cap) %>%
     left_join(bld_eneff_i) %>%
     left_join(dem_eneff_i) %>%
     left_join(new_eneff_i) %>%
@@ -692,7 +696,8 @@ if("material" %in% report_var){
     #                                 "mat_stock_Mt",
     #                                 "mat_demand_Mt", "mat_scrap_Mt"))))
     group_by_at(c(geo_levels, 
-                  paste(c("urt", "clim", "inc_cl", "arch", "mat", "eneff", "material", "scenario", "ssp", "year")))) %>% #Drop yr_con dimension
+                  paste(c("urt", "clim", "inc_cl", "arch", "mat", "eneff", "material", "scenario", #"ssp", 
+                          "year")))) %>% #Drop yr_con dimension
       summarise(floor_tot_Mm2 = sum(floor_tot_Mm2),
                 floor_new_Mm2 = sum(floor_new_Mm2), 
                 floor_dem_Mm2 = sum(floor_dem_Mm2),

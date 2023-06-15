@@ -115,7 +115,7 @@ run_scenario <- function(run, scenario_name, prices,
                                          bld_cases_eneff, bld_cases_fuel,
                                          d$pop,
                                          d$hh_size, # used for residential
-                                         d$floor, # used for commercial
+                                         d$floor_cap, # used for commercial
                                          ct_hh_inc,
                                          ct_eneff, ct_fuel_comb,
                                          d$stock_arch_base,
@@ -182,13 +182,12 @@ run_scenario <- function(run, scenario_name, prices,
       
       # Market share - new construction options
       ms_new_i <- fun_ms_new(yrs,i,
-                             bld_dyn_par,
                              bld_cases_fuel, ct_bld_age,
-                             hh_size, floor,
-                             c_inv_new_shell,c_inv_new_heat,
-                             c_int_new_shell,c_int_new_heat,
-                             ct_fuel_excl_new,ct_fuel_excl_reg,
-                             r_new, nu_new, l_new,
+                             d$hh_size, d$floor_cap,
+                             d$cost_invest_new_shell, d$cost_invest_new_heat,
+                             d$cost_intang_new_shell, d$cost_intang_new_heat,
+                             d$ct_fuel_excl_new, d$ct_fuel_excl_reg,
+                             d$discount_new, d$heterog_new, d$lifetime_new,
                              en_hh_tot
       )       
       
@@ -197,15 +196,14 @@ run_scenario <- function(run, scenario_name, prices,
       # Market share - renovation + fuel switches options
       lst_ms_ren_sw_i <- fun_ms_ren_sw(yrs,i,
                                        bld_cases_fuel, ct_bld_age, ct_hh_tenr, ct_fuel_comb,
-                                       ct_ren_eneff, ct_ren_fuel_heat,
-                                       bld_dyn_par,
-                                       hh_size, floor,
-                                       hh_tenr,
-                                       c_inv_ren_shell,c_inv_ren_heat,
-                                       c_int_ren_shell,c_int_ren_heat,
-                                       ct_fuel_excl_ren,ct_fuel_excl_reg,
-                                       r_ren, nu_ren, l_ren,
-                                       ren_en_min, ren_en_max, #ren_rate, 
+                                       ct_ren_eneff, d$ct_ren_fuel_heat,
+                                       d$hh_size, d$floor_cap,
+                                       d$hh_tenure,
+                                       d$cost_invest_ren_shell,d$cost_invest_ren_heat,
+                                       d$cost_intang_ren_shell,d$cost_intang_ren_heat,
+                                       d$ct_fuel_excl_ren,d$ct_fuel_excl_reg,
+                                       d$discount_ren, d$heterog_ren, d$lifetime_ren,
+                                       d$ren_low, d$ren_high, #ren_rate, 
                                        # en_hh_tot_ren_init,
                                        # en_hh_tot_ren_fin
                                        en_hh_tot)
@@ -226,11 +224,11 @@ run_scenario <- function(run, scenario_name, prices,
                                    geo_level, geo_level_aggr,geo_levels,
                                    bld_cases_fuel, bld_cases_eneff, 
                                    ct_bld_age, ct_fuel_comb,
-                                   hh_size, floor,
+                                   hh_size, floor_cap,
                                    stock_aggr, bld_det_age_i, #bld_det, 
                                    #bld_eneff_age,
                                    bld_dyn_par,
-                                   ren_en_min, ren_en_max, #ren_rate, 
+                                   ren_low, ren_high, #ren_rate, 
                                    rate_switch_fuel,
                                    #ms_new, ms_ren,
                                    ms_new_i, ms_ren_i, ren_rate_i,
@@ -278,7 +276,7 @@ run_scenario <- function(run, scenario_name, prices,
                                          bld_cases_eneff, bld_cases_fuel,
                                          pop_fut,
                                          hh_size, # used for residential
-                                         floor, # used for commercial
+                                         floor_cap, # used for commercial
                                          ct_hh_inc,
                                          ct_eneff, ct_fuel_comb,
                                          stock_arch_base,
@@ -316,7 +314,7 @@ run_scenario <- function(run, scenario_name, prices,
                              cool_data_scen,
                              shr_acc_cool,
                              hh_size=NULL, # not used for commercial
-                             floor, 
+                             floor_cap, 
                              price_en=NULL # not used for commercial
       )
       
@@ -364,11 +362,11 @@ run_scenario <- function(run, scenario_name, prices,
                                    bld_cases_fuel, bld_cases_eneff, 
                                    ct_bld_age, ct_fuel_comb,
                                    hh_size = NULL, # Not used for commercial
-                                   floor,
+                                   floor_cap,
                                    stock_aggr, bld_det_age_i, #bld_det, 
                                    #bld_eneff_age, # keep track of age
                                    bld_dyn_par,
-                                   ren_en_min, ren_en_max, #ren_rate,
+                                   ren_en_low, ren_en_high, #ren_rate,
                                    rate_switch_fuel,
                                    #ms_new, ms_ren,
                                    ms_new_i, ms_ren_i, ren_rate_i,

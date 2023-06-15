@@ -139,6 +139,10 @@ ct_eneff <- read_csv(paste0(path_in_csv,"input_",sector,"/categories/ct_eneff.cs
 ct_fuel_comb <- read_csv(paste0(path_in_csv,"input_",sector,"/categories/ct_fuel.csv")) 
 ct_fuel_dhw <- read_csv(paste0(path_in_csv,"input_",sector,"/categories/ct_fuel_res.csv"))# fuels domestic hot water - Add solar thermal options
 
+## RENOVATION CATEGORIES
+ct_ren_eneff <- read_csv(paste0(path_in_csv,"input_",sector,"/categories/ct_ren_eneff2.csv")) # "fuel" settings. Energy efficiency transitions for renovations
+# The following is loaded as input data 
+#ct_ren_fuel_heat <- read_csv(paste0(path_in_csv,"input_",sector,"/decision/ct_ren_fuel_heat.csv")) # Energy efficiency transitions for renovations
 
 # BUILDING CASES
 

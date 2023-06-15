@@ -41,8 +41,8 @@ r_new,discount_new,discount_rate_new,decision
 r_ren,discount_ren,discount_rate_ren,decision
 ren_en_min,rate_ren_low,ren_rate_en_min,decision
 ren_en_max,rate_ren_high,ren_rate_en_max_ssp2,decision
-nu_new,,NA,skip
-nu_ren,,NA,skip
+nu_new,heterog_new,heterog_new,decision
+nu_ren,heterog_ren,heterog_ren,decision
 ct_fuel_excl_new,ct_fuel_excl_new,ct_fuel_excluded_new,decision
 ct_fuel_excl_ren,ct_fuel_excl_ren,ct_fuel_excluded_ren,decision
 ct_fuel_excl_reg,ct_fuel_excl_reg,ct_fuel_excluded_reg,decision

@@ -19,15 +19,14 @@
 
 ## BEGIN FUNCTION
 fun_ms_ren_sw <- function(yrs,i,
-                       bld_cases_fuel, ct_bld_age, ct_hh_tenure, ct_fuel_comb,
+                       bld_cases_fuel, ct_bld_age, ct_hh_tenr, ct_fuel_comb,
                        ct_ren_eneff, ct_ren_fuel_heat,
-                       bld_dyn_par,
                        hh_size, floor_cap,
                        hh_tenure,
                        cost_invest_ren_shell,cost_invest_ren_heat,
                        cost_intang_ren_shell,cost_intang_ren_heat,
                        ct_fuel_excl_ren,ct_fuel_excl_reg,
-                       discount_ren, nu_ren, lifetime_ren,
+                       discount_ren, heterog_ren, lifetime_ren,
                        rate_ren_low, rate_ren_high, #rate_ren, 
                        # en_hh_tot_ren_init,
                        # en_hh_tot_ren_fin
@@ -43,7 +42,7 @@ rnd <- 5
 stp <- yrs[i]-yrs[i-1]
   
 # Building cases fuels + tenure
-bld_cases_fuel_tenr <- merge(bld_cases_fuel, as.data.frame(ct_hh_tenure)) %>% rename(tenr = ct_hh_tenure)
+bld_cases_fuel_tenr <- merge(bld_cases_fuel, as.data.frame(ct_hh_tenr)) %>% rename(tenr = ct_hh_tenr)
   
 # Removed in v1.0 - now included in lcc_ren_hh processing
 # # Edit fuel excluded on a regional level for renovation (from script 02a_data_processing)
@@ -78,18 +77,15 @@ cost_invest_ren_heat_i <- cost_invest_ren_heat %>% filter(year == yrs[i])
   
 ## Prepare intangible cost data
 cost_intang_ren_shell_i <- cost_intang_ren_shell %>% filter(year == yrs[i])
-cost_intang_ren_heat_i <- cost_intang_ren_heat %>%
-  gather(key="fuel_heat_f", value="cost_int_ren_heat", all_of(ct_fuel_heat_mod)) %>% # Convert to long format (this is not on time steps! dedicated function cannot be used)
-  filter(!is.na(cost_int_ren_heat)) # Exclude NA values (costs not available = option not feasible)
- 
-# Prepare lifetime data (investment - renovation)
-lifetime_ren <- bld_dyn_par %>%
-  select(-c(p_dem_hist, p_ren_hist, dem_k, dem_lambda, 
-            n_yrs_nodem, ren_tau, ren_sd, lifetime_new))
+
+cost_intang_ren_heat_i <- cost_intang_ren_heat # No need to transform: laready in long format in new version
+# cost_intang_ren_heat_i <- cost_intang_ren_heat %>%
+#   gather(key="fuel_heat_f", value="cost_intang_ren_heat", all_of(ct_fuel_heat_mod)) %>% # Convert to long format (this is not on time steps! dedicated function cannot be used)
+#   filter(!is.na(cost_intang_ren_heat)) # Exclude NA values (costs not available = option not feasible)
 
 # cost_intang_ren_shell <- cost_intang_ren_shell %>% 
-#   gather(key="eneff_f", value="cost_int_ren_shell", all_of(ct_eneff_f_ren)) %>% # Convert to long format (this is not on time steps! dedicated function cannot be used)
-#   filter(!is.na(cost_int_ren_shell)) # Exclude NA values (costs not available = option not feasible)
+#   gather(key="eneff_f", value="cost_intang_ren_shell", all_of(ct_eneff_f_ren)) %>% # Convert to long format (this is not on time steps! dedicated function cannot be used)
+#   filter(!is.na(cost_intang_ren_shell)) # Exclude NA values (costs not available = option not feasible)
 
 
 
@@ -113,18 +109,22 @@ lcc_ren_hh <- bld_cases_fuel_tenr %>%
   left_join(ct_ren_fuel_heat %>% rename(fuel_heat = fuel_heat_i)) %>% # add heat_fuel categories for renovations
   left_join(ct_fuel_excl_ren) %>% ## Constraint: fuels not allowed for renovation
   left_join(ct_fuel_excl_reg %>% 
-              rename(fuel_excluded_i_reg = fuel_excluded_reg)) %>% ## Constraint (before renovation): fuels not used in specific regions
+              rename(ct_fuel_excl_i_reg = ct_fuel_excl_reg)) %>% ## Constraint (before renovation): fuels not used in specific regions
   left_join(ct_fuel_excl_reg %>% 
               rename(fuel_heat_f = fuel_heat) %>%
-              rename(fuel_excluded_f_reg = fuel_excluded_reg)) %>% ## Constraint (after renovation): fuels not used in specific regions
+              rename(ct_fuel_excl_f_reg = ct_fuel_excl_reg)) %>% ## Constraint (after renovation): fuels not used in specific regions
   filter(mod_decision == 1) %>% # exclude cases out of modelling decisions (e.g. district heating, substandard buildings)
-  filter(is.na(fuel_excluded), 
-         is.na(fuel_excluded_i_reg), 
-         is.na(fuel_excluded_f_reg)) %>% #  exclude non-permitted fuels (e.g. coal for passive houses)
+  filter(is.na(ct_fuel_excl_ren), 
+         is.na(ct_fuel_excl_i_reg), 
+         is.na(ct_fuel_excl_f_reg)) %>% #  exclude non-permitted fuels (e.g. coal for passive houses)
+  filter(!is.na(eneff_f)) %>% # filter out new construction, already renovated buildings, etc. (no "eneff_f" value availablefor those)
+  # filter((eneff == eneff_f & fuel_heat == fuel_heat_f) | 
+  #          (eneff == eneff_f & swt_exst == 1) | # transitions between eneffs for existing buildings (without renovation) require the renovation switch "swt_ren" to be ON
+  #          (eneff != eneff_f & swt_ren == 1)) %>% # transitions between eneffs for renovations require the renovation switch "swt_ren" to be ON
   filter((eneff == eneff_f & fuel_heat == fuel_heat_f) | 
-           (eneff == eneff_f & swt_exst == 1) | # transitions between eneffs for existing buildings (without renovation) require the renovation switch "swt_ren" to be ON
-           (eneff != eneff_f & swt_ren == 1)) %>% # transitions between eneffs for renovations require the renovation switch "swt_ren" to be ON
-  mutate(year = yrs[i]) %>% # Attach year (in the loop)
+           (eneff == eneff_f & ct_ren_fuel_heat == 1) | # transitions between eneffs for existing buildings (without renovation) require the renovation switch "swt_ren" to be ON
+           (eneff != eneff_f & ct_ren_fuel_heat == 1)) %>% # transitions between eneffs for renovations require the renovation switch "ct_ren_fuel_heat" to be ON (1). Note:  swt_exst and  swt_ren replaced by one column only: ct_ren_fuel_heat 
+    mutate(year = yrs[i]) %>% # Attach year (in the loop)
   left_join(hh_size) %>% # Add HH size
   left_join(floor_cap) %>% ## Add floor per capita
   left_join(lifetime_ren) %>% ## Add lifetime ren construction (for investment: based on loan duration)
@@ -141,22 +141,22 @@ lcc_ren_hh <- bld_cases_fuel_tenr %>%
   mutate(cost_op_hh = cost_op_m2 * floor_cap * hh_size) %>%  ## Add operative costs (total)
   #mutate(cost_intang_hh = 0) %>% ## Add intangible costs
   left_join(cost_intang_ren_shell_i) %>% ## Add intangible costs
-  #filter(!is.na(cost_int_ren_shell)) %>% # Remove NAs
-  left_join(cost_intang_ren_heat_i) %>% ## Add intangible costs
-  #filter(!is.na(cost_int_ren_heat)) %>% # Remove NAs
-  mutate(cost_intang_hh = cost_int_ren_heat + (cost_int_ren_shell * floor_cap * hh_size)) %>% # Calculate total investment costs
+  #filter(!is.na(cost_intang_ren_shell)) %>% # Remove NAs
+  left_join(cost_intang_ren_heat_i %>% rename(fuel_heat = fuel_heat_i)) %>% ## Add intangible costs
+  #filter(!is.na(cost_intang_ren_heat)) %>% # Remove NAs
+  mutate(cost_intang_hh = cost_intang_ren_heat + (cost_intang_ren_shell * floor_cap * hh_size)) %>% # Calculate total investment costs
   left_join(discount_ren) %>% ## Add discount rates
-  mutate(nu = nu_ren) %>% ## Add nu parameter
-  mutate(lcc_ren = fun_lcc(cost_invest_hh, cost_op_hh, cost_intang_hh, disc_rate, lifetime_ren)) %>% ## Apply LCC function to new construction
+  left_join(heterog_ren) %>% ## Add discount rates
+  mutate(lcc_ren = fun_lcc(cost_invest_hh, cost_op_hh, cost_intang_hh, discount_ren, lifetime_ren)) %>% ## Apply LCC function to new construction
   mutate(cost_op_hh_lcc = lcc_ren - cost_intang_hh - cost_invest_hh) %>% # Calculate operation lcc (for reporting)
-  mutate(lcc_ren_exp = fun_lcc_exp(lcc_ren, nu)) %>% ## Expon. nu
+  mutate(lcc_ren_exp = fun_lcc_exp(lcc_ren, heterog_ren)) %>% ## Expon. nu
   #select(-eneff) %>%
   rename(eneff_i = eneff) %>% # Rename eneff column 
   rename(fuel_heat_i = fuel_heat) %>% ## REMOVED IN v0.7
-  filter(cost_int_ren_shell != 99999) %>% # FILTERING BASED ON INTANGIBLE COSTS - NECESSARY? 
-  filter(cost_int_ren_heat != 99999) %>% # FILTERING BASED ON INTANGIBLE COSTS - NECESSARY?
+  filter(cost_intang_ren_shell != 99999) %>% # FILTERING BASED ON INTANGIBLE COSTS - NECESSARY? 
+  filter(cost_intang_ren_heat != 99999) %>% # FILTERING BASED ON INTANGIBLE COSTS - NECESSARY?
   #select(-mod_decision) %>% # keep mod_decision so it can be used in the stock dynamics model
-  select(-c(swt_ren,swt_exst,fuel_excluded,fuel_excluded_i_reg,fuel_excluded_f_reg))
+  select(-c(ct_ren_fuel_heat,ct_fuel_excl_ren,ct_fuel_excl_i_reg,ct_fuel_excl_f_reg))
 
   try(if(nrow(lcc_ren_hh)!=nrow(distinct(lcc_ren_hh))) stop("Error in renovation calculation! Duplicated records in lcc_ren_hh"))
 
@@ -166,8 +166,8 @@ lcc_ren_hh <- bld_cases_fuel_tenr %>%
 ms_i <- lcc_ren_hh %>%
   select(-c(#"acc_cool",
     "hh_size", "floor_cap", "cost_invest_ren_shell", "cost_invest_ren_heat", "cost_invest_hh", "cost_op_m2", "cost_op_m2_init",
-    "cost_op_hh", "cost_int_ren_heat", "cost_int_ren_shell", "cost_intang_hh", "disc_rate", 
-    "lifetime_ren", "nu", "lcc_ren", "cost_op_hh_lcc"))
+    "cost_op_hh", "cost_intang_ren_heat", "cost_intang_ren_shell", "cost_intang_hh", "discount_ren", 
+    "lifetime_ren", "heterog_ren", "lcc_ren", "cost_op_hh_lcc"))
 ms_i <- ms_i %>%
   group_by_at(setdiff(names(ms_i), c("eneff_f", "fuel_heat_f", "lcc_ren_exp"))) %>% # Select all variables, except "eneff_f" and "lcc_ren_hh_exp" for grouping)
   mutate(lcc_ren_exp_sum=sum(lcc_ren_exp)) %>%
@@ -244,9 +244,9 @@ fun_ms_ren_target <- function(yrs,i,
     filter(!is.na(ms_ren)) %>%
     filter(ms_ren > 0) %>%
     filter(mod_decision == 1) %>%
-    mutate(fuel_excluded = 0) %>% # Placeholder for fuels to be excluded
+    mutate(ct_fuel_excl_ren = 0) %>% # Placeholder for fuels to be excl
     select(-c(bld_age,ms_eneff,ms_fuel,
-              fuel_excluded
+              ct_fuel_excl_ren
               ))
   
   print(paste0("Completed renovation target - year ", yrs[i]))

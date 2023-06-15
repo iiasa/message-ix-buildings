@@ -12,14 +12,13 @@
 ## Complete model with fuel choice
 
 fun_ms_new <- function(yrs,i,
-                       bld_dyn_par,
                        bld_cases_fuel, ct_bld_age,
-                      hh_size, floor_cap,
-                      cost_invest_new_shell,cost_invest_new_heat,
-                      cost_intang_new_shell,cost_intang_new_heat,
-                      ct_fuel_excl_new,ct_fuel_excl_reg,
-                      discount_new, nu_new, lifetime_new,
-                      en_hh_tot){
+                       hh_size, floor_cap,
+                       cost_invest_new_shell, cost_invest_new_heat,
+                       cost_intang_new_shell, cost_intang_new_heat,
+                       ct_fuel_excl_new, ct_fuel_excl_reg,
+                       discount_new, heterog_new, lifetime_new,
+                       en_hh_tot){
 
 print(paste0("Running construction decisions - year ", yrs[i]))
 
@@ -38,11 +37,6 @@ cost_invest_new_heat_i <- cost_invest_new_heat %>% filter(year == yrs[i])
 cost_intang_new_shell_i <- cost_intang_new_shell %>% filter(year == yrs[i])
 cost_intang_new_heat_i <- cost_intang_new_heat %>% filter(year == yrs[i])
 
-# Prepare lifetime data (investment - new construction)
-lifetime_new <- bld_dyn_par %>%
-  select(-c(p_dem_hist, p_ren_hist, dem_k, dem_lambda, 
-            n_yrs_nodem, ren_tau, ren_sd, lifetime_ren))
-
 
 ## Prepare dataframe for LCC calculations at household level - New constructions
 lcc_new_hh <- bld_cases_fuel %>%
@@ -52,8 +46,8 @@ lcc_new_hh <- bld_cases_fuel %>%
   #filter(year == yrs[i]) %>% # Filter "i" year 
   left_join(ct_fuel_excl_new) %>% ## Constraint: fuels not allowed for new construction
   left_join(ct_fuel_excl_reg) %>% ## Constraint: fuels not used in specific regions
-  mutate_cond(is.na(fuel_excluded), fuel_excluded = 0) %>% # 0=fuel permitted; 1=fuel excluded
-  mutate_cond(is.na(fuel_excluded_reg), fuel_excluded_reg = 0) %>% # 0=fuel permitted; 1=fuel excluded
+  mutate_cond(is.na(ct_fuel_excl_new), ct_fuel_excl_new = 0) %>% # 0=fuel permitted; 1=fuel excluded
+  mutate_cond(is.na(ct_fuel_excl_reg), ct_fuel_excl_reg = 0) %>% # 0=fuel permitted; 1=fuel excluded
   left_join(cost_invest_new_shell_i) %>% ## Add investment costs - shell
   left_join(cost_invest_new_heat_i) %>% ## Add investment costs - heating fuel shift
   #mutate(cost_inv = cost_shell + cost_heat) %>% 
@@ -66,17 +60,17 @@ lcc_new_hh <- bld_cases_fuel %>%
   mutate(cost_intang_hh = cost_intang_new_heat + (cost_intang_new_shell * floor_cap * hh_size)) %>% # total intangible costs by hh
   left_join(discount_new) %>% ## Add discount rates #%>% filter(year == yrs[i]) # Filter "i" year 
   left_join(lifetime_new) %>% ## Add lifetime new construction (for investment: based on loan duration)
+  left_join(heterog_new) %>% # Add heterogeneity parameter
   #mutate(lifetime_new = lifetime_new) %>% ## Add lifetime new construction (for investment: based on loan duration) ## old formulation
-  mutate(lcc_new = fun_lcc(cost_invest_hh, cost_op_hh, cost_intang_hh, disc_rate, lifetime_new)) %>% ## Apply LCC function to new construction
-  mutate(nu = nu_new) %>% ## Add nu parameter
-  mutate(lcc_new_exp = fun_lcc_exp(lcc_new, nu))
+  mutate(lcc_new = fun_lcc(cost_invest_hh, cost_op_hh, cost_intang_hh, discount_new, lifetime_new)) %>% ## Apply LCC function to new construction
+  mutate(lcc_new_exp = fun_lcc_exp(lcc_new, heterog_new))
 
 print(paste0("generate lcc_new_hh "))
 # Filter rows based on constraints and calc settings
 lcc_new_hh <- lcc_new_hh %>%
   filter(bld_age %in% ct_bld_age_id_i) %>% # only current construction period allowed
   filter(mod_decision == 1) %>% # cases out of modelling decisions (e.g. district heating, substandard buildings)
-  filter(fuel_excluded == 0 & fuel_excluded_reg == 0) %>% # excluded non-permitted fuels (e.g. coal for passive houses)
+  filter(ct_fuel_excl_new == 0 & ct_fuel_excl_reg == 0) %>% # excluded non-permitted fuels (e.g. coal for passive houses)
   filter(cost_intang_new_shell != 99999) %>% # FILTERING BASED ON INTANGIBLE COSTS
   filter(cost_intang_new_heat != 99999) %>% # FILTERING BASED ON INTANGIBLE COSTS
   filter(!is.na(lcc_new))
@@ -88,12 +82,12 @@ lcc_new_hh_exp <- lcc_new_hh %>% select(-c(hh_size, floor_cap, #cost_inv,
                                            #fuel_heat, fuel_cool, ## here they should stay!!! they represent different choices 
                                            #en_m2, en_hh,      
                                            # price_en,
-                                           mod_decision, fuel_excluded,fuel_excluded_reg,
+                                           mod_decision, ct_fuel_excl_new,ct_fuel_excl_reg,
                                            cost_invest_new_shell, cost_invest_new_heat,
                                            cost_op_m2, cost_op_hh, 
                                            cost_intang_new_shell, cost_intang_new_heat,
                                            cost_intang_hh,
-                                           disc_rate, lifetime_new, lcc_new, nu))
+                                           discount_new, lifetime_new, lcc_new, heterog_new))
 
 print(paste0("generate lcc_new_hh_sum "))
 # calculate sum of exponents

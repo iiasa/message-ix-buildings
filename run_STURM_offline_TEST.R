@@ -47,6 +47,13 @@ yrs <- seq(2015,2050,5)
 input_mode <- "csv"
 #input_mode <- "rdata"
 
+# Other settings:
+  
+# Share of buildings archetypes:
+# mod_arch = "new",  # provided for new buildings (on the margin)
+mod_arch <- "stock" # provided for the entire stock - Default
+
+
 # # call STURM
 # sturm_scenarios <- run_scenario(run=scen, 
 #                                 #scenario_name=paste(ssp_scen,clim_scen,sep="_"),

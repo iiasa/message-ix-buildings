@@ -64,7 +64,7 @@ fun_stock_init_fut <- function(sector,
       left_join(shr_mat) %>% 
       #left_join(shr_arch) %>% # long format
       mutate(n_units_aggr = round(bld_units * shr_mat,rnd)) %>% # to mat level
-      #mutate(n_units_arch = bld_units * shr_mat * shr_arch) %>% # to arch level
+      #mutate(stock_arch_base = bld_units * shr_mat * shr_arch) %>% # to arch level
       select(-c(bld_units, shr_mat)) #%>%
       #arrange_at(c(geo_level, "urt", "inc_cl", "region_gea", "clim", "mat", "year"))
       #select(-c(bld_units, shr_mat, shr_arch))
@@ -73,8 +73,8 @@ fun_stock_init_fut <- function(sector,
     stock_aggr_base <- geo_data %>%
       select_at(geo_levels) %>%
       left_join(stock_arch_base) %>% 
-      group_by_at(setdiff(names(stock_arch_base), c("bld_age", "arch", "yr_con", "n_units_arch"))) %>% # Select all variables, except the ones specified
-      summarise(n_units_aggr = sum(n_units_arch)) %>%
+      group_by_at(setdiff(names(stock_arch_base), c("bld_age", "arch", "yr_con", "stock_arch_base"))) %>% # Select all variables, except the ones specified
+      summarise(n_units_aggr = sum(stock_arch_base)) %>%
       ungroup()
     
     # stock aggregated - combined
@@ -110,8 +110,8 @@ fun_stock_init_fut <- function(sector,
     stock_aggr_base <- geo_data %>%
       select_at(geo_levels) %>%
       left_join(stock_arch_base) %>% 
-      group_by_at(setdiff(names(stock_arch_base), c("bld_age", "yr_con", "n_units_arch"))) %>% # Select all variables, except the ones specified
-      summarise(n_units_aggr = sum(n_units_arch)) %>%
+      group_by_at(setdiff(names(stock_arch_base), c("bld_age", "yr_con", "stock_arch_base"))) %>% # Select all variables, except the ones specified
+      summarise(n_units_aggr = sum(stock_arch_base)) %>%
       ungroup()
     
     # stock aggregated - combined
@@ -143,13 +143,13 @@ fun_stock_init_fut <- function(sector,
     left_join(shr_fuel_heat_base) %>%
     left_join(shr_distr_heat) %>%
     #left_join(shr_acc_cool) %>%
-    mutate(n_units_eneff = n_units_arch) %>% # assumption: one eneff per period of construction
+    mutate(n_units_eneff = stock_arch_base) %>% # assumption: one eneff per period of construction
     mutate(n_units_fuel = ifelse(fuel_heat == "district_heat", 
                                  round(n_units_eneff * shr_distr_heat,rnd), # district heating 
-                                 round(n_units_eneff * (1 - shr_distr_heat) * shr_fuel,rnd))) %>% # other fuels (decentralized)
+                                 round(n_units_eneff * (1 - shr_distr_heat) * shr_fuel_heat_base,rnd))) %>% # other fuels (decentralized)
     mutate(n_units_fuel = round(n_units_fuel, rnd)) %>%
     mutate_cond(mat == "sub", n_units_fuel = n_units_eneff) %>% # sub-standard buildings - one fuel type only
-    select(-c(n_units_arch, shr_fuel, shr_distr_heat, n_units_eneff, mod_decision))
+    select(-c(stock_arch_base, shr_fuel_heat_base, shr_distr_heat, n_units_eneff, mod_decision))
     
     # ## other option: start from bld cases
     # bld_fuel_age <- bld_cases_fuel %>% 

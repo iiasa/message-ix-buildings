@@ -5,41 +5,47 @@
 fun_en_sim <- function(sector,
                        yrs, i,
                        bld_cases_fuel,
-                       en_m2_sim_r,
-                       eff_cool_scen, eff_heat_scen,
-                       ren_en_sav_scen,
-                       heat_hours_scen,heat_floor,
-                       cool_data_scen,
+                       en_int_heat, en_int_cool,
+                       days_cool,
+                       eff_cool, eff_heat,
+                       en_sav_ren,
+                       hours_heat, shr_floor_heat,
+                       hours_cool, shr_floor_cool,
+                       hours_fans, power_fans,
                        shr_acc_cool,
-                       hh_size,floor,
-                       price_en
-                       ){
+                       hh_size,floor_cap,
+                       price_en){
   
 print(paste0("Running energy demand year ", yrs[i]))
 
-  acc_heat = 1
+  shr_acc_heat = 1
   
   en_m2_scen_det <- bld_cases_fuel %>%
     mutate(year = yrs[i]) %>%
     #left_join(ct_eneff) %>% # to have "mat" for joining ct_access
-    left_join(eff_cool_scen) %>%
-    left_join(eff_heat_scen) %>%
-    left_join(ren_en_sav_scen) %>%
-    mutate_cond(is.na(ren_scl), ren_scl=0) %>%
-    #mutate(ren_scl=0) %>% ## NO RENOVATION SCALING HERE - VALUES ARE NOT TO BE SCALED
-    left_join(heat_hours_scen) %>%
-    mutate(f_h = heat_hours/24) %>%
-    left_join(cool_data_scen) %>%
+    left_join(eff_cool) %>%
+    left_join(eff_heat) %>%
+    left_join(en_sav_ren) %>%
+    mutate_cond(is.na(en_sav_ren), en_sav_ren=0) %>%
+    #mutate(en_sav_ren=0) %>% ## NO RENOVATION SCALING HERE - VALUES ARE NOT TO BE SCALED
+    left_join(hours_heat) %>%
+    mutate(f_h = hours_heat/24) %>%
+    left_join(shr_floor_cool) %>%
+    left_join(hours_cool) %>%
+    left_join(hours_fans) %>%
+    left_join(power_fans) %>%
     mutate(f_c = hours_cool/24) %>%
     mutate(f_f = hours_fans/24) %>% # fans operation
-    left_join(heat_floor) %>%
+    left_join(shr_floor_heat) %>%
     left_join(shr_acc_cool) %>%
     #left_join(cool_data_base) %>%
-    left_join(en_m2_sim_r) %>%
+    left_join(en_int_heat) %>%
+    left_join(en_int_cool) %>%
+    left_join(days_cool) %>%
     #left_join(en_m2_sim) %>%
-    mutate(en_dem_heat = en_dem_heat_sim*(1-ren_scl)*acc_heat/eff_heat*fl_cnd_h*f_h) %>% # Edit heating demand (final) [kWh/m2/y] # Removed acc_heat
-    mutate(en_dem_c_ac = en_dem_cool_sim*(1-ren_scl)*acc_cool/eff_cool*fl_cnd_c*f_c) %>% # Edit cooling demand - AC (final) [kWh/m2/y] (fans not included for now)
-    mutate(en_dem_c_fans = n_days_cool * fl_cnd_c * f_f * 24 * power_fans / (25 * 1e3)) %>% # Cooling demand - FANS (final) [kWh/m2/y]
+    mutate(en_dem_heat = en_int_heat*(1-en_sav_ren)*shr_acc_heat/eff_heat*shr_floor_heat*f_h) %>% # Edit heating demand (final) [kWh/m2/y] # Removed acc_heat
+    mutate(en_dem_c_ac = en_int_cool*(1-en_sav_ren)*shr_acc_cool/eff_cool*shr_floor_cool*f_c) %>% # Edit cooling demand - AC (final) [kWh/m2/y] (fans not included for now)
+    mutate(en_dem_c_fans = days_cool * shr_floor_cool * f_f * 24 * power_fans / (25 * 1e3)) %>% # Cooling demand - FANS (final) [kWh/m2/y]
     mutate_cond(is.na(en_dem_heat), en_dem_heat=0) %>% 
     mutate_cond(is.na(en_dem_c_ac), en_dem_c_ac=0) %>% # Remove NA values 
     mutate_cond(is.na(en_dem_c_fans), en_dem_c_fans=0) %>% # Remove NA values 
@@ -49,12 +55,12 @@ print(paste0("Running energy demand year ", yrs[i]))
     # # mutate_cond(eneff %in% c("s6_low", "s9_rlow") & en_dem_heat>15, en_dem_heat = 15) %>% # ADJUST VALUES FOR  PASSIVE
     # # mutate_cond(eneff %in% c("s6_low", "s9_rlow") & en_dem_cool>15, en_dem_cool = 15) %>% # ADJUST VALUES FOR  PASSIVE
     select(-year) %>%
-    select(-c(en_dem_heat_sim,en_dem_cool_sim,n_days_cool))  
+    select(-c(en_int_heat,en_int_cool,days_cool))  
   
   en_m2_scen_S <- en_m2_scen_det %>% 
-    select(-c(bld_age,eff_cool,eff_heat,mod_decision, f_h,f_c,fl_cnd_h,fl_cnd_c,heat_hours,hours_cool,
+    select(-c(bld_age,eff_cool,eff_heat,mod_decision, f_h,f_c,shr_floor_heat,shr_floor_cool,hours_heat,hours_cool,
               #eneff_fuel,
-              ren_scl))%>%
+              en_sav_ren))%>%
     select(-c(hours_fans,power_fans,f_f)) #%>% NAs removed before
   
   ## Energy demand SPACE HEATING ONLY - by fuel: for investment decisions
@@ -62,7 +68,7 @@ print(paste0("Running energy demand year ", yrs[i]))
     #mutate(fuel = fuel_heat) %>%
     left_join(en_m2_scen_S) %>%
     select(-c(en_dem_cool,en_dem_c_ac,en_dem_c_fans,bld_age,
-              acc_cool,
+              shr_acc_cool,
               fuel_cool,
               #eneff_fuel,
               mod_decision)) 
@@ -78,7 +84,7 @@ print(paste0("Running energy demand year ", yrs[i]))
   
 # }
 # 
-# fun_en_hh <- function(yrs, i, bld_cases_fuel, en_m2_scen_heat,hh_size,floor,price_en){
+# fun_en_hh <- function(yrs, i, bld_cases_fuel, en_m2_scen_heat,hh_size,floor_Cap,price_en){
   
   u1 <- 3.6/1000 #kWh to GJ (to calculate operational costs)
   
@@ -94,7 +100,7 @@ print(paste0("Running energy demand year ", yrs[i]))
   
   #en_hh <- en_hh %>% left_join(ct_eneff) #Add mat categories
   #en_hh <- en_hh %>% left_join(ct_bld) #Add arch categories
-  en_hh <- en_hh %>% left_join(floor) %>% #Add floor surface
+  en_hh <- en_hh %>% left_join(floor_cap) %>% #Add floor surface
     mutate(en_hh = en_m2 * floor_cap * hh_size) %>% #Calculate total energy demand per household
     left_join(price_en) %>% #Associate energy prices to en_perm
     mutate(cost_op = u1 * en_hh * price_en) # calculate the total costs for operational energy
@@ -148,10 +154,11 @@ print(paste0("Running energy demand year ", yrs[i]))
 ## FUNCTION DOMESTIC HOT WATER - RESIDENTIAL
 
 fun_hw_resid <- function(yrs, i,
-                          bld_cases_fuel,hh_size,
+                          bld_cases_fuel,
+                          hh_size,
                           #ct_fuel_dhw,
-                          eff_hotwater_scen, en_cap_dhw,
-                          en_m2_sim_r){
+                          eff_hotwater, en_int_hotwater,
+                          en_int_heat){
   
   print(paste0("Running energy demand year ", yrs[i]))
   
@@ -162,13 +169,13 @@ fun_hw_resid <- function(yrs, i,
     #left_join(ct_eneff) %>% # to have "mat" for joining ct_access ## needed for DHW?
     left_join(hh_size) %>%
     #left_join(ct_fuel_dhw) %>%
-    left_join(eff_hotwater_scen) %>%
-    left_join(en_cap_dhw) %>%
-    left_join(en_m2_sim_r) %>% # join data energy demand - filter where heating is needed
-    mutate(en_dem_dhw = hh_size*en_dhw_useful_GJ_cap*acc_hw/eff_hotwater) %>% # DHW energy demand (final) [GJ/hh/y] 
-    mutate_cond(en_dem_heat_sim == 0, en_dem_dhw=0) %>% # no hot water demand where there is no heating
+    left_join(eff_hotwater) %>%
+    left_join(en_int_hotwater) %>%
+    left_join(en_int_heat) %>% # join data energy demand - filter where heating is needed
+    mutate(en_dem_dhw = hh_size*en_int_hotwater*acc_hw/eff_hotwater) %>% # DHW energy demand (final) [GJ/hh/y] 
+    mutate_cond(en_int_heat == 0, en_dem_dhw=0) %>% # no hot water demand where there is no heating
     select(-year) %>%
-    select(-c(hh_size,eff_hotwater,en_dhw_final_GJ_cap, en_dhw_useful_GJ_cap,en_dem_heat_sim,en_dem_cool_sim,n_days_cool, mod_decision, bld_age))  
+    select(-c(hh_size,eff_hotwater, en_int_hotwater,en_int_heat,mod_decision, bld_age))  
   
   output = en_hh_hw_scen
 
@@ -178,7 +185,7 @@ fun_hw_resid <- function(yrs, i,
 
 fun_hw_comm <- function(yrs, i,
                         bld_cases_fuel, 
-                        eff_hotwater_scen,
+                        eff_hotwater,
                         en_m2_dhw
                         ){
   
@@ -187,7 +194,7 @@ fun_hw_comm <- function(yrs, i,
   en_m2_hw_scen <- bld_cases_fuel %>%
     mutate(year = yrs[i]) %>%
     #left_join(ct_eneff) %>% # to have "mat" for joining ct_access ## needed for DHW?
-    left_join(eff_hotwater_scen) %>%
+    left_join(eff_hotwater) %>%
     left_join(en_m2_dhw) %>%
     mutate(en_dem_dhw = en_dhw_useful_kwh_m2/eff_hotwater) %>% # DHW energy demand (final) [kWh/m2/y] 
     select(-year) %>%

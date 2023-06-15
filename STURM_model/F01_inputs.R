@@ -162,6 +162,3 @@ bld_cases_fuel <- expand.grid(geo_level = regions,
 ### BUILDING CASES at more aggregate level can be generated from bld_cases_fuel
 # bld_cases_arch <- bld_cases_fuel %>% select(-c(eneff, bld_age, fuel_heat, fuel_cool, mod_decision)) %>% distinct()
 bld_cases_eneff <- bld_cases_fuel %>% select(-c(fuel_heat, fuel_cool, mod_decision)) %>% distinct()
-
-# remove unused files
-rm(ct_bld,ct_bld_age,ct_eneff,ct_fuel_comb,ct_fuel_dhw,clim_zones)

@@ -113,12 +113,12 @@ run_scenario <- function(run, scenario_name, prices,
                                          yrs,
                                          geo_data, geo_levels, geo_level,
                                          bld_cases_eneff, bld_cases_fuel,
-                                         d$pop_fut,
+                                         d$pop,
                                          d$hh_size, # used for residential
                                          d$floor, # used for commercial
                                          ct_hh_inc,
                                          ct_eneff, ct_fuel_comb,
-                                         bld_arch_age,
+                                         d$stock_arch_base,
                                          d$shr_mat, d$shr_arch, d$shr_fuel_heat_base, d$shr_distr_heat,
                                          # eff_cool_scen, eff_heat_scen,eff_hotwater_scen,
                                          # ren_en_sav_scen,
@@ -152,13 +152,15 @@ run_scenario <- function(run, scenario_name, prices,
       lst_en_i <- fun_en_sim(sector,
                              yrs, i,
                              bld_cases_fuel,
-                             en_m2_sim_r,
-                             eff_cool_scen, eff_heat_scen,
-                             ren_en_sav_scen,
-                             heat_hours_scen,heat_floor,
-                             cool_data_scen,
-                             shr_acc_cool,
-                             hh_size,floor,
+                             d$en_int_heat, d$en_int_cool,
+                             d$days_cool,
+                             d$eff_cool, d$eff_heat,
+                             d$en_sav_ren,
+                             d$hours_heat, d$shr_floor_heat,
+                             d$hours_cool, d$shr_floor_cool,
+                             d$hours_fans, d$power_fans,
+                             d$shr_acc_cool,
+                             d$hh_size,d$floor_cap,
                              price_en)
       
       # Extract dataframes from list
@@ -171,10 +173,12 @@ run_scenario <- function(run, scenario_name, prices,
       
       # Energy demand intensities - hot water
       en_hh_hw_scen <- fun_hw_resid(yrs, i,
-                                    bld_cases_fuel,hh_size,
+                                    bld_cases_fuel,
+                                    d$hh_size,
                                     #ct_fuel_dhw,
-                                    eff_hotwater_scen, en_cap_dhw,
-                                    en_m2_sim_r)
+                                    d$eff_hotwater, 
+                                    d$en_int_hotwater,
+                                    d$en_int_heat)
       
       # Market share - new construction options
       ms_new_i <- fun_ms_new(yrs,i,
@@ -277,7 +281,7 @@ run_scenario <- function(run, scenario_name, prices,
                                          floor, # used for commercial
                                          ct_hh_inc,
                                          ct_eneff, ct_fuel_comb,
-                                         bld_arch_age,
+                                         stock_arch_base,
                                          shr_mat, shr_arch, shr_fuel_heat_base,shr_distr_heat,
                                          # eff_cool_scen, eff_heat_scen,eff_hotwater_scen,
                                          # ren_en_sav_scen,

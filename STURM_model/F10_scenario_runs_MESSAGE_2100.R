@@ -203,7 +203,7 @@ run_scenario <- function(run, scenario_name, prices,
                                        d$cost_intang_ren_shell,d$cost_intang_ren_heat,
                                        d$ct_fuel_excl_ren,d$ct_fuel_excl_reg,
                                        d$discount_ren, d$heterog_ren, d$lifetime_ren,
-                                       d$ren_low, d$ren_high, #ren_rate, 
+                                       d$rate_ren_low, d$rate_ren_high, #ren_rate, 
                                        # en_hh_tot_ren_init,
                                        # en_hh_tot_ren_fin
                                        en_hh_tot)

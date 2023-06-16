@@ -17,7 +17,8 @@ fun_report_basic <- function(report, report_var, geo_data, geo_level, geo_level_
         en_stock_rep <- report$en_stock %>%
           left_join(geo_data) %>%
           group_by_at(paste(c(geo_level_report, "urt","arch","mat","eneff","fuel_heat","fuel_cool",   
-                              "scenario", "ssp","year"))) %>%
+                              "scenario", # "ssp", # drop SSP
+                              "year"))) %>%
           summarise(stock_M =sum(stock_M),
                     floor_Mm2 = sum(floor_Mm2), 
                     heat_TJ = sum(heat_TJ),   
@@ -41,7 +42,8 @@ fun_report_basic <- function(report, report_var, geo_data, geo_level, geo_level_
       mat_stock_rep <- report$mat_stock %>%
           left_join(geo_data) %>%
           group_by_at(paste(c(geo_level_report, "urt","arch","mat","eneff","material",  
-                              "scenario", "ssp","year"))) %>%
+                              "scenario", # "ssp", # drop SSP
+                              "year"))) %>%
           summarise(
                     floor_tot_Mm2 = sum(floor_tot_Mm2), 
                     floor_new_Mm2 = sum(floor_new_Mm2), 
@@ -64,7 +66,7 @@ fun_report_basic <- function(report, report_var, geo_data, geo_level, geo_level_
         bld_eneff_age_rep <- report$bld_eneff_age %>%
           left_join(geo_data) %>%
           group_by_at(paste(c(geo_level_report, "year", "yr_con","urt","arch","mat","eneff"
-                              #,"scenario", "ssp"
+                              #,"scenario", # "ssp", # drop SSP
                               ))) %>%
           summarise(n_units =sum(n_units_eneff))%>%
           ungroup()}

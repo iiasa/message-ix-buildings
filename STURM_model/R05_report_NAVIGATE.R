@@ -3,7 +3,7 @@
 
 ## geo_level_report should be one of the column in the DF "geo_data"
 
-fun_report_NAVIGATE <- function(report, report_var, geo_data, geo_level, geo_level_report, sector, scenario_name, yrs, path_out){
+fun_report_NAVIGATE <- function(report, report_var, geo_data, geo_level, geo_level_report, sector, scenario_name, yrs, path_out, path_in, ct_bld, ct_ren_eneff, ren_en_sav_scen){
 
   print(paste0("Aggregate and report results - NAVIGATE Report"))
   
@@ -132,108 +132,108 @@ fun_report_NAVIGATE <- function(report, report_var, geo_data, geo_level, geo_lev
   }
   
   
-  ### REPORT U-VALUES
-  if(sector == "resid"){
-  
-    # import U-values
-    
-    u_val <- read_csv(paste0(path_in, "input_U_values.csv"))
-    u_val <- u_val %>%
-      mutate(eneff = substr(arch, 5,12)) %>%
-      mutate(arch = substr(arch, 1,3)) %>%
-      mutate(region_gea = substr(name, 1,3)) %>%
-      select(region_gea, arch, eneff, u_val)
-    
-    if (sector =="comm"){
-      u_val <- u_val %>% 
-        filter(arch == "mfh") %>%
-        mutate(arch = "comm")
-    }
-    
-    # # U-values renovation -- already loaded: "ren_en_sav_scen"
-    # ren_energy_savings <- read_csv(paste0(path_in,"ren_energy_savings.csv")) %>% 
-    #   rename(eneff_f = eneff) %>%
-    #   mutate(eneff_i = paste0("s",substr(eneff_f,3,3)), .before=eneff_f) %>%
-    #   fun_toLong("ren_energy_savings") %>%
-    #   filter(ssp == "SSP2") %>% # EDIT THIS! THIS IS SCENARIO SPECIFIC!
-    #   select(-c(scenario,ssp))
-    
-    u_val_ren <- ct_bld %>%
-      left_join(ct_ren_eneff) %>%
-      filter(eneff_f != eneff_i) %>% # filter only renovated buildings
-      left_join(ren_en_sav_scen %>% rename(eneff_f = eneff)) %>%
-      left_join(u_val %>% rename(eneff_i = eneff, u_val_i = u_val)) %>%
-      mutate(u_val = u_val_i * (1-ren_scl)) %>%
-      rename(eneff = eneff_f) %>%
-      select(-c(eneff_i, u_val_i, ren_scl)) %>%
-      rename(u_val_ren = u_val)
-    
-    u_val_ren <- bind_rows( # add values for the base year
-      u_val_ren %>% filter(year == 2020) %>% mutate(year = 2015),
-      u_val_ren
-    ) 
-    
-    # U-values slums: take values from eneff s1
-    u_val_slum <- u_val %>%
-      filter(eneff == "s1" & arch == "sfh") %>%
-      select(-c(arch,eneff)) %>%
-      rename(u_val_slum = u_val)
-    
-    # U-values: join all datasets
-    u_val <- stock_rep %>%
-      select(-c(stock_M, heat_TJ, cool_TJ, cool_ac_TJ, cool_fans_TJ, hotwater_TJ, other_uses_TJ)) %>%
-      left_join(u_val) %>%
-      left_join(u_val_ren) %>%
-      left_join(u_val_slum) %>%
-      mutate(u_val = ifelse(is.na(u_val), u_val_ren, u_val)) %>%
-      mutate(u_val = ifelse(arch == "inf", u_val_slum, u_val)) %>%
-      select(-c(u_val_slum, u_val_ren, region_gea))
-    
-    rm(u_val_slum, u_val_ren)
-    
-    # Average U-values: weighted on floorspace
-    u_val_avg <- u_val %>%
-      group_by(scenario, R12, year) %>%
-      summarise(u_val = weighted.mean(u_val, floor_Mm2)) %>%
-      ungroup %>%
-      pivot_wider(names_from = "year", values_from = "u_val") %>%
-      rename(Scenario = scenario, Region = R12) %>%
-      mutate(Model = model_name, 
-             Variable = paste0("Energy Service|", lab_sector, "|U-Value"),
-             Unit = "W/m2/K") %>%
-      relocate(Model, Scenario, Region, Variable, Unit)
-    
-    # # Average U-values: weighted on floorspace - New construction -- NOT REPORTED
-    # # NOTE: this does not include new slum buildings!
-    # u_val_new <- u_val %>% 
-    #   filter(eneff %in% c("s51_std", "s52_low")) %>%
-    #   group_by(scenario, R12, year) %>%
-    #   summarise(u_val = weighted.mean(u_val, floor_Mm2)) %>%
-    #   ungroup %>%
-    #   pivot_wider(names_from = "year", values_from = "u_val") %>%
-    #   rename(Scenario = scenario, Region = R12) %>%
-    #   mutate(Model = model_name, 
-    #          Variable = paste0("Energy Service|", lab_sector, "|New Construction|U-Value"),
-    #          Unit = "W/m2/K") %>%
-    #   relocate(Model, Scenario, Region, Variable, Unit)
-    # 
-    # # Average U-values: weighted on floorspace - Renovations -- NOT REPORTED
-    # # NOTE: this does not include new slum buildings!
-    # u_val_ren <- u_val %>% 
-    #   filter(eneff %in% c("sr11_std", "sr21_std", "sr31_std", "sr12_low", "sr22_low", "sr32_low")) %>%
-    #   group_by(scenario, R12, year) %>%
-    #   summarise(u_val = weighted.mean(u_val, floor_Mm2)) %>%
-    #   ungroup %>%
-    #   pivot_wider(names_from = "year", values_from = "u_val") %>%
-    #   rename(Scenario = scenario, Region = R12) %>%
-    #   mutate(Model = model_name, 
-    #          Variable = paste0("Energy Service|", lab_sector, "|Renovation|U-Value"),
-    #          Unit = "W/m2/K") %>%
-    #   relocate(Model, Scenario, Region, Variable, Unit)
-    
-    exp_rep <- bind_rows(exp_rep,u_val_avg) 
-    
-  }  
+  # ### REPORT U-VALUES -- TO BE REVISED!!! inputs to function to be completed
+  # if(sector == "resid"){
+  # 
+  #   # import U-values
+  #   
+  #   u_val <- read_csv(paste0(path_in, "input_U_values.csv"))
+  #   u_val <- u_val %>%
+  #     mutate(eneff = substr(arch, 5,12)) %>%
+  #     mutate(arch = substr(arch, 1,3)) %>%
+  #     mutate(region_gea = substr(name, 1,3)) %>%
+  #     select(region_gea, arch, eneff, u_val)
+  #   
+  #   if (sector =="comm"){
+  #     u_val <- u_val %>% 
+  #       filter(arch == "mfh") %>%
+  #       mutate(arch = "comm")
+  #   }
+  #   
+  #   # # U-values renovation -- already loaded: "ren_en_sav_scen"
+  #   # ren_energy_savings <- read_csv(paste0(path_in,"ren_energy_savings.csv")) %>% 
+  #   #   rename(eneff_f = eneff) %>%
+  #   #   mutate(eneff_i = paste0("s",substr(eneff_f,3,3)), .before=eneff_f) %>%
+  #   #   fun_toLong("ren_energy_savings") %>%
+  #   #   filter(ssp == "SSP2") %>% # EDIT THIS! THIS IS SCENARIO SPECIFIC!
+  #   #   select(-c(scenario,ssp))
+  #   
+  #   u_val_ren <- ct_bld %>%
+  #     left_join(ct_ren_eneff) %>%
+  #     filter(eneff_f != eneff_i) %>% # filter only renovated buildings
+  #     left_join(ren_en_sav_scen %>% rename(eneff_f = eneff)) %>%
+  #     left_join(u_val %>% rename(eneff_i = eneff, u_val_i = u_val)) %>%
+  #     mutate(u_val = u_val_i * (1-ren_scl)) %>%
+  #     rename(eneff = eneff_f) %>%
+  #     select(-c(eneff_i, u_val_i, ren_scl)) %>%
+  #     rename(u_val_ren = u_val)
+  #   
+  #   u_val_ren <- bind_rows( # add values for the base year
+  #     u_val_ren %>% filter(year == 2020) %>% mutate(year = 2015),
+  #     u_val_ren
+  #   ) 
+  #   
+  #   # U-values slums: take values from eneff s1
+  #   u_val_slum <- u_val %>%
+  #     filter(eneff == "s1" & arch == "sfh") %>%
+  #     select(-c(arch,eneff)) %>%
+  #     rename(u_val_slum = u_val)
+  #   
+  #   # U-values: join all datasets
+  #   u_val <- stock_rep %>%
+  #     select(-c(stock_M, heat_TJ, cool_TJ, cool_ac_TJ, cool_fans_TJ, hotwater_TJ, other_uses_TJ)) %>%
+  #     left_join(u_val) %>%
+  #     left_join(u_val_ren) %>%
+  #     left_join(u_val_slum) %>%
+  #     mutate(u_val = ifelse(is.na(u_val), u_val_ren, u_val)) %>%
+  #     mutate(u_val = ifelse(arch == "inf", u_val_slum, u_val)) %>%
+  #     select(-c(u_val_slum, u_val_ren, region_gea))
+  #   
+  #   rm(u_val_slum, u_val_ren)
+  #   
+  #   # Average U-values: weighted on floorspace
+  #   u_val_avg <- u_val %>%
+  #     group_by(scenario, R12, year) %>%
+  #     summarise(u_val = weighted.mean(u_val, floor_Mm2)) %>%
+  #     ungroup %>%
+  #     pivot_wider(names_from = "year", values_from = "u_val") %>%
+  #     rename(Scenario = scenario, Region = R12) %>%
+  #     mutate(Model = model_name, 
+  #            Variable = paste0("Energy Service|", lab_sector, "|U-Value"),
+  #            Unit = "W/m2/K") %>%
+  #     relocate(Model, Scenario, Region, Variable, Unit)
+  #   
+  #   # # Average U-values: weighted on floorspace - New construction -- NOT REPORTED
+  #   # # NOTE: this does not include new slum buildings!
+  #   # u_val_new <- u_val %>% 
+  #   #   filter(eneff %in% c("s51_std", "s52_low")) %>%
+  #   #   group_by(scenario, R12, year) %>%
+  #   #   summarise(u_val = weighted.mean(u_val, floor_Mm2)) %>%
+  #   #   ungroup %>%
+  #   #   pivot_wider(names_from = "year", values_from = "u_val") %>%
+  #   #   rename(Scenario = scenario, Region = R12) %>%
+  #   #   mutate(Model = model_name, 
+  #   #          Variable = paste0("Energy Service|", lab_sector, "|New Construction|U-Value"),
+  #   #          Unit = "W/m2/K") %>%
+  #   #   relocate(Model, Scenario, Region, Variable, Unit)
+  #   # 
+  #   # # Average U-values: weighted on floorspace - Renovations -- NOT REPORTED
+  #   # # NOTE: this does not include new slum buildings!
+  #   # u_val_ren <- u_val %>% 
+  #   #   filter(eneff %in% c("sr11_std", "sr21_std", "sr31_std", "sr12_low", "sr22_low", "sr32_low")) %>%
+  #   #   group_by(scenario, R12, year) %>%
+  #   #   summarise(u_val = weighted.mean(u_val, floor_Mm2)) %>%
+  #   #   ungroup %>%
+  #   #   pivot_wider(names_from = "year", values_from = "u_val") %>%
+  #   #   rename(Scenario = scenario, Region = R12) %>%
+  #   #   mutate(Model = model_name, 
+  #   #          Variable = paste0("Energy Service|", lab_sector, "|Renovation|U-Value"),
+  #   #          Unit = "W/m2/K") %>%
+  #   #   relocate(Model, Scenario, Region, Variable, Unit)
+  #   
+  #   exp_rep <- bind_rows(exp_rep,u_val_avg) 
+  #   
+  # }  
   
   
   

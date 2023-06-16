@@ -6,9 +6,12 @@ library(readxl)
 # require(devtools) # source code from github
 # library(RCurl) # read file from github
 
-run_scenario <- function(run, scenario_name, prices, 
-                         path_in, path_rcode, path_out, 
+run_scenario <- function(run, 
+                         scenario_name, 
                          sector, 
+                         path_in, path_rcode, path_out, 
+                         prices, 
+                         file_inputs, file_scenarios,
                          geo_level, geo_level_aggr, geo_levels, 
                          geo_level_report,
                          yrs,
@@ -16,7 +19,7 @@ run_scenario <- function(run, scenario_name, prices,
                          mod_arch,
                          report_type, report_var){
   
-  print(paste("Start scenario run: ", run))
+  print(paste("Start scenario run: ", run, "_", sector))
   
   # Track time
   start_time <- Sys.time()
@@ -44,6 +47,7 @@ run_scenario <- function(run, scenario_name, prices,
   # SOURCE MODEL FUNCTIONS
   print("Load functions")
   source(file.path(path_rcode, "B00_functions.R"))
+  source(file.path(path_rcode, "F01_inputs.R"))
   source(file.path(path_rcode, "F03_energy_demand.R"))
   source(file.path(path_rcode, "F04_constr_decision.R"))
   # source(file.path(path_rcode, "F05_renov_decision.R"))
@@ -79,12 +83,72 @@ run_scenario <- function(run, scenario_name, prices,
     print("Load data - csv")
     
     # Source - input data
-    source(paste0(path_rcode,"F01_inputs.R"))
+    d <- fun_inputs_csv(path_in, file_inputs, file_scenarios, sector, run)
     
     print("Data loaded!")
   }
     
-    
+  #### FROM HERE: MOVE AND RE-ORGANIZE TO SEPARATE SCRIPT FOR MODEL BUILDING -- CREATE MATRIX OF ALL DIMENSIONS ####
+  
+  
+  ### MODEL BUILDING ### MOVE TO SEPARATE SCRIPT?
+
+  # PATH DATA INPUT FILES
+  path_in_csv = paste0(path_in,"./input_csv/")
+  
+  # Regions
+  geo_data <- read_csv(paste0(path_in_csv,"/input_basic_geo/regions.csv"))  # First columns
+  regions <- unlist(geo_data[,paste(geo_level)]) # Regions in the analysis
+  regions_aggr <- sort(unique(unlist(geo_data[,paste(geo_level_aggr)]))) # Regions in the analysis - aggregated level
+
+  # Climatic zones
+  clim_zones <- read_csv(paste0(path_in_csv,"/input_basic_geo/climatic_zones.csv"))
+
+  #Household categories
+  urts <- c("rur","urb") # # Urban-Rural / Total. options: "rur", "urb", "tot"
+  ct_hh_inc <- c("q1","q2","q3")  # Income classes
+  ct_hh_tenr <- c("own", "rent") #c("ownns")
+
+  #Building categories
+  ct_bld_age <- read_csv(paste0(path_in_csv,"input_",sector,"/categories/ct_bld_age.csv")) # Vintage cohorts
+  ct_bld <- read_csv(paste0(path_in_csv,"input_",sector,"/categories/ct_arch.csv"))
+  ct_eneff <- read_csv(paste0(path_in_csv,"input_",sector,"/categories/ct_eneff.csv")) # Energy efficiency categories
+
+  # Fuel type
+  ct_fuel_comb <- read_csv(paste0(path_in_csv,"input_",sector,"/categories/ct_fuel.csv"))
+  ct_fuel_dhw <- read_csv(paste0(path_in_csv,"input_",sector,"/categories/ct_fuel_res.csv"))# fuels domestic hot water - Add solar thermal options
+
+  ## RENOVATION CATEGORIES
+  ct_ren_eneff <- read_csv(paste0(path_in_csv,"input_",sector,"/categories/ct_ren_eneff2.csv")) # "fuel" settings. Energy efficiency transitions for renovations
+  # The following is loaded as input data
+  #ct_ren_fuel_heat <- read_csv(paste0(path_in_csv,"input_",sector,"/decision/ct_ren_fuel_heat.csv")) # Energy efficiency transitions for renovations
+
+  # BUILDING CASES
+
+  bld_cases_fuel <- expand.grid(geo_level = regions,
+                                urt = urts, inc_cl = ct_hh_inc,
+                                #arch = ct_bld_arch,
+                                stringsAsFactors = FALSE) %>%
+    rename_at("geo_level", ~paste0(geo_level)) %>%
+    left_join(geo_data %>% select_at(geo_levels)) %>%
+    left_join(clim_zones, by=c(paste(geo_level), "urt")) %>%
+    left_join(ct_bld) %>%
+    left_join(ct_eneff, by="mat") %>%
+    #left_join(ct_access, by="mat") %>% # REMOVED in this version
+    inner_join(ct_fuel_comb, by=c("mat" = "mat")) %>%
+    # select(!!as.symbol(geo_level), scenario, urt, clim, inc_cl, arch, mat, eneff) %>% # Re-order the columns
+    arrange(!!as.symbol(geo_level), #scenario,
+            urt, clim, inc_cl, arch, mat, eneff,
+            #acc_heat, acc_cool,
+            fuel_heat, fuel_cool) # Sort values ## used eneff (ordered categories)
+
+  ### BUILDING CASES at more aggregate level can be generated from bld_cases_fuel
+  # bld_cases_arch <- bld_cases_fuel %>% select(-c(eneff, bld_age, fuel_heat, fuel_cool, mod_decision)) %>% distinct()
+  bld_cases_eneff <- bld_cases_fuel %>% select(-c(fuel_heat, fuel_cool, mod_decision)) %>% distinct()
+
+  #### TO HERE: MOVE AND RE-ORGANIZE TO SEPARATE SCRIPT FOR MODEL BUILDING -- CREATE MATRIX OF ALL DIMENSIONS ####
+  
+  
   ## Energy prices (from MESSAGE)
   if(is.null(prices) == FALSE){
     price_en <- prices %>%
@@ -105,7 +169,6 @@ run_scenario <- function(run, scenario_name, prices,
       select_at(c(paste(geo_level),"year","fuel","price_en"))
   }
   
-
   
   
   ### RESIDENTIAL SECTOR
@@ -419,7 +482,7 @@ run_scenario <- function(run, scenario_name, prices,
   if ("NGFS" %in% report_type) {fun_report_NGFS(report, report_var, geo_data, geo_level, geo_level_report, sector, scenario_name, yrs, path_out)}
   
   ## Report results - NGFS template (results written as csv)
-  if ("NAVIGATE" %in% report_type) {fun_report_NAVIGATE(report, report_var, geo_data, geo_level, geo_level_report, sector, scenario_name, yrs, path_out)}
+  if ("NAVIGATE" %in% report_type) {fun_report_NAVIGATE(report, report_var, geo_data, geo_level, geo_level_report, sector, scenario_name, yrs, path_out,path_in, ct_bld, ct_ren_eneff, ren_en_sav_scen)}
   
   # Tracking time
   end_time <- Sys.time()

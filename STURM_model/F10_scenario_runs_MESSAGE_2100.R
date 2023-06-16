@@ -8,7 +8,13 @@ library(readxl)
 
 run_scenario <- function(run, scenario_name, prices, 
                          path_in, path_rcode, path_out, 
-                         geo_level_report, sector, report_type, report_var) {
+                         sector, 
+                         geo_level, geo_level_aggr, geo_levels, 
+                         geo_level_report,
+                         yrs,
+                         input_mode, 
+                         mod_arch,
+                         report_type, report_var){
   
   print(paste("Start scenario run: ", run))
   
@@ -209,7 +215,7 @@ run_scenario <- function(run, scenario_name, prices,
                                        en_hh_tot)
       
       ms_ren_i = lst_ms_ren_sw_i$ms_ren_i
-      ren_rate_i = lst_ms_ren_sw_i$ren_rate_i
+      rate_ren_i = lst_ms_ren_sw_i$rate_ren_i
       ms_sw_i = lst_ms_ren_sw_i$ms_sw_i
       rm(lst_ms_ren_sw_i)
       
@@ -220,7 +226,7 @@ run_scenario <- function(run, scenario_name, prices,
       lst_stock_i <- fun_stock_dyn(sector,
                                    mod_arch,
                                    yrs,i,
-                                   run, ssp_r,
+                                   run, #ssp_r, # removed ssp dimension
                                    geo_level, geo_level_aggr,geo_levels,
                                    bld_cases_fuel, bld_cases_eneff, 
                                    ct_bld_age, ct_fuel_comb,
@@ -229,21 +235,21 @@ run_scenario <- function(run, scenario_name, prices,
                                    #bld_eneff_age,
                                    d$prob_dem,
                                    #rate_ren_low, rate_ren_high, #ren_rate, 
-                                   d$rate_switch_fuel,
+                                   d$rate_switch_fuel_heat,
                                    #ms_new, ms_ren,
-                                   ms_new_i, ms_ren_i, ren_rate_i,
+                                   ms_new_i, ms_ren_i, rate_ren_i,
                                    ms_sw_i,
                                    #shr_acc_cool, 
                                    d$shr_distr_heat, d$shr_need_heat,
                                    en_m2_scen_heat, en_m2_scen_cool,
-                                   en_hh_hw_scen, en_m2_hw_scen, en_m2_others,
+                                   en_hh_hw_scen, 
+                                   en_m2_hw_scen, en_m2_others, # used only in commercial
                                    #en_stock,
                                    d$mat_int,
                                    #mat_stock,
                                    report_var,
                                    report
       )
-      
       
       # Extract dataframes from list
       report = lst_stock_i$report
@@ -309,7 +315,7 @@ run_scenario <- function(run, scenario_name, prices,
                              bld_cases_fuel,
                              en_m2_sim_r,
                              eff_cool_scen, eff_heat_scen,
-                             ren_en_sav_scen,
+                             en_sav_ren,
                              heat_hours_scen,heat_floor,
                              cool_data_scen,
                              shr_acc_cool,
@@ -366,10 +372,10 @@ run_scenario <- function(run, scenario_name, prices,
                                    stock_aggr, bld_det_age_i, #bld_det, 
                                    #bld_eneff_age, # keep track of age
                                    bld_dyn_par,
-                                   ren_en_low, ren_en_high, #ren_rate,
-                                   rate_switch_fuel,
+                                   rate_ren_low, rate_ren_high, #ren_rate,
+                                   rate_switch_fuel_heat,
                                    #ms_new, ms_ren,
-                                   ms_new_i, ms_ren_i, ren_rate_i,
+                                   ms_new_i, ms_ren_i, rate_ren_i,
                                    ms_sw_i,
                                    #shr_acc_cool, 
                                    shr_distr_heat, shr_need_heat,

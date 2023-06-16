@@ -21,11 +21,11 @@ fun_stock_dyn <- function(sector,
                           #bld_eneff_age, # keep track of age
                           prob_dem,
                           #rate_ren_low, rate_ren_high, #ren_rate,
-                          rate_switch_fuel,
+                          rate_switch_fuel_heat,
                           #ms_new, ms_ren,
-                          ms_new_i, ms_ren_i, ren_rate_i,
+                          ms_new_i, ms_ren_i, rate_ren_i,
                           ms_sw_i,
-                          #shr_acc_cool, 
+                          #shr_acc_cool, # included in en_m2_scen_cool
                           shr_distr_heat, shr_need_heat,
                           en_m2_scen_heat, en_m2_scen_cool,
                           en_hh_hw_scen, en_m2_hw_scen, en_m2_others,
@@ -288,7 +288,7 @@ if ("sub" %in% unique(bld_cases_eneff$mat)){
   # ## Fuel switching: yes/no (REMOVED)
   # bld_fuel_switch <- bld_cases_fuel %>%
   #   mutate(year=yrs[i]) %>%
-  #   #left_join(rate_switch_fuel) %>%
+  #   #left_join(rate_switch_fuel_heat) %>%
   #   left_join(ms_sw_i) %>%
   #   mutate(sw_fuel = ifelse(!is.na(ms) & ms>0,1,0))
   # bld_fuel_switch <- bld_fuel_switch  %>%
@@ -303,22 +303,22 @@ if ("sub" %in% unique(bld_cases_eneff$mat)){
       add_column(year = yrs[i], .before = "yr_con") %>%
       mutate(n_units_fuel_exst = n_units_fuel_p - n_dem - n_empty)  %>% # update results existing buildings (before renovation)
       ## Account for renovations
-      left_join(ren_rate_i) %>%
-      mutate(ren_rate = ifelse(is.na(ren_rate),0,ren_rate)) %>% # NAs for ren_rate -> no renovations! (e.g. no space heating demand) 
+      left_join(rate_ren_i) %>%
+      mutate(rate_ren = ifelse(is.na(rate_ren),0,rate_ren)) %>% # NAs for rate_ren -> no renovations! (e.g. no space heating demand) 
       left_join(ms_ren_i %>% rename(eneff = eneff_i, fuel_heat = fuel_heat_i)) %>%
       mutate(mod_decision = ifelse(is.na(ms_ren),0,mod_decision), # CHANGE THIS!!! no renovation if there is no MS data available (district heat)
              eneff_f = ifelse(is.na(ms_ren),eneff,eneff_f), # take original eneff if is.na(ms_ren)
              fuel_heat_f = ifelse(is.na(ms_ren),fuel_heat,fuel_heat_f)) %>%
       mutate(ms_ren = ifelse(is.na(ms_ren),0,ms_ren)) %>% # take original fuel heat if is.na(ms_ren)
-      mutate(n_units_fuel = round(n_units_fuel_exst * ren_rate * stp * ms_ren, rnd)) %>% # calculate n.units - after renovation
-        select(-c(n_units_fuel_p, n_dem, n_empty, n_units_fuel_exst, ren_rate,
+      mutate(n_units_fuel = round(n_units_fuel_exst * rate_ren * stp * ms_ren, rnd)) %>% # calculate n.units - after renovation
+        select(-c(n_units_fuel_p, n_dem, n_empty, n_units_fuel_exst, rate_ren,
                   mod_decision,
                   #eneff, fuel_heat, 
                   ms_ren)) #%>%
       #   filter(n_units_fuel != 0) %>%
     #   # Calculate renovation rate - mat level
     #   #mutate(ren = 1) %>% # flag renovations: 0=no; 1=yes
-    #   select(-c(n_units_fuel_p, n_dem, n_empty, n_units_fuel_exst, ren_rate_upd, 
+    #   select(-c(n_units_fuel_p, n_dem, n_empty, n_units_fuel_exst, rate_ren_upd, 
     #             mod_decision, 
     #             eneff, fuel_heat, ms_ren)) %>%
     #   rename(eneff = eneff_f, fuel_heat = fuel_heat_f)
@@ -354,7 +354,7 @@ if ("sub" %in% unique(bld_cases_eneff$mat)){
     ## Existing buildings - non-renovated - fuel switch
     exst_sw_det_age_i <- exst_det_age_i %>%
       #left_join(bld_fuel_switch) %>%
-      left_join(rate_switch_fuel) %>%
+      left_join(rate_switch_fuel_heat) %>%
       left_join(ms_sw_i) %>%
       mutate(rate_switch_fuel_heat = ifelse(year-yr_con > bld_age_min, rate_switch_fuel_heat, 0)) %>% # fuel switches only over the minimum age of buildings
       #mutate(n_units_fuel = round(n_units_fuel_exst * sw_fuel * (rate_switch_fuel_heat * stp) * ms, rnd)) %>% # calculate n.units - after renovation
@@ -399,14 +399,14 @@ if ("sub" %in% unique(bld_cases_eneff$mat)){
     #   add_column(year = yrs[i], .before = "yr_con") %>%
     #   mutate(n_units_fuel_exst = n_units_fuel_p - n_dem - n_empty)  %>% # update results existing buildings (before renovation)
     #   ## Account for renovations
-    #   left_join(ren_rate_i) %>%
-    #   mutate(ren_rate_upd = ifelse(is.na(ren_rate_upd),0,ren_rate_upd)) %>% # NAs for ren_rate -> no renovations! (e.g. no space heating demand) 
+    #   left_join(rate_ren_i) %>%
+    #   mutate(rate_ren_upd = ifelse(is.na(rate_ren_upd),0,rate_ren_upd)) %>% # NAs for rate_ren -> no renovations! (e.g. no space heating demand) 
     #   left_join(ms_ren_i %>% rename(eneff = eneff_i, fuel_heat = fuel_heat_i)) %>%
     #   mutate(mod_decision = ifelse(is.na(ms_ren),0,mod_decision), # CHANGE THIS!!! no renovation if there is no MS data available (district heat)
     #          eneff_f = ifelse(is.na(ms_ren),eneff,eneff_f), # take original eneff if is.na(ms_ren)
     #          fuel_heat_f = ifelse(is.na(ms_ren),fuel_heat,fuel_heat_f)) %>%
     #   mutate(ms_ren = ifelse(is.na(ms_ren),0,ms_ren)) %>% # take original fuel heat if is.na(ms_ren)
-    #   mutate(n_units_fuel_ren = round(n_units_fuel_exst * ren_rate_upd * stp * ms_ren, rnd)) %>% # renovated buildings
+    #   mutate(n_units_fuel_ren = round(n_units_fuel_exst * rate_ren_upd * stp * ms_ren, rnd)) %>% # renovated buildings
     #   mutate(n_units_fuel_non = n_units_fuel_exst - n_units_fuel_ren) # non-renovated buildings
     # 
     # ## Existing buildings - renovated
@@ -415,7 +415,7 @@ if ("sub" %in% unique(bld_cases_eneff$mat)){
     #   filter(n_units_fuel != 0) %>%
     #   # Calculate renovation rate - mat level
     #   #mutate(ren = 1) %>% # flag renovations: 0=no; 1=yes
-    #   select(-c(n_units_fuel_p, n_dem, n_empty, n_units_fuel_exst, n_units_fuel_non, ren_rate_upd, 
+    #   select(-c(n_units_fuel_p, n_dem, n_empty, n_units_fuel_exst, n_units_fuel_non, rate_ren_upd, 
     #             mod_decision, 
     #             eneff, fuel_heat, ms_ren)) %>%
     #   rename(eneff = eneff_f, fuel_heat = fuel_heat_f)
@@ -427,7 +427,7 @@ if ("sub" %in% unique(bld_cases_eneff$mat)){
     #   distinct()%>%
     #   # Calculate renovation rate - mat level
     #   #mutate(ren = 1) %>% # flag renovations: 0=no; 1=yes
-    #   select(-c(n_units_fuel_p, n_dem, n_empty, n_units_fuel_exst, n_units_fuel_ren, ren_rate_upd, 
+    #   select(-c(n_units_fuel_p, n_dem, n_empty, n_units_fuel_exst, n_units_fuel_ren, rate_ren_upd, 
     #             mod_decision, 
     #             eneff_f, fuel_heat_f, ms_ren)) 
     
@@ -531,11 +531,11 @@ if(sector == "resid"){
     mutate(floor_Mm2 = n_units_fuel / 1e6 * hh_size * floor_cap) %>% # convert n. units to millions
     mutate(floor_heat_Mm2 = floor_Mm2) %>%
     #mutate(floor_heat_Mm2 = ifelse(acc_heat == 1, floor_Mm2, 0)) %>%
-    mutate(floor_cool_Mm2 = ifelse(acc_cool == 1, floor_Mm2 * acc_cool, 0)) %>%
+    mutate(floor_cool_Mm2 = ifelse(shr_acc_cool == 1, floor_Mm2 * shr_acc_cool, 0)) %>%
     mutate(heat_TJ = ifelse(fuel_heat == "v_no_heat", 0, en_dem_heat * n_units_fuel / 1e6 * hh_size * floor_cap * 3.6)) %>% # converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
-    mutate(cool_TJ = en_dem_cool * acc_cool * n_units_fuel / 1e6 * hh_size * floor_cap * 3.6) %>% # converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
-    mutate(cool_ac_TJ = en_dem_c_ac * acc_cool * n_units_fuel / 1e6 * hh_size * floor_cap * 3.6) %>% # converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
-    mutate(cool_fans_TJ = en_dem_c_fans * acc_cool * n_units_fuel / 1e6 * hh_size * floor_cap * 3.6) %>% # Note:shr_acc_cool=1 for all cases (access calculated before) #converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
+    mutate(cool_TJ = en_dem_cool * shr_acc_cool * n_units_fuel / 1e6 * hh_size * floor_cap * 3.6) %>% # converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
+    mutate(cool_ac_TJ = en_dem_c_ac * shr_acc_cool * n_units_fuel / 1e6 * hh_size * floor_cap * 3.6) %>% # converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
+    mutate(cool_fans_TJ = en_dem_c_fans * shr_acc_cool * n_units_fuel / 1e6 * hh_size * floor_cap * 3.6) %>% # Note:shr_acc_cool=1 for all cases (access calculated before) #converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
     mutate(hotwater_TJ = ifelse(fuel_heat == "v_no_heat", 0, en_dem_dhw * n_units_fuel / 1e3)) %>% # converted from GJ/hh/yr to TJ
     mutate(other_uses_TJ = 0) %>% # other uses not covered for residential
     mutate(stock_M = n_units_fuel / 1e6) %>%
@@ -565,11 +565,11 @@ if(sector == "comm"){
     mutate(floor_Mm2 = n_units_fuel / 1e6) %>%
     mutate(floor_heat_Mm2 = floor_Mm2) %>%
     #mutate(floor_heat_Mm2 = ifelse(acc_heat == 1, floor_Mm2, 0)) %>%
-    mutate(floor_cool_Mm2 = ifelse(acc_cool == 1, floor_Mm2 * acc_cool, 0)) %>%
+    mutate(floor_cool_Mm2 = ifelse(shr_acc_cool == 1, floor_Mm2 * shr_acc_cool, 0)) %>%
     mutate(heat_TJ = ifelse(fuel_heat == "v_no_heat", 0, en_dem_heat * n_units_fuel / 1e6 * 3.6)) %>% # converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
-    mutate(cool_TJ = en_dem_cool * acc_cool * n_units_fuel / 1e6 * 3.6) %>% # converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
-    mutate(cool_ac_TJ = en_dem_c_ac * acc_cool * n_units_fuel / 1e6 * 3.6) %>% # converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
-    mutate(cool_fans_TJ = en_dem_c_fans * acc_cool * n_units_fuel / 1e6 * 3.6) %>% # Note:shr_acc_cool=1 for all cases (access calculated before) #converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
+    mutate(cool_TJ = en_dem_cool * shr_acc_cool * n_units_fuel / 1e6 * 3.6) %>% # converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
+    mutate(cool_ac_TJ = en_dem_c_ac * shr_acc_cool * n_units_fuel / 1e6 * 3.6) %>% # converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
+    mutate(cool_fans_TJ = en_dem_c_fans * shr_acc_cool * n_units_fuel / 1e6 * 3.6) %>% # Note:shr_acc_cool=1 for all cases (access calculated before) #converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
     #mutate(hotwater_TJ = ifelse(fuel_heat == "v_no_heat", 0, en_dem_dhw * n_units_fuel / 1e6 * 3.6)) %>% # converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
     mutate(hotwater_TJ = ifelse(fuel_heat == "v_no_heat", 0, en_dem_dhw * n_units_fuel / 1e6 * 3.6)) %>% # converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
     mutate(other_uses_TJ = en_dem_others * n_units_fuel / 1e6 * 3.6) %>% # converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.

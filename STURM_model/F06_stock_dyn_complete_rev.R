@@ -38,6 +38,7 @@ fun_stock_dyn <- function(sector,
 
   # rounding (number of decimals)
   rnd <- 5
+  test <- FALSE
   
   print(paste0("Running stock turnover - scenario ", run, " - year ", yrs[i]))
 

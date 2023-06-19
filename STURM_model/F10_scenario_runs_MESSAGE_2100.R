@@ -53,22 +53,6 @@ run_scenario <- function(run,
   print(paste("Start scenario run: ", run, "_", sector))
   # Track time
   start_time <- Sys.time()
-  # # LOAD SETTINGS FOR SCENARIO RUNS (names Rfiles)
-  # runs <- read_csv(file.path(path_in, "scenarios.csv"))
-
-  #### SCENARIO SETTINGS ####
-  # r <- runs %>% filter(scenario_name == run) %>% select(scenario_id) %>% pull # scenario run
-  # ssp_r <- paste0(runs[r,"ssp"]) # SSP
-
-  # # Regions settings
-  # geo_level <- "region_bld" # Level for analysis
-  # geo_level_aggr <- "region_gea" # Level for aggregation
-  # geo_levels <- c(geo_level, geo_level_aggr)
-  #
-  # # Temporal settings
-  # #yrs <- seq(2015,2050,5)
-  # yrs <- c(seq(2015,2060,5),seq(2070,2100,10))
-  # #yrs <- c(2015, 2020, 2030, 2040, 2050)
 
   # Unit conversion
   u_EJ_GWa <- 31.71
@@ -100,14 +84,6 @@ run_scenario <- function(run,
   print("Functions loaded!")
 
   # LOAD INPUT DATA
-
-  if (input_mode == "rdata") {
-    print("Load data - RData")
-    basename <- paste("data_input", run, sector, sep = "_")
-    load(file.path(path_in, paste0(basename, ".RData"))) # 2100
-    rm(basename)
-    print("Data loaded!")
-  }
 
   if (input_mode == "csv") {
     print("Load data - csv")

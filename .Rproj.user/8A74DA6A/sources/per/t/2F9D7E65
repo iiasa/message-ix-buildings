@@ -1,0 +1,26 @@
+{
+    "id": "2F9D7E65",
+    "path": "~/PycharmProjects/message-ix-buildings/run_STURM_offline.R",
+    "project_path": "run_STURM_offline.R",
+    "type": "r_source",
+    "hash": "2956262287",
+    "contents": "",
+    "dirty": false,
+    "created": 1686732527206.0,
+    "source_on_save": false,
+    "relative_order": 1,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "22,0",
+        "scrollLine": "11"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1686731634,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1686731634,
+    "read_only": false,
+    "read_only_alternatives": []
+}

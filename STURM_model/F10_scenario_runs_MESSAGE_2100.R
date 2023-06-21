@@ -5,6 +5,7 @@ library(readxl)
 library(readr)
 library(dplyr)
 
+
 # require(devtools) # source code from github
 # library(RCurl) # read file from github
 
@@ -96,7 +97,6 @@ run_scenario <- function(run,
 
   #### FROM HERE: MOVE AND RE-ORGANIZE TO SEPARATE SCRIPT FOR MODEL BUILDING -- CREATE MATRIX OF ALL DIMENSIONS ####
 
-  ### MODEL BUILDING ### MOVE TO SEPARATE SCRIPT?
 
   # PATH DATA INPUT FILES
   path_in_csv <- paste0(path_in, "./input_csv/")
@@ -148,7 +148,6 @@ run_scenario <- function(run,
     geo_level = regions,
     urt = urts,
     inc_cl = ct_hh_inc,
-    # arch = ct_bld_arch,
     stringsAsFactors = FALSE
   ) %>%
     rename_at("geo_level", ~ paste0(geo_level)) %>%
@@ -156,16 +155,12 @@ run_scenario <- function(run,
     left_join(clim_zones, by = c(paste(geo_level), "urt")) %>%
     left_join(ct_bld) %>%
     left_join(ct_eneff, by = "mat") %>%
-    # left_join(ct_access, by="mat") %>% # REMOVED in this version
     inner_join(ct_fuel_comb, by = c("mat" = "mat")) %>%
-    # select(!!as.symbol(geo_level), scenario, urt, clim, inc_cl, arch, mat, eneff) %>% # Re-order the columns
     arrange(
-      !!as.symbol(geo_level), # scenario,
+      !!as.symbol(geo_level),
       urt, clim, inc_cl, arch, mat, eneff,
-      # acc_heat, acc_cool,
       fuel_heat, fuel_cool
-    ) # Sort values ## used eneff (ordered categories)
-
+    ) 
 
   # Lucas: Why do we need this more aggregated level?
   ### BUILDING CASES at more aggregate level can be generated from bld_cases_fuel
@@ -201,7 +196,7 @@ run_scenario <- function(run,
     # Initialize housing stock (fun)
     print(paste("Initialize scenario run", sector))
 
-    # Why do we need geo_data, geo_levels, geo_level here?
+    # Lucas: Why do we need geo_data, geo_levels, geo_level here?
     lst_stock_init <- fun_stock_init_fut(
       sector,
       mod_arch,
@@ -222,18 +217,12 @@ run_scenario <- function(run,
       d$shr_arch,
       d$shr_fuel_heat_base,
       d$shr_distr_heat,
-      # eff_cool_scen, eff_heat_scen,eff_hotwater_scen,
-      # ren_en_sav_scen,
-      # heat_hours_scen,cool_data_scen, heat_floor, shr_acc_cool,
-      # en_m2_sim_r, price_en
       report_var
     )
 
     # Extract dataframes from list
     stock_aggr <- lst_stock_init$stock_aggr
     bld_det_age_i <- lst_stock_init$bld_det_age_i
-    # bld_eneff_age = lst_stock_init$bld_eneff_age
-    # bld_det = lst_stock_init$bld_det
 
     # Lucas: Can we remove this?
     report <- lst_stock_init$report
@@ -249,20 +238,30 @@ run_scenario <- function(run,
     print(paste("Start scenario run", sector))
 
     for (i in 2:length(yrs)) {
+      print(paste("Start scenario run", sector, "for year", yrs[i]))
+
+      # Lucas: try to run this function only once before the loop
       # Energy demand intensities - heating/cooling
       lst_en_i <- fun_en_sim(
         sector,
-        yrs, i,
+        yrs,
+        i,
         bld_cases_fuel,
-        d$en_int_heat, d$en_int_cool,
+        d$en_int_heat,
+        d$en_int_cool,
         d$days_cool,
-        d$eff_cool, d$eff_heat,
+        d$eff_cool,
+        d$eff_heat,
         d$en_sav_ren,
-        d$hours_heat, d$shr_floor_heat,
-        d$hours_cool, d$shr_floor_cool,
-        d$hours_fans, d$power_fans,
+        d$hours_heat,
+        d$shr_floor_heat,
+        d$hours_cool,
+        d$shr_floor_cool,
+        d$hours_fans,
+        d$power_fans,
         d$shr_acc_cool,
-        d$hh_size, d$floor_cap,
+        d$hh_size,
+        d$floor_cap,
         price_en
       )
 
@@ -270,8 +269,6 @@ run_scenario <- function(run,
       en_m2_scen_heat <- lst_en_i$en_m2_scen_heat
       en_m2_scen_cool <- lst_en_i$en_m2_scen_cool
       en_hh_tot <- lst_en_i$en_hh_tot
-      # en_hh_tot_ren_init = lst_en_i$en_hh_tot_ren_init
-      # en_hh_tot_ren_fin = lst_en_i$en_hh_tot_ren_fin
       rm(lst_en_i)
 
       # Energy demand intensities - hot water
@@ -287,30 +284,50 @@ run_scenario <- function(run,
 
       # Market share - new construction options
       ms_new_i <- fun_ms_new(
-        yrs, i,
-        bld_cases_fuel, ct_bld_age,
-        d$hh_size, d$floor_cap,
-        d$cost_invest_new_shell, d$cost_invest_new_heat,
-        d$cost_intang_new_shell, d$cost_intang_new_heat,
-        d$ct_fuel_excl_new, d$ct_fuel_excl_reg,
-        d$discount_new, d$heterog_new, d$lifetime_new,
+        yrs,
+        i,
+        bld_cases_fuel,
+        ct_bld_age,
+        d$hh_size,
+        d$floor_cap,
+        d$cost_invest_new_shell,
+        d$cost_invest_new_heat,
+        d$cost_intang_new_shell,
+        d$cost_intang_new_heat,
+        d$ct_fuel_excl_new,
+        d$ct_fuel_excl_reg,
+        d$discount_new,
+        d$heterog_new,
+        d$lifetime_new,
         en_hh_tot
       )
 
       try(if (nrow(ms_new_i) == 0) stop("Error in new construction calculation! Empty dataframe ms_new_i"))
 
-      # Market share - renovation + fuel switches options
+      # Market share - renovation + fuel switches options for the existing building stock
       lst_ms_ren_sw_i <- fun_ms_ren_sw(
-        yrs, i,
-        bld_cases_fuel, ct_bld_age, ct_hh_tenr, ct_fuel_comb,
-        ct_ren_eneff, d$ct_ren_fuel_heat,
-        d$hh_size, d$floor_cap,
+        yrs,
+        i,
+        bld_cases_fuel,
+        ct_bld_age,
+        ct_hh_tenr,
+        ct_fuel_comb,
+        ct_ren_eneff,
+        d$ct_ren_fuel_heat,
+        d$hh_size,
+        d$floor_cap,
         d$hh_tenure,
-        d$cost_invest_ren_shell, d$cost_invest_ren_heat,
-        d$cost_intang_ren_shell, d$cost_intang_ren_heat,
-        d$ct_fuel_excl_ren, d$ct_fuel_excl_reg,
-        d$discount_ren, d$heterog_ren, d$lifetime_ren,
-        d$rate_ren_low, d$rate_ren_high, # ren_rate,
+        d$cost_invest_ren_shell,
+        d$cost_invest_ren_heat,
+        d$cost_intang_ren_shell,
+        d$cost_intang_ren_heat,
+        d$ct_fuel_excl_ren,
+        d$ct_fuel_excl_reg,
+        d$discount_ren,
+        d$heterog_ren,
+        d$lifetime_ren,
+        d$rate_ren_low,
+        d$rate_ren_high, # ren_rate,
         # en_hh_tot_ren_init,
         # en_hh_tot_ren_fin
         en_hh_tot
@@ -328,28 +345,34 @@ run_scenario <- function(run,
       lst_stock_i <- fun_stock_dyn(
         sector,
         mod_arch,
-        yrs, i,
+        yrs,
+        i,
         run, # ssp_r, # removed ssp dimension
-        geo_level, geo_level_aggr, geo_levels,
-        bld_cases_fuel, bld_cases_eneff,
-        ct_bld_age, ct_fuel_comb,
-        d$hh_size, d$floor_cap,
-        stock_aggr, bld_det_age_i, # bld_det,
-        # bld_eneff_age,
+        geo_level,
+        geo_level_aggr,
+        geo_levels,
+        bld_cases_fuel,
+        bld_cases_eneff,
+        ct_bld_age,
+        ct_fuel_comb,
+        d$hh_size,
+        d$floor_cap,
+        stock_aggr,
+        bld_det_age_i,
         d$prob_dem,
-        # rate_ren_low, rate_ren_high, #ren_rate,
         d$rate_switch_fuel_heat,
-        # ms_new, ms_ren,
-        ms_new_i, ms_ren_i, rate_ren_i,
+        ms_new_i,
+        ms_ren_i,
+        rate_ren_i,
         ms_sw_i,
-        # shr_acc_cool,
-        d$shr_distr_heat, d$shr_need_heat,
-        en_m2_scen_heat, en_m2_scen_cool,
+        d$shr_distr_heat,
+        d$shr_need_heat,
+        en_m2_scen_heat,
+        en_m2_scen_cool,
         en_hh_hw_scen,
-        en_m2_hw_scen, en_m2_others, # used only in commercial
-        # en_stock,
+        en_m2_hw_scen,
+        en_m2_others, # used only in commercial
         d$mat_int,
-        # mat_stock,
         report_var,
         report
       )
@@ -539,7 +562,7 @@ run_scenario <- function(run,
   print(paste0("End: ", end_time))
   rm(start_time, end_time)
 
-  print("scenario run completed!")
+  print("Senario run completed!")
 
   # return(en_stock)
   return(output)

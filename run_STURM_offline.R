@@ -4,22 +4,29 @@ library(rstudioapi)
 library(tidyverse)
 library(readxl)
 
-setwd(dirname(rstudioapi::getSourceEditorContext()$path))
+# setwd(dirname(rstudioapi::getSourceEditorContext()$path))
 
 source("./STURM_model/F10_scenario_runs_MESSAGE_2100.R")
 
 # Paths
 rcode_path <- paste(getwd(), "/STURM_model/", sep = "")
 data_path <- paste(getwd(), "/STURM_data/", sep = "")
+# Lucas: Should we add date to output folder?
 rout_path <- paste(getwd(), "/STURM_output/", sep = "")
 
-
-yrs <- seq(2015, 2050, 5)
+# configuration file STURM
+base_year <- 2015
+end_year <- 2050
+step_year <- 5
 region <- c("WEU", "EEU")
 sector <- "resid"
 prices <- read.csv(paste0(data_path, "input_prices_R12.csv"))
-report_var <- "energy"
+report_var <- c("energy")
 report_type <- "STURM"
+mod_arch <- "stock"
+
+yrs <- seq(base_year, end_year, step_year)
+
 
 # call STURM
 #' @param run: name of the run, default is "NAV_Dem-NPi-ref"
@@ -58,7 +65,10 @@ sturm_scenarios <- run_scenario(
     geo_level_report = "R12",
     yrs = yrs,
     input_mode = "csv",
-    mod_arch = "stock",
+    mod_arch = mod_arch,
+    report_var = report_var,
+    report_type = report_type,
+    region = region
 )
 
 # # write results to csv file

@@ -1,6 +1,8 @@
 ## FUTURE STOCK DYNAMICS
 ## this calculation is to be put within a loop on "i" (time steps)
 
+library(dplyr)
+
 
 ## DATA INPUT:
 

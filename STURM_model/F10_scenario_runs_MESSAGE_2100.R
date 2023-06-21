@@ -6,6 +6,9 @@ library(readr)
 library(dplyr)
 
 
+# Unit conversion
+u_EJ_GWa <- 31.71
+
 # require(devtools) # source code from github
 # library(RCurl) # read file from github
 
@@ -21,13 +24,16 @@ library(dplyr)
 #' @param file_scenarios: file with scenarios, e.g. "scenarios_TEST.csv"
 #' @param geo_level: level for analysis, e.g. "region_bld"
 #' @param geo_level_aggr: level for aggregation, e.g. "region_gea"
-#' @param geo_levels: levels to keep track of, e.g. c("region_bld", "region_gea")
+#' @param geo_levels: levels to keep track of,
+#' e.g. c("region_bld", "region_gea")
 #' @param geo_level_report: level for reporting, e.g. "R12"
 #' @param yrs: years to run, if NULL run all years, e.g. seq(2015, 2050, 5)
 #' @param input_mode: input mode, available: "csv", "xlsx"
 #' @param mod_arch: model architecture, available: "stock", "new"
-#' @param report_type: available reports, available: "MESSAGE","STURM","IRP","NGFS","NAVIGATE"
-#' @param report_var: available report variables, available: "energy","material","vintage","dle"
+#' @param report_type: available reports,
+#' available: "MESSAGE","STURM","IRP","NGFS","NAVIGATE"
+#' @param report_var: available report variables,
+#' available: "energy","material","vintage","dle"
 #' @param region: region to run, if NULL run all regions
 #' @import tidyverse
 #' @import readxl
@@ -55,8 +61,6 @@ run_scenario <- function(run,
   # Track time
   start_time <- Sys.time()
 
-  # Unit conversion
-  u_EJ_GWa <- 31.71
 
   # SOURCE MODEL FUNCTIONS
   print("Load functions")
@@ -84,10 +88,9 @@ run_scenario <- function(run,
   source(file.path(path_rcode, "R05_report_NAVIGATE.R"))
   print("Functions loaded!")
 
-  # LOAD INPUT DATA
-
+  # Load input data
   if (input_mode == "csv") {
-    print("Load data - csv")
+    print("Load data from csv files")
 
     # Source - input data
     d <- fun_inputs_csv(path_in, file_inputs, file_scenarios, sector, run)
@@ -97,65 +100,70 @@ run_scenario <- function(run,
 
   #### FROM HERE: MOVE AND RE-ORGANIZE TO SEPARATE SCRIPT FOR MODEL BUILDING -- CREATE MATRIX OF ALL DIMENSIONS ####
 
+  #' @title Create list of dimensions
+  #' @description Create list of dimensions
+  #' @param path_in_csv: path to input data
+  #' @param sector: sector to run, available: "com", "resid"
+  #' @return list of dimensions
+  read_categories <- function(path_in_csv,
+                              sector,
+                              region = region) {
+    input_list <- list(
+      geo_data = "/input_basic_geo/regions.csv",
+      clim_zones = "/input_basic_geo/climatic_zones.csv",
+      ct_bld_age = paste0("input_", sector, "/categories/ct_bld_age.csv"),
+      ct_bld = paste0("input_", sector, "/categories/ct_arch.csv"),
+      ct_eneff = paste0("input_", sector, "/categories/ct_eneff.csv"),
+      ct_fuel_comb = paste0("input_", sector, "/categories/ct_fuel.csv"),
+      ct_fuel_dhw = paste0("input_", sector, "/categories/ct_fuel_res.csv"),
+      ct_ren_eneff = paste0("input_", sector, "/categories/ct_ren_eneff2.csv")
+    )
+    
+    # Read all categories, and return a list
+    categories <- lapply(input_list, function(x) {
+      read_csv(paste0(path_in_csv, x), show_col_types = FALSE)
+    })
 
-  # PATH DATA INPUT FILES
-  path_in_csv <- paste0(path_in, "./input_csv/")
-
-  # Regions
-  geo_data <- read_csv(paste0(path_in_csv, "/input_basic_geo/regions.csv"),
-                       show_col_types = FALSE) # First columns
-
-  # filter if region is specified, region can be a vector
-  if (!is.null(region)) {
-    geo_data <- geo_data %>%
+    # Select region
+    if (!is.null(region)) {
+      categories$geo_data <- categories$geo_data %>%
       filter(region_gea %in% region)
+    }
+
+    # Add others categories
+    regions <- unlist(categories$geo_data[, paste(geo_level)])
+    categories <- c(categories,
+                    list(urts = c("rur", "urb"),
+                         ct_hh_inc = c("q1", "q2", "q3"),
+                         ct_hh_tenr = c("own", "rent"),
+                         regions = regions))
+
+
+    return(categories)
+
   }
-  # Lucas: Why do we need paste?
-  regions <- unlist(geo_data[, paste(geo_level)]) # Regions in the analysis
-  
-  # Lucas: regions_aggr is not used in the code.
-  # regions_aggr <- sort(unique(unlist(geo_data[, paste(geo_level_aggr)]))) # Regions in the analysis - aggregated level
 
-  # Climatic zones
-  clim_zones <- read_csv(paste0(path_in_csv, "/input_basic_geo/climatic_zones.csv"))
+  # Path to input data
+  path_in_csv <- paste0(path_in, "./input_csv/")
+  cat <- read_categories(path_in_csv, sector, region)
 
-  # Lucas: Should be in a file not in the code.
-  # Household categories
-  urts <- c("rur", "urb") # # Urban-Rural / Total. options: "rur", "urb", "tot"
-  ct_hh_inc <- c("q1", "q2", "q3") # Income classes
-  ct_hh_tenr <- c("own", "rent") # c("ownns")
-
-  # Building categories
-  # Vintage cohorts
-  ct_bld_age <- read_csv(paste0(path_in_csv, "input_", sector, "/categories/ct_bld_age.csv")) 
-  ct_bld <- read_csv(paste0(path_in_csv, "input_", sector, "/categories/ct_arch.csv"))
-  # Energy efficiency categories
-  ct_eneff <- read_csv(paste0(path_in_csv, "input_", sector, "/categories/ct_eneff.csv")) 
-
-  # Fuel type
-  ct_fuel_comb <- read_csv(paste0(path_in_csv, "input_", sector, "/categories/ct_fuel.csv"))
-  ct_fuel_dhw <- read_csv(paste0(path_in_csv, "input_", sector, "/categories/ct_fuel_res.csv")) # fuels domestic hot water - Add solar thermal options
-
-  # Renovation categories
-  ct_ren_eneff <- read_csv(paste0(path_in_csv, "input_", sector, "/categories/ct_ren_eneff2.csv")) # "fuel" settings. Energy efficiency transitions for renovations
-  
-  # The following is loaded as input data
-  # ct_ren_fuel_heat <- read_csv(paste0(path_in_csv,"input_",sector,"/decision/ct_ren_fuel_heat.csv")) # Energy efficiency transitions for renovations
-
-  # BUILDING CASES
-
+  # Create matrix of all dimensions
   bld_cases_fuel <- expand.grid(
-    geo_level = regions,
-    urt = urts,
-    inc_cl = ct_hh_inc,
+    geo_level = cat$regions,
+    urt = cat$urts,
+    inc_cl = cat$ct_hh_inc,
     stringsAsFactors = FALSE
   ) %>%
     rename_at("geo_level", ~ paste0(geo_level)) %>%
-    left_join(geo_data %>% select_at(geo_levels)) %>%
-    left_join(clim_zones, by = c(paste(geo_level), "urt")) %>%
-    left_join(ct_bld) %>%
-    left_join(ct_eneff, by = "mat") %>%
-    inner_join(ct_fuel_comb, by = c("mat" = "mat")) %>%
+    left_join(cat$geo_data %>% select_at(geo_levels)) %>%
+    left_join(cat$clim_zones, by = c(paste(geo_level), "urt"),
+              relationship = "many-to-many") %>%
+    left_join(cat$ct_bld,
+              relationship = "many-to-many") %>%
+    left_join(cat$ct_eneff, by = "mat",
+              relationship = "many-to-many") %>%
+    inner_join(cat$ct_fuel_comb, by = c("mat" = "mat"),
+               relationship = "many-to-many") %>%
     arrange(
       !!as.symbol(geo_level),
       urt, clim, inc_cl, arch, mat, eneff,
@@ -163,15 +171,13 @@ run_scenario <- function(run,
     ) 
 
   # Lucas: Why do we need this more aggregated level?
-  ### BUILDING CASES at more aggregate level can be generated from bld_cases_fuel
-  # bld_cases_arch <- bld_cases_fuel %>% select(-c(eneff, bld_age, fuel_heat, fuel_cool, mod_decision)) %>% distinct()
   bld_cases_eneff <- bld_cases_fuel %>%
     select(-c(fuel_heat, fuel_cool, mod_decision)) %>%
     distinct()
 
   #### TO HERE: MOVE AND RE-ORGANIZE TO SEPARATE SCRIPT FOR MODEL BUILDING -- CREATE MATRIX OF ALL DIMENSIONS ####
 
-  ## Energy prices (from MESSAGE)
+  # Read and parse energy prices from MESSAGE
   if (is.null(prices) == FALSE) {
     price_en <- prices %>%
     mutate(price_en = lvl / all_of(u_EJ_GWa)) %>%
@@ -185,7 +191,7 @@ run_scenario <- function(run,
     filter(year %in% yrs) %>%
     select(region, year, fuel, price_en) %>%
     rename_at("region", ~ paste(substr(prices$node[1], 1, 3))) # rename region column based on R11/R12
-    price_en <- geo_data %>% # use the most granular level for prices
+    price_en <- cat$geo_data %>% # use the most granular level for prices
     left_join(price_en) %>% # Join R11/R12 data
     select_at(c(paste(geo_level), "year", "fuel", "price_en"))
   }
@@ -201,17 +207,17 @@ run_scenario <- function(run,
       sector,
       mod_arch,
       yrs,
-      geo_data,
+      cat$geo_data,
       geo_levels,
       geo_level,
       bld_cases_eneff,
       bld_cases_fuel,
       d$pop,
-      d$hh_size, # used for residential
-      d$floor_cap, # used for commercial
-      ct_hh_inc,
-      ct_eneff,
-      ct_fuel_comb,
+      d$hh_size,
+      d$floor_cap,
+      cat$ct_hh_inc,
+      cat$ct_eneff,
+      cat$ct_fuel_comb,
       d$stock_arch_base,
       d$shr_mat,
       d$shr_arch,
@@ -226,9 +232,6 @@ run_scenario <- function(run,
 
     # Lucas: Can we remove this?
     report <- lst_stock_init$report
-    # if ("vintage" %in% report){bld_eneff_age = lst_stock_init$bld_eneff_age} # Not needed - already within the DF report
-    # if ("energy" %in% report){en_stock = lst_stock_init$en_stock}
-    # if ("material" %in% report){mat_stock = lst_stock_init$mat_stock}
 
     rm(lst_stock_init)
 
@@ -241,7 +244,7 @@ run_scenario <- function(run,
       print(paste("Start scenario run", sector, "for year", yrs[i]))
 
       # Lucas: try to run this function only once before the loop
-      # Energy demand intensities - heating/cooling
+      print(paste("Calculate energy demand intensities for space heating and cooling"))
       lst_en_i <- fun_en_sim(
         sector,
         yrs,
@@ -272,22 +275,23 @@ run_scenario <- function(run,
       rm(lst_en_i)
 
       # Energy demand intensities - hot water
+      print(paste("Calculate energy demand intensities for hot water"))
       en_hh_hw_scen <- fun_hw_resid(
         yrs, i,
         bld_cases_fuel,
         d$hh_size,
-        # ct_fuel_dhw,
         d$eff_hotwater,
         d$en_int_hotwater,
         d$en_int_heat
       )
 
       # Market share - new construction options
+      print(paste("Calculate market share for new construction"))
       ms_new_i <- fun_ms_new(
         yrs,
         i,
         bld_cases_fuel,
-        ct_bld_age,
+        cat$ct_bld_age,
         d$hh_size,
         d$floor_cap,
         d$cost_invest_new_shell,
@@ -302,17 +306,19 @@ run_scenario <- function(run,
         en_hh_tot
       )
 
-      try(if (nrow(ms_new_i) == 0) stop("Error in new construction calculation! Empty dataframe ms_new_i"))
+      try(if (nrow(ms_new_i) == 0)
+        stop("Error in new construction calculation! Empty dataframe ms_new_i"))
 
-      # Market share - renovation + fuel switches options for the existing building stock
+      # Market share for renovation and fuel switches options
+      print(paste("Calculate market share for renovation and fuel switches"))
       lst_ms_ren_sw_i <- fun_ms_ren_sw(
         yrs,
         i,
         bld_cases_fuel,
-        ct_bld_age,
-        ct_hh_tenr,
-        ct_fuel_comb,
-        ct_ren_eneff,
+        cat$ct_bld_age,
+        cat$ct_hh_tenr,
+        cat$ct_fuel_comb,
+        cat$ct_ren_eneff,
         d$ct_ren_fuel_heat,
         d$hh_size,
         d$floor_cap,
@@ -327,34 +333,36 @@ run_scenario <- function(run,
         d$heterog_ren,
         d$lifetime_ren,
         d$rate_ren_low,
-        d$rate_ren_high, # ren_rate,
-        # en_hh_tot_ren_init,
-        # en_hh_tot_ren_fin
+        d$rate_ren_high,
         en_hh_tot
       )
 
+      # Extract dataframes from list
       ms_ren_i <- lst_ms_ren_sw_i$ms_ren_i
       rate_ren_i <- lst_ms_ren_sw_i$rate_ren_i
       ms_sw_i <- lst_ms_ren_sw_i$ms_sw_i
       rm(lst_ms_ren_sw_i)
 
-      try(if (nrow(ms_ren_i) == 0) stop("Error in renovation calculation! Empty dataframe ms_ren_i"))
-      try(if (nrow(ms_sw_i) == 0) stop("Error in renovation calculation! Empty dataframe ms_sw_i"))
+      try(if (nrow(ms_ren_i) == 0)
+        stop("Error in renovation calculation! Empty dataframe ms_ren_i")) 
+      try(if (nrow(ms_sw_i) == 0)
+        stop("Error in renovation calculation! Empty dataframe ms_sw_i"))
 
       # Stock turnover
+      print(paste("Calculate stock turnover"))
       lst_stock_i <- fun_stock_dyn(
         sector,
         mod_arch,
         yrs,
         i,
-        run, # ssp_r, # removed ssp dimension
+        run,
         geo_level,
         geo_level_aggr,
         geo_levels,
         bld_cases_fuel,
         bld_cases_eneff,
-        ct_bld_age,
-        ct_fuel_comb,
+        cat$ct_bld_age,
+        cat$ct_fuel_comb,
         d$hh_size,
         d$floor_cap,
         stock_aggr,
@@ -379,15 +387,8 @@ run_scenario <- function(run,
 
       # Extract dataframes from list
       report <- lst_stock_i$report
-      # en_stock = lst_stock_i$en_stock
-      # mat_stock = lst_stock_i$mat_stock
-      # stock_eneff.df = lst_stock_i$stock_eneff.df
       stock_aggr <- lst_stock_i$stock_aggr
       bld_det_age_i <- lst_stock_i$bld_det_age_i
-      # bld_det = lst_stock_i$bld_det
-      # bld_eneff_age = lst_stock_i$bld_eneff_age
-      # ms_new = lst_stock_i$ms_new
-      # ms_ren = lst_stock_i$ms_ren
       rm(lst_stock_i)
     }
   }
@@ -532,17 +533,17 @@ run_scenario <- function(run,
 
   ## MESSAGE report -  Aggregate results for reporting
   if ("MESSAGE" %in% report_type) {
-    output <- fun_report_MESSAGE(sector, report_var, report, geo_data, geo_level, geo_level_report)
+    output <- fun_report_MESSAGE(sector, report_var, report, cat$geo_data, geo_level, geo_level_report)
   }
 
   ## STURM basic report (results written as csv)
   if ("STURM" %in% report_type) {
-    fun_report_basic(report, report_var, geo_data, geo_level, geo_level_report, sector, scenario_name, path_out)
+    fun_report_basic(report, report_var, cat$geo_data, geo_level, geo_level_report, sector, scenario_name, path_out)
   }
 
   ## Report results - IRP template (results written as csv)
   if ("IRP" %in% report_type) {
-    fun_report_IRP(report, report_var, geo_data, geo_level, geo_level_report, sector, scenario_name, yrs, path_out)
+    fun_report_IRP(report, report_var, cat$geo_data, geo_level, geo_level_report, sector, scenario_name, yrs, path_out)
   }
 
   ## Report results - NGFS template (results written as csv)
@@ -552,7 +553,7 @@ run_scenario <- function(run,
 
   ## Report results - NGFS template (results written as csv)
   if ("NAVIGATE" %in% report_type) {
-    fun_report_NAVIGATE(report, report_var, geo_data, geo_level, geo_level_report, sector, scenario_name, yrs, path_out, path_in, ct_bld, ct_ren_eneff, ren_en_sav_scen)
+    fun_report_NAVIGATE(report, report_var, cat$geo_data, geo_level, geo_level_report, sector, scenario_name, yrs, path_out, path_in, cat$ct_bld, cat$ct_ren_eneff, ren_en_sav_scen)
   }
 
   # Tracking time

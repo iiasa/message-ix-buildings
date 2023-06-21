@@ -1,8 +1,12 @@
 ## ENERGY DEMAND
 ## this calculation is to be put within a loop on "i" (time steps)
 
-u1 <- 3.6 / 1000 # kWh to GJ (to calculate operational costs)
+library(dplyr)
 
+# Set the verbosity level to suppress the message
+options(dplyr.summarise.inform = FALSE)
+
+u1 <- 3.6 / 1000 # kWh to GJ (to calculate operational costs)
 
 #' @title Energy demand - STURM
 #' @description Calculate energy demand for heating, cooling, hot water, fans and other uses
@@ -91,8 +95,8 @@ fun_en_sim <- function(sector,
 
   en_m2_scen_S <- en_m2_scen_det %>%
     select(-c(
-      bld_age, eff_cool, eff_heat, mod_decision, f_h, f_c, shr_floor_heat, shr_floor_cool, hours_heat, hours_cool,
-      # eneff_fuel,
+      bld_age, eff_cool, eff_heat, mod_decision, f_h, f_c, 
+      shr_floor_heat, shr_floor_cool, hours_heat, hours_cool,
       en_sav_ren
     )) %>%
     select(-c(hours_fans, power_fans, f_f)) # %>% NAs removed before
@@ -122,7 +126,7 @@ fun_en_sim <- function(sector,
     )) %>%
     distinct()
 
-
+  en_hh_tot <- NULL
   if (sector == "resid") { # Calculate household energy demand - for cost calculations - residential only
 
     # Add HH size - HEATING ONLY
@@ -131,10 +135,7 @@ fun_en_sim <- function(sector,
       mutate(fuel = fuel_heat) %>%
       left_join(hh_size) %>%
       filter(year == yrs[i]) # Filter "i" year
-    # filter(year >= yr_base & year <= yr_end) #Limit to the period yr_bas to yr_end
 
-    # en_hh <- en_hh %>% left_join(ct_eneff) #Add mat categories
-    # en_hh <- en_hh %>% left_join(ct_bld) #Add arch categories
     en_hh <- en_hh %>% left_join(floor_cap) %>% # Add floor surface
       mutate(en_hh = en_m2 * floor_cap * hh_size) %>% # Calculate total energy demand per household
       left_join(price_en) %>% # Associate energy prices to en_perm
@@ -143,6 +144,7 @@ fun_en_sim <- function(sector,
     ## Sum total energy costs for all fuels
     en_hh_tot <- en_hh %>% # Initialize
       select(-c(en_m2, hh_size, floor_cap, en_hh, price_en))
+
     en_hh_tot <- en_hh_tot %>%
       group_by_at(setdiff(names(en_hh_tot), c("fuel", "cost_op"))) %>% # Select all variables, except "fuel" and  for grouping)
       summarise(cost_op_m2 = sum(cost_op)) %>%
@@ -150,11 +152,6 @@ fun_en_sim <- function(sector,
 
     # Reorder rows
     en_hh_tot <- bld_cases_fuel %>% left_join(en_hh_tot) # %>% select(-acc_cool)
-
-  } else { # commercial (no cost calculations)
-    en_hh_tot <- NULL
-    # en_hh_tot_ren_init <- NULL
-    # en_hh_tot_ren_fin <- NULL
   }
 
   output <- list(
@@ -163,7 +160,6 @@ fun_en_sim <- function(sector,
     en_hh_tot = en_hh_tot
   )
 } 
-
 
 #' @title Function to calculate energy demand for domestic hot water
 #' @param yrs vector of years to be calculated
@@ -200,9 +196,15 @@ fun_hw_resid <- function(yrs, i,
   output <- en_hh_hw_scen
 }
 
-## FUNCTION HOT WATER - COMMERCIAL
-
-fun_hw_comm <- function(yrs, i,
+#' @title Function to calculate energy demand for domestic hot water for commercial buildings
+#' @param yrs vector of years to be calculated
+#' @param i index of the year to be calculated
+#' @param bld_cases_fuel data frame with building cases and fuel
+#' @param eff_hotwater data frame with efficiency of hot water systems
+#' @param en_m2_dhw data frame with energy demand for domestic hot water
+#' @return data frame with energy demand for domestic hot water
+fun_hw_comm <- function(yrs, 
+                        i,
                         bld_cases_fuel,
                         eff_hotwater,
                         en_m2_dhw) {

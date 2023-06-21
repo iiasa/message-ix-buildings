@@ -40,13 +40,16 @@ yrs <- seq(base_year, end_year, step_year)
 #' @param file_scenarios: name of the scenario file, default is "scenarios_TEST"
 #' @param geo_level: level for analysis, default is "region_bld"
 #' @param geo_level_aggr: level for aggregation, default is "region_gea"
-#' @param geo_levels: levels to keep track of, default is c("region_bld","region_gea")
+#' @param geo_levels: levels to keep track of,
+#' default is c("region_bld","region_gea")
 #' @param geo_level_report: level for reporting, default is "R12"
 #' @param yrs: years to be analysed, default is seq(2015,2050,5)
 #' @param input_mode: input mode, default is "csv"
 #' @param mod_arch: model architecture, default is "stock"
-#' @param report_type: type of report, available is c("MESSAGE","STURM","IRP","NGFS","NAVIGATE")
-#' @param report_var: variables to be reported, available is c("energy","material","vintage","dle")
+#' @param report_type: type of report,
+#' available is c("MESSAGE","STURM","IRP","NGFS","NAVIGATE")
+#' @param report_var: variables to be reported,
+#' available is c("energy","material","vintage","dle")
 #' @return: results of the STURM model
 #' @export
 sturm_scenarios <- run_scenario(
@@ -59,9 +62,9 @@ sturm_scenarios <- run_scenario(
     prices = prices,
     file_inputs = "input_list_resid.csv",
     file_scenarios = "scenarios_TEST.csv",
-    geo_level = "region_bld", # Level for analysis
-    geo_level_aggr = "region_gea", # Level for aggregation
-    geo_levels = c("region_bld", "region_gea"), # Levels to keep track of
+    geo_level = "region_bld",
+    geo_level_aggr = "region_gea",
+    geo_levels = c("region_bld", "region_gea"),
     geo_level_report = "R12",
     yrs = yrs,
     input_mode = "csv",

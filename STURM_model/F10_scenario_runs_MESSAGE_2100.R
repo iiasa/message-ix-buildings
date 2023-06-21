@@ -35,9 +35,7 @@ u_EJ_GWa <- 31.71
 #' @param report_var: available report variables,
 #' available: "energy","material","vintage","dle"
 #' @param region: region to run, if NULL run all regions
-#' @import tidyverse
-#' @import readxl
-#' @import RCurl
+#' @return output data
 run_scenario <- function(run,
                          scenario_name,
                          sector,
@@ -94,58 +92,17 @@ run_scenario <- function(run,
 
     # Source - input data
     d <- fun_inputs_csv(path_in, file_inputs, file_scenarios, sector, run)
+    
+    # Read categories
+    path_in_csv <- paste0(path_in, "./input_csv/")
+    cat <- read_categories(path_in_csv, sector, region)
 
     print("Data loaded!")
   }
 
   #### FROM HERE: MOVE AND RE-ORGANIZE TO SEPARATE SCRIPT FOR MODEL BUILDING -- CREATE MATRIX OF ALL DIMENSIONS ####
 
-  #' @title Create list of dimensions
-  #' @description Create list of dimensions
-  #' @param path_in_csv: path to input data
-  #' @param sector: sector to run, available: "com", "resid"
-  #' @return list of dimensions
-  read_categories <- function(path_in_csv,
-                              sector,
-                              region = region) {
-    input_list <- list(
-      geo_data = "/input_basic_geo/regions.csv",
-      clim_zones = "/input_basic_geo/climatic_zones.csv",
-      ct_bld_age = paste0("input_", sector, "/categories/ct_bld_age.csv"),
-      ct_bld = paste0("input_", sector, "/categories/ct_arch.csv"),
-      ct_eneff = paste0("input_", sector, "/categories/ct_eneff.csv"),
-      ct_fuel_comb = paste0("input_", sector, "/categories/ct_fuel.csv"),
-      ct_fuel_dhw = paste0("input_", sector, "/categories/ct_fuel_res.csv"),
-      ct_ren_eneff = paste0("input_", sector, "/categories/ct_ren_eneff2.csv")
-    )
-    
-    # Read all categories, and return a list
-    categories <- lapply(input_list, function(x) {
-      read_csv(paste0(path_in_csv, x), show_col_types = FALSE)
-    })
 
-    # Select region
-    if (!is.null(region)) {
-      categories$geo_data <- categories$geo_data %>%
-      filter(region_gea %in% region)
-    }
-
-    # Add others categories
-    regions <- unlist(categories$geo_data[, paste(geo_level)])
-    categories <- c(categories,
-                    list(urts = c("rur", "urb"),
-                         ct_hh_inc = c("q1", "q2", "q3"),
-                         ct_hh_tenr = c("own", "rent"),
-                         regions = regions))
-
-
-    return(categories)
-
-  }
-
-  # Path to input data
-  path_in_csv <- paste0(path_in, "./input_csv/")
-  cat <- read_categories(path_in_csv, sector, region)
 
   # Create matrix of all dimensions
   bld_cases_fuel <- expand.grid(
@@ -170,7 +127,7 @@ run_scenario <- function(run,
       fuel_heat, fuel_cool
     ) 
 
-  # Lucas: Why do we need this more aggregated level?
+  # Romve bld_cases_eneff and aggregate bld_cases_fuel when needed
   bld_cases_eneff <- bld_cases_fuel %>%
     select(-c(fuel_heat, fuel_cool, mod_decision)) %>%
     distinct()
@@ -211,7 +168,6 @@ run_scenario <- function(run,
       geo_levels,
       geo_level,
       bld_cases_eneff,
-      bld_cases_fuel,
       d$pop,
       d$hh_size,
       d$floor_cap,
@@ -225,14 +181,10 @@ run_scenario <- function(run,
       d$shr_distr_heat,
       report_var
     )
-
     # Extract dataframes from list
     stock_aggr <- lst_stock_init$stock_aggr
     bld_det_age_i <- lst_stock_init$bld_det_age_i
-
-    # Lucas: Can we remove this?
     report <- lst_stock_init$report
-
     rm(lst_stock_init)
 
     print(paste("Initialize scenario run", sector, "- completed!"))
@@ -267,7 +219,6 @@ run_scenario <- function(run,
         d$floor_cap,
         price_en
       )
-
       # Extract dataframes from list
       en_m2_scen_heat <- lst_en_i$en_m2_scen_heat
       en_m2_scen_cool <- lst_en_i$en_m2_scen_cool
@@ -336,7 +287,6 @@ run_scenario <- function(run,
         d$rate_ren_high,
         en_hh_tot
       )
-
       # Extract dataframes from list
       ms_ren_i <- lst_ms_ren_sw_i$ms_ren_i
       rate_ren_i <- lst_ms_ren_sw_i$rate_ren_i
@@ -384,7 +334,6 @@ run_scenario <- function(run,
         report_var,
         report
       )
-
       # Extract dataframes from list
       report <- lst_stock_i$report
       stock_aggr <- lst_stock_i$stock_aggr
@@ -565,6 +514,5 @@ run_scenario <- function(run,
 
   print("Senario run completed!")
 
-  # return(en_stock)
   return(output)
 }

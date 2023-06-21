@@ -10,7 +10,6 @@ library(dplyr)
 #' @param geo_levels: levels to keep track of, e.g. c("region_bld","region_gea")
 #' @param geo_level: level for analysis, e.g. "region_bld", "region_gea"
 #' @param bld_cases_eneff: building cases for energy efficiency,
-#' @param bld_cases_fuel: building cases for fuel,
 #' @param pop: population data
 #' @param hh_size: household size data, used for residential
 #' @param floor_cap: floor space data, used for commercial
@@ -32,7 +31,6 @@ fun_stock_init_fut <- function(sector,
                                geo_levels,
                                geo_level,
                                bld_cases_eneff,
-                               bld_cases_fuel,
                                pop,
                                hh_size,
                                floor_cap,
@@ -165,14 +163,6 @@ fun_stock_init_fut <- function(sector,
     mutate_cond(mat == "sub", n_units_fuel = n_units_eneff) %>% # sub-standard buildings - one fuel type only
     select(-c(stock_arch_base, shr_fuel_heat_base, shr_distr_heat, n_units_eneff, mod_decision))
 
-  # ## other option: start from bld cases
-  # bld_fuel_age <- bld_cases_fuel %>%
-  #   mutate(year = yrs[1]) %>%
-  # initialize bld_arch: stock data - arch level - NOT NEEDED!
-  # bld_det <- as.data.frame(NULL)
-  # Report energy and material results
-  # en_stock <- as.data.frame(NULL) # COMMENT IF en_stock is updated for base year
-  # mat_stock <- as.data.frame(NULL)
 
   report <- list()
   if ("energy" %in% report_var) {

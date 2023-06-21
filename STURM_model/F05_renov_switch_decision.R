@@ -1,4 +1,8 @@
 
+library(dplyr)
+
+# Set the verbosity level to suppress the message
+options(dplyr.summarise.inform = FALSE)
 
 ## Complete model with fuel choice
 

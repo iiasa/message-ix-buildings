@@ -1,31 +1,6 @@
-### TEMPORARY - GENERIC FUNCTIONS TO PROCESS DATA - MOVE TO DEDICATED SCRIPT
-
-# # Function to convert dataframes to long format
-# fun_toLong <- function(DF){ ## var_name excluded from inputs
-#   if("data.frame"  %in% class(DF) == FALSE) stop(paste(deparse(substitute(DF)),'is not a data.frame'))
-#   #if(class(var_name)!="character" | length(var_name)!= 1) stop(paste(deparse(substitute(var_name)),'is not a character unit vector. Please, provide a name in quotes.'))
-#   if(length(grep("\\d{4}", names(DF)))>0){ # If column names contain years, convert to long format over years, otherwise return the same dataframe
-#     DF_L <- pivot_longer(data=DF, values_to = "value", names_to = "year", cols=matches("\\d{4}")) %>%
-#       mutate(year=as.integer(year))
-#   } else {DF_L = DF}
-#
-#   output = DF_L
-# }
-
-# # Function to rename data inputs - Moved to script B00_functions
-# fun_rename <- function(DF,name){ ## DF = dataframe; name = name to relabel the "value" column
-#   if("data.frame"  %in% class(DF) == FALSE) stop(paste(deparse(substitute(DF)),'is not a data.frame'))
-#   if(length(grep("value", names(DF)))==0) stop(paste(deparse(substitute(DF)),'no columns named: value'))
-#
-#   # DF_R <- DF %>% rename_with(~paste(name), .cols=value) # Works with only one "value" column per dataframe
-#   DF_R <- DF %>% rename_with(~gsub("value", name, names(DF)), .cols = everything()) # works also with multiple "value1", "value2", etc. columns
-#
-#   output = DF_R
-# }
-
-# # Check if "value" is among the column names
-# for(i in 1:length(d)){if(length(grep("value", names(d[[i]])))==0) {print(names(d)[i])}}
-
+# Description: Import input data from csv files
+# Input: path_in, file_inputs, file_scenarios, sector, run
+# Output: List of input dataframes
 
 library(dplyr)
 library(readr)
@@ -79,8 +54,6 @@ fun_inputs_csv <- function(path_in, file_inputs, file_scenarios, sector, run) {
   input <- input %>%
     filter(!name_parameter %in% c("bld_dyn_par", "cool_data_scen", "en_m2_sim_r")) %>%
     filter(category != "categories")
-
-  ###
 
   ### DATA LOADING AND PROCESSING
 
@@ -138,6 +111,48 @@ fun_inputs_csv <- function(path_in, file_inputs, file_scenarios, sector, run) {
   # remove provisional inputs
   rm(input, scen_setup)
 
-  # Output
-  output <- d
+  return(d)
+}
+
+
+#' @title Create list of dimensions
+#' @description Create list of dimensions
+#' @param path_in_csv: path to input data
+#' @param sector: sector to run, available: "com", "resid"
+#' @return list of dimensions
+read_categories <- function(path_in_csv,
+                            sector,
+                            region = region) {
+  input_list <- list(
+    geo_data = "/input_basic_geo/regions.csv",
+    clim_zones = "/input_basic_geo/climatic_zones.csv",
+    ct_bld_age = paste0("input_", sector, "/categories/ct_bld_age.csv"),
+    ct_bld = paste0("input_", sector, "/categories/ct_arch.csv"),
+    ct_eneff = paste0("input_", sector, "/categories/ct_eneff.csv"),
+    ct_fuel_comb = paste0("input_", sector, "/categories/ct_fuel.csv"),
+    ct_fuel_dhw = paste0("input_", sector, "/categories/ct_fuel_res.csv"),
+    ct_ren_eneff = paste0("input_", sector, "/categories/ct_ren_eneff2.csv")
+  )
+  
+  # Read all categories, and return a list
+  categories <- lapply(input_list, function(x) {
+    read_csv(paste0(path_in_csv, x), show_col_types = FALSE)
+  })
+
+  # Select region
+  if (!is.null(region)) {
+    categories$geo_data <- categories$geo_data %>%
+    filter(region_gea %in% region)
+  }
+
+  # Add others categories
+  regions <- unlist(categories$geo_data[, paste(geo_level)])
+  categories <- c(categories,
+                  list(urts = c("rur", "urb"),
+                        ct_hh_inc = c("q1", "q2", "q3"),
+                        ct_hh_tenr = c("own", "rent"),
+                        regions = regions))
+
+
+  return(categories)
 }

@@ -4,6 +4,7 @@
 library(dplyr)
 library(tidyverse)
 library(tibble)
+library(tidyr)
 
 # rounding (number of decimals)
 rnd <- 5
@@ -85,148 +86,51 @@ fun_stock_dyn <- function(sector,
 
   # b <- bld_dyn_par %>% select(-c(p_dem_hist, p_ren_hist, ren_tau, ren_sd, l_new, l_ren))
 
-  # Calculate demolitions - detailed - by fuel, yr_con - i-th year
+  # Calculate number of demolition by segment.
   dem_det_age_i <- bld_det_age_i %>%
-    filter(year == yrs[i - 1]) %>% # Stock from previous year
+    # Stock from previous year
+    filter(year == yrs[i - 1]) %>%
     select(-year) %>%
-    # mutate(age = yrs[i]-yr_con) %>% # Calculate age of buildings
-    # left_join(b) %>% # Attach probability of demolition
     left_join(prob_dem %>%
-    pivot_wider(names_from = "parameter", values_from = "prob_dem")) %>%
+      pivot_wider(names_from = "parameter", values_from = "prob_dem")) %>%
     # CDF: difference between two consecutive time steps
     mutate(pdem = pweibull(yrs[i] - yr_con, shape = shape, scale = scale) -
       pweibull(yrs[i - 1] - yr_con, shape = shape, scale = scale)) %>%
     mutate(n_dem = ifelse(n_units_fuel > 0,
       round(pdem * n_units_fuel, rnd), 0)) %>%
-    # N. units are from the previous time-step
     rename(n_units_fuel_p = n_units_fuel) %>%
     select(-c(shape, scale, pdem))
 
-  # rm(b)
-
-  # Calculate demolition, new constructions - aggregated ("mat" level) - for i-th year
-  if (mod_arch == "new") {
-    bld_aggr_i <- stock_aggr %>%
-      filter(year == yrs[i]) %>% # stock variation current year
-      left_join(dem_det_age_i %>% # aggregate demolitions by arch
-        group_by_at(setdiff(
-          names(dem_det_age_i),
-          c(
-            "yr_con", "arch", "eneff", "fuel_heat", "fuel_cool",
-            "bld_age"
-            # ,"mod_decision"
-            , "n_units_fuel_p", "n_dem"
-          )
-        )) %>% # Select all variables, except the ones indicated, for grouping
-        summarise(n_dem = sum(n_dem)) %>%
-        ungroup()) %>%
-      mutate(n_dem = ifelse(var_aggr == n_units_aggr & is.na(n_dem), 0, n_dem)) %>%
-      mutate(
-        n_new = ifelse(var_aggr + n_dem >= 0, var_aggr + n_dem, 0),
-        n_empty = ifelse(var_aggr + n_dem >= 0, 0, -var_aggr - n_dem)
-      ) %>%
-      mutate(
-        n_dem = ifelse(abs(var_aggr) < 1e-9 & abs(n_units_aggr) < 1e-9, 0,
-                       n_dem),
-        n_new = ifelse(abs(var_aggr) < 1e-9 & abs(n_units_aggr) < 1e-9, 0, 
-                       n_new),
-        n_empty = ifelse(abs(var_aggr) < 1e-9 & abs(n_units_aggr) < 1e-9, 0, 
-                         n_empty)
+  # Calculate new constructions - aggregated ("arch" level)
+  bld_aggr_i <- stock_aggr %>%
+    # stock variation current year
+    filter(year == yrs[i]) %>%
+    # aggregate demolitions by arch
+    left_join(dem_det_age_i %>%
+    # Select all variables, except the ones indicated, for grouping
+    group_by_at(setdiff(
+      names(dem_det_age_i),
+      c(
+        "yr_con", "eneff", "fuel_heat", "fuel_cool",
+        "bld_age", "n_units_fuel_p", "n_dem"
       )
-
-    # Distribute abandoned buildings across vintage cohorts
-    # First calculate share of buildings by vintage in the previous timestep,
-    #  to allocate empty buildings.
-    dem_det_age_i <- dem_det_age_i %>%
-      # Select all variables, except "eneff" and "n_dem" for grouping
-      group_by_at(setdiff(names(dem_det_age_i), c(
-        "yr_con", "arch", "eneff", "fuel_heat", "fuel_cool"
-        , "n_units_fuel_p", "n_dem"
-      ))) %>% 
-      mutate(n_units_fuel_upd_tot = sum(n_units_fuel_p - n_dem)) %>%
-      ungroup() %>%
-      mutate(shr_aggr_age = (n_units_fuel_p - n_dem) / n_units_fuel_upd_tot) %>%
-      left_join(bld_aggr_i %>%
-      select(-c(year, n_units_aggr, var_aggr, n_dem, n_new))) %>%
-      # Update number of empty buildings by vintage cohort
-      mutate(n_empty = ifelse(shr_aggr_age > 0 & n_units_fuel_p > 0,
-        round(n_empty * shr_aggr_age, rnd), 0)) %>% 
-      select(-c(n_units_fuel_upd_tot, shr_aggr_age))
-
-    # Update stock results by age - disaggregated - current timestep
-
-    ## New buildings
-    # Disaggregate results from totals based on market shares
-    new_det_age_i <- bld_aggr_i %>%
-      filter(mat != "sub") %>%
-      select(-c(n_units_aggr, var_aggr, n_dem, n_empty)) %>%
-      add_column(yr_con = yrs[i], .after = "year") %>%
-      # rowwise() %>% # add period of construction
-      # mutate(bld_age = ct_bld_age$bld_age_id[which(ct_bld_age$mat == mat & ct_bld_age$year_i <= yr_con & ct_bld_age$year_f >= yr_con)]) %>%
-      # ungroup() %>%
-      left_join(ct_bld_age_i) %>%
-      left_join(shr_arch) %>% # join shares of arch in new construction
-      left_join(shr_distr_heat) %>%
-      left_join(ms_new_i) %>% # join shares of eneff and fuel_heat in new construction
-      # mutate(mod_decision = 1) %>%
-      mutate(n_new = round(n_new * shr_arch * c(1 - shr_distr_heat) * ms, rnd)) %>%
-      # mutate(n_dem = 0) %>%
-      # mutate(n_empty = 0) %>%
-      # mutate(n_ren = 0) %>%
-      # relocate(n_new, .before=n_dem) %>%
-      filter(n_new > 0) %>%
-      relocate(n_units_fuel = n_new, .after = last_col()) %>%
-      select(-c(shr_arch, shr_distr_heat, ms, mod_decision)) # ,
-
-    # New buildings - district heating
-    new_det_distr_age_i <-
-      bld_aggr_i %>%
-      filter(mat != "sub") %>%
-      select(-c(n_units_aggr, var_aggr, n_dem, n_empty)) %>%
-      add_column(yr_con = yrs[i], .after = "year") %>%
-      left_join(ct_bld_age_i) %>%
-      left_join(shr_arch) %>% # join shares of arch in new construction
-      left_join(shr_distr_heat) %>%
-      mutate(
-        eneff = "s51_std", # CHANGE THIS!!!!
-        fuel_heat = "district_heat", fuel_cool = "electricity"
-        # , mod_decision = 0
-      ) %>%
-      mutate(n_new = round(n_new * shr_arch * shr_distr_heat, rnd)) %>%
-      # mutate(n_dem = 0) %>%
-      # mutate(n_empty = 0) %>%
-      # mutate(n_ren = 0) %>%
-      # relocate(n_new, .before=n_dem) %>%
-      filter(n_new > 0) %>%
-      relocate(n_units_fuel = n_new, .after = last_col()) %>%
-      select(-c(shr_arch, shr_distr_heat)) # ,
-  } else if (mod_arch == "stock") { # Check negative n_empty values!!!
-
-    # Calculate demolition, new constructions - aggregated ("arch" level) - for i-th year
-    bld_aggr_i <- stock_aggr %>%
-      filter(year == yrs[i]) %>% # stock variation current year
-      left_join(dem_det_age_i %>% # aggregate demolitions by arch
-        group_by_at(setdiff(
-          names(dem_det_age_i),
-          c(
-            "yr_con", "eneff", "fuel_heat", "fuel_cool" # ,"arch"
-            , "bld_age"
-            # ,"mod_decision"
-            , "n_units_fuel_p", "n_dem"
-          )
-        )) %>% # Select all variables, except the ones indicated, for grouping
-        summarise(n_dem = sum(n_dem)) %>%
-        ungroup()) %>%
-      mutate(n_dem = ifelse(var_aggr == n_units_aggr & is.na(n_dem), 0, n_dem)) %>%
-      mutate(
-        n_new = ifelse(var_aggr + n_dem >= 0, var_aggr + n_dem, 0),
-        n_empty = ifelse(var_aggr + n_dem >= 0, 0, -var_aggr - n_dem)
-      ) %>%
-      mutate(
-        n_dem = ifelse(abs(var_aggr) < 1e-9 & abs(n_units_aggr) < 1e-9, 0, n_dem),
-        n_new = ifelse(abs(var_aggr) < 1e-9 & abs(n_units_aggr) < 1e-9, 0, n_new),
-        n_empty = ifelse(abs(var_aggr) < 1e-9 & abs(n_units_aggr) < 1e-9, 0, n_empty)
-      )
+    )) %>%
+    summarise(n_dem = sum(n_dem)) %>%
+      ungroup()) %>%
+    mutate(n_dem = ifelse(var_aggr == n_units_aggr
+      & is.na(n_dem), 0, n_dem)) %>%
+    mutate(
+      n_new = ifelse(var_aggr + n_dem >= 0, var_aggr + n_dem, 0),
+      n_empty = ifelse(var_aggr + n_dem >= 0, 0, -var_aggr - n_dem)
+    ) %>%
+    mutate(
+      n_dem = ifelse(abs(var_aggr) < 1e-9
+        & abs(n_units_aggr) < 1e-9, 0, n_dem),
+      n_new = ifelse(abs(var_aggr) < 1e-9
+        & abs(n_units_aggr) < 1e-9, 0, n_new),
+      n_empty = ifelse(abs(var_aggr) < 1e-9
+        & abs(n_units_aggr) < 1e-9, 0, n_empty)
+    )
 
     # Distribute abandoned buildings across vintage cohorts + arch ## PROBLEM: empty units exceeding n.units(previous stes) - n.units demolished
     dem_det_age_i <- dem_det_age_i %>% # First calculate share of buildings by vintage in the previous timestep (to allocate empty buildings)
@@ -297,7 +201,7 @@ fun_stock_dyn <- function(sector,
       filter(n_new > 0) %>%
       relocate(n_units_fuel = n_new, .after = last_col()) %>%
       select(-c(shr_distr_heat)) # ,
-  }
+  
 
 
   if ("sub" %in% unique(bld_cases_eneff$mat)) {

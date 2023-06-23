@@ -4,6 +4,7 @@
 
 library(dplyr)
 library(readr)
+library(tidyr)
 
 
 #' @title Import input data
@@ -25,7 +26,8 @@ fun_inputs_csv <- function(path_in, file_inputs, file_scenarios, sector, run) {
   scenarios <- read_csv(paste0(path_in, file_scenarios), show_col_types = FALSE)
 
   # Create vector of scenario-dependent parameters
-  scen_pars <- names(scenarios)[!names(scenarios) %in% c("scenario_id", "scenario_name")]
+  scen_pars <- names(scenarios)[!names(scenarios) %in%
+    c("scenario_id", "scenario_name")]
 
   # Scenario setup for scenario-dependent parameters
   scen_setup <- scenarios %>%
@@ -37,7 +39,6 @@ fun_inputs_csv <- function(path_in, file_inputs, file_scenarios, sector, run) {
       values_to = "scenario"
     )
 
-
   # Input data: build vector of input file names for the current scenarios
   input <- input %>%
     left_join(scen_setup) %>%
@@ -46,7 +47,8 @@ fun_inputs_csv <- function(path_in, file_inputs, file_scenarios, sector, run) {
       paste0(path_in_csv, "input_basic/", name_file),
       paste0(path_in_csv, "input_", sector, "/", category, "/", name_file)
     )) %>%
-    mutate(path_file = ifelse(!is.na(scenario), paste0(path_file, "_", scenario), path_file)) %>%
+    mutate(path_file = ifelse(!is.na(scenario), paste0(path_file, "_", scenario),
+      path_file)) %>%
     mutate(path_file = paste0(path_file, ".csv"))
 
 
@@ -72,43 +74,19 @@ fun_inputs_csv <- function(path_in, file_inputs, file_scenarios, sector, run) {
 
 
   # Load input data csv files into a list of dataframes
-  # d <- lapply(input_paths, read_csv) 
-
   d <- lapply(input_paths, function(x){
     read_csv(x, show_col_types = FALSE)})
   
   # Rename the dataframes within the list based on the variable names
-  d <- setNames(d, input_names) 
+  d <- setNames(d, input_names)
 
-  # # PROCESS DATA (1) - Convert timeseries to long format
+  # Convert timeseries to long format
   # d <- lapply(d, fun_toLong)
 
-  # PROCESS DATA (2) - Rename the "value" column within each dataframe with variable-specific name
+  # Rename the "value" column within each dataframe with variable-specific name
   d <- Map(fun_rename, d, input_names)
-  # d <- mapply(fun_rename, d, input_names, SIMPLIFY = FALSE) # Alternative coding with mapply (same result)
 
-  # ### TEMPORARY ### Extract dataframes to global environment
-  # list2env(d, .GlobalEnv)
-
-
-  # Temporary - Load special data separately (to be changed!)
-
-  ## bld_dyn_par
-  # Parameters: # Xiaoyang: separate csv files with multiple variables
-  # dem_k, dem_lambda -> F06 # Alessio
-  # l_new -> F04 # Xiaoyang
-  # l_ren -> F05 # Xiaoyang
-
-  ## energy_sim_ref
-  # separate heat/cool/days of cooling?
-
-  ## cool operation / cool_operation_hours:
-  # separate different parameters
-
-  ## heat operation: already long format
-
-
-  # remove provisional inputs
+  # Remove provisional inputs
   rm(input, scen_setup)
 
   return(d)
@@ -122,7 +100,8 @@ fun_inputs_csv <- function(path_in, file_inputs, file_scenarios, sector, run) {
 #' @return list of dimensions
 read_categories <- function(path_in_csv,
                             sector,
-                            region = region) {
+                            geo_level,
+                            region = NULL) {
   input_list <- list(
     geo_data = "/input_basic_geo/regions.csv",
     clim_zones = "/input_basic_geo/climatic_zones.csv",
@@ -155,4 +134,38 @@ read_categories <- function(path_in_csv,
 
 
   return(categories)
+}
+
+#' @title Read energy prices
+#' @description Read energy prices
+#' @param path_prices: path to energy prices
+#' @param geo_data: list of dimensions
+#' @param geo_level: level of geographical aggregation
+#' @return list of energy prices
+read_energy_prices <- function(path_prices, geo_data, geo_level) {
+  prices <- read.csv(path_prices)
+
+  # Parse energy prices from MESSAGE
+  if (is.null(prices) == FALSE) {
+    price_en <- prices %>%
+    mutate(price_en = lvl / all_of(u_EJ_GWa)) %>%
+    mutate(region = substr(node, 5, 7)) %>%
+    # mutate(region_gea = ifelse(region_gea == "LAM", "LAC", region_gea)) %>%
+    mutate(fuel = commodity) %>%
+    mutate(fuel = ifelse(commodity == "biomass", "biomass_solid", fuel)) %>%
+    mutate(fuel = ifelse(commodity == "electr", "electricity", fuel)) %>%
+    mutate(fuel = ifelse(commodity == "lightoil", "oil", fuel)) %>%
+    filter(commodity != "d_heat") %>%
+    filter(year %in% yrs) %>%
+    select(region, year, fuel, price_en) %>%
+    # Rename region column based on R11/R12
+    rename_at("region", ~ paste(substr(prices$node[1], 1, 3)))
+    # Use the most granular level for prices
+    price_en <- geo_data %>%
+    # Join R11/R12 data with prices
+    left_join(price_en) %>% 
+    select_at(c(paste(geo_level), "year", "fuel", "price_en"))
+  } else {
+    price_en <- NULL
+  }
 }

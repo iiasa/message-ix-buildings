@@ -20,10 +20,15 @@ end_year <- 2050
 step_year <- 5
 region <- c("WEU", "EEU")
 sector <- "resid"
-prices <- read.csv(paste0(data_path, "input_prices_R12.csv"))
-report_var <- c("energy")
-report_type <- "STURM"
+file_inputs <- "input_list_resid.csv"
+path_prices <- paste0(data_path, "input_prices_R12.csv")
+file_scenarios <- "scenarios_TEST.csv"
+
 mod_arch <- "stock"
+
+report <- list(var = c("energy"),
+               type = "STURM",
+               geo_level = "R12")
 
 yrs <- seq(base_year, end_year, step_year)
 
@@ -35,7 +40,7 @@ yrs <- seq(base_year, end_year, step_year)
 #' @param path_in: path to input data, default is current working directory
 #' @param path_rcode: path to R code, default is current working directory
 #' @param path_out: path to output data, default is current working directory
-#' @param prices: prices for energy carriers, default is "input_prices_R12"
+#' @param path_prices: name of the price file, default is "input_prices_R12.csv"
 #' @param file_inputs: name of the input file, default is "input_list_resid"
 #' @param file_scenarios: name of the scenario file, default is "scenarios_TEST"
 #' @param geo_level: level for analysis, default is "region_bld"
@@ -59,20 +64,20 @@ sturm_scenarios <- run_scenario(
     path_in = data_path,
     path_rcode = rcode_path,
     path_out = rout_path,
-    prices = prices,
-    file_inputs = "input_list_resid.csv",
-    file_scenarios = "scenarios_TEST.csv",
+    path_prices = path_prices,
+    file_inputs = file_inputs,
+    file_scenarios = file_scenarios,
     geo_level = "region_bld",
     geo_level_aggr = "region_gea",
     geo_levels = c("region_bld", "region_gea"),
-    geo_level_report = "R12",
+    geo_level_report = report$geo_level,
     yrs = yrs,
     input_mode = "csv",
     mod_arch = mod_arch,
-    report_var = report_var,
-    report_type = report_type,
+    report_var = report$var,
+    report_type = report$type,
     region = region
 )
 
-# # write results to csv file
-# write.csv(sturm_scenarios, paste("./temp/",sect,"_sturm.csv",sep=""),r ow.names=F)
+# Write results to csv file
+# write.csv(sturm_scenarios, paste("./temp/",sect,"_sturm.csv",sep=""), row.names=F)

@@ -9,7 +9,8 @@ options(dplyr.summarise.inform = FALSE)
 u1 <- 3.6 / 1000 # kWh to GJ (to calculate operational costs)
 
 #' @title Energy demand - STURM
-#' @description Calculate energy demand for heating, cooling, hot water, fans and other uses
+#' @description Calculate energy demand for heating, cooling, hot water,
+#'  fans and other uses
 #' @param sector Sector to be calculated
 #' @param yrs Years to be calculated
 #' @param i Time step
@@ -127,31 +128,36 @@ fun_en_sim <- function(sector,
     distinct()
 
   en_hh_tot <- NULL
-  if (sector == "resid") { # Calculate household energy demand - for cost calculations - residential only
 
-    # Add HH size - HEATING ONLY
+  # Calculate household energy demand - for cost calculations - residential only
+  if (sector == "resid") {
+
+    # Add hh size, only for heating
     en_hh <- en_m2_scen_heat %>%
       rename(en_m2 = en_dem_heat) %>%
       mutate(fuel = fuel_heat) %>%
       left_join(hh_size) %>%
-      filter(year == yrs[i]) # Filter "i" year
+      filter(year == yrs[i])
 
-    en_hh <- en_hh %>% left_join(floor_cap) %>% # Add floor surface
-      mutate(en_hh = en_m2 * floor_cap * hh_size) %>% # Calculate total energy demand per household
-      left_join(price_en) %>% # Associate energy prices to en_perm
-      mutate(cost_op = u1 * en_hh * price_en) # calculate the total costs for operational energy
+    # TODO: change to use average surface by dwelling
+    en_hh <- en_hh %>%
+     # Add floor surface area
+      left_join(floor_cap) %>%
+      # Calculate total energy demand per household
+      mutate(en_hh = en_m2 * floor_cap * hh_size) %>%
+      # Associate energy prices to en_perm
+      left_join(price_en) %>%
+      # Calculate the total costs for operational energy
+      mutate(cost_op = u1 * en_hh * price_en)
 
-    ## Sum total energy costs for all fuels
-    en_hh_tot <- en_hh %>% # Initialize
-      select(-c(en_m2, hh_size, floor_cap, en_hh, price_en))
 
-    en_hh_tot <- en_hh_tot %>%
-      group_by_at(setdiff(names(en_hh_tot), c("fuel", "cost_op"))) %>% # Select all variables, except "fuel" and  for grouping)
+    # Sum total energy costs for all fuels
+    en_hh_tot <- en_hh %>%
+      select(-c(en_m2, hh_size, floor_cap, en_hh, price_en)) %>%
+      group_by_at(setdiff(names(.), c("fuel", "cost_op"))) %>%
       summarise(cost_op_m2 = sum(cost_op)) %>%
-      ungroup()
-
-    # Reorder rows
-    en_hh_tot <- bld_cases_fuel %>% left_join(en_hh_tot) # %>% select(-acc_cool)
+      ungroup() %>%
+      left_join(bld_cases_fuel)
   }
 
   output <- list(

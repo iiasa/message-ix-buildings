@@ -113,7 +113,8 @@ run_scenario <- function(run,
     rename_at("geo_level", ~ paste0(geo_level)) %>%
     left_join(cat$geo_data %>% select_at(geo_levels)) %>%
     left_join(cat$clim_zones, by = c(paste(geo_level), "urt"),
-              relationship = "many-to-many") %>%
+              relationship = "many-to-many",
+              ) %>%
     left_join(cat$ct_bld,
               relationship = "many-to-many") %>%
     left_join(cat$ct_eneff, by = "mat",
@@ -286,7 +287,6 @@ run_scenario <- function(run,
       print(paste("Calculate stock turnover"))
       lst_stock_i <- fun_stock_dyn(
         sector,
-        mod_arch,
         yrs,
         i,
         run,
@@ -420,7 +420,6 @@ run_scenario <- function(run,
 
       # Stock turnover
       lst_stock_i <- fun_stock_dyn(sector,
-        mod_arch, # mod_arch = "new", mod_arch = "stock"
         yrs, i,
         run, ssp_r,
         geo_level, geo_level_aggr, geo_levels,

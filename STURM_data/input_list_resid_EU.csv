@@ -2,7 +2,7 @@ name_parameter,name_file,category
 pop,pop_clim_ssp2,basic
 hh_size,hh_size,basic
 floor_cap,floor_resid_ssp2,activity
-hh_tenure,hh_tenr,stock
+hh_tenure,hh_tenr_EU,stock
 shr_arch,bld_shr_arch_resid,stock
 shr_mat,bld_share_mat_resid_ssp2,stock
 prob_dem,bld_demolition_distr_long,activity

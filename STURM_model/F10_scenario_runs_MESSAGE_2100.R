@@ -9,9 +9,6 @@ library(dplyr)
 # Unit conversion
 u_EJ_GWa <- 31.71
 
-# require(devtools) # source code from github
-# library(RCurl) # read file from github
-
 
 #' @param run: name of the scenario to run, e.g. "NAV_Dem-NPi-ref"
 #' @param scenario_name: name of the scenario to run, e.g. "NAV_Dem-NPi-ref"
@@ -89,14 +86,16 @@ run_scenario <- function(run,
 
   # Load input data
   if (input_mode == "csv") {
-    print("Load data from csv files")
+    print("Load data")
+
+    # Read categories
+    path_in_csv <- paste0(path_in, "./input_csv/")
+    cat <- read_categories(path_in_csv, sector, geo_level, region)
 
     # Source - input data
     d <- fun_inputs_csv(path_in, file_inputs, file_scenarios, sector, run)
     
-    # Read categories
-    path_in_csv <- paste0(path_in, "./input_csv/")
-    cat <- read_categories(path_in_csv, sector, geo_level, region)
+    d$stock_arch_base <- fun_parse_stock(d$stock_arch_base, cat, d$pop)
 
     # TODO properly
     cat$geo_data <- cat$geo_data %>%

@@ -293,56 +293,74 @@ fun_ms_ren_sw <- function(yrs,
   return(output)
 }
 
-fun_ms_ren_target <- function(yrs, i,
-                              bld_cases_fuel, ct_bld_age,
-                              shr_eneff_ren, shr_fuel_heat_ren) {
+fun_ms_ren_sw_exogenous <- function(yrs,
+                                    i,
+                                    bld_cases_fuel,
+                                    ct_bld_age,
+                                    rate_shell_ren_exo,
+                                    ms_shell_ren_exo,
+                                    ms_switch_fuel_exo) {
   print(paste0("Running renovation target - year ", yrs[i]))
 
-  ms_ren_i <- bld_cases_fuel %>%
-    mutate(year = yrs[i]) %>% # Add years columns
-    rename(eneff_i = eneff) %>% # Rename eneff column
-    rename(fuel_heat_i = fuel_heat) %>%
-    left_join(shr_eneff_ren) %>% # Join market share column
-    left_join(shr_fuel_heat_ren) %>%
-    mutate(ms_ren = ms_eneff * ms_fuel) %>%
-    filter(!is.na(ms_ren)) %>%
-    filter(ms_ren > 0) %>%
+  p_past <- ct_bld_age %>%
+    filter(year_f < yrs[i]) %>%
+    pull(bld_age_id)
+
+
+  rate_ren_i <- bld_cases_fuel %>%
+    filter(bld_age %in% p_past) %>%
+    # Add years columns
+    mutate(year = yrs[i]) %>%
+    # Join market share column
+    left_join(rate_shell_ren_exo) %>%
+    # Rename eneff column
+    rename(rate_ren = rate_shell_ren_exo) %>%
+    filter(!is.na(rate_ren)) %>%
+    filter(rate_ren > 0) %>%
     filter(mod_decision == 1) %>%
-    mutate(ct_fuel_excl_ren = 0) %>% # Placeholder for fuels to be excl
-    select(-c(
-      bld_age, ms_eneff, ms_fuel,
-      ct_fuel_excl_ren
-    ))
-
-  print(paste0("Completed renovation target - year ", yrs[i]))
-
-  output <- ms_ren_i
-}
-
-
-fun_ms_ren_target2 <- function(yrs, i,
-                               bld_cases_fuel, ct_bld_age,
-                               ms_ren_target) {
-  print(paste0("Running renovation target - year ", yrs[i]))
+    select(-c(bld_age))
 
   ms_ren_i <- bld_cases_fuel %>%
+    filter(bld_age %in% p_past) %>%
     # Add years columns
     mutate(year = yrs[i]) %>%
     # Rename eneff column
     rename(eneff_i = eneff) %>%
     rename(fuel_heat_i = fuel_heat) %>%
     # Join market share column
-    left_join(ms_ren_target) %>%
-    # mutate(ms= ms_eneff*ms_fuel) %>%
+    left_join(ms_shell_ren_exo) %>%
+    rename(ms_ren = ms_shell_ren_exo) %>%
+    # Only shell renovation and no switch fuel
+    mutate(fuel_heat_f = fuel_heat_i) %>%
+    rename(eneff_f = eneff) %>%
+    mutate(eneff_f = paste0(eneff_i, "_", eneff_f)) %>%
+    filter(!is.na(ms_ren)) %>%
+    filter(ms_ren > 0) %>%
+    filter(mod_decision == 1) %>%
+    select(-c(bld_age))
+
+  ms_sw_i <- bld_cases_fuel %>%
+   # Add years columns
+    mutate(year = yrs[i]) %>%
+    filter(bld_age %in% p_past) %>%
+    left_join(ms_switch_fuel_exo %>%
+      rename(ms = ms_switch_fuel_exo) %>%
+      rename(fuel_heat_f = fuel_heat)
+      ) %>%
     filter(!is.na(ms)) %>%
     filter(ms > 0) %>%
     filter(mod_decision == 1) %>%
-    # mutate(fuel_excluded = 0) %>% # Placeholder for fuels to be excluded
     select(-c(bld_age))
+
 
   print(paste0("Completed renovation target - year ", yrs[i]))
 
-  output <- ms_ren_i
+  output <- list(
+                ms_ren_i = ms_ren_i,
+                ms_sw_i = ms_sw_i,
+                rate_ren_i = rate_ren_i
+                )
+  return(output)
 }
 
 ## FUNCTION -FUEL SWITCHES (WITHOUT RENOVATION)
@@ -357,7 +375,8 @@ fun_ms_fuel_sw <- function(yrs, i,
     pull(bld_age_id)
 
   ms_sw_i <- bld_cases_fuel %>%
-    mutate(year = yrs[i]) %>% # Add years columns
+   # Add years columns
+    mutate(year = yrs[i]) %>%
     filter(bld_age %in% p_past) %>%
     # rename(fuel_heat_i = fuel_heat) %>%
     left_join(shr_fuel_heat_sw) %>%

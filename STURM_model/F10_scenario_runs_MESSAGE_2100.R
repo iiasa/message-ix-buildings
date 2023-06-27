@@ -54,7 +54,8 @@ run_scenario <- function(run,
                          mod_arch,
                          report_type,
                          report_var,
-                         region = NULL) {
+                         region = NULL,
+                         energy_efficiency = "endogenous") {
   print(paste("Start scenario run: ", run, "_", sector))
   # Track time
   start_time <- Sys.time()
@@ -96,6 +97,15 @@ run_scenario <- function(run,
     # Read categories
     path_in_csv <- paste0(path_in, "./input_csv/")
     cat <- read_categories(path_in_csv, sector, geo_level, region)
+
+    # TODO properly
+    cat$geo_data <- cat$geo_data %>%
+      filter(region_bld %in% unique(d$shr_fuel_heat_base$region_bld))
+
+    # Selecting only useful fuel for the run
+    fuel <- unique(d$shr_fuel_heat_base$fuel_heat)
+    cat$ct_fuel_comb <- cat$ct_fuel_comb %>%
+      filter(fuel_heat %in% fuel)
 
     # Read energy prices
     price_en <- read_energy_prices(path_prices, cat$geo_data, geo_level)
@@ -146,7 +156,6 @@ run_scenario <- function(run,
                            cat$ct_eneff,
                            cat$ct_fuel_comb,
                            d$shr_fuel_heat_base,
-                           d$shr_distr_heat,
                            report_var)
     # Extract dataframes from list
     bld_det_age_i <- temp$bld_det_age_i
@@ -180,7 +189,8 @@ run_scenario <- function(run,
       print(paste("Start scenario run", sector, "for year", yrs[i]))
 
       # Lucas: try to run this function only once before the loop
-      print(paste("Calculate energy demand intensities for space heating and cooling"))
+      print(paste("Calculate energy demand intensities 
+        for space heating and cooling"))
       lst_en_i <- fun_en_sim(
         sector,
         yrs,
@@ -222,55 +232,76 @@ run_scenario <- function(run,
 
       # Market share - new construction options
       print(paste("Calculate market share for new construction"))
-      ms_new_i <- fun_ms_new(
-        yrs,
-        i,
-        bld_cases_fuel,
-        cat$ct_bld_age,
-        d$hh_size,
-        d$floor_cap,
-        d$cost_invest_new_shell,
-        d$cost_invest_new_heat,
-        d$cost_intang_new_shell,
-        d$cost_intang_new_heat,
-        d$ct_fuel_excl_new,
-        d$ct_fuel_excl_reg,
-        d$discount_new,
-        d$heterog_new,
-        d$lifetime_new,
-        en_hh_tot
-      )
-
+      if (energy_efficiency == "endogenous") {
+        ms_new_i <- fun_ms_new(
+          yrs,
+          i,
+          bld_cases_fuel,
+          cat$ct_bld_age,
+          d$hh_size,
+          d$floor_cap,
+          d$cost_invest_new_shell,
+          d$cost_invest_new_heat,
+          d$cost_intang_new_shell,
+          d$cost_intang_new_heat,
+          d$ct_fuel_excl_new,
+          d$ct_fuel_excl_reg,
+          d$discount_new,
+          d$heterog_new,
+          d$lifetime_new,
+          en_hh_tot
+        ) } else {
+        ms_new_i <- fun_ms_new_exogenous(
+                      yrs,
+                      i,
+                      bld_cases_fuel,
+                      cat$ct_bld_age,
+                      d$ms_shell_new_exo,
+                      d$ms_switch_fuel_exo
+        )
+      }
       try(if (nrow(ms_new_i) == 0)
         stop("Error in new construction calculation! Empty dataframe ms_new_i"))
 
       # Market share for renovation and fuel switches options
       print(paste("Calculate market share for renovation and fuel switches"))
-      lst_ms_ren_sw_i <- fun_ms_ren_sw(
-        yrs,
-        i,
-        bld_cases_fuel,
-        cat$ct_bld_age,
-        cat$ct_hh_tenr,
-        cat$ct_fuel_comb,
-        cat$ct_ren_eneff,
-        d$ct_ren_fuel_heat,
-        d$hh_size,
-        d$floor_cap,
-        d$hh_tenure,
-        d$cost_invest_ren_shell,
-        d$cost_invest_ren_heat,
-        d$cost_intang_ren_shell,
-        d$cost_intang_ren_heat,
-        d$ct_fuel_excl_ren,
-        d$ct_fuel_excl_reg,
-        d$discount_ren,
-        d$heterog_ren,
-        d$lifetime_ren,
-        d$rate_ren_low,
-        d$rate_ren_high,
-        en_hh_tot
-      )
+      if (energy_efficiency == "endogenous") {
+        lst_ms_ren_sw_i <- fun_ms_ren_sw(
+          yrs,
+          i,
+          bld_cases_fuel,
+          cat$ct_bld_age,
+          cat$ct_hh_tenr,
+          cat$ct_fuel_comb,
+          cat$ct_ren_eneff,
+          d$ct_ren_fuel_heat,
+          d$hh_size,
+          d$floor_cap,
+          d$hh_tenure,
+          d$cost_invest_ren_shell,
+          d$cost_invest_ren_heat,
+          d$cost_intang_ren_shell,
+          d$cost_intang_ren_heat,
+          d$ct_fuel_excl_ren,
+          d$ct_fuel_excl_reg,
+          d$discount_ren,
+          d$heterog_ren,
+          d$lifetime_ren,
+          d$rate_ren_low,
+          d$rate_ren_high,
+          en_hh_tot
+        )
+        } else {
+        lst_ms_ren_sw_i <- fun_ms_ren_sw_exogenous(
+                              yrs,
+                              i,
+                              bld_cases_fuel,
+                              cat$ct_bld_age,
+                              d$rate_shell_ren_exo,
+                              d$ms_shell_ren_exo,
+                              d$ms_switch_fuel_exo
+        )
+      }
       # Extract dataframes from list
       ms_ren_i <- lst_ms_ren_sw_i$ms_ren_i
       rate_ren_i <- lst_ms_ren_sw_i$rate_ren_i
@@ -307,7 +338,6 @@ run_scenario <- function(run,
         ms_ren_i,
         rate_ren_i,
         ms_sw_i,
-        d$shr_distr_heat,
         d$shr_need_heat,
         en_m2_scen_heat,
         en_m2_scen_cool,

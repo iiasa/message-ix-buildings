@@ -47,14 +47,16 @@ fun_inputs_csv <- function(path_in, file_inputs, file_scenarios, sector, run) {
       paste0(path_in_csv, "input_basic/", name_file),
       paste0(path_in_csv, "input_", sector, "/", category, "/", name_file)
     )) %>%
-    mutate(path_file = ifelse(!is.na(scenario), paste0(path_file, "_", scenario),
+    mutate(path_file = ifelse(!is.na(scenario),
+      paste0(path_file, "_", scenario),
       path_file)) %>%
     mutate(path_file = paste0(path_file, ".csv"))
 
 
   ### TEMPORARY ### EXCLUDE SPECIAL DATA FILES
   input <- input %>%
-    filter(!name_parameter %in% c("bld_dyn_par", "cool_data_scen", "en_m2_sim_r")) %>%
+    filter(!name_parameter %in% 
+      c("bld_dyn_par", "cool_data_scen", "en_m2_sim_r")) %>%
     filter(category != "categories")
 
   ### DATA LOADING AND PROCESSING

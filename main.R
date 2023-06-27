@@ -20,12 +20,12 @@ end_year <- 2050
 step_year <- 5
 region <- c("WEU", "EEU")
 sector <- "resid"
-file_inputs <- "input_list_resid.csv"
+file_inputs <- "input_list_resid_EU.csv"
 path_prices <- paste0(data_path, "input_prices_R12.csv")
 file_scenarios <- "scenarios_TEST.csv"
 
 mod_arch <- "stock"
-
+energy_efficiency <- "exogenous"
 report <- list(var = c("energy"),
                type = "STURM",
                geo_level = "R12")
@@ -76,7 +76,8 @@ sturm_scenarios <- run_scenario(
     mod_arch = mod_arch,
     report_var = report$var,
     report_type = report$type,
-    region = region
+    region = region,
+    energy_efficiency = energy_efficiency
 )
 
 # Write results to csv file

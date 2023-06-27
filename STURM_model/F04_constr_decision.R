@@ -1,15 +1,7 @@
+library(dplyr)
+library(tidyverse)
 
-## CONSTRUCTION DECISIONS
-## this calculation is to be put within a loop on "i" (time steps)
-## Different fuels currently not included
-
-## check construction period: extract valid ones for the current timestep 
-
-# # mod_stock_level == "fuel"
-# # ms = 1 -> level "country" "scenario" "urt" "inc_cl""arch"  "clim"  "acc_cool" (choice between eneffs and fuels)
-
-
-## Complete model with fuel choice
+##Complete model with fuel choice
 
 fun_ms_new <- function(yrs,i,
                        bld_cases_fuel, ct_bld_age,
@@ -127,46 +119,40 @@ output = ms_new_i
 
 # SIMPLE FUNCTION - Fixed market shares
 
-fun_ms_new_target <- function(yrs,i,
-                              bld_cases_eneff, bld_cases_fuel, 
+#' @title Function to generate market shares for new construction
+#' @description Function to generate market shares for new construction
+#' @param yrs vector of years
+#' @param i index of the year
+#' @param bld_cases_fuel dataframe with building cases
+#' @param ct_bld_age dataframe with building age cohorts
+#' @param ms_shell_new_exo dataframe with exogenous market shares for shell
+#' @param ms_switch_fuel_exo dataframe with exogenous market shares for fuel switch
+#' @return dataframe with market shares for new construction
+fun_ms_new_exogenous <- function(yrs,
+                              i,
+                              bld_cases_fuel,
                               ct_bld_age,
-                              shr_eneff_new, shr_fuel_heat_new){
-  
+                              ms_shell_new_exo,
+                              ms_switch_fuel_exo) {
   print(paste0("Running construction target - year ", yrs[i]))
   
+
   # Filter building age cohorts - current period of construction
-  p_i <- ct_bld_age %>% filter(year_i <= yrs[i] & year_f >= yrs[i]) %>% pull(bld_age_id)
+  p_i <- ct_bld_age %>%
+    filter(year_i <= yrs[i] & year_f >= yrs[i]) %>%
+    pull(bld_age_id)
   
-  ## Prepare dataframe for LCC calculations at household level - New constructions
-  ms_new_i <- bld_cases_fuel %>% 
-    mutate(year = yrs[i]) %>% 
-    left_join(shr_eneff_new) %>% # Join market share column
-    left_join(shr_fuel_heat_new) %>%
+  ms_new_i <- bld_cases_fuel %>%
+    mutate(year = yrs[i]) %>%
+    # Join market share column
+    left_join(ms_shell_new_exo) %>%
+    left_join(ms_switch_fuel_exo) %>%
     filter(bld_age %in% p_i) %>%
-    mutate(ms= ms_eneff*ms_fuel) %>%
+    mutate(ms = ms_shell_new_exo * ms_switch_fuel_exo) %>%
     mutate_cond(is.na(ms) & eneff == "ns", ms = 1) %>%
-    filter(!is.na(ms)) %>% # temporary fix (renovated buildings are taken as they belong to building period p5)
-    select(-c(bld_age,ms_eneff,ms_fuel))
+    filter(!is.na(ms)) %>%
+    select(-c(bld_age, ms_shell_new_exo, ms_switch_fuel_exo))
 
-  
-  # ## Prepare dataframe at eneff level (used to assign district heating in script M04) ### MOVED TO stock dynamics script
-  # ms_new_eneff_i <- bld_cases_eneff %>% 
-  #   mutate(year = yrs[i]) %>% 
-  #   left_join(shr_eneff_new) %>% # Join market share column
-  #   filter(bld_age %in% p_i) %>%
-  #   mutate_cond(is.na(ms_eneff) & eneff == "ns", ms = 1) %>%
-  #   select(-c(bld_age))
-  
   print(paste0("Completed construction target - year ", yrs[i]))
-  output = ms_new_i
+  return(ms_new_i)
 }
-
-  # # remove unused files
-  # rm(ct_bld_age_id_i)
-  # rm(lcc_new_hh,lcc_new_hh_exp,lcc_new_hh_sum)
-
-# write out results for testing
-#write.csv(ms_new_i, paste0(path_out,"ms_new_test.csv"))
-
-
-

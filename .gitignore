@@ -1,3 +1,5 @@
+
+
 # History files
 .Rhistory
 .Rapp.history
@@ -58,3 +60,4 @@ rsconnect/
 .vs/
 .history/
 *.log
+

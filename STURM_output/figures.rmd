@@ -1,0 +1,204 @@
+---
+output: reprex::reprex_document
+knit: reprex::reprex_render
+---
+
+Notebook to run STURM Ouput.
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(stringr)
+
+print(getwd())
+```
+
+```{r}
+file <- "report_STURM_NAV_Dem-NPi-ref_resid_R12_energy.csv"
+
+```
+
+```{r}
+# Read output files
+data <- read.csv(file)
+```
+
+```{r}
+  # Define the colors for each energy source
+colors <- c("biomass_solid" = "springgreen4",
+            "coal" = "black",
+            "district_heat" = "slateblue4",
+            "electricity" = "darkorange",
+            "gas" = "firebrick",
+            "oil" = "grey50")
+
+# Define the labels for each energy source
+labels <- c("biomass_solid" = "Biomass solid",
+            "coal" = "Coal",
+            "district_heat" = "District heating",
+            "electricity" = "Electricity",
+            "gas" = "Gas",
+            "oil" = "Oil")
+
+# Format labels with comma between thousands
+comma_format <- function(x) {
+  sprintf("%1.0f", x)
+}
+
+```
+
+
+
+
+```{r}
+
+plot_stacked_area <- function(data, x_column, y_column, fill_column, 
+                            y_label = "",
+                             font_size = 12,
+                             save_path = NULL)
+                              {
+  
+  
+  # Create the stacked area plot
+  group <- c(x_column, fill_column)
+  p <- data %>%
+    group_by(across(all_of(group))) %>%
+    summarise(total = sum(.data[[y_column]])) %>%
+    ungroup() %>%
+    ggplot(aes(x = .data[[x_column]],
+               y = total,
+               fill = .data[[fill_column]])) +
+    geom_area() +
+    scale_fill_manual(values = colors, labels = labels) +
+    labs(title = y_label,
+        fill = str_replace_all(str_to_title(fill_column), "_", " ")) +
+    theme_minimal() +
+    theme(text = element_text(size = font_size, family = "Arial"),
+          axis.title.x = element_blank(),
+          axis.title.y = element_blank(),
+          axis.title = element_text(hjust = 0, size = font_size),
+          panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+          legend.title = element_blank()
+          )
+  
+  # Save the plot as PNG if save_path is specified
+  if (!is.null(save_path)) {
+    ggsave(save_path, plot = p, width = 8, height = 6, dpi = 300)
+  }
+  
+  # Print the plot
+  print(p)
+}
+
+```
+
+```{r}
+library(ggplot2)
+library(gridExtra)
+library(dplyr)
+
+plot_variable_evolution <- function(data,
+    x_column = "year",
+    y_column = "heat_TWh",
+    group_column = "R12",
+    subplot = FALSE,
+    y_label = "",
+    font_size = 12,
+    save_path = NULL) {
+  
+  # Group and summarize data
+  group <- c(x_column, group_column)
+
+  summarized_data <- data %>%
+    # Group by year and group_column
+    group_by(across(all_of(group))) %>%
+    summarise(value = sum(.data[[y_column]])) %>%
+    ungroup()
+  
+  # Convert year column to numeric
+  summarized_data$year <- as.numeric(summarized_data$year)
+  
+  if (subplot) {
+    # Create subplot for each instance of group_column
+    p <- ggplot(summarized_data, aes(x = .data[[x_column]], y = value)) +
+                geom_line() +
+                facet_wrap(group_column) +
+                theme_minimal() + 
+                theme(text = element_text(size = font_size, family = "Arial"),
+                    axis.title.x = element_blank(),
+                    axis.title.y = element_blank(),
+                    axis.title = element_text(hjust = 0, size = font_size),
+                    panel.grid.major = element_blank(),
+                    panel.grid.minor = element_blank(),
+                    legend.title = element_blank()
+                )
+  } 
+  else {
+    # Create line plot on the same axis
+    p <- ggplot(summarized_data, aes(x = .data[[x_column]],
+                                y = value,
+                                color = .data[[group_column]])) +
+      geom_line() +
+      theme_minimal() +
+      theme(text = element_text(size = font_size, family = "Arial"),
+          axis.title.x = element_blank(),
+          axis.title.y = element_blank(),
+          axis.title = element_text(hjust = 0, size = font_size),
+          panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+          legend.title = element_blank()
+          )
+  }
+
+
+  
+  # Print the plot
+  print(p)
+
+}
+
+
+```
+
+
+```{r}
+x_column <- "year"
+y_column <- "heat_TWh"
+group_column <- "R12"
+
+```
+
+```{r}
+plot_variable_evolution(data, x_column = "year",
+                        y_column = "heat_TWh", 
+                        group_column = "R12",
+                        subplot = TRUE)
+```
+
+## Stock of households by space heating fuels
+```{r}
+plot_stacked_area(data, "year", "stock_M", "fuel_heat",
+                  save_path = "figures/stock_hh_fuel.png",
+                  y_label = "Stock households\nMillion buildings",
+                  font_size = 11)
+```
+
+## Final energy consumption for space heating in the Residential sector (TWh)
+```{r}
+data <- data %>%
+    mutate(heat_TWh = heat_TJ / 3.6 / 10^3)
+
+plot_stacked_area(data, "year", "heat_TWh", "fuel_heat",
+                  save_path = "figures/heating_fuel.png",
+                  y_label = "Final energy consumption for space heating \nResidential sector\nTWh",
+                  font_size = 11)
+```
+
+
+
+## 
+```{r}
+data <- data %>%
+    mutate(heat_hh_kWh = heat_TWh * 10**3 / stock_M)
+```

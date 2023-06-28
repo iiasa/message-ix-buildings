@@ -26,7 +26,6 @@ u_EJ_GWa <- 31.71
 #' @param geo_level_report: level for reporting, e.g. "R12"
 #' @param yrs: years to run, if NULL run all years, e.g. seq(2015, 2050, 5)
 #' @param input_mode: input mode, available: "csv", "xlsx"
-#' @param mod_arch: model architecture, available: "stock", "new"
 #' @param report_type: available reports,
 #' available: "MESSAGE","STURM","IRP","NGFS","NAVIGATE"
 #' @param report_var: available report variables,
@@ -48,7 +47,6 @@ run_scenario <- function(run,
                          geo_level_report,
                          yrs,
                          input_mode,
-                         mod_arch,
                          report_type,
                          report_var,
                          region = NULL,
@@ -361,7 +359,7 @@ run_scenario <- function(run,
     print(paste("Initialize scenario run", sector))
 
     lst_stock_init <- fun_stock_init_fut(
-      sector, mod_arch,
+      sector, "stock",
       yrs,
       geo_data, geo_levels, geo_level,
       bld_cases_eneff, bld_cases_fuel,

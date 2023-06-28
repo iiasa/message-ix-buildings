@@ -4,8 +4,6 @@ library(rstudioapi)
 library(tidyverse)
 library(readxl)
 
-# setwd(dirname(rstudioapi::getSourceEditorContext()$path))
-
 source("./STURM_model/F10_scenario_runs_MESSAGE_2100.R")
 
 # Paths
@@ -21,7 +19,8 @@ step_year <- 5
 region <- c("WEU", "EEU")
 sector <- "resid"
 file_inputs <- "input_list_resid_EU.csv"
-path_prices <- paste0(data_path, "input_prices_R12.csv")
+path_prices <- paste0(data_path,
+    "/input_csv/input_price/input_prices_R12.csv")
 file_scenarios <- "scenarios_TEST.csv"
 
 mod_arch <- "stock"
@@ -73,7 +72,6 @@ sturm_scenarios <- run_scenario(
     geo_level_report = report$geo_level,
     yrs = yrs,
     input_mode = "csv",
-    mod_arch = mod_arch,
     report_var = report$var,
     report_type = report$type,
     region = region,
@@ -81,4 +79,4 @@ sturm_scenarios <- run_scenario(
 )
 
 # Write results to csv file
-# write.csv(sturm_scenarios, paste("./temp/",sect,"_sturm.csv",sep=""), row.names=F)
+# write.csv(sturm_scenarios, paste("./temp/", sect,"_sturm.csv",sep=""), row.names=F)

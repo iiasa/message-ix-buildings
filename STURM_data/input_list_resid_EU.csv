@@ -38,9 +38,9 @@ cost_invest_ren_heat,cost_inv_ren_heat_ssp2,decision
 cost_invest_ren_shell,cost_inv_ren_shell_EU,decision
 lifetime_new,bld_lifetime_new,decision
 lifetime_ren,bld_lifetime_ren,decision
-rate_shell_ren_exo,rate_ren_EU,activity
-ms_shell_ren_exo,ms_ren_EU,activity
-ms_switch_fuel_exo,ms_switch_EU,activity
+rate_shell_ren_exo,rate_shell_ren_EU,activity
+ms_shell_ren_exo,ms_shell_ren_EU,activity
+ms_switch_fuel_exo,ms_switch_fuel_EU,activity
 ms_shell_new_exo,ms_shell_new_exo_EU,activity
 discount_new,,skip
 discount_ren,,skip

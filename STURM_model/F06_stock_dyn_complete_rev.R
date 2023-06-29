@@ -415,9 +415,6 @@ fun_stock_dyn <- function(sector,
     ) %>%
     ungroup()
 
-
-  t <- en_stock_i %>% 
-
   # Report Energy Demand
   en_stock_i <- bld_cases_fuel %>%
     mutate(scenario = run) %>%

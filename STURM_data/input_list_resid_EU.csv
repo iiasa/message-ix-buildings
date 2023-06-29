@@ -10,19 +10,19 @@ shr_acc_cool,bld_shr_access_cool_resid_ssp2,stock
 shr_distr_heat,bld_shr_district_heat_resid,stock
 shr_fuel_heat_base,bld_share_fuel_heat_resid_EU,stock
 mat_int,material_int_resid,material
-eff_heat ,eff_heat_ssp2,energy
+eff_heat ,eff_heat_EU,energy
 eff_cool,eff_cool_ssp2,energy
-eff_hotwater,eff_hotwater_resid,energy
+eff_hotwater,eff_hotwater_resid_EU,energy
 shr_floor_heat,heat_floor_resid,energy
 hours_heat,heat_operation_hours_ssp2,energy
-en_sav_ren,ren_energy_savings_ssp2,energy
+en_sav_ren,ren_energy_savings_EU,energy
 shr_floor_cool,cool_area_share,energy
 hours_cool,cool_hours,energy
 hours_fans,fans_hours,energy
 power_fans,fans_power,energy
-en_int_heat,heat_intensity,energy
-en_int_cool,cool_intensity,energy
-days_cool,cool_days,energy
+en_int_heat,heat_intensity_EU,energy
+en_int_cool,cool_intensity_EU,energy
+days_cool,cool_days_EU,energy
 shr_need_cool,shr_need_cool_resid,stock
 shr_need_heat,shr_need_heat_resid,stock
 en_int_hotwater,en_int_resid_hotwater_SSP2_rev_2022-12-15,energy
@@ -41,7 +41,7 @@ lifetime_ren,bld_lifetime_ren,decision
 rate_shell_ren_exo,rate_shell_ren_EU,activity
 ms_shell_ren_exo,ms_shell_ren_EU,activity
 ms_switch_fuel_exo,ms_switch_fuel_EU,activity
-ms_shell_new_exo,ms_shell_new_exo_EU,activity
+ms_shell_new_exo,ms_shell_new_EU,activity
 discount_new,,skip
 discount_ren,,skip
 rate_ren_low,,skip

@@ -64,7 +64,6 @@ fun_en_sim <- function(sector,
     left_join(eff_heat) %>%
     left_join(en_sav_ren) %>%
     mutate_cond(is.na(en_sav_ren), en_sav_ren = 0) %>%
-    # mutate(en_sav_ren=0) %>% ## NO RENOVATION SCALING HERE - VALUES ARE NOT TO BE SCALED
     left_join(hours_heat) %>%
     mutate(f_h = hours_heat / 24) %>%
     left_join(shr_floor_cool) %>%
@@ -72,31 +71,35 @@ fun_en_sim <- function(sector,
     left_join(hours_fans) %>%
     left_join(power_fans) %>%
     mutate(f_c = hours_cool / 24) %>%
-    mutate(f_f = hours_fans / 24) %>% # fans operation
+    mutate(f_f = hours_fans / 24) %>%
     left_join(shr_floor_heat) %>%
     left_join(shr_acc_cool) %>%
-    # left_join(cool_data_base) %>%
     left_join(en_int_heat) %>%
     left_join(en_int_cool) %>%
     left_join(days_cool) %>%
-    # left_join(en_m2_sim) %>%
-    mutate(en_dem_heat = en_int_heat * (1 - en_sav_ren) * shr_acc_heat / eff_heat * shr_floor_heat * f_h) %>% # Edit heating demand (final) [kWh/m2/y] # Removed acc_heat
-    mutate(en_dem_c_ac = en_int_cool * (1 - en_sav_ren) * shr_acc_cool / eff_cool * shr_floor_cool * f_c) %>% # Edit cooling demand - AC (final) [kWh/m2/y] (fans not included for now)
-    mutate(en_dem_c_fans = days_cool * shr_floor_cool * f_f * 24 * power_fans / (25 * 1e3)) %>% # Cooling demand - FANS (final) [kWh/m2/y]
+    # Edit heating demand (final) [kWh/m2/y]
+    mutate(en_dem_heat = en_int_heat * (1 - en_sav_ren) * shr_acc_heat /
+      eff_heat * shr_floor_heat * f_h) %>%
+    # Edit cooling demand - AC (final) [kWh/m2/y] (fans not included for now)
+    mutate(en_dem_c_ac = en_int_cool * (1 - en_sav_ren) * shr_acc_cool /
+      eff_cool * shr_floor_cool * f_c) %>%
+    # Cooling demand - FANS (final) [kWh/m2/y]
+    mutate(en_dem_c_fans =
+      days_cool * shr_floor_cool * f_f * 24 * power_fans / (25 * 1e3)) %>%
     mutate_cond(is.na(en_dem_heat), en_dem_heat = 0) %>%
-    mutate_cond(is.na(en_dem_c_ac), en_dem_c_ac = 0) %>% # Remove NA values
-    mutate_cond(is.na(en_dem_c_fans), en_dem_c_fans = 0) %>% # Remove NA values
-    mutate(en_dem_cool = en_dem_c_ac + en_dem_c_fans) %>% # Total energy demand for cooling
-    # mutate_cond(eneff %in% c("s6_low", "s9_rlow") & en_dem_heat/eff_heat >20, en_dem_heat = 20/eff_heat) %>% # ADJUST VALUES FOR  PASSIVE (on useful energy - 20 kWh/m2 with 5kwh/m2 allowance for climate)
-    # mutate_cond(eneff %in% c("s6_low", "s9_rlow") & en_dem_cool/eff_cool >20, en_dem_cool = 20/eff_cool) %>% # ADJUST VALUES FOR  PASSIVE (on useful energy - 20 kWh/m2 with 5kwh/m2 allowance for climate)
-    # # mutate_cond(eneff %in% c("s6_low", "s9_rlow") & en_dem_heat>15, en_dem_heat = 15) %>% # ADJUST VALUES FOR  PASSIVE
-    # # mutate_cond(eneff %in% c("s6_low", "s9_rlow") & en_dem_cool>15, en_dem_cool = 15) %>% # ADJUST VALUES FOR  PASSIVE
+    # Remove NA values
+    mutate_cond(is.na(en_dem_c_ac), en_dem_c_ac = 0) %>%
+    # Remove NA values
+    mutate_cond(is.na(en_dem_c_fans), en_dem_c_fans = 0) %>%
+    # Total energy demand for cooling
+    mutate(en_dem_cool = en_dem_c_ac + en_dem_c_fans) %>%
     select(-year) %>%
     select(-c(en_int_heat, en_int_cool, days_cool))
 
+
   en_m2_scen_S <- en_m2_scen_det %>%
     select(-c(
-      bld_age, eff_cool, eff_heat, mod_decision, f_h, f_c, 
+      eff_cool, eff_heat, mod_decision, f_h, f_c,
       shr_floor_heat, shr_floor_cool, hours_heat, hours_cool,
       en_sav_ren
     )) %>%
@@ -110,10 +113,8 @@ fun_en_sim <- function(sector,
       en_dem_cool,
       en_dem_c_ac,
       en_dem_c_fans,
-      bld_age,
       shr_acc_cool,
       fuel_cool,
-      # eneff_fuel,
       mod_decision
     ))
 
@@ -121,14 +122,13 @@ fun_en_sim <- function(sector,
     left_join(en_m2_scen_S) %>%
     select(-c(
       fuel_heat,
-      en_dem_heat, bld_age,
+      en_dem_heat,
       # eneff_fuel,
       mod_decision
     )) %>%
     distinct()
 
   en_hh_tot <- NULL
-
   # Calculate household energy demand - for cost calculations - residential only
   if (sector == "resid") {
 
@@ -165,6 +165,7 @@ fun_en_sim <- function(sector,
     en_m2_scen_cool = en_m2_scen_cool,
     en_hh_tot = en_hh_tot
   )
+  return(output)
 } 
 
 #' @title Function to calculate energy demand for domestic hot water

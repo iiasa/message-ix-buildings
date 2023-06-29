@@ -14,27 +14,28 @@ rout_path <- paste(getwd(), "/STURM_output/", sep = "")
 
 # configuration file STURM
 base_year <- 2015
-end_year <- 2050
+end_year <- 2025
 step_year <- 5
+run <- "EU_implementation"
 region <- c("WEU", "EEU")
 sector <- "resid"
 file_inputs <- "input_list_resid_EU.csv"
 path_prices <- paste0(data_path,
-    "/input_csv/input_price/input_prices_R12.csv")
+    "input_csv/input_price/input_prices_R12.csv")
 file_scenarios <- "scenarios_TEST.csv"
 
 mod_arch <- "stock"
 energy_efficiency <- "exogenous"
 report <- list(var = c("energy"),
-               type = "STURM",
-               geo_level = "R12")
+               type = c("STURM"),
+               geo_level = "region_bld")
 
 yrs <- seq(base_year, end_year, step_year)
 
 
 # call STURM
-#' @param run: name of the run, default is "NAV_Dem-NPi-ref"
-#' @param scenario_name: name of the scenario, default is "NAV_Dem-NPi-ref"
+#' @param run: name of the run
+#' @param scenario_name: name of the scenario
 #' @param sector: sector to be analysed, default is "resid"
 #' @param path_in: path to input data, default is current working directory
 #' @param path_rcode: path to R code, default is current working directory
@@ -50,15 +51,15 @@ yrs <- seq(base_year, end_year, step_year)
 #' @param yrs: years to be analysed, default is seq(2015,2050,5)
 #' @param input_mode: input mode, default is "csv"
 #' @param mod_arch: model architecture, default is "stock"
-#' @param report_type: type of report,
+#' @param report_type: type of report, default is "STURM"
 #' available is c("MESSAGE","STURM","IRP","NGFS","NAVIGATE")
 #' @param report_var: variables to be reported,
 #' available is c("energy","material","vintage","dle")
 #' @return: results of the STURM model
 #' @export
 sturm_scenarios <- run_scenario(
-    run = "NAV_Dem-NPi-ref",
-    scenario_name = "NAV_Dem-NPi-ref",
+    run = run,
+    scenario_name = run,
     sector = sector,
     path_in = data_path,
     path_rcode = rcode_path,
@@ -77,6 +78,3 @@ sturm_scenarios <- run_scenario(
     region = region,
     energy_efficiency = energy_efficiency
 )
-
-# Write results to csv file
-# write.csv(sturm_scenarios, paste("./temp/", sect,"_sturm.csv",sep=""), row.names=F)

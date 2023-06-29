@@ -141,17 +141,54 @@ fun_ms_new_exogenous <- function(yrs,
   p_i <- ct_bld_age %>%
     filter(year_i <= yrs[i] & year_f >= yrs[i]) %>%
     pull(bld_age_id)
+
+  # Test sum of ms_shell_new_exo equal to 1
+  test <- ms_shell_new_exo %>% group_by_at(setdiff(names(ms_shell_new_exo),
+            c("ms_shell_new_exo", "eneff"))) %>%
+            summarise(total = sum(ms_shell_new_exo)) %>%
+            ungroup()
+  # All ms value of test should be equal to 1
+  if (any(round(test$total, 2) != 1)) {
+    print("Test failed. Market shares ms_shell_new_exo.")
+  } else {
+    print("Test passed. Market shares ms_shell_new_exo.")
+  }
   
+  # Test sum of ms_shell_new_exo equal to 1
+  test <- ms_switch_fuel_exo %>% group_by_at(setdiff(names(ms_switch_fuel_exo),
+            c("ms_switch_fuel_exo", "fuel_heat"))) %>%
+            summarise(total = sum(ms_switch_fuel_exo)) %>%
+            ungroup()
+  # All ms value of test should be equal to 1
+  if (any(round(test$total, 2) != 1)) {
+    print("Test failed. Market shares ms_switch_fuel_exo.")
+  } else {
+    print("Test passed. Market shares ms_switch_fuel_exo.")
+  }
+
   ms_new_i <- bld_cases_fuel %>%
     mutate(year = yrs[i]) %>%
+    filter(bld_age %in% p_i) %>%
     # Join market share column
     left_join(ms_shell_new_exo) %>%
     left_join(ms_switch_fuel_exo) %>%
-    filter(bld_age %in% p_i) %>%
     mutate(ms = ms_shell_new_exo * ms_switch_fuel_exo) %>%
-    mutate_cond(is.na(ms) & eneff == "ns", ms = 1) %>%
-    filter(!is.na(ms)) %>%
-    select(-c(bld_age, ms_shell_new_exo, ms_switch_fuel_exo))
+    # mutate_cond(is.na(ms) & eneff == "ns", ms = 1) %>%
+    # filter(!is.na(ms)) %>%
+    select(-c(ms_shell_new_exo, ms_switch_fuel_exo)) %>%
+    filter(ms > 0)    
+
+  # Test sum of ms_shell_new_exo equal to 1
+  test <- ms_new_i %>% group_by_at(setdiff(names(ms_new_i),
+            c("ms", "mod_decision", "fuel_heat", "eneff"))) %>%
+            summarise(total = sum(ms)) %>%
+            ungroup()
+  # All ms value of test should be equal to 1
+  if (any(round(test$total, 2) != 1)) {
+    print("Test failed. Market shares ms_new_i.")
+  } else {
+    print("Test passed. Market shares ms_new_i.")
+  }
 
   print(paste0("Completed construction target - year ", yrs[i]))
   return(ms_new_i)

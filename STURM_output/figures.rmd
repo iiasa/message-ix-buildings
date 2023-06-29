@@ -14,7 +14,7 @@ print(getwd())
 ```
 
 ```{r}
-file <- "report_STURM_NAV_Dem-NPi-ref_resid_R12_energy.csv"
+file <- "STURM_output/report_STURM_NAV_Dem-NPi-ref_resid_R12_energy.csv"
 
 ```
 
@@ -94,9 +94,6 @@ plot_stacked_area <- function(data, x_column, y_column, fill_column,
 ```
 
 ```{r}
-library(ggplot2)
-library(gridExtra)
-library(dplyr)
 
 plot_variable_evolution <- function(data,
     x_column = "year",
@@ -162,16 +159,10 @@ plot_variable_evolution <- function(data,
 ```
 
 
-```{r}
-x_column <- "year"
-y_column <- "heat_TWh"
-group_column <- "R12"
-
-```
 
 ```{r}
 plot_variable_evolution(data, x_column = "year",
-                        y_column = "heat_TWh", 
+                        y_column = "heat_TWh",
                         group_column = "R12",
                         subplot = TRUE)
 ```

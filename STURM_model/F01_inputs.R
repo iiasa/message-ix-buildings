@@ -57,7 +57,7 @@ fun_inputs_csv <- function(path_in, file_inputs, file_scenarios, sector, run
 
   ### TEMPORARY ### EXCLUDE SPECIAL DATA FILES
   input <- input %>%
-    filter(!name_parameter %in% 
+    filter(!name_parameter %in%
       c("bld_dyn_par", "cool_data_scen", "en_m2_sim_r")) %>%
     filter(category != "categories")
 
@@ -125,12 +125,10 @@ read_categories <- function(path_in_csv,
   }
 
   # Add others categories
-  regions <- unlist(categories$geo_data[, paste(geo_level)])
   categories <- c(categories,
                   list(urts = c("rur", "urb"),
                         ct_hh_inc = c("q1", "q2", "q3"),
-                        ct_hh_tenr = c("own", "rent"),
-                        regions = regions))
+                        ct_hh_tenr = c("own", "rent")))
 
 
   return(categories)

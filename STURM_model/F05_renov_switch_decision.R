@@ -302,13 +302,15 @@ fun_ms_ren_sw_exogenous <- function(yrs,
                                     ms_switch_fuel_exo) {
   print(paste0("Running renovation target - year ", yrs[i]))
 
+  # Filter based on the construction period
   p_past <- ct_bld_age %>%
     filter(year_f < yrs[i]) %>%
     pull(bld_age_id)
 
-
   rate_ren_i <- bld_cases_fuel %>%
     filter(bld_age %in% p_past) %>%
+    # Filter based on eneff
+    filter(eneff == "avg") %>%
     # Add years columns
     mutate(year = yrs[i]) %>%
     # Join market share column
@@ -333,7 +335,6 @@ fun_ms_ren_sw_exogenous <- function(yrs,
     # Only shell renovation and no switch fuel
     mutate(fuel_heat_f = fuel_heat_i) %>%
     rename(eneff_f = eneff) %>%
-    mutate(eneff_f = paste0(eneff_i, "_", eneff_f)) %>%
     filter(!is.na(ms_ren)) %>%
     filter(ms_ren > 0) %>%
     filter(mod_decision == 1) %>%

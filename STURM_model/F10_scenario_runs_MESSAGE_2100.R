@@ -84,20 +84,23 @@ run_scenario <- function(run,
 
   # Load input data
   if (input_mode == "csv") {
-    print("Load data")
 
     # Read categories
+    print("Load categories")
     path_in_csv <- paste0(path_in, "./input_csv/")
     cat <- read_categories(path_in_csv, sector, geo_level, region)
 
     # Source - input data
+    print("Load data")
     d <- fun_inputs_csv(path_in, file_inputs, file_scenarios, sector, run)
     
+    print("Initialize building stock for base year")
     d$stock_arch_base <- fun_parse_stock(d$stock_arch_base, cat, d$pop)
 
     # TODO properly
     cat$geo_data <- cat$geo_data %>%
       filter(region_bld %in% unique(d$shr_fuel_heat_base$region_bld))
+    cat$regions = unique(pull(cat$geo_data[geo_level]))
 
     # Selecting only useful fuel for the run
     fuel <- unique(d$shr_fuel_heat_base$fuel_heat)
@@ -105,6 +108,7 @@ run_scenario <- function(run,
       filter(fuel_heat %in% fuel)
 
     # Read energy prices
+    print("Load energy prices")
     price_en <- read_energy_prices(path_prices, cat$geo_data, geo_level)
 
     print("Data loaded!")
@@ -119,21 +123,14 @@ run_scenario <- function(run,
   ) %>%
     rename_at("geo_level", ~ paste0(geo_level)) %>%
     left_join(cat$geo_data %>% select_at(geo_levels)) %>%
-    left_join(cat$clim_zones, by = c(paste(geo_level), "urt"),
-              relationship = "many-to-many",
+    left_join(cat$clim_zones, by = c(geo_level, "urt")
               ) %>%
     left_join(cat$ct_bld,
               relationship = "many-to-many") %>%
     left_join(cat$ct_eneff, by = "mat",
               relationship = "many-to-many") %>%
     inner_join(cat$ct_fuel_comb, by = c("mat" = "mat"),
-               relationship = "many-to-many") %>%
-    arrange(
-      !!as.symbol(geo_level),
-      urt, clim, inc_cl, arch, mat, eneff,
-      fuel_heat, fuel_cool
-    )
-
+               relationship = "many-to-many")
   # Romve bld_cases_eneff and aggregate bld_cases_fuel when needed
   bld_cases_eneff <- bld_cases_fuel %>%
     select(-c(fuel_heat, fuel_cool, mod_decision)) %>%
@@ -157,8 +154,10 @@ run_scenario <- function(run,
     # Extract dataframes from list
     bld_det_age_i <- temp$bld_det_age_i
     report <- temp$report
+    print(paste("Initial building stock is",
+      round(sum(bld_det_age_i$n_units_fuel) / 10^6, 0), "million units."))
     rm(temp)
-
+    
 
     stock_aggr <- fun_stock_future(
       sector,
@@ -215,6 +214,10 @@ run_scenario <- function(run,
       en_m2_scen_cool <- lst_en_i$en_m2_scen_cool
       en_hh_tot <- lst_en_i$en_hh_tot
       rm(lst_en_i)
+      t <- en_m2_scen_heat %>% filter(region_bld == "C-WEU-FRA",
+                                      arch == "sfh",
+                                      bld_age == "p1")
+
 
       # Energy demand intensities - hot water
       print(paste("Calculate energy demand intensities for hot water"))
@@ -349,6 +352,7 @@ run_scenario <- function(run,
       report <- lst_stock_i$report
       stock_aggr <- lst_stock_i$stock_aggr
       bld_det_age_i <- lst_stock_i$bld_det_age_i
+
       rm(lst_stock_i)
     }
   }

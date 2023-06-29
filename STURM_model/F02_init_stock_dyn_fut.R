@@ -28,15 +28,20 @@ fun_stock_init <- function(sector,
                            ct_fuel_comb,
                            shr_fuel_heat_base,
                            report_var) {
+  
+  # Assumption: one intial eneff (the lower) per period of construction
+  ct_eneff_ini <- ct_eneff %>%
+    group_by(bld_age) %>%
+    filter(rank(match(eneff, c("avg", "std", "adv"))) == 1) %>%
+    ungroup()
 
   # Initialize DF stock by vintage (baseyear) - detailed fuel level
   bld_det_age_i <- geo_data %>%
     select_at(geo_levels) %>%
     left_join(stock_arch_base) %>%
-    left_join(ct_eneff) %>%
+    left_join(ct_eneff_ini) %>%
     left_join(ct_fuel_comb) %>%
     left_join(shr_fuel_heat_base) %>%
-    # Assumption: one eneff per period of construction
     mutate(n_units_eneff = stock_arch_base) %>%
     mutate(n_units_fuel = round(n_units_eneff * shr_fuel_heat_base, rnd)) %>%
     # Sub-standard buildings - one fuel type only
@@ -45,16 +50,20 @@ fun_stock_init <- function(sector,
       n_units_eneff, mod_decision)) %>%
     filter(n_units_fuel != 0)
 
-  # Test sum stock_arch_base equal sum of bld_det_age_i
   if (sum(is.na(bld_det_age_i$n_units_fuel)) > 0) {
     print("NA value in bld_det_age_i")
   }
+  # Test sum stock_arch_base equal sum of bld_det_age_i
   temp <- stock_arch_base %>%
       filter(region_bld %in% unique(geo_data$region_bld))
   if (round(sum(bld_det_age_i$n_units_fuel), 0) !=
       round(sum(temp$stock_arch_base), 0)) {
-        print("Problem during detailing builing stock for base year")
+        print("Test failed.
+          Problem during detailing builing stock for base year")
       }
+  else {
+    print("Test passed. Building stock detailing for base year successful")
+  }
 
   report <- list()
   if ("energy" %in% report_var) {

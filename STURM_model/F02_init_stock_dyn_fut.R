@@ -72,7 +72,6 @@ fun_stock_init <- function(sector,
   if ("material" %in% report_var) {
     report <- append(report, list(mat_stock = as.data.frame(NULL)))
   }
-
   if ("vintage" %in% report_var) {
     # Report stock by eneff - vintage
     bld_eneff_age <- bld_det_age_i %>%

@@ -158,7 +158,6 @@ run_scenario <- function(run,
       round(sum(bld_det_age_i$n_units_fuel) / 10^6, 0), "million units."))
     rm(temp)
     
-
     stock_aggr <- fun_stock_future(
       sector,
       yrs,
@@ -214,9 +213,6 @@ run_scenario <- function(run,
       en_m2_scen_cool <- lst_en_i$en_m2_scen_cool
       en_hh_tot <- lst_en_i$en_hh_tot
       rm(lst_en_i)
-      t <- en_m2_scen_heat %>% filter(region_bld == "C-WEU-FRA",
-                                      arch == "sfh",
-                                      bld_age == "p1")
 
 
       # Energy demand intensities - hot water
@@ -343,16 +339,16 @@ run_scenario <- function(run,
         en_m2_scen_cool,
         en_hh_hw_scen,
         en_m2_hw_scen,
-        en_m2_others, # used only in commercial
+        en_m2_others,
         d$mat_int,
         report_var,
         report
       )
+      
       # Extract dataframes from list
       report <- lst_stock_i$report
       stock_aggr <- lst_stock_i$stock_aggr
       bld_det_age_i <- lst_stock_i$bld_det_age_i
-
       rm(lst_stock_i)
     }
   }
@@ -385,10 +381,6 @@ run_scenario <- function(run,
     stock_aggr <- lst_stock_init$stock_aggr
     bld_det_age_i <- lst_stock_init$bld_det_age_i
     report <- lst_stock_init$report
-    # bld_det = lst_stock_init$bld_det
-    # bld_eneff_age = lst_stock_init$bld_eneff_age
-    # en_stock = lst_stock_init$en_stock
-    # mat_stock = lst_stock_init$mat_stock
     rm(lst_stock_init)
 
     # Loop over timesteps
@@ -479,15 +471,9 @@ run_scenario <- function(run,
 
       # Extract dataframes from list
       report <- lst_stock_i$report
-      # en_stock = lst_stock_i$en_stock
-      # mat_stock = lst_stock_i$mat_stock
-      # stock_eneff.df = lst_stock_i$stock_eneff.df
       stock_aggr <- lst_stock_i$stock_aggr
       bld_det_age_i <- lst_stock_i$bld_det_age_i
-      # bld_det = lst_stock_i$bld_det
-      # bld_eneff_age = lst_stock_i$bld_eneff_age
-      # ms_new = lst_stock_i$ms_new
-      # ms_ren = lst_stock_i$ms_ren
+
       rm(lst_stock_i)
     }
   }

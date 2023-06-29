@@ -319,8 +319,7 @@ fun_ms_ren_sw_exogenous <- function(yrs,
     rename(rate_ren = rate_shell_ren_exo) %>%
     filter(!is.na(rate_ren)) %>%
     filter(rate_ren > 0) %>%
-    filter(mod_decision == 1) %>%
-    select(-c(bld_age))
+    filter(mod_decision == 1)
 
   ms_ren_i <- bld_cases_fuel %>%
     filter(bld_age %in% p_past) %>%
@@ -337,8 +336,7 @@ fun_ms_ren_sw_exogenous <- function(yrs,
     rename(eneff_f = eneff) %>%
     filter(!is.na(ms_ren)) %>%
     filter(ms_ren > 0) %>%
-    filter(mod_decision == 1) %>%
-    select(-c(bld_age))
+    filter(mod_decision == 1)
 
   ms_sw_i <- bld_cases_fuel %>%
    # Add years columns
@@ -350,9 +348,7 @@ fun_ms_ren_sw_exogenous <- function(yrs,
       ) %>%
     filter(!is.na(ms)) %>%
     filter(ms > 0) %>%
-    filter(mod_decision == 1) %>%
-    select(-c(bld_age))
-
+    filter(mod_decision == 1)
 
   print(paste0("Completed renovation target - year ", yrs[i]))
 

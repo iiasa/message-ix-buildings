@@ -191,18 +191,6 @@ fun_stock_dyn <- function(sector,
       }
     }
 
-  # Test: ms_new_i aggregated on bld_aggr_i intersect names should be equal to 1
-  test <- ms_new_i %>% 
-    group_by_at(intersect(names(bld_aggr_i), names(ms_new_i))) %>%
-    summarise(ms = sum(ms)) %>%
-    ungroup()
-  # All ms value of test should be equal to 1
-  if (any(round(test$ms, 2) != 1)) {
-    print("Test failed. Market shares.")
-  } else {
-    print("Test passed. Market shares.")
-  }
-
   # Disaggregate results based on market shares
   new_det_age_i <- bld_aggr_i %>%
     filter(mat != "sub") %>%
@@ -266,7 +254,6 @@ fun_stock_dyn <- function(sector,
       rename(eneff = eneff_i, fuel_heat = fuel_heat_i)) %>%
     mutate(
       mod_decision = ifelse(is.na(ms_ren), 0, mod_decision),
-      # take original eneff if is.na(ms_ren)
       eneff_f = ifelse(is.na(ms_ren), eneff, eneff_f),
       fuel_heat_f = ifelse(is.na(ms_ren), fuel_heat, fuel_heat_f)
     ) %>%
@@ -279,6 +266,7 @@ fun_stock_dyn <- function(sector,
       n_units_fuel_p, n_dem, n_empty, n_units_fuel_exst, rate_ren,
       mod_decision, ms_ren
     ))
+
   print(
     paste("Renovated buildings:",
       round(sum(ren_det_age_i$n_units_fuel) / 10^6, 0),
@@ -415,6 +403,7 @@ fun_stock_dyn <- function(sector,
     ) %>%
     ungroup()
 
+
   # Report Energy Demand
   en_stock_i <- bld_cases_fuel %>%
     mutate(scenario = run) %>%
@@ -435,7 +424,7 @@ fun_stock_dyn <- function(sector,
     ) %>%
     filter(!is.na(n_units_fuel)) %>%
     group_by_at(paste(c(geo_level,
-      "urt", "inc_cl", "arch", "year", "clim", "eneff"))) %>%
+      "urt", "inc_cl", "arch", "year", "clim", "bld_age", "eneff"))) %>%
     # Calculate n_units_eneff to account for buildings with no heating
     mutate(n_units_eneff = sum(n_units_fuel)) %>%
     ungroup()

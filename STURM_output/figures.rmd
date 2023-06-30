@@ -38,8 +38,8 @@ print(summary(data))
 ## Data formatting
 ```{r}
 data <- data %>%
-    mutate(heat_TWh = heat_TJ / 3.6 / 10^3) %>%
-    mutate(heat_hh_kWh = heat_TWh * 10**3 / stock_M)
+    mutate(heat_TWh = heat_TJ / 3.6 / 1e3) %>%
+    mutate(heat_hh_kWh = heat_TWh * 1e3 / stock_M)
 ```
 
 ## Figures
@@ -49,6 +49,13 @@ data <- data %>%
 plot_stacked_area(data, "year", "stock_M", "fuel_heat",
                   y_label = "Stock households\nMillion buildings",
                   save_path = paste(save_dir, "stock_hh_fuel.png", sep = "/"))
+```
+
+### Buidling stock evolution by country
+```{r}
+plot_stacked_area(data, "year", "stock_M", "region_bld",
+                  y_label = "Stock households\nMillion buildings",
+                  save_path = paste(save_dir, "stock_hh_countries.png", sep = "/"))
 ```
 
 ## Final energy consumption for space heating in the Residential sector (TWh)

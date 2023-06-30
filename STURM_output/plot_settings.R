@@ -87,6 +87,7 @@ plot_stacked_area <- function(data, x_column, y_column, fill_column,
     labs(title = y_label,
          fill = str_replace_all(str_to_title(fill_column), "_", " ")) +
     message_building_theme
+
   # Save the plot as PNG if save_path is specified
   if (!is.null(save_path)) {
     ggsave(save_path, plot = p, width = plot_settings[["width"]],

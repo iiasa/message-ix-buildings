@@ -198,7 +198,7 @@ fun_hw_resid <- function(yrs, i,
     mutate(en_dem_dhw = hh_size * en_int_hotwater * acc_hw / eff_hotwater) %>% # DHW energy demand (final) [GJ/hh/y]
     mutate_cond(en_int_heat == 0, en_dem_dhw = 0) %>% # no hot water demand where there is no heating
     select(-year) %>%
-    select(-c(hh_size, eff_hotwater, en_int_hotwater, en_int_heat, mod_decision, bld_age))
+    select(-c(hh_size, eff_hotwater, en_int_hotwater, en_int_heat, mod_decision))
 
   output <- en_hh_hw_scen
 }
@@ -210,7 +210,7 @@ fun_hw_resid <- function(yrs, i,
 #' @param eff_hotwater data frame with efficiency of hot water systems
 #' @param en_m2_dhw data frame with energy demand for domestic hot water
 #' @return data frame with energy demand for domestic hot water
-fun_hw_comm <- function(yrs, 
+fun_hw_comm <- function(yrs,
                         i,
                         bld_cases_fuel,
                         eff_hotwater,
@@ -224,7 +224,7 @@ fun_hw_comm <- function(yrs,
     left_join(en_m2_dhw) %>%
     mutate(en_dem_dhw = en_dhw_useful_kwh_m2 / eff_hotwater) %>% # DHW energy demand (final) [kWh/m2/y]
     select(-year) %>%
-    select(-c(eff_hotwater, en_dhw_useful_kwh_m2, mod_decision, bld_age))
+    select(-c(eff_hotwater, en_dhw_useful_kwh_m2, mod_decision))
 
   output <- en_m2_hw_scen
 }

@@ -1,0 +1,893 @@
+"","region_bld","urt","clim","year","bld_units"
+"1","C-EEU-BGR","rur","Zone_4A Mixed Humid",2020,502173.43929
+"2","C-EEU-BGR","rur","Zone_4A Mixed Humid",2025,457901.10884
+"3","C-EEU-BGR","rur","Zone_5A Cool Humid",2020,245787.60302
+"4","C-EEU-BGR","rur","Zone_5A Cool Humid",2025,224118.61552
+"5","C-EEU-BGR","urb","Zone_4A Mixed Humid",2020,1622224.4714
+"6","C-EEU-BGR","urb","Zone_4A Mixed Humid",2025,1617956.45757
+"7","C-EEU-BGR","urb","Zone_5A Cool Humid",2020,650448.42945
+"8","C-EEU-BGR","urb","Zone_5A Cool Humid",2025,648737.12319
+"9","C-EEU-CZE","rur","Zone_5A Cool Humid",2020,1048590.78101
+"10","C-EEU-CZE","rur","Zone_5A Cool Humid",2025,986290.28945
+"11","C-EEU-CZE","urb","Zone_5A Cool Humid",2020,3580910.62489
+"12","C-EEU-CZE","urb","Zone_5A Cool Humid",2025,3719842.91266
+"13","C-EEU-EST","rur","Zone_6A Cold Humid",2020,156260.26957
+"14","C-EEU-EST","rur","Zone_6A Cold Humid",2025,145963.44957
+"15","C-EEU-EST","urb","Zone_6A Cold Humid",2020,419663.79
+"16","C-EEU-EST","urb","Zone_6A Cold Humid",2025,424512.97957
+"17","C-EEU-HUN","rur","Zone_4A Mixed Humid",2020,586339.16825
+"18","C-EEU-HUN","rur","Zone_4A Mixed Humid",2025,547710.36952
+"19","C-EEU-HUN","rur","Zone_5A Cool Humid",2020,552110.17683
+"20","C-EEU-HUN","rur","Zone_5A Cool Humid",2025,515736.42925
+"21","C-EEU-HUN","urb","Zone_4A Mixed Humid",2020,1356882.55554
+"22","C-EEU-HUN","urb","Zone_4A Mixed Humid",2025,1369788.65544
+"23","C-EEU-HUN","urb","Zone_5A Cool Humid",2020,1491916.22151
+"24","C-EEU-HUN","urb","Zone_5A Cool Humid",2025,1506106.70522
+"25","C-EEU-LTU","rur","Zone_6A Cold Humid",2020,397914.09574
+"26","C-EEU-LTU","rur","Zone_6A Cold Humid",2025,366974.26255
+"27","C-EEU-LTU","urb","Zone_6A Cold Humid",2020,959344.55404
+"28","C-EEU-LTU","urb","Zone_6A Cold Humid",2025,962616.80851
+"29","C-EEU-LVA","rur","Zone_6A Cold Humid",2020,247682.43185
+"30","C-EEU-LVA","rur","Zone_6A Cold Humid",2025,228520.68347
+"31","C-EEU-LVA","urb","Zone_6A Cold Humid",2020,608681.72258
+"32","C-EEU-LVA","urb","Zone_6A Cold Humid",2025,606549.35887
+"33","C-EEU-POL","rur","Zone_5A Cool Humid",2020,4590491.86856
+"34","C-EEU-POL","rur","Zone_5A Cool Humid",2025,4259310.02842
+"35","C-EEU-POL","urb","Zone_5A Cool Humid",2020,9054102.11012
+"36","C-EEU-POL","urb","Zone_5A Cool Humid",2025,9331688.39076
+"37","C-EEU-ROU","rur","Zone_4A Mixed Humid",2020,966852.79258
+"38","C-EEU-ROU","rur","Zone_4A Mixed Humid",2025,888506.48711
+"39","C-EEU-ROU","rur","Zone_5A Cool Humid",2020,1376270.4018
+"40","C-EEU-ROU","rur","Zone_5A Cool Humid",2025,1264748.04582
+"41","C-EEU-ROU","rur","Zone_6A Cold Humid",2020,436710.76401
+"42","C-EEU-ROU","rur","Zone_6A Cold Humid",2025,401323.0864
+"43","C-EEU-ROU","urb","Zone_4A Mixed Humid",2020,1935488.19208
+"44","C-EEU-ROU","urb","Zone_4A Mixed Humid",2025,1965811.51875
+"45","C-EEU-ROU","urb","Zone_5A Cool Humid",2020,2481298.80006
+"46","C-EEU-ROU","urb","Zone_5A Cool Humid",2025,2520173.35088
+"47","C-EEU-ROU","urb","Zone_6A Cold Humid",2020,382156.12349
+"48","C-EEU-ROU","urb","Zone_6A Cold Humid",2025,388143.37003
+"49","C-EEU-SVK","rur","Zone_5A Cool Humid",2020,415629.58636
+"50","C-EEU-SVK","rur","Zone_5A Cool Humid",2025,393324.77926
+"51","C-EEU-SVK","rur","Zone_6A Cold Humid",2020,352917.36768
+"52","C-EEU-SVK","rur","Zone_6A Cold Humid",2025,333978.01864
+"53","C-EEU-SVK","urb","Zone_5A Cool Humid",2020,702089.4884
+"54","C-EEU-SVK","urb","Zone_5A Cool Humid",2025,735861.88662
+"55","C-EEU-SVK","urb","Zone_6A Cold Humid",2020,496660.34142
+"56","C-EEU-SVK","urb","Zone_6A Cold Humid",2025,520551.04355
+"57","C-EEU-SVN","rur","Zone_5A Cool Humid",2020,375163.18259
+"58","C-EEU-SVN","rur","Zone_5A Cool Humid",2025,355932.20567
+"59","C-EEU-SVN","urb","Zone_5A Cool Humid",2020,472635.29231
+"60","C-EEU-SVN","urb","Zone_5A Cool Humid",2025,501037.78178
+"61","C-WEU-AUT","rur","Zone_4A Mixed Humid",2020,3401.95327
+"62","C-WEU-AUT","rur","Zone_4A Mixed Humid",2025,3268.18848
+"63","C-WEU-AUT","rur","Zone_5A Cool Humid",2020,799074.54475
+"64","C-WEU-AUT","rur","Zone_5A Cool Humid",2025,767654.93611
+"65","C-WEU-AUT","rur","Zone_6A Cold Humid",2020,311486.66629
+"66","C-WEU-AUT","rur","Zone_6A Cold Humid",2025,299239.01153
+"67","C-WEU-AUT","urb","Zone_4A Mixed Humid",2020,949826.76698
+"68","C-WEU-AUT","urb","Zone_4A Mixed Humid",2025,985897.82166
+"69","C-WEU-AUT","urb","Zone_5A Cool Humid",2020,1212350.10375
+"70","C-WEU-AUT","urb","Zone_5A Cool Humid",2025,1258390.86444
+"71","C-WEU-AUT","urb","Zone_6A Cold Humid",2020,554756.61562
+"72","C-WEU-AUT","urb","Zone_6A Cold Humid",2025,575824.30597
+"73","C-WEU-BEL","rur","Zone_4A Mixed Humid",2020,111875.15
+"74","C-WEU-BEL","rur","Zone_4A Mixed Humid",2025,108395.29872
+"75","C-WEU-BEL","urb","Zone_4A Mixed Humid",2020,4704459.19231
+"76","C-WEU-BEL","urb","Zone_4A Mixed Humid",2025,4818774.2735
+"77","C-WEU-CHE","rur","Zone_5A Cool Humid",2020,821772.84539
+"78","C-WEU-CHE","rur","Zone_5A Cool Humid",2025,779977.30247
+"79","C-WEU-CHE","urb","Zone_5A Cool Humid",2020,2819114.91326
+"80","C-WEU-CHE","urb","Zone_5A Cool Humid",2025,2955869.4364
+"81","C-WEU-CYP","rur","Zone_3A Warm Humid",2020,116982.92777
+"82","C-WEU-CYP","rur","Zone_3A Warm Humid",2025,115451.31615
+"83","C-WEU-CYP","urb","Zone_3A Warm Humid",2020,335929.74446
+"84","C-WEU-CYP","urb","Zone_3A Warm Humid",2025,362164.36443
+"85","C-WEU-DEU","rur","Zone_4A Mixed Humid",2020,269851.38666
+"86","C-WEU-DEU","rur","Zone_4A Mixed Humid",2025,248733.38253
+"87","C-WEU-DEU","rur","Zone_5A Cool Humid",2020,8469247.88303
+"88","C-WEU-DEU","rur","Zone_5A Cool Humid",2025,7806462.28812
+"89","C-WEU-DEU","urb","Zone_4A Mixed Humid",2020,7523080.67049
+"90","C-WEU-DEU","urb","Zone_4A Mixed Humid",2025,7665739.7455
+"91","C-WEU-DEU","urb","Zone_5A Cool Humid",2020,22835768.90946
+"92","C-WEU-DEU","urb","Zone_5A Cool Humid",2025,23268800.24495
+"93","C-WEU-DNK","rur","Zone_5A Cool Humid",2020,275116.1413
+"94","C-WEU-DNK","rur","Zone_5A Cool Humid",2025,263236.37268
+"95","C-WEU-DNK","urb","Zone_5A Cool Humid",2020,2203518.62156
+"96","C-WEU-DNK","urb","Zone_5A Cool Humid",2025,2275194.67492
+"97","C-WEU-ESP","rur","Zone_3A Warm Humid",2020,1810410.46201
+"98","C-WEU-ESP","rur","Zone_3A Warm Humid",2025,1696406.58401
+"99","C-WEU-ESP","rur","Zone_3B Warm Dry",2020,466924.53958
+"100","C-WEU-ESP","rur","Zone_3B Warm Dry",2025,437521.70008
+"101","C-WEU-ESP","rur","Zone_3C Warm Marine",2020,166626.98187
+"102","C-WEU-ESP","rur","Zone_3C Warm Marine",2025,156134.26626
+"103","C-WEU-ESP","rur","Zone_4A Mixed Humid",2020,616721.03558
+"104","C-WEU-ESP","rur","Zone_4A Mixed Humid",2025,577885.31784
+"105","C-WEU-ESP","rur","Zone_4C Mixed Marine",2020,541078.10546
+"106","C-WEU-ESP","rur","Zone_4C Mixed Marine",2025,507005.72043
+"107","C-WEU-ESP","urb","Zone_3A Warm Humid",2020,6595194.57278
+"108","C-WEU-ESP","urb","Zone_3A Warm Humid",2025,6822800.54302
+"109","C-WEU-ESP","urb","Zone_3B Warm Dry",2020,3642068.11326
+"110","C-WEU-ESP","urb","Zone_3B Warm Dry",2025,3767759.08984
+"111","C-WEU-ESP","urb","Zone_3C Warm Marine",2020,840209.5337
+"112","C-WEU-ESP","urb","Zone_3C Warm Marine",2025,869205.90431
+"113","C-WEU-ESP","urb","Zone_4A Mixed Humid",2020,2841435.01917
+"114","C-WEU-ESP","urb","Zone_4A Mixed Humid",2025,2939495.4429
+"115","C-WEU-ESP","urb","Zone_4C Mixed Marine",2020,1117174.1067
+"116","C-WEU-ESP","urb","Zone_4C Mixed Marine",2025,1155728.76853
+"117","C-WEU-FIN","rur","Zone_6A Cold Humid",2020,60801.32944
+"118","C-WEU-FIN","rur","Zone_6A Cold Humid",2025,57412.61976
+"119","C-WEU-FIN","rur","Zone_7A Very cold Humid",2020,284309.16283
+"120","C-WEU-FIN","rur","Zone_7A Very cold Humid",2025,268463.43676
+"121","C-WEU-FIN","urb","Zone_6A Cold Humid",2020,1508550.89114
+"122","C-WEU-FIN","urb","Zone_6A Cold Humid",2025,1557979.94032
+"123","C-WEU-FIN","urb","Zone_7A Very cold Humid",2020,859884.60983
+"124","C-WEU-FIN","urb","Zone_7A Very cold Humid",2025,888059.51524
+"125","C-WEU-FRA","rur","Zone_3A Warm Humid",2020,383441.41544
+"126","C-WEU-FRA","rur","Zone_3A Warm Humid",2025,364821.92221
+"127","C-WEU-FRA","rur","Zone_4A Mixed Humid",2020,2849562.04514
+"128","C-WEU-FRA","rur","Zone_4A Mixed Humid",2025,2711190.44764
+"129","C-WEU-FRA","rur","Zone_5A Cool Humid",2020,522569.75745
+"130","C-WEU-FRA","rur","Zone_5A Cool Humid",2025,497194.34502
+"131","C-WEU-FRA","urb","Zone_3A Warm Humid",2020,3823588.40133
+"132","C-WEU-FRA","urb","Zone_3A Warm Humid",2025,3974167.50866
+"133","C-WEU-FRA","urb","Zone_4A Mixed Humid",2020,19971051.32559
+"134","C-WEU-FRA","urb","Zone_4A Mixed Humid",2025,20757543.68967
+"135","C-WEU-FRA","urb","Zone_5A Cool Humid",2020,2453897.29561
+"136","C-WEU-FRA","urb","Zone_5A Cool Humid",2025,2550535.74762
+"137","C-WEU-GBR","rur","Zone_4A Mixed Humid",2020,2297703.02382
+"138","C-WEU-GBR","rur","Zone_4A Mixed Humid",2025,2160809.35078
+"139","C-WEU-GBR","rur","Zone_5A Cool Humid",2020,2458015.40042
+"140","C-WEU-GBR","rur","Zone_5A Cool Humid",2025,2311570.55831
+"141","C-WEU-GBR","urb","Zone_4A Mixed Humid",2020,10259667.6007
+"142","C-WEU-GBR","urb","Zone_4A Mixed Humid",2025,10749534.7967
+"143","C-WEU-GBR","urb","Zone_5A Cool Humid",2020,13646347.62441
+"144","C-WEU-GBR","urb","Zone_5A Cool Humid",2025,14297918.25092
+"145","C-WEU-GRC","rur","Zone_3A Warm Humid",2020,992349.88424
+"146","C-WEU-GRC","rur","Zone_3A Warm Humid",2025,921199.01494
+"147","C-WEU-GRC","rur","Zone_4A Mixed Humid",2020,524961.95976
+"148","C-WEU-GRC","rur","Zone_4A Mixed Humid",2025,487322.51386
+"149","C-WEU-GRC","urb","Zone_3A Warm Humid",2020,2692180.47745
+"150","C-WEU-GRC","urb","Zone_3A Warm Humid",2025,2778256.24777
+"151","C-WEU-GRC","urb","Zone_4A Mixed Humid",2020,362589.03855
+"152","C-WEU-GRC","urb","Zone_4A Mixed Humid",2025,374181.92063
+"153","C-WEU-IRL","rur","Zone_5A Cool Humid",2020,593707.65415
+"154","C-WEU-IRL","rur","Zone_5A Cool Humid",2025,578812.38773
+"155","C-WEU-IRL","urb","Zone_5A Cool Humid",2020,1224611.28628
+"156","C-WEU-IRL","urb","Zone_5A Cool Humid",2025,1328698.49928
+"157","C-WEU-ISL","rur","Zone_7A Very cold Humid",2020,5062.04739
+"158","C-WEU-ISL","rur","Zone_7A Very cold Humid",2025,4545.25379
+"159","C-WEU-ISL","urb","Zone_7A Very cold Humid",2020,152352.92508
+"160","C-WEU-ISL","urb","Zone_7A Very cold Humid",2025,162691.67172
+"161","C-WEU-ITA","rur","Zone_3A Warm Humid",2020,3169211.69912
+"162","C-WEU-ITA","rur","Zone_3A Warm Humid",2025,3003999.55547
+"163","C-WEU-ITA","rur","Zone_4A Mixed Humid",2020,3169312.78114
+"164","C-WEU-ITA","rur","Zone_4A Mixed Humid",2025,3004095.36804
+"165","C-WEU-ITA","rur","Zone_4C Mixed Marine",2020,412166.93785
+"166","C-WEU-ITA","rur","Zone_4C Mixed Marine",2025,390680.52741
+"167","C-WEU-ITA","rur","Zone_5A Cool Humid",2020,545015.41939
+"168","C-WEU-ITA","rur","Zone_5A Cool Humid",2025,516603.56991
+"169","C-WEU-ITA","urb","Zone_3A Warm Humid",2020,8980230.84378
+"170","C-WEU-ITA","urb","Zone_3A Warm Humid",2025,9193719.12812
+"171","C-WEU-ITA","urb","Zone_4A Mixed Humid",2020,8001935.53241
+"172","C-WEU-ITA","urb","Zone_4A Mixed Humid",2025,8192166.66544
+"173","C-WEU-ITA","urb","Zone_4C Mixed Marine",2020,877868.33757
+"174","C-WEU-ITA","urb","Zone_4C Mixed Marine",2025,898738.02439
+"175","C-WEU-ITA","urb","Zone_5A Cool Humid",2020,553317.21124
+"176","C-WEU-ITA","urb","Zone_5A Cool Humid",2025,566471.29872
+"177","C-WEU-LUX","rur","Zone_5A Cool Humid",2020,29436.45311
+"178","C-WEU-LUX","rur","Zone_5A Cool Humid",2025,28185.10622
+"179","C-WEU-LUX","urb","Zone_5A Cool Humid",2020,216638.95768
+"180","C-WEU-LUX","urb","Zone_5A Cool Humid",2025,235010.12448
+"181","C-WEU-MLT","rur","Zone_3A Warm Humid",2020,4660.63949
+"182","C-WEU-MLT","rur","Zone_3A Warm Humid",2025,3720.66159
+"183","C-WEU-MLT","urb","Zone_3A Warm Humid",2020,152290.20797
+"184","C-WEU-MLT","urb","Zone_3A Warm Humid",2025,155664.13406
+"185","C-WEU-NLD","rur","Zone_4A Mixed Humid",2020,493453.40298
+"186","C-WEU-NLD","rur","Zone_4A Mixed Humid",2025,460012.55354
+"187","C-WEU-NLD","rur","Zone_5A Cool Humid",2020,627455.98625
+"188","C-WEU-NLD","rur","Zone_5A Cool Humid",2025,584933.91418
+"189","C-WEU-NLD","urb","Zone_4A Mixed Humid",2020,5827591.96823
+"190","C-WEU-NLD","urb","Zone_4A Mixed Humid",2025,6022859.21762
+"191","C-WEU-NLD","urb","Zone_5A Cool Humid",2020,793012.51607
+"192","C-WEU-NLD","urb","Zone_5A Cool Humid",2025,819584.27566
+"193","C-WEU-NOR","rur","Zone_6A Cold Humid",2020,411458.84369
+"194","C-WEU-NOR","rur","Zone_6A Cold Humid",2025,396195.76216
+"195","C-WEU-NOR","urb","Zone_6A Cold Humid",2020,2032634.83514
+"196","C-WEU-NOR","urb","Zone_6A Cold Humid",2025,2178258.56667
+"197","C-WEU-PRT","rur","Zone_3A Warm Humid",2020,781529.64756
+"198","C-WEU-PRT","rur","Zone_3A Warm Humid",2025,733659.24586
+"199","C-WEU-PRT","rur","Zone_3C Warm Marine",2020,629420.40754
+"200","C-WEU-PRT","rur","Zone_3C Warm Marine",2025,590867.02976
+"201","C-WEU-PRT","urb","Zone_3A Warm Humid",2020,1391991.89573
+"202","C-WEU-PRT","urb","Zone_3A Warm Humid",2025,1452808.47151
+"203","C-WEU-PRT","urb","Zone_3C Warm Marine",2020,1366479.98647
+"204","C-WEU-PRT","urb","Zone_3C Warm Marine",2025,1426181.93869
+"205","C-WEU-SWE","rur","Zone_5A Cool Humid",2020,76750.27112
+"206","C-WEU-SWE","rur","Zone_5A Cool Humid",2025,73708.18134
+"207","C-WEU-SWE","rur","Zone_6A Cold Humid",2020,486684.23261
+"208","C-WEU-SWE","rur","Zone_6A Cold Humid",2025,467393.91471
+"209","C-WEU-SWE","urb","Zone_5A Cool Humid",2020,1584808.47269
+"210","C-WEU-SWE","urb","Zone_5A Cool Humid",2025,1668924.68394
+"211","C-WEU-SWE","urb","Zone_6A Cold Humid",2020,2199907.77918
+"212","C-WEU-SWE","urb","Zone_6A Cold Humid",2025,2316671.35704
+"213","R32ANUZ","rur","Zone_2A Hot Humid",2020,169978.84497
+"214","R32ANUZ","rur","Zone_2A Hot Humid",2025,167014.20058
+"215","R32ANUZ","rur","Zone_3A Warm Humid",2020,983643.36588
+"216","R32ANUZ","rur","Zone_3A Warm Humid",2025,966487.39103
+"217","R32ANUZ","urb","Zone_2A Hot Humid",2020,1693892.48686
+"218","R32ANUZ","urb","Zone_2A Hot Humid",2025,1822464.54606
+"219","R32ANUZ","urb","Zone_3A Warm Humid",2020,9157272.23448
+"220","R32ANUZ","urb","Zone_3A Warm Humid",2025,9852339.57614
+"221","R32BRA","rur","Zone_0A Extremely hot Humid",2020,2019460.36564
+"222","R32BRA","rur","Zone_0A Extremely hot Humid",2025,1932459.11735
+"223","R32BRA","rur","Zone_1A Very hot Humid",2020,2498678.85845
+"224","R32BRA","rur","Zone_1A Very hot Humid",2025,2391032.19032
+"225","R32BRA","rur","Zone_1B Very hot Dry",2020,378533.18915
+"226","R32BRA","rur","Zone_1B Very hot Dry",2025,362225.43657
+"227","R32BRA","rur","Zone_2A Hot Humid",2020,1774502.50461
+"228","R32BRA","rur","Zone_2A Hot Humid",2025,1698054.39222
+"229","R32BRA","rur","Zone_3A Warm Humid",2020,517808.75587
+"230","R32BRA","rur","Zone_3A Warm Humid",2025,495500.81217
+"231","R32BRA","urb","Zone_0A Extremely hot Humid",2020,6468045.77455
+"232","R32BRA","urb","Zone_0A Extremely hot Humid",2025,6734549.72698
+"233","R32BRA","urb","Zone_1A Very hot Humid",2020,11426677.81143
+"234","R32BRA","urb","Zone_1A Very hot Humid",2025,11897493.09413
+"235","R32BRA","urb","Zone_1B Very hot Dry",2020,451907.75853
+"236","R32BRA","urb","Zone_1B Very hot Dry",2025,470527.78813
+"237","R32BRA","urb","Zone_2A Hot Humid",2020,34133009.13339
+"238","R32BRA","urb","Zone_2A Hot Humid",2025,35539397.11506
+"239","R32BRA","urb","Zone_3A Warm Humid",2020,3999849.09914
+"240","R32BRA","urb","Zone_3A Warm Humid",2025,4164655.53855
+"241","R32CAN","rur","Zone_5A Cool Humid",2020,193767.51545
+"242","R32CAN","rur","Zone_5A Cool Humid",2025,185398.00465
+"243","R32CAN","rur","Zone_6A Cold Humid",2020,1038564.64893
+"244","R32CAN","rur","Zone_6A Cold Humid",2025,993705.33373
+"245","R32CAN","rur","Zone_7A Very cold Humid",2020,1256557.63888
+"246","R32CAN","rur","Zone_7A Very cold Humid",2025,1202282.42815
+"247","R32CAN","urb","Zone_5A Cool Humid",2020,4479681.80502
+"248","R32CAN","urb","Zone_5A Cool Humid",2025,4782470.62415
+"249","R32CAN","urb","Zone_6A Cold Humid",2020,4862597.84802
+"250","R32CAN","urb","Zone_6A Cold Humid",2025,5191268.5716
+"251","R32CAN","urb","Zone_7A Very cold Humid",2020,3582789.90138
+"252","R32CAN","urb","Zone_7A Very cold Humid",2025,3824956.37004
+"253","R32CAS-CAU","rur","Zone_4A Mixed Humid",2020,615672.03941
+"254","R32CAS-CAU","rur","Zone_4A Mixed Humid",2025,577100.99321
+"255","R32CAS-CAU","rur","Zone_4B Mixed Dry",2020,379526.43672
+"256","R32CAS-CAU","rur","Zone_4B Mixed Dry",2025,355749.60298
+"257","R32CAS-CAU","rur","Zone_5A Cool Humid",2020,433494.87101
+"258","R32CAS-CAU","rur","Zone_5A Cool Humid",2025,406336.9856
+"259","R32CAS-CAU","rur","Zone_6A Cold Humid",2020,236799.46684
+"260","R32CAS-CAU","rur","Zone_6A Cold Humid",2025,221964.29066
+"261","R32CAS-CAU","urb","Zone_4A Mixed Humid",2020,634342.57063
+"262","R32CAS-CAU","urb","Zone_4A Mixed Humid",2025,661713.53936
+"263","R32CAS-CAU","urb","Zone_4B Mixed Dry",2020,777434.36265
+"264","R32CAS-CAU","urb","Zone_4B Mixed Dry",2025,810979.53621
+"265","R32CAS-CAU","urb","Zone_5A Cool Humid",2020,622977.0696
+"266","R32CAS-CAU","urb","Zone_5A Cool Humid",2025,649857.63332
+"267","R32CAS-CAU","urb","Zone_6A Cold Humid",2020,537341.50319
+"268","R32CAS-CAU","urb","Zone_6A Cold Humid",2025,560527.0155
+"269","R32CAS-OTH","rur","Zone_3B Warm Dry",2020,241584.51996
+"270","R32CAS-OTH","rur","Zone_3B Warm Dry",2025,236168.64395
+"271","R32CAS-OTH","rur","Zone_4A Mixed Humid",2020,1314852.25569
+"272","R32CAS-OTH","rur","Zone_4A Mixed Humid",2025,1285375.71144
+"273","R32CAS-OTH","rur","Zone_4B Mixed Dry",2020,2490852.42155
+"274","R32CAS-OTH","rur","Zone_4B Mixed Dry",2025,2435012.13887
+"275","R32CAS-OTH","rur","Zone_5A Cool Humid",2020,1629978.69254
+"276","R32CAS-OTH","rur","Zone_5A Cool Humid",2025,1593437.59916
+"277","R32CAS-OTH","rur","Zone_6A Cold Humid",2020,214897.41307
+"278","R32CAS-OTH","rur","Zone_6A Cold Humid",2025,210079.81241
+"279","R32CAS-OTH","rur","Zone_7A Very cold Humid",2020,1317172.05464
+"280","R32CAS-OTH","rur","Zone_7A Very cold Humid",2025,1287643.5048
+"281","R32CAS-OTH","urb","Zone_3B Warm Dry",2020,462698.05677
+"282","R32CAS-OTH","urb","Zone_3B Warm Dry",2025,505404.03333
+"283","R32CAS-OTH","urb","Zone_4A Mixed Humid",2020,1759517.29283
+"284","R32CAS-OTH","urb","Zone_4A Mixed Humid",2025,1921916.73057
+"285","R32CAS-OTH","urb","Zone_4B Mixed Dry",2020,1306966.99192
+"286","R32CAS-OTH","urb","Zone_4B Mixed Dry",2025,1427597.06786
+"287","R32CAS-OTH","urb","Zone_5A Cool Humid",2020,892993.07037
+"288","R32CAS-OTH","urb","Zone_5A Cool Humid",2025,975414.29643
+"289","R32CAS-OTH","urb","Zone_6A Cold Humid",2020,196942.21841
+"290","R32CAS-OTH","urb","Zone_6A Cold Humid",2025,215119.53652
+"291","R32CAS-OTH","urb","Zone_7A Very cold Humid",2020,2629993.9629
+"292","R32CAS-OTH","urb","Zone_7A Very cold Humid",2025,2872736.41425
+"293","R32CHN","rur","Zone_1A Very hot Humid",2020,2144040.87202
+"294","R32CHN","rur","Zone_1A Very hot Humid",2025,1996329.68556
+"295","R32CHN","rur","Zone_2A Hot Humid",2020,17969298.13289
+"296","R32CHN","rur","Zone_2A Hot Humid",2025,16731324.36956
+"297","R32CHN","rur","Zone_3A Warm Humid",2020,73473910.06095
+"298","R32CHN","rur","Zone_3A Warm Humid",2025,68412011.02227
+"299","R32CHN","rur","Zone_3C Warm Marine",2020,6262343.061
+"300","R32CHN","rur","Zone_3C Warm Marine",2025,5830906.26535
+"301","R32CHN","rur","Zone_4A Mixed Humid",2020,26905789.60716
+"302","R32CHN","rur","Zone_4A Mixed Humid",2025,25052146.72312
+"303","R32CHN","rur","Zone_4B Mixed Dry",2020,7373546.6528
+"304","R32CHN","rur","Zone_4B Mixed Dry",2025,6865554.78626
+"305","R32CHN","rur","Zone_4C Mixed Marine",2020,3624151.95645
+"306","R32CHN","rur","Zone_4C Mixed Marine",2025,3374470.24918
+"307","R32CHN","rur","Zone_5A Cool Humid",2020,9078445.39309
+"308","R32CHN","rur","Zone_5A Cool Humid",2025,8452996.52329
+"309","R32CHN","rur","Zone_5B Cool Dry",2020,5342492.74356
+"310","R32CHN","rur","Zone_5B Cool Dry",2025,4974427.95893
+"311","R32CHN","rur","Zone_5C Cool Marine",2020,1102605.40251
+"312","R32CHN","rur","Zone_5C Cool Marine",2025,1026642.69381
+"313","R32CHN","rur","Zone_6A Cold Humid",2020,10996207.49433
+"314","R32CHN","rur","Zone_6A Cold Humid",2025,10238636.64913
+"315","R32CHN","rur","Zone_6B Cold Dry",2020,4853950.33141
+"316","R32CHN","rur","Zone_6B Cold Dry",2025,4519543.10446
+"317","R32CHN","rur","Zone_7A Very cold Humid",2020,13320575.60333
+"318","R32CHN","rur","Zone_7A Very cold Humid",2025,12402870.13774
+"319","R32CHN","rur","Zone_7B Very cold Dry",2020,1151206.75906
+"320","R32CHN","rur","Zone_7B Very cold Dry",2025,1071895.71679
+"321","R32CHN","rur","Zone_8A Subarctic/arctic Humid",2020,1380337.53455
+"322","R32CHN","rur","Zone_8A Subarctic/arctic Humid",2025,1285240.79567
+"323","R32CHN","urb","Zone_1A Very hot Humid",2020,1238364.35447
+"324","R32CHN","urb","Zone_1A Very hot Humid",2025,1318826.35438
+"325","R32CHN","urb","Zone_2A Hot Humid",2020,32763899.01603
+"326","R32CHN","urb","Zone_2A Hot Humid",2025,34892714.19878
+"327","R32CHN","urb","Zone_3A Warm Humid",2020,82688091.04627
+"328","R32CHN","urb","Zone_3A Warm Humid",2025,88060701.41739
+"329","R32CHN","urb","Zone_3C Warm Marine",2020,1837759.59977
+"330","R32CHN","urb","Zone_3C Warm Marine",2025,1957166.9553
+"331","R32CHN","urb","Zone_4A Mixed Humid",2020,58625893.54177
+"332","R32CHN","urb","Zone_4A Mixed Humid",2025,62435076.6983
+"333","R32CHN","urb","Zone_4B Mixed Dry",2020,19080121.75842
+"334","R32CHN","urb","Zone_4B Mixed Dry",2025,20319841.51424
+"335","R32CHN","urb","Zone_4C Mixed Marine",2020,420823.87304
+"336","R32CHN","urb","Zone_4C Mixed Marine",2025,448166.65815
+"337","R32CHN","urb","Zone_5A Cool Humid",2020,7614172.69382
+"338","R32CHN","urb","Zone_5A Cool Humid",2025,8108899.11289
+"339","R32CHN","urb","Zone_5B Cool Dry",2020,3176226.19906
+"340","R32CHN","urb","Zone_5B Cool Dry",2025,3382599.63933
+"341","R32CHN","urb","Zone_5C Cool Marine",2020,367405.17989
+"342","R32CHN","urb","Zone_5C Cool Marine",2025,391277.11664
+"343","R32CHN","urb","Zone_6A Cold Humid",2020,8658677.98457
+"344","R32CHN","urb","Zone_6A Cold Humid",2025,9221270.52422
+"345","R32CHN","urb","Zone_6B Cold Dry",2020,1827111.68731
+"346","R32CHN","urb","Zone_6B Cold Dry",2025,1945827.20095
+"347","R32CHN","urb","Zone_7A Very cold Humid",2020,4749229.51106
+"348","R32CHN","urb","Zone_7A Very cold Humid",2025,5057807.92185
+"349","R32CHN","urb","Zone_7B Very cold Dry",2020,24761.54955
+"350","R32CHN","urb","Zone_7B Very cold Dry",2025,26370.41675
+"351","R32CHN","urb","Zone_8A Subarctic/arctic Humid",2020,4550.77127
+"352","R32CHN","urb","Zone_8A Subarctic/arctic Humid",2025,4846.45497
+"353","R32EEU","rur","Zone_3A Warm Humid",2020,455897.02913
+"354","R32EEU","rur","Zone_3A Warm Humid",2025,425255.03363
+"355","R32EEU","rur","Zone_4A Mixed Humid",2020,1387542.11004
+"356","R32EEU","rur","Zone_4A Mixed Humid",2025,1294281.88596
+"357","R32EEU","rur","Zone_5A Cool Humid",2020,1336041.31801
+"358","R32EEU","rur","Zone_5A Cool Humid",2025,1246242.59276
+"359","R32EEU","urb","Zone_3A Warm Humid",2020,656023.95678
+"360","R32EEU","urb","Zone_3A Warm Humid",2025,682722.25366
+"361","R32EEU","urb","Zone_4A Mixed Humid",2020,1744099.89886
+"362","R32EEU","urb","Zone_4A Mixed Humid",2025,1815079.77149
+"363","R32EEU","urb","Zone_5A Cool Humid",2020,2636138.99715
+"364","R32EEU","urb","Zone_5A Cool Humid",2025,2743422.30723
+"365","R32EEU-FSU","rur","Zone_5A Cool Humid",2020,5627180.37462
+"366","R32EEU-FSU","rur","Zone_5A Cool Humid",2025,5152115.76622
+"367","R32EEU-FSU","rur","Zone_6A Cold Humid",2020,527158.16353
+"368","R32EEU-FSU","rur","Zone_6A Cold Humid",2025,482653.78126
+"369","R32EEU-FSU","urb","Zone_5A Cool Humid",2020,13915520.73114
+"370","R32EEU-FSU","urb","Zone_5A Cool Humid",2025,13904738.97769
+"371","R32EEU-FSU","urb","Zone_6A Cold Humid",2020,2236172.96806
+"372","R32EEU-FSU","urb","Zone_6A Cold Humid",2025,2234440.37996
+"373","R32IDN","rur","Zone_0A Extremely hot Humid",2020,18973465.81851
+"374","R32IDN","rur","Zone_0A Extremely hot Humid",2025,18444801.5252
+"375","R32IDN","rur","Zone_1A Very hot Humid",2020,13666987.58794
+"376","R32IDN","rur","Zone_1A Very hot Humid",2025,13286179.5477
+"377","R32IDN","rur","Zone_2A Hot Humid",2020,748804.25446
+"378","R32IDN","rur","Zone_2A Hot Humid",2025,727940.06044
+"379","R32IDN","urb","Zone_0A Extremely hot Humid",2020,23462694.45206
+"380","R32IDN","urb","Zone_0A Extremely hot Humid",2025,25632161.82339
+"381","R32IDN","urb","Zone_1A Very hot Humid",2020,10947232.98317
+"382","R32IDN","urb","Zone_1A Very hot Humid",2025,11959463.902
+"383","R32IDN","urb","Zone_2A Hot Humid",2020,0
+"384","R32IDN","urb","Zone_2A Hot Humid",2025,0
+"385","R32IND","rur","Zone_0A Extremely hot Humid",2020,48013194.57188
+"386","R32IND","rur","Zone_0A Extremely hot Humid",2025,48261582.61115
+"387","R32IND","rur","Zone_0B Extremely hot Dry",2020,20457247.58326
+"388","R32IND","rur","Zone_0B Extremely hot Dry",2025,20563079.65007
+"389","R32IND","rur","Zone_1A Very hot Humid",2020,78224003.5741
+"390","R32IND","rur","Zone_1A Very hot Humid",2025,78628682.05976
+"391","R32IND","rur","Zone_1B Very hot Dry",2020,34836011.56901
+"392","R32IND","rur","Zone_1B Very hot Dry",2025,35016229.70877
+"393","R32IND","rur","Zone_2A Hot Humid",2020,9280151.74422
+"394","R32IND","rur","Zone_2A Hot Humid",2025,9328161.01993
+"395","R32IND","rur","Zone_2B Hot Dry",2020,500812.27112
+"396","R32IND","rur","Zone_2B Hot Dry",2025,503403.13763
+"397","R32IND","rur","Zone_3A Warm Humid",2020,1416761.21832
+"398","R32IND","rur","Zone_3A Warm Humid",2025,1424090.58985
+"399","R32IND","rur","Zone_3C Warm Marine",2020,698027.65179
+"400","R32IND","rur","Zone_3C Warm Marine",2025,701638.7783
+"401","R32IND","rur","Zone_4C Mixed Marine",2020,1450774.4112
+"402","R32IND","rur","Zone_4C Mixed Marine",2025,1458279.74415
+"403","R32IND","rur","Zone_5C Cool Marine",2020,327400.30837
+"404","R32IND","rur","Zone_5C Cool Marine",2025,329094.05779
+"405","R32IND","urb","Zone_0A Extremely hot Humid",2020,43380575.06208
+"406","R32IND","urb","Zone_0A Extremely hot Humid",2025,49421152.4849
+"407","R32IND","urb","Zone_0B Extremely hot Dry",2020,5568197.7301
+"408","R32IND","urb","Zone_0B Extremely hot Dry",2025,6343547.74439
+"409","R32IND","urb","Zone_1A Very hot Humid",2020,37280879.63403
+"410","R32IND","urb","Zone_1A Very hot Humid",2025,42472098.04223
+"411","R32IND","urb","Zone_1B Very hot Dry",2020,17262276.82674
+"412","R32IND","urb","Zone_1B Very hot Dry",2025,19665982.16068
+"413","R32IND","urb","Zone_2A Hot Humid",2020,3814289.14642
+"414","R32IND","urb","Zone_2A Hot Humid",2025,4345414.16883
+"415","R32IND","urb","Zone_2B Hot Dry",2020,514334.06542
+"416","R32IND","urb","Zone_2B Hot Dry",2025,585953.09626
+"417","R32IND","urb","Zone_3A Warm Humid",2020,316784.22473
+"418","R32IND","urb","Zone_3A Warm Humid",2025,360895.20374
+"419","R32IND","urb","Zone_3C Warm Marine",2020,90626.81035
+"420","R32IND","urb","Zone_3C Warm Marine",2025,103246.24344
+"421","R32IND","urb","Zone_4C Mixed Marine",2020,50251.75232
+"422","R32IND","urb","Zone_4C Mixed Marine",2025,57249.11462
+"423","R32IND","urb","Zone_5C Cool Marine",2020,256973.56889
+"424","R32IND","urb","Zone_5C Cool Marine",2025,292756.14522
+"425","R32JPN","rur","Zone_3A Warm Humid",2020,5087357.80364
+"426","R32JPN","rur","Zone_3A Warm Humid",2025,4702484.53007
+"427","R32JPN","rur","Zone_4A Mixed Humid",2020,5874844.22671
+"428","R32JPN","rur","Zone_4A Mixed Humid",2025,5430395.33664
+"429","R32JPN","rur","Zone_5A Cool Humid",2020,3722056.23717
+"430","R32JPN","rur","Zone_5A Cool Humid",2025,3440471.96028
+"431","R32JPN","rur","Zone_6A Cold Humid",2020,1018517.34046
+"432","R32JPN","rur","Zone_6A Cold Humid",2025,941463.56949
+"433","R32JPN","urb","Zone_3A Warm Humid",2020,25311816.63923
+"434","R32JPN","urb","Zone_3A Warm Humid",2025,25542929.51167
+"435","R32JPN","urb","Zone_4A Mixed Humid",2020,9074214.50983
+"436","R32JPN","urb","Zone_4A Mixed Humid",2025,9157067.81943
+"437","R32JPN","urb","Zone_5A Cool Humid",2020,2255497.63129
+"438","R32JPN","urb","Zone_5A Cool Humid",2025,2276091.7492
+"439","R32JPN","urb","Zone_6A Cold Humid",2020,1223312.80333
+"440","R32JPN","urb","Zone_6A Cold Humid",2025,1234482.42185
+"441","R32KOR","rur","Zone_4A Mixed Humid",2020,1427345.42473
+"442","R32KOR","rur","Zone_4A Mixed Humid",2025,1312090.73531
+"443","R32KOR","rur","Zone_5A Cool Humid",2020,1379686.04444
+"444","R32KOR","rur","Zone_5A Cool Humid",2025,1268279.73466
+"445","R32KOR","urb","Zone_4A Mixed Humid",2020,11427681.39714
+"446","R32KOR","urb","Zone_4A Mixed Humid",2025,11653811.83586
+"447","R32KOR","urb","Zone_5A Cool Humid",2020,5282107.31432
+"448","R32KOR","urb","Zone_5A Cool Humid",2025,5386629.41315
+"449","R32LAM-L","rur","Zone_0A Extremely hot Humid",2020,209062.97112
+"450","R32LAM-L","rur","Zone_0A Extremely hot Humid",2025,207221.17241
+"451","R32LAM-L","rur","Zone_1A Very hot Humid",2020,1546301.66527
+"452","R32LAM-L","rur","Zone_1A Very hot Humid",2025,1532679.08827
+"453","R32LAM-L","rur","Zone_2A Hot Humid",2020,1432557.92501
+"454","R32LAM-L","rur","Zone_2A Hot Humid",2025,1419937.40529
+"455","R32LAM-L","rur","Zone_3C Warm Marine",2020,787859.46087
+"456","R32LAM-L","rur","Zone_3C Warm Marine",2025,780918.59259
+"457","R32LAM-L","urb","Zone_0A Extremely hot Humid",2020,584037.70058
+"458","R32LAM-L","urb","Zone_0A Extremely hot Humid",2025,649573.05868
+"459","R32LAM-L","urb","Zone_1A Very hot Humid",2020,2258895.08055
+"460","R32LAM-L","urb","Zone_1A Very hot Humid",2025,2512367.58391
+"461","R32LAM-L","urb","Zone_2A Hot Humid",2020,1446076.55034
+"462","R32LAM-L","urb","Zone_2A Hot Humid",2025,1608342.00766
+"463","R32LAM-L","urb","Zone_3C Warm Marine",2020,1304332.7435
+"464","R32LAM-L","urb","Zone_3C Warm Marine",2025,1450693.00988
+"465","R32LAM-M","rur","Zone_0A Extremely hot Humid",2020,1678079.41215
+"466","R32LAM-M","rur","Zone_0A Extremely hot Humid",2025,1606175.65963
+"467","R32LAM-M","rur","Zone_1A Very hot Humid",2020,5491045.3876
+"468","R32LAM-M","rur","Zone_1A Very hot Humid",2025,5255760.47453
+"469","R32LAM-M","rur","Zone_2A Hot Humid",2020,1832103.51093
+"470","R32LAM-M","rur","Zone_2A Hot Humid",2025,1753600.00479
+"471","R32LAM-M","rur","Zone_2B Hot Dry",2020,424427.70826
+"472","R32LAM-M","rur","Zone_2B Hot Dry",2025,406241.47424
+"473","R32LAM-M","rur","Zone_3A Warm Humid",2020,736897.21749
+"474","R32LAM-M","rur","Zone_3A Warm Humid",2025,705322.02815
+"475","R32LAM-M","rur","Zone_3B Warm Dry",2020,228352.65537
+"476","R32LAM-M","rur","Zone_3B Warm Dry",2025,218568.00948
+"477","R32LAM-M","rur","Zone_3C Warm Marine",2020,1880183.92574
+"478","R32LAM-M","rur","Zone_3C Warm Marine",2025,1799620.2297
+"479","R32LAM-M","rur","Zone_4C Mixed Marine",2020,535805.48598
+"480","R32LAM-M","rur","Zone_4C Mixed Marine",2025,512846.84363
+"481","R32LAM-M","urb","Zone_0A Extremely hot Humid",2020,5041630.8546
+"482","R32LAM-M","urb","Zone_0A Extremely hot Humid",2025,5327159.78221
+"483","R32LAM-M","urb","Zone_1A Very hot Humid",2020,16260749.43604
+"484","R32LAM-M","urb","Zone_1A Very hot Humid",2025,17181664.60861
+"485","R32LAM-M","urb","Zone_2A Hot Humid",2020,8180886.98739
+"486","R32LAM-M","urb","Zone_2A Hot Humid",2025,8644205.29762
+"487","R32LAM-M","urb","Zone_2B Hot Dry",2020,1434267.45407
+"488","R32LAM-M","urb","Zone_2B Hot Dry",2025,1515496.10009
+"489","R32LAM-M","urb","Zone_3A Warm Humid",2020,13264912.04804
+"490","R32LAM-M","urb","Zone_3A Warm Humid",2025,14016160.24948
+"491","R32LAM-M","urb","Zone_3B Warm Dry",2020,3571420.41226
+"492","R32LAM-M","urb","Zone_3B Warm Dry",2025,3773685.09005
+"493","R32LAM-M","urb","Zone_3C Warm Marine",2020,8906605.67754
+"494","R32LAM-M","urb","Zone_3C Warm Marine",2025,9411024.51364
+"495","R32LAM-M","urb","Zone_4C Mixed Marine",2020,2384711.2885
+"496","R32LAM-M","urb","Zone_4C Mixed Marine",2025,2519767.59795
+"497","R32MEA-H","rur","Zone_0B Extremely hot Dry",2020,799076.81733
+"498","R32MEA-H","rur","Zone_0B Extremely hot Dry",2025,814717.26507
+"499","R32MEA-H","rur","Zone_1B Very hot Dry",2020,495059.67699
+"500","R32MEA-H","rur","Zone_1B Very hot Dry",2025,504749.55266
+"501","R32MEA-H","rur","Zone_2B Hot Dry",2020,259835.34142
+"502","R32MEA-H","rur","Zone_2B Hot Dry",2025,264921.13666
+"503","R32MEA-H","rur","Zone_3A Warm Humid",2020,136022.17073
+"504","R32MEA-H","rur","Zone_3A Warm Humid",2025,138684.55263
+"505","R32MEA-H","urb","Zone_0B Extremely hot Dry",2020,4656483.76143
+"506","R32MEA-H","urb","Zone_0B Extremely hot Dry",2025,5195414.52837
+"507","R32MEA-H","urb","Zone_1B Very hot Dry",2020,4729336.32764
+"508","R32MEA-H","urb","Zone_1B Very hot Dry",2025,5276698.88376
+"509","R32MEA-H","urb","Zone_2B Hot Dry",2020,922288.1059
+"510","R32MEA-H","urb","Zone_2B Hot Dry",2025,1029031.61919
+"511","R32MEA-H","urb","Zone_3A Warm Humid",2020,1816349.12934
+"512","R32MEA-H","urb","Zone_3A Warm Humid",2025,2026569.21803
+"513","R32MEA-M","rur","Zone_0A Extremely hot Humid",2020,786152.9314
+"514","R32MEA-M","rur","Zone_0A Extremely hot Humid",2025,799637.79975
+"515","R32MEA-M","rur","Zone_0B Extremely hot Dry",2020,4457760.74697
+"516","R32MEA-M","rur","Zone_0B Extremely hot Dry",2025,4534224.64402
+"517","R32MEA-M","rur","Zone_1B Very hot Dry",2020,1947744.93625
+"518","R32MEA-M","rur","Zone_1B Very hot Dry",2025,1981154.57322
+"519","R32MEA-M","rur","Zone_2A Hot Humid",2020,310058.0393
+"520","R32MEA-M","rur","Zone_2A Hot Humid",2025,315376.45977
+"521","R32MEA-M","rur","Zone_2B Hot Dry",2020,3631376.61038
+"522","R32MEA-M","rur","Zone_2B Hot Dry",2025,3693665.55387
+"523","R32MEA-M","rur","Zone_3A Warm Humid",2020,728097.1705
+"524","R32MEA-M","rur","Zone_3A Warm Humid",2025,740586.20933
+"525","R32MEA-M","rur","Zone_3B Warm Dry",2020,2331321.27817
+"526","R32MEA-M","rur","Zone_3B Warm Dry",2025,2371310.39385
+"527","R32MEA-M","rur","Zone_3C Warm Marine",2020,924624.70539
+"528","R32MEA-M","rur","Zone_3C Warm Marine",2025,940484.77781
+"529","R32MEA-M","rur","Zone_4A Mixed Humid",2020,449914.21687
+"530","R32MEA-M","rur","Zone_4A Mixed Humid",2025,457631.58806
+"531","R32MEA-M","rur","Zone_4B Mixed Dry",2020,648027.21597
+"532","R32MEA-M","rur","Zone_4B Mixed Dry",2025,659142.81619
+"533","R32MEA-M","rur","Zone_5A Cool Humid",2020,514109.9784
+"534","R32MEA-M","rur","Zone_5A Cool Humid",2025,522928.49844
+"535","R32MEA-M","rur","Zone_5B Cool Dry",2020,197958.26806
+"536","R32MEA-M","rur","Zone_5B Cool Dry",2025,201353.84299
+"537","R32MEA-M","urb","Zone_0A Extremely hot Humid",2020,241207.90828
+"538","R32MEA-M","urb","Zone_0A Extremely hot Humid",2025,265997.3867
+"539","R32MEA-M","urb","Zone_0B Extremely hot Dry",2020,4760114.12837
+"540","R32MEA-M","urb","Zone_0B Extremely hot Dry",2025,5249321.74728
+"541","R32MEA-M","urb","Zone_1B Very hot Dry",2020,4122694.47839
+"542","R32MEA-M","urb","Zone_1B Very hot Dry",2025,4546393.0484
+"543","R32MEA-M","urb","Zone_2A Hot Humid",2020,1700255.40641
+"544","R32MEA-M","urb","Zone_2A Hot Humid",2025,1874994.47284
+"545","R32MEA-M","urb","Zone_2B Hot Dry",2020,3867246.28865
+"546","R32MEA-M","urb","Zone_2B Hot Dry",2025,4264691.87454
+"547","R32MEA-M","urb","Zone_3A Warm Humid",2020,4158830.28113
+"548","R32MEA-M","urb","Zone_3A Warm Humid",2025,4586242.60874
+"549","R32MEA-M","urb","Zone_3B Warm Dry",2020,2978054.39535
+"550","R32MEA-M","urb","Zone_3B Warm Dry",2025,3284115.73347
+"551","R32MEA-M","urb","Zone_3C Warm Marine",2020,707767.4915
+"552","R32MEA-M","urb","Zone_3C Warm Marine",2025,780506.34606
+"553","R32MEA-M","urb","Zone_4A Mixed Humid",2020,4728046.8279
+"554","R32MEA-M","urb","Zone_4A Mixed Humid",2025,5213958.81833
+"555","R32MEA-M","urb","Zone_4B Mixed Dry",2020,1994158.61331
+"556","R32MEA-M","urb","Zone_4B Mixed Dry",2025,2199102.77235
+"557","R32MEA-M","urb","Zone_5A Cool Humid",2020,1076936.97432
+"558","R32MEA-M","urb","Zone_5A Cool Humid",2025,1187616.20568
+"559","R32MEA-M","urb","Zone_5B Cool Dry",2020,458213.49063
+"560","R32MEA-M","urb","Zone_5B Cool Dry",2025,505305.12008
+"561","R32MEX","rur","Zone_0A Extremely hot Humid",2020,447883.89867
+"562","R32MEX","rur","Zone_0A Extremely hot Humid",2025,431048.84865
+"563","R32MEX","rur","Zone_1A Very hot Humid",2020,1597957.24556
+"564","R32MEX","rur","Zone_1A Very hot Humid",2025,1537893.26413
+"565","R32MEX","rur","Zone_1B Very hot Dry",2020,493298.64902
+"566","R32MEX","rur","Zone_1B Very hot Dry",2025,474756.55036
+"567","R32MEX","rur","Zone_2A Hot Humid",2020,867485.25391
+"568","R32MEX","rur","Zone_2A Hot Humid",2025,834878.23747
+"569","R32MEX","rur","Zone_2B Hot Dry",2020,696929.79392
+"570","R32MEX","rur","Zone_2B Hot Dry",2025,670733.61231
+"571","R32MEX","rur","Zone_3A Warm Humid",2020,370093.85697
+"572","R32MEX","rur","Zone_3A Warm Humid",2025,356182.7773
+"573","R32MEX","rur","Zone_3B Warm Dry",2020,645728.07381
+"574","R32MEX","rur","Zone_3B Warm Dry",2025,621456.46133
+"575","R32MEX","rur","Zone_3C Warm Marine",2020,1218854.29666
+"576","R32MEX","rur","Zone_3C Warm Marine",2025,1173040.02845
+"577","R32MEX","urb","Zone_0A Extremely hot Humid",2020,974172.03804
+"578","R32MEX","urb","Zone_0A Extremely hot Humid",2025,1036151.29464
+"579","R32MEX","urb","Zone_1A Very hot Humid",2020,3052830.70965
+"580","R32MEX","urb","Zone_1A Very hot Humid",2025,3247059.41929
+"581","R32MEX","urb","Zone_1B Very hot Dry",2020,886895.55756
+"582","R32MEX","urb","Zone_1B Very hot Dry",2025,943322.06663
+"583","R32MEX","urb","Zone_2A Hot Humid",2020,3680264.9939
+"584","R32MEX","urb","Zone_2A Hot Humid",2025,3914412.63878
+"585","R32MEX","urb","Zone_2B Hot Dry",2020,2017820.77074
+"586","R32MEX","urb","Zone_2B Hot Dry",2025,2146199.56467
+"587","R32MEX","urb","Zone_3A Warm Humid",2020,1575461.33875
+"588","R32MEX","urb","Zone_3A Warm Humid",2025,1675696.12149
+"589","R32MEX","urb","Zone_3B Warm Dry",2020,1776179.99798
+"590","R32MEX","urb","Zone_3B Warm Dry",2025,1889185.00281
+"591","R32MEX","urb","Zone_3C Warm Marine",2020,13436847.82933
+"592","R32MEX","urb","Zone_3C Warm Marine",2025,14291733.62671
+"593","R32NAF","rur","Zone_1B Very hot Dry",2020,71953.49734
+"594","R32NAF","rur","Zone_1B Very hot Dry",2025,71483.714
+"595","R32NAF","rur","Zone_2B Hot Dry",2020,11940732.44108
+"596","R32NAF","rur","Zone_2B Hot Dry",2025,11862771.57232
+"597","R32NAF","rur","Zone_3A Warm Humid",2020,2169934.34971
+"598","R32NAF","rur","Zone_3A Warm Humid",2025,2155766.87984
+"599","R32NAF","rur","Zone_3B Warm Dry",2020,2852296.95324
+"600","R32NAF","rur","Zone_3B Warm Dry",2025,2833674.34785
+"601","R32NAF","urb","Zone_1B Very hot Dry",2020,605864.09857
+"602","R32NAF","urb","Zone_1B Very hot Dry",2025,666287.65167
+"603","R32NAF","urb","Zone_2B Hot Dry",2020,11072717.91721
+"604","R32NAF","urb","Zone_2B Hot Dry",2025,12177013.35347
+"605","R32NAF","urb","Zone_3A Warm Humid",2020,9708174.66463
+"606","R32NAF","urb","Zone_3A Warm Humid",2025,10676382.56595
+"607","R32NAF","urb","Zone_3B Warm Dry",2020,2612225.57298
+"608","R32NAF","urb","Zone_3B Warm Dry",2025,2872745.96195
+"609","R32OAS-CPA","rur","Zone_0A Extremely hot Humid",2020,8473881.35595
+"610","R32OAS-CPA","rur","Zone_0A Extremely hot Humid",2025,8355767.30814
+"611","R32OAS-CPA","rur","Zone_1A Very hot Humid",2020,8207623.56867
+"612","R32OAS-CPA","rur","Zone_1A Very hot Humid",2025,8093220.78181
+"613","R32OAS-CPA","rur","Zone_2A Hot Humid",2020,2522243.53828
+"614","R32OAS-CPA","rur","Zone_2A Hot Humid",2025,2487086.99297
+"615","R32OAS-CPA","rur","Zone_8A Subarctic/arctic Humid",2020,258370.64674
+"616","R32OAS-CPA","rur","Zone_8A Subarctic/arctic Humid",2025,254769.32149
+"617","R32OAS-CPA","urb","Zone_0A Extremely hot Humid",2020,4520666.10464
+"618","R32OAS-CPA","urb","Zone_0A Extremely hot Humid",2025,5067543.28899
+"619","R32OAS-CPA","urb","Zone_1A Very hot Humid",2020,5609570.19403
+"620","R32OAS-CPA","urb","Zone_1A Very hot Humid",2025,6288175.04608
+"621","R32OAS-CPA","urb","Zone_2A Hot Humid",2020,303611.53049
+"622","R32OAS-CPA","urb","Zone_2A Hot Humid",2025,340340.23707
+"623","R32OAS-CPA","urb","Zone_8A Subarctic/arctic Humid",2020,546565.69743
+"624","R32OAS-CPA","urb","Zone_8A Subarctic/arctic Humid",2025,612685.22556
+"625","R32OAS-L-PAS","rur","Zone_0A Extremely hot Humid",2020,9824154.91939
+"626","R32OAS-L-PAS","rur","Zone_0A Extremely hot Humid",2025,9773702.91455
+"627","R32OAS-L-PAS","rur","Zone_0B Extremely hot Dry",2020,313884.10435
+"628","R32OAS-L-PAS","rur","Zone_0B Extremely hot Dry",2025,312272.15071
+"629","R32OAS-L-PAS","rur","Zone_1A Very hot Humid",2020,6824166.85232
+"630","R32OAS-L-PAS","rur","Zone_1A Very hot Humid",2025,6789121.30368
+"631","R32OAS-L-PAS","rur","Zone_2A Hot Humid",2020,3306665.33104
+"632","R32OAS-L-PAS","rur","Zone_2A Hot Humid",2025,3289683.93197
+"633","R32OAS-L-PAS","urb","Zone_0A Extremely hot Humid",2020,12441432.7068
+"634","R32OAS-L-PAS","urb","Zone_0A Extremely hot Humid",2025,13921248.03095
+"635","R32OAS-L-PAS","urb","Zone_0B Extremely hot Dry",2020,358817.73958
+"636","R32OAS-L-PAS","urb","Zone_0B Extremely hot Dry",2025,401496.42476
+"637","R32OAS-L-PAS","urb","Zone_1A Very hot Humid",2020,5881174.86235
+"638","R32OAS-L-PAS","urb","Zone_1A Very hot Humid",2025,6580696.60478
+"639","R32OAS-L-PAS","urb","Zone_2A Hot Humid",2020,776629.55793
+"640","R32OAS-L-PAS","urb","Zone_2A Hot Humid",2025,869003.83251
+"641","R32OAS-L-SAS","rur","Zone_0A Extremely hot Humid",2020,2470772.10812
+"642","R32OAS-L-SAS","rur","Zone_0A Extremely hot Humid",2025,2492655.57872
+"643","R32OAS-L-SAS","rur","Zone_1A Very hot Humid",2020,22344631.35511
+"644","R32OAS-L-SAS","rur","Zone_1A Very hot Humid",2025,22542536.32647
+"645","R32OAS-L-SAS","rur","Zone_2A Hot Humid",2020,3857794.61264
+"646","R32OAS-L-SAS","rur","Zone_2A Hot Humid",2025,3891962.85289
+"647","R32OAS-L-SAS","rur","Zone_3A Warm Humid",2020,843753.57006
+"648","R32OAS-L-SAS","rur","Zone_3A Warm Humid",2025,851226.64149
+"649","R32OAS-L-SAS","rur","Zone_3C Warm Marine",2020,1402965.06092
+"650","R32OAS-L-SAS","rur","Zone_3C Warm Marine",2025,1415391.03277
+"651","R32OAS-L-SAS","urb","Zone_0A Extremely hot Humid",2020,1524993.91639
+"652","R32OAS-L-SAS","urb","Zone_0A Extremely hot Humid",2025,1753963.66213
+"653","R32OAS-L-SAS","urb","Zone_1A Very hot Humid",2020,11303429.05604
+"654","R32OAS-L-SAS","urb","Zone_1A Very hot Humid",2025,13000578.95882
+"655","R32OAS-L-SAS","urb","Zone_2A Hot Humid",2020,836863.21474
+"656","R32OAS-L-SAS","urb","Zone_2A Hot Humid",2025,962513.78648
+"657","R32OAS-L-SAS","urb","Zone_3A Warm Humid",2020,919113.36613
+"658","R32OAS-L-SAS","urb","Zone_3A Warm Humid",2025,1057113.36173
+"659","R32OAS-L-SAS","urb","Zone_3C Warm Marine",2020,97228.61272
+"660","R32OAS-L-SAS","urb","Zone_3C Warm Marine",2025,111826.97307
+"661","R32OAS-M-PAS","rur","Zone_0A Extremely hot Humid",2020,9919543.94194
+"662","R32OAS-M-PAS","rur","Zone_0A Extremely hot Humid",2025,9637642.37117
+"663","R32OAS-M-PAS","rur","Zone_1A Very hot Humid",2020,3640169.86482
+"664","R32OAS-M-PAS","rur","Zone_1A Very hot Humid",2025,3536720.59248
+"665","R32OAS-M-PAS","urb","Zone_0A Extremely hot Humid",2020,11770314.94922
+"666","R32OAS-M-PAS","urb","Zone_0A Extremely hot Humid",2025,12762151.71703
+"667","R32OAS-M-PAS","urb","Zone_1A Very hot Humid",2020,3182432.54502
+"668","R32OAS-M-PAS","urb","Zone_1A Very hot Humid",2025,3450603.24588
+"669","R32OAS-M-SAS","rur","Zone_0A Extremely hot Humid",2020,2075028.05212
+"670","R32OAS-M-SAS","rur","Zone_0A Extremely hot Humid",2025,2070544.0485
+"671","R32OAS-M-SAS","rur","Zone_1A Very hot Humid",2020,743063.79948
+"672","R32OAS-M-SAS","rur","Zone_1A Very hot Humid",2025,741458.08588
+"673","R32OAS-M-SAS","rur","Zone_2A Hot Humid",2020,501432.45646
+"674","R32OAS-M-SAS","rur","Zone_2A Hot Humid",2025,500348.89282
+"675","R32OAS-M-SAS","rur","Zone_4C Mixed Marine",2020,88194.07243
+"676","R32OAS-M-SAS","rur","Zone_4C Mixed Marine",2025,88003.49065
+"677","R32OAS-M-SAS","urb","Zone_0A Extremely hot Humid",2020,611065.57671
+"678","R32OAS-M-SAS","urb","Zone_0A Extremely hot Humid",2025,701615.20461
+"679","R32OAS-M-SAS","urb","Zone_1A Very hot Humid",2020,74485.67873
+"680","R32OAS-M-SAS","urb","Zone_1A Very hot Humid",2025,85523.20196
+"681","R32OAS-M-SAS","urb","Zone_2A Hot Humid",2020,79002.63734
+"682","R32OAS-M-SAS","urb","Zone_2A Hot Humid",2025,90709.49776
+"683","R32OAS-M-SAS","urb","Zone_4C Mixed Marine",2020,64209.96413
+"684","R32OAS-M-SAS","urb","Zone_4C Mixed Marine",2025,73724.7995
+"685","R32PAK","rur","Zone_0B Extremely hot Dry",2020,3588006.94896
+"686","R32PAK","rur","Zone_0B Extremely hot Dry",2025,3721887.71988
+"687","R32PAK","rur","Zone_1A Very hot Humid",2020,403212.70219
+"688","R32PAK","rur","Zone_1A Very hot Humid",2025,418257.94267
+"689","R32PAK","rur","Zone_1B Very hot Dry",2020,8046275.04395
+"690","R32PAK","rur","Zone_1B Very hot Dry",2025,8346508.9959
+"691","R32PAK","rur","Zone_2A Hot Humid",2020,1386543.41437
+"692","R32PAK","rur","Zone_2A Hot Humid",2025,1438280.07594
+"693","R32PAK","rur","Zone_2B Hot Dry",2020,2250306.17898
+"694","R32PAK","rur","Zone_2B Hot Dry",2025,2334272.7739
+"695","R32PAK","rur","Zone_3A Warm Humid",2020,757648.13028
+"696","R32PAK","rur","Zone_3A Warm Humid",2025,785918.56487
+"697","R32PAK","rur","Zone_3B Warm Dry",2020,2260877.26802
+"698","R32PAK","rur","Zone_3B Warm Dry",2025,2345238.30631
+"699","R32PAK","rur","Zone_4A Mixed Humid",2020,745186.53228
+"700","R32PAK","rur","Zone_4A Mixed Humid",2025,772991.98217
+"701","R32PAK","rur","Zone_5A Cool Humid",2020,839897.41945
+"702","R32PAK","rur","Zone_5A Cool Humid",2025,871236.85541
+"703","R32PAK","rur","Zone_6A Cold Humid",2020,504985.45209
+"704","R32PAK","rur","Zone_6A Cold Humid",2025,523828.18082
+"705","R32PAK","rur","Zone_7A Very cold Humid",2020,475693.7771
+"706","R32PAK","rur","Zone_7A Very cold Humid",2025,493443.53359
+"707","R32PAK","urb","Zone_0B Extremely hot Dry",2020,2915761.27221
+"708","R32PAK","urb","Zone_0B Extremely hot Dry",2025,3395067.50216
+"709","R32PAK","urb","Zone_1A Very hot Humid",2020,1041221.93085
+"710","R32PAK","urb","Zone_1A Very hot Humid",2025,1212382.77416
+"711","R32PAK","urb","Zone_1B Very hot Dry",2020,5591952.74996
+"712","R32PAK","urb","Zone_1B Very hot Dry",2025,6511183.62671
+"713","R32PAK","urb","Zone_2A Hot Humid",2020,2630597.98665
+"714","R32PAK","urb","Zone_2A Hot Humid",2025,3063027.76597
+"715","R32PAK","urb","Zone_2B Hot Dry",2020,307955.95646
+"716","R32PAK","urb","Zone_2B Hot Dry",2025,358579.17102
+"717","R32PAK","urb","Zone_3A Warm Humid",2020,80276.30174
+"718","R32PAK","urb","Zone_3A Warm Humid",2025,93472.48893
+"719","R32PAK","urb","Zone_3B Warm Dry",2020,431877.73892
+"720","R32PAK","urb","Zone_3B Warm Dry",2025,502871.78524
+"721","R32PAK","urb","Zone_4A Mixed Humid",2020,151034.18164
+"722","R32PAK","urb","Zone_4A Mixed Humid",2025,175861.87411
+"723","R32PAK","urb","Zone_5A Cool Humid",2020,970001.05416
+"724","R32PAK","urb","Zone_5A Cool Humid",2025,1129454.28264
+"725","R32PAK","urb","Zone_6A Cold Humid",2020,27427.70389
+"726","R32PAK","urb","Zone_6A Cold Humid",2025,31936.39583
+"727","R32PAK","urb","Zone_7A Very cold Humid",2020,0
+"728","R32PAK","urb","Zone_7A Very cold Humid",2025,0
+"729","R32RUS","rur","Zone_4A Mixed Humid",2020,574802.58786
+"730","R32RUS","rur","Zone_4A Mixed Humid",2025,527279.12178
+"731","R32RUS","rur","Zone_5A Cool Humid",2020,1260943.9507
+"732","R32RUS","rur","Zone_5A Cool Humid",2025,1156691.76337
+"733","R32RUS","rur","Zone_6A Cold Humid",2020,4191329.1671
+"734","R32RUS","rur","Zone_6A Cold Humid",2025,3844798.90837
+"735","R32RUS","rur","Zone_7A Very cold Humid",2020,5515582.03991
+"736","R32RUS","rur","Zone_7A Very cold Humid",2025,5059565.34565
+"737","R32RUS","rur","Zone_8A Subarctic/arctic Humid",2020,1042765.87847
+"738","R32RUS","rur","Zone_8A Subarctic/arctic Humid",2025,956552.19416
+"739","R32RUS","urb","Zone_4A Mixed Humid",2020,1291877.83381
+"740","R32RUS","urb","Zone_4A Mixed Humid",2025,1311060.68261
+"741","R32RUS","urb","Zone_5A Cool Humid",2020,3820454.40429
+"742","R32RUS","urb","Zone_5A Cool Humid",2025,3877183.60675
+"743","R32RUS","urb","Zone_6A Cold Humid",2020,19493937.28751
+"744","R32RUS","urb","Zone_6A Cold Humid",2025,19783399.06304
+"745","R32RUS","urb","Zone_7A Very cold Humid",2020,16190186.0158
+"746","R32RUS","urb","Zone_7A Very cold Humid",2025,16430591.01563
+"747","R32RUS","urb","Zone_8A Subarctic/arctic Humid",2020,1644694.38108
+"748","R32RUS","urb","Zone_8A Subarctic/arctic Humid",2025,1669116.13584
+"749","R32SAF","rur","Zone_2A Hot Humid",2020,795843.23036
+"750","R32SAF","rur","Zone_2A Hot Humid",2025,767648.63779
+"751","R32SAF","rur","Zone_2B Hot Dry",2020,890664.89854
+"752","R32SAF","rur","Zone_2B Hot Dry",2025,859111.02842
+"753","R32SAF","rur","Zone_3A Warm Humid",2020,1298106.43193
+"754","R32SAF","rur","Zone_3A Warm Humid",2025,1252118.00034
+"755","R32SAF","rur","Zone_3B Warm Dry",2020,892055.42149
+"756","R32SAF","rur","Zone_3B Warm Dry",2025,860452.28887
+"757","R32SAF","rur","Zone_3C Warm Marine",2020,1480416.80041
+"758","R32SAF","rur","Zone_3C Warm Marine",2025,1427969.60112
+"759","R32SAF","urb","Zone_2A Hot Humid",2020,1680492.85167
+"760","R32SAF","urb","Zone_2A Hot Humid",2025,1803143.85896
+"761","R32SAF","urb","Zone_2B Hot Dry",2020,807653.94962
+"762","R32SAF","urb","Zone_2B Hot Dry",2025,866600.6868
+"763","R32SAF","urb","Zone_3A Warm Humid",2020,2885002.85618
+"764","R32SAF","urb","Zone_3A Warm Humid",2025,3095565.19568
+"765","R32SAF","urb","Zone_3B Warm Dry",2020,1383592.88704
+"766","R32SAF","urb","Zone_3B Warm Dry",2025,1484574.60863
+"767","R32SAF","urb","Zone_3C Warm Marine",2020,4194800.38109
+"768","R32SAF","urb","Zone_3C Warm Marine",2025,4500958.4773
+"769","R32SSA-L","rur","Zone_0A Extremely hot Humid",2020,21232189.01606
+"770","R32SSA-L","rur","Zone_0A Extremely hot Humid",2025,22588134.14961
+"771","R32SSA-L","rur","Zone_0B Extremely hot Dry",2020,17422792.41892
+"772","R32SSA-L","rur","Zone_0B Extremely hot Dry",2025,18535459.16164
+"773","R32SSA-L","rur","Zone_1A Very hot Humid",2020,25834343.84644
+"774","R32SSA-L","rur","Zone_1A Very hot Humid",2025,27484195.06011
+"775","R32SSA-L","rur","Zone_1B Very hot Dry",2020,362423.60499
+"776","R32SSA-L","rur","Zone_1B Very hot Dry",2025,385568.95864
+"777","R32SSA-L","rur","Zone_2A Hot Humid",2020,31301869.31528
+"778","R32SSA-L","rur","Zone_2A Hot Humid",2025,33300891.52335
+"779","R32SSA-L","rur","Zone_2B Hot Dry",2020,2280859.56331
+"780","R32SSA-L","rur","Zone_2B Hot Dry",2025,2426521.43656
+"781","R32SSA-L","rur","Zone_3A Warm Humid",2020,2268343.35281
+"782","R32SSA-L","rur","Zone_3A Warm Humid",2025,2413205.90694
+"783","R32SSA-L","rur","Zone_3C Warm Marine",2020,13627618.07109
+"784","R32SSA-L","rur","Zone_3C Warm Marine",2025,14497914.69436
+"785","R32SSA-L","urb","Zone_0A Extremely hot Humid",2020,29190335.73966
+"786","R32SSA-L","urb","Zone_0A Extremely hot Humid",2025,34669222.54704
+"787","R32SSA-L","urb","Zone_0B Extremely hot Dry",2020,8168629.31902
+"788","R32SSA-L","urb","Zone_0B Extremely hot Dry",2025,9701842.08538
+"789","R32SSA-L","urb","Zone_1A Very hot Humid",2020,16149797.46751
+"790","R32SSA-L","urb","Zone_1A Very hot Humid",2025,19181037.43254
+"791","R32SSA-L","urb","Zone_1B Very hot Dry",2020,946635.62312
+"792","R32SSA-L","urb","Zone_1B Very hot Dry",2025,1124314.615
+"793","R32SSA-L","urb","Zone_2A Hot Humid",2020,12115794.9342
+"794","R32SSA-L","urb","Zone_2A Hot Humid",2025,14389871.86219
+"795","R32SSA-L","urb","Zone_2B Hot Dry",2020,1315469.58255
+"796","R32SSA-L","urb","Zone_2B Hot Dry",2025,1562376.94962
+"797","R32SSA-L","urb","Zone_3A Warm Humid",2020,495335.40717
+"798","R32SSA-L","urb","Zone_3A Warm Humid",2025,588307.5008
+"799","R32SSA-L","urb","Zone_3C Warm Marine",2020,7448833.21047
+"800","R32SSA-L","urb","Zone_3C Warm Marine",2025,8846943.68001
+"801","R32SSA-M","rur","Zone_1A Very hot Humid",2020,537275.02617
+"802","R32SSA-M","rur","Zone_1A Very hot Humid",2025,551886.87045
+"803","R32SSA-M","rur","Zone_1B Very hot Dry",2020,47289.32662
+"804","R32SSA-M","rur","Zone_1B Very hot Dry",2025,48575.41706
+"805","R32SSA-M","rur","Zone_2A Hot Humid",2020,1382451.19643
+"806","R32SSA-M","rur","Zone_2A Hot Humid",2025,1420048.62906
+"807","R32SSA-M","rur","Zone_2B Hot Dry",2020,500789.73401
+"808","R32SSA-M","rur","Zone_2B Hot Dry",2025,514409.31663
+"809","R32SSA-M","rur","Zone_3C Warm Marine",2020,223345.6448
+"810","R32SSA-M","rur","Zone_3C Warm Marine",2025,229419.79979
+"811","R32SSA-M","urb","Zone_1A Very hot Humid",2020,969550.54669
+"812","R32SSA-M","urb","Zone_1A Very hot Humid",2025,1120307.80364
+"813","R32SSA-M","urb","Zone_1B Very hot Dry",2020,984670.64996
+"814","R32SSA-M","urb","Zone_1B Very hot Dry",2025,1137778.96049
+"815","R32SSA-M","urb","Zone_2A Hot Humid",2020,1164000.03491
+"816","R32SSA-M","urb","Zone_2A Hot Humid",2025,1344992.61229
+"817","R32SSA-M","urb","Zone_2B Hot Dry",2020,611329.05417
+"818","R32SSA-M","urb","Zone_2B Hot Dry",2025,706385.77052
+"819","R32SSA-M","urb","Zone_3C Warm Marine",2020,1007195.06303
+"820","R32SSA-M","urb","Zone_3C Warm Marine",2025,1163805.73736
+"821","R32TUR","rur","Zone_3A Warm Humid",2020,376192.21195
+"822","R32TUR","rur","Zone_3A Warm Humid",2025,373054.79687
+"823","R32TUR","rur","Zone_4A Mixed Humid",2020,1294451.59324
+"824","R32TUR","rur","Zone_4A Mixed Humid",2025,1283655.96319
+"825","R32TUR","rur","Zone_4C Mixed Marine",2020,985635.14221
+"826","R32TUR","rur","Zone_4C Mixed Marine",2025,977415.0184
+"827","R32TUR","rur","Zone_5A Cool Humid",2020,1372499.65311
+"828","R32TUR","rur","Zone_5A Cool Humid",2025,1361053.10804
+"829","R32TUR","rur","Zone_5C Cool Marine",2020,821743.75388
+"830","R32TUR","rur","Zone_5C Cool Marine",2025,814890.47207
+"831","R32TUR","rur","Zone_6A Cold Humid",2020,615978.56943
+"832","R32TUR","rur","Zone_6A Cold Humid",2025,610841.35395
+"833","R32TUR","urb","Zone_3A Warm Humid",2020,6433248.03414
+"834","R32TUR","urb","Zone_3A Warm Humid",2025,6847483.43598
+"835","R32TUR","urb","Zone_4A Mixed Humid",2020,4937127.21136
+"836","R32TUR","urb","Zone_4A Mixed Humid",2025,5255027.7281
+"837","R32TUR","urb","Zone_4C Mixed Marine",2020,859491.41793
+"838","R32TUR","urb","Zone_4C Mixed Marine",2025,914833.87807
+"839","R32TUR","urb","Zone_5A Cool Humid",2020,993895.67399
+"840","R32TUR","urb","Zone_5A Cool Humid",2025,1057892.39412
+"841","R32TUR","urb","Zone_5C Cool Marine",2020,1081590.84784
+"842","R32TUR","urb","Zone_5C Cool Marine",2025,1151234.24059
+"843","R32TUR","urb","Zone_6A Cold Humid",2020,132861.33071
+"844","R32TUR","urb","Zone_6A Cold Humid",2025,141416.24207
+"845","R32USA","rur","Zone_1A Very hot Humid",2020,53972.90669
+"846","R32USA","rur","Zone_1A Very hot Humid",2025,51356.68943
+"847","R32USA","rur","Zone_2A Hot Humid",2020,1855316.35042
+"848","R32USA","rur","Zone_2A Hot Humid",2025,1765383.99445
+"849","R32USA","rur","Zone_2B Hot Dry",2020,137120.78388
+"850","R32USA","rur","Zone_2B Hot Dry",2025,130474.15721
+"851","R32USA","rur","Zone_3A Warm Humid",2020,4830528.83025
+"852","R32USA","rur","Zone_3A Warm Humid",2025,4596379.63077
+"853","R32USA","rur","Zone_3B Warm Dry",2020,346197.78074
+"854","R32USA","rur","Zone_3B Warm Dry",2025,329416.60914
+"855","R32USA","rur","Zone_3C Warm Marine",2020,161645.66664
+"856","R32USA","rur","Zone_3C Warm Marine",2025,153810.25053
+"857","R32USA","rur","Zone_4A Mixed Humid",2020,4566955.48535
+"858","R32USA","rur","Zone_4A Mixed Humid",2025,4345582.42071
+"859","R32USA","rur","Zone_4C Mixed Marine",2020,393537.17981
+"860","R32USA","rur","Zone_4C Mixed Marine",2025,374461.33556
+"861","R32USA","rur","Zone_5A Cool Humid",2020,4621484.57241
+"862","R32USA","rur","Zone_5A Cool Humid",2025,4397468.33089
+"863","R32USA","rur","Zone_5C Cool Marine",2020,368244.57231
+"864","R32USA","rur","Zone_5C Cool Marine",2025,350394.73126
+"865","R32USA","rur","Zone_6A Cold Humid",2020,2385654.11652
+"866","R32USA","rur","Zone_6A Cold Humid",2025,2270014.8105
+"867","R32USA","rur","Zone_7A Very cold Humid",2020,426424.55254
+"868","R32USA","rur","Zone_7A Very cold Humid",2025,405754.56565
+"869","R32USA","urb","Zone_1A Very hot Humid",2020,4637671.20396
+"870","R32USA","urb","Zone_1A Very hot Humid",2025,4883213.94606
+"871","R32USA","urb","Zone_2A Hot Humid",2020,13411813.46724
+"872","R32USA","urb","Zone_2A Hot Humid",2025,14121905.51788
+"873","R32USA","urb","Zone_2B Hot Dry",2020,2060989.1947
+"874","R32USA","urb","Zone_2B Hot Dry",2025,2170108.81877
+"875","R32USA","urb","Zone_3A Warm Humid",2020,17114442.1126
+"876","R32USA","urb","Zone_3A Warm Humid",2025,18020570.82704
+"877","R32USA","urb","Zone_3B Warm Dry",2020,3111661.7506
+"878","R32USA","urb","Zone_3B Warm Dry",2025,3276409.51412
+"879","R32USA","urb","Zone_3C Warm Marine",2020,9231301.43967
+"880","R32USA","urb","Zone_3C Warm Marine",2025,9720055.16304
+"881","R32USA","urb","Zone_4A Mixed Humid",2020,27565867.41809
+"882","R32USA","urb","Zone_4A Mixed Humid",2025,29025349.64026
+"883","R32USA","urb","Zone_4C Mixed Marine",2020,3809380.12274
+"884","R32USA","urb","Zone_4C Mixed Marine",2025,4011068.77205
+"885","R32USA","urb","Zone_5A Cool Humid",2020,26602390.06076
+"886","R32USA","urb","Zone_5A Cool Humid",2025,28010860.71659
+"887","R32USA","urb","Zone_5C Cool Marine",2020,1890517.4573
+"888","R32USA","urb","Zone_5C Cool Marine",2025,1990611.40964
+"889","R32USA","urb","Zone_6A Cold Humid",2020,6159865.97834
+"890","R32USA","urb","Zone_6A Cold Humid",2025,6486001.72985
+"891","R32USA","urb","Zone_7A Very cold Humid",2020,454082.11111
+"892","R32USA","urb","Zone_7A Very cold Humid",2025,478123.60991

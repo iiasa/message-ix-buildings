@@ -205,6 +205,7 @@ fun_stock_dyn <- function(sector,
     select(-c(ms))
 
 
+
   if ("sub" %in% unique(bld_cases_eneff$mat)) {
     # Slum buildings
     new_det_slum_age_i <-
@@ -228,9 +229,9 @@ fun_stock_dyn <- function(sector,
   }
 
   # Test for new construction - total
-  if (round(c(sum(new_det_age_i$n_units_fuel) +
-      sum(new_det_slum_age_i$n_units_fuel)), 0) !=
-      round(sum(bld_aggr_i$n_new), 0)) {
+  if (round(sum(new_det_age_i$n_units_fuel) / 1e6 +
+      sum(new_det_slum_age_i$n_units_fuel) / 1e6, 0) !=
+      round(sum(bld_aggr_i$n_new) / 1e6, 0)) {
     print(paste("Test failed. New construction buildings.",
       "Error is:",
       round((sum(new_det_age_i$n_units_fuel) +
@@ -425,12 +426,9 @@ fun_stock_dyn <- function(sector,
     filter(!is.na(n_units_fuel)) %>%
     group_by_at(paste(c(geo_level,
       "urt", "inc_cl", "arch", "year", "clim", "bld_age", "eneff"))) %>%
-    # Calculate n_units_eneff to account for buildings with no heating
+    # Calculate n_units_eneff to account later for buildings with no heating
     mutate(n_units_eneff = sum(n_units_fuel)) %>%
     ungroup()
-
-  # Stock results - Energy
-  t <- bld_det_i %>% group_by_at("eneff") %>% summarise(total = sum(n_units_fuel))
 
   if (sector == "resid") {
     en_stock_i <- en_stock_i %>%

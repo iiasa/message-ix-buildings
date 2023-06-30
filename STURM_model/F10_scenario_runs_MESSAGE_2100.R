@@ -95,7 +95,7 @@ run_scenario <- function(run,
     d <- fun_inputs_csv(path_in, file_inputs, file_scenarios, sector, run)
     
     print("Initialize building stock for base year")
-    d$stock_arch_base <- fun_parse_stock(d$stock_arch_base, cat, d$pop)
+    # d$stock_arch_base <- fun_parse_stock(d$stock_arch_base, cat, d$pop)
 
     # TODO properly
     cat$geo_data <- cat$geo_data %>%
@@ -131,6 +131,7 @@ run_scenario <- function(run,
               relationship = "many-to-many") %>%
     inner_join(cat$ct_fuel_comb, by = c("mat" = "mat"),
                relationship = "many-to-many")
+               
   # Romve bld_cases_eneff and aggregate bld_cases_fuel when needed
   bld_cases_eneff <- bld_cases_fuel %>%
     select(-c(fuel_heat, fuel_cool, mod_decision)) %>%
@@ -142,8 +143,25 @@ run_scenario <- function(run,
     # Initialize housing stock (fun)
     print(paste("Initialize scenario run", sector))
 
+    stock_aggr <- fun_stock_future(
+      sector,
+      yrs,
+      cat$geo_data,
+      geo_levels,
+      geo_level,
+      bld_cases_fuel,
+      d$pop,
+      d$hh_size,
+      d$floor_cap,
+      cat$ct_eneff,
+      cat$ct_fuel_comb,
+      d$shr_mat,
+      d$shr_arch
+    )
+    print(paste("Initialize scenario run", sector, "- completed!"))
 
     temp <- fun_stock_init(sector,
+                          stock_aggr,
                            d$stock_arch_base,
                            cat$geo_data,
                            geo_levels,
@@ -154,29 +172,10 @@ run_scenario <- function(run,
     # Extract dataframes from list
     bld_det_age_i <- temp$bld_det_age_i
     report <- temp$report
-    print(paste("Initial building stock is",
-      round(sum(bld_det_age_i$n_units_fuel) / 10^6, 0), "million units."))
+    print(paste("Initial building stock based on detailed data:",
+      round(sum(bld_det_age_i$n_units_fuel) / 1e6, 0), "million units."))
     rm(temp)
     
-    stock_aggr <- fun_stock_future(
-      sector,
-      yrs,
-      cat$geo_data,
-      geo_levels,
-      geo_level,
-      bld_cases_eneff,
-      d$pop,
-      d$hh_size,
-      d$floor_cap,
-      cat$ct_hh_inc,
-      cat$ct_eneff,
-      cat$ct_fuel_comb,
-      d$stock_arch_base,
-      d$shr_mat,
-      d$shr_arch
-    )
-    print(paste("Initialize scenario run", sector, "- completed!"))
-
     # Loop over timesteps
     print(paste("Start scenario run", sector))
 
@@ -250,7 +249,7 @@ run_scenario <- function(run,
         ms_new_i <- fun_ms_new_exogenous(
                       yrs,
                       i,
-                      bld_cases_fuel,
+                      stock_aggr,
                       cat$ct_bld_age,
                       d$ms_shell_new_exo,
                       d$ms_switch_fuel_exo

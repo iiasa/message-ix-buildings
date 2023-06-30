@@ -1,3 +1,16 @@
+```{r reprex-options, include = FALSE}
+options(
+  keep.source = TRUE,
+  rlang_backtrace_on_error_report = "full",
+  crayon.enabled = FALSE,
+  reprex.current_venue = "gh"
+)
+```
+
+```{r, results = 'asis', echo = FALSE, include = file.exists('.Rprofile'), eval = file.exists('.Rprofile')}
+cat(sprintf("*Local `.Rprofile` detected at `%s`*", normalizePath(".Rprofile")))
+```
+
 ---
 output: reprex::reprex_document
 knit: reprex::reprex_render
@@ -43,22 +56,6 @@ data <- data %>%
 ```
 
 ## Figures
-
-### Buidling stock evolution by space heating fuels
-```{r}
-plot_stacked_area(data, "year", "stock_M", "fuel_heat",
-                  y_label = "Stock households\nMillion buildings",
-                  save_path = paste(save_dir, "stock_hh_fuel.png", sep = "/"))
-```
-
-## Final energy consumption for space heating in the Residential sector (TWh)
-```{r}
-plot_stacked_area(data, "year", "heat_TWh", "fuel_heat",
-                  y_label = "Final energy consumption for space heating\nResidential sector\nTWh",
-                  save_path = paste(save_dir, "heating_fuel.png", sep = "/")
-                  )
-```
-
 ```{r}
 plot_variable_evolution(data,
                         x_column = "year",
@@ -68,6 +65,20 @@ plot_variable_evolution(data,
                         save_path = paste(save_dir, "heat_evolution.png", sep="/"))
 ```
 
+## Stock of households by space heating fuels
+```{r}
+plot_stacked_area(data, "year", "stock_M", "fuel_heat",
+                  y_label = "Stock households\nMillion buildings",
+                  save_path = paste(save_dir, "stock_hh_fuel.png", sep="/"))
+```
+
+## Final energy consumption for space heating in the Residential sector (TWh)
+```{r}
+plot_stacked_area(data, "year", "heat_TWh", "fuel_heat",
+                  save_path = "figures/heating_fuel.png",
+                  y_label = "Final energy consumption for space heating \nResidential sector\nTWh",
+                  font_size = 11)
+```
 
 
-
+<sup>Created on `r Sys.Date()` with [reprex v`r utils::packageVersion("reprex")`](https://reprex.tidyverse.org)</sup>

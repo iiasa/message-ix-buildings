@@ -4,6 +4,9 @@ library(rstudioapi)
 library(tidyverse)
 library(readxl)
 
+# rounding (number of decimals)
+rnd <- 5
+
 source("./STURM_model/F10_scenario_runs_MESSAGE_2100.R")
 
 # Paths
@@ -31,6 +34,7 @@ report <- list(var = c("energy"),
                geo_level = "region_bld")
 
 yrs <- seq(base_year, end_year, step_year)
+
 
 
 # call STURM

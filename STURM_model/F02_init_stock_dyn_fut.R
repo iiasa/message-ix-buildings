@@ -1,10 +1,6 @@
-### INITIALIZE BUILDING STOCK - FUTURE SCENARIOS ###
+# Description: Initialize building stock for future scenarios
 
-# add switch to select levels for calculation?
 library(dplyr)
-
-# rounding (number of decimals)
-rnd <- 5
 
 #' @param sector: sector to run, "resid" or "comm"
 #' @param yrs: years to run, e.g. c(2015,2020,2025,2030,2035,2040,2045,2050)
@@ -23,7 +19,7 @@ rnd <- 5
 #' @param report_var: report variable, e.g. "energy"
 #' @return: data frame with results
 #' @export fun_stock_init_fut
-fun_stock_future <- function(sector,
+fun_stock_aggr <- function(sector,
                                yrs,
                                geo_data,
                                geo_levels,
@@ -119,7 +115,7 @@ fun_stock_future <- function(sector,
 #' @param shr_fuel_heat_base: share of heat fuel in baseyear
 #' @param shr_distr_heat: share of district heating
 #' @param report_var: variables to be reported,
-fun_stock_init <- function(sector,
+fun_stock_det_ini <- function(sector,
                            stock_aggr,
                            stock_arch_base,
                            geo_data,

@@ -5,11 +5,6 @@ library(readxl)
 library(readr)
 library(dplyr)
 
-
-# Unit conversion
-u_EJ_GWa <- 31.71
-
-
 #' @param run: name of the scenario to run, e.g. "NAV_Dem-NPi-ref"
 #' @param scenario_name: name of the scenario to run, e.g. "NAV_Dem-NPi-ref"
 #' @param sector: sector to run, available: "com", "resid"
@@ -143,7 +138,7 @@ run_scenario <- function(run,
     # Initialize housing stock (fun)
     print(paste("Initialize scenario run", sector))
 
-    stock_aggr <- fun_stock_future(
+    stock_aggr <- fun_stock_aggr(
       sector,
       yrs,
       cat$geo_data,
@@ -160,7 +155,7 @@ run_scenario <- function(run,
     )
     print(paste("Initialize scenario run", sector, "- completed!"))
 
-    temp <- fun_stock_init(sector,
+    temp <- fun_stock_det_ini(sector,
                           stock_aggr,
                            d$stock_arch_base,
                            cat$geo_data,
@@ -182,7 +177,6 @@ run_scenario <- function(run,
     for (i in 2:length(yrs)) {
       print(paste("Start scenario run", sector, "for year", yrs[i]))
 
-      # Lucas: try to run this function only once before the loop
       print(paste("Calculate energy demand intensities 
         for space heating and cooling"))
       lst_en_i <- fun_en_sim(
@@ -343,7 +337,6 @@ run_scenario <- function(run,
         report_var,
         report
       )
-      
       # Extract dataframes from list
       report <- lst_stock_i$report
       stock_aggr <- lst_stock_i$stock_aggr
@@ -481,27 +474,33 @@ run_scenario <- function(run,
 
   ## MESSAGE report -  Aggregate results for reporting
   if ("MESSAGE" %in% report_type) {
-    output <- fun_report_MESSAGE(sector, report_var, report, cat$geo_data, geo_level, geo_level_report)
+    output <- fun_report_MESSAGE(sector, report_var, report,
+      cat$geo_data, geo_level, geo_level_report)
   }
 
   ## STURM basic report (results written as csv)
   if ("STURM" %in% report_type) {
-    output <- fun_report_basic(report, report_var, cat$geo_data, geo_level, geo_level_report, sector, scenario_name, path_out)
+    output <- fun_report_basic(report, report_var, cat$geo_data,
+      geo_level, geo_level_report, sector, scenario_name, path_out)
   }
 
   ## Report results - IRP template (results written as csv)
   if ("IRP" %in% report_type) {
-    output <- fun_report_IRP(report, report_var, cat$geo_data, geo_level, geo_level_report, sector, scenario_name, yrs, path_out)
+    output <- fun_report_IRP(report, report_var, cat$geo_data, geo_level,
+      geo_level_report, sector, scenario_name, yrs, path_out)
   }
 
   ## Report results - NGFS template (results written as csv)
   if ("NGFS" %in% report_type) {
-    output <- fun_report_NGFS(report, report_var, geo_data, geo_level, geo_level_report, sector, scenario_name, yrs, path_out)
+    output <- fun_report_NGFS(report, report_var, geo_data, geo_level,
+      geo_level_report, sector, scenario_name, yrs, path_out)
   }
 
   ## Report results - NGFS template (results written as csv)
   if ("NAVIGATE" %in% report_type) {
-    output <- fun_report_NAVIGATE(report, report_var, cat$geo_data, geo_level, geo_level_report, sector, scenario_name, yrs, path_out, path_in, cat$ct_bld, cat$ct_ren_eneff, ren_en_sav_scen)
+    output <- fun_report_NAVIGATE(report, report_var, cat$geo_data, geo_level,
+      geo_level_report, sector, scenario_name, yrs, path_out, path_in,
+      cat$ct_bld,cat$ct_ren_eneff, ren_en_sav_scen)
   }
 
   # Tracking time

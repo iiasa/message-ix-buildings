@@ -1,13 +1,10 @@
-## FUTURE STOCK DYNAMICS
-## this calculation is to be put within a loop on "i" (time steps)
+# Description: Stock dynamics for the STURM model
+# Calculation of stock dynamics for one iteration
 
 library(dplyr)
 library(tidyverse)
 library(tibble)
 library(tidyr)
-
-# Rounding (number of decimals)
-rnd <- 5
 
 #' @param sector: sector to run, "resid" or "comm"
 #' @param yrs: years to run, e.g. c(2015,2020,2025,2030,2035,2040,2045,2050)
@@ -394,163 +391,166 @@ fun_stock_dyn <- function(sector,
     summarise(n_units_fuel = sum(n_units_fuel)) %>%
     ungroup()
 
-  # Aggregate at fuel level for keeping track of the stock
-  bld_det_i <- bld_det_age_i %>%
-    # Select all variables, except the ones indicated, for grouping
-    group_by_at(setdiff(names(bld_det_age_i),
-      c("yr_con", "n_units_fuel", "n_dem", "n_empty"))) %>%
-    summarise(
-      n_units_fuel = sum(n_units_fuel)
-    ) %>%
-    ungroup()
 
+  if ("energy" %in% report_var) {
 
-  # Report Energy Demand
-  en_stock_i <- bld_cases_fuel %>%
-    mutate(scenario = run) %>%
-    mutate(year = yrs[i]) %>%
-    # Issue matching periods of construction when definition is different!
-    left_join(bld_det_i) %>%
-    # Add "v_no_heat" category
-    select(-c(mod_decision)) %>%
-    pivot_wider(
-      names_from = "fuel_heat",
-      values_from = "n_units_fuel"
-    ) %>%
-    mutate(v_no_heat = 0) %>%
-    pivot_longer(
-      cols = c(sort(unique(ct_fuel_comb$fuel_heat)), "v_no_heat"),
-      names_to = "fuel_heat",
-      values_to = "n_units_fuel"
-    ) %>%
-    filter(!is.na(n_units_fuel)) %>%
-    group_by_at(paste(c(geo_level,
-      "urt", "inc_cl", "arch", "year", "clim", "bld_age", "eneff"))) %>%
-    # Calculate n_units_eneff to account later for buildings with no heating
-    mutate(n_units_eneff = sum(n_units_fuel)) %>%
-    ungroup()
+    # Aggregate at fuel level for keeping track of the stock
+    bld_det_i <- bld_det_age_i %>%
+      # Select all variables, except the ones indicated, for grouping
+      group_by_at(setdiff(names(bld_det_age_i),
+        c("yr_con", "n_units_fuel", "n_dem", "n_empty"))) %>%
+      summarise(
+        n_units_fuel = sum(n_units_fuel)
+      ) %>%
+      ungroup()
 
-  if (sector == "resid") {
-    en_stock_i <- en_stock_i %>%
-      left_join(shr_need_heat) %>%
-      # Rescale number of units based on fuel
-      # Heating access not considered here!
-      mutate(n_units_fuel = ifelse(fuel_heat == "v_no_heat",
-        n_units_eneff * (1 - shr_need_heat),
-        n_units_fuel * shr_need_heat
-      )) %>%
-      left_join(hh_size) %>%
-      left_join(floor_cap) %>%
-      # left_join(shr_acc_cool) %>%
-      left_join(en_m2_scen_heat) %>%
-      left_join(en_m2_scen_cool) %>%
-      left_join(en_hh_hw_scen) %>%
-      # convert n. units to millions
-      mutate(floor_Mm2 = n_units_fuel / 1e6 * hh_size * floor_cap) %>%
-      mutate(floor_heat_Mm2 = floor_Mm2) %>%
-      # mutate(floor_heat_Mm2 = ifelse(acc_heat == 1, floor_Mm2, 0)) %>%
-      mutate(floor_cool_Mm2 =
-        ifelse(shr_acc_cool == 1, floor_Mm2 * shr_acc_cool, 0)) %>%
-      # Converted from kWh to MJ (3.6).
-      #  Houssing units are in million, so results are in TJ.
-      mutate(heat_TJ = ifelse(fuel_heat == "v_no_heat", 0,
-        en_dem_heat * n_units_fuel / 1e6 * hh_size * floor_cap * 3.6)) %>%
-      # Converted from kWh to MJ (3.6).
-      #  Houssing units are in million, so results are in TJ.
-      mutate(cool_TJ = en_dem_cool * shr_acc_cool *
-        n_units_fuel / 1e6 * hh_size * floor_cap * 3.6) %>%
-      mutate(cool_ac_TJ = en_dem_c_ac * shr_acc_cool *
-        n_units_fuel / 1e6 * hh_size * floor_cap * 3.6) %>%
-      # Note:shr_acc_cool=1 for all cases (access calculated before)
-      # Converted from kWh to MJ (3.6). 
-      #   Houssing units are in million, so results are in TJ.
-      mutate(cool_fans_TJ = en_dem_c_fans * shr_acc_cool *
-        n_units_fuel / 1e6 * hh_size * floor_cap * 3.6) %>% 
-      # converted from GJ/hh/yr to TJ
-      mutate(hotwater_TJ = ifelse(fuel_heat == "v_no_heat", 0,
-        en_dem_dhw * n_units_fuel / 1e3)) %>%
-      # Other uses not covered for residential
-      mutate(other_uses_TJ = 0) %>%
-      mutate(stock_M = n_units_fuel / 1e6) %>%
-      filter(stock_M > 0 & !is.na(stock_M)) %>%
-      select_at(c(geo_levels, paste(c(
-        "urt", "clim", "inc_cl", "arch", "mat",
-        "eneff", "fuel_heat", "fuel_cool",
-        "scenario", "year", "stock_M", "floor_Mm2",
-        "heat_TJ", "cool_TJ", "cool_ac_TJ", "cool_fans_TJ",
-        "hotwater_TJ", "other_uses_TJ"
-      ))))
+    # Report Energy Demand
+    en_stock_i <- bld_cases_fuel %>%
+      mutate(scenario = run) %>%
+      mutate(year = yrs[i]) %>%
+      # Issue matching periods of construction when definition is different!
+      left_join(bld_det_i) %>%
+      # Add "v_no_heat" category
+      select(-c(mod_decision)) %>%
+      pivot_wider(
+        names_from = "fuel_heat",
+        values_from = "n_units_fuel"
+      ) %>%
+      mutate(v_no_heat = 0) %>%
+      pivot_longer(
+        cols = c(sort(unique(ct_fuel_comb$fuel_heat)), "v_no_heat"),
+        names_to = "fuel_heat",
+        values_to = "n_units_fuel"
+      ) %>%
+      filter(!is.na(n_units_fuel)) %>%
+      group_by_at(paste(c(geo_level,
+        "urt", "inc_cl", "arch", "year", "clim", "bld_age", "eneff"))) %>%
+      # Calculate n_units_eneff to account later for buildings with no heating
+      mutate(n_units_eneff = sum(n_units_fuel)) %>%
+      ungroup()
+
+    if (sector == "resid") {
+      en_stock_i <- en_stock_i %>%
+        left_join(shr_need_heat) %>%
+        # Rescale number of units based on fuel
+        # Heating access not considered here!
+        mutate(n_units_fuel = ifelse(fuel_heat == "v_no_heat",
+          n_units_eneff * (1 - shr_need_heat),
+          n_units_fuel * shr_need_heat
+        )) %>%
+        left_join(hh_size) %>%
+        left_join(floor_cap) %>%
+        # left_join(shr_acc_cool) %>%
+        left_join(en_m2_scen_heat) %>%
+        left_join(en_m2_scen_cool) %>%
+        left_join(en_hh_hw_scen) %>%
+        # convert n. units to millions
+        mutate(floor_Mm2 = n_units_fuel / 1e6 * hh_size * floor_cap) %>%
+        mutate(floor_heat_Mm2 = floor_Mm2) %>%
+        # mutate(floor_heat_Mm2 = ifelse(acc_heat == 1, floor_Mm2, 0)) %>%
+        mutate(floor_cool_Mm2 =
+          ifelse(shr_acc_cool == 1, floor_Mm2 * shr_acc_cool, 0)) %>%
+        # Converted from kWh to MJ (3.6).
+        #  Houssing units are in million, so results are in TJ.
+        mutate(heat_TJ = ifelse(fuel_heat == "v_no_heat", 0,
+          en_dem_heat * n_units_fuel / 1e6 * hh_size * floor_cap * 3.6)) %>%
+        # Converted from kWh to MJ (3.6).
+        #  Houssing units are in million, so results are in TJ.
+        mutate(cool_TJ = en_dem_cool * shr_acc_cool *
+          n_units_fuel / 1e6 * hh_size * floor_cap * 3.6) %>%
+        mutate(cool_ac_TJ = en_dem_c_ac * shr_acc_cool *
+          n_units_fuel / 1e6 * hh_size * floor_cap * 3.6) %>%
+        # Note:shr_acc_cool=1 for all cases (access calculated before)
+        # Converted from kWh to MJ (3.6). 
+        #   Houssing units are in million, so results are in TJ.
+        mutate(cool_fans_TJ = en_dem_c_fans * shr_acc_cool *
+          n_units_fuel / 1e6 * hh_size * floor_cap * 3.6) %>% 
+        # converted from GJ/hh/yr to TJ
+        mutate(hotwater_TJ = ifelse(fuel_heat == "v_no_heat", 0,
+          en_dem_dhw * n_units_fuel / 1e3)) %>%
+        # Other uses not covered for residential
+        mutate(other_uses_TJ = 0) %>%
+        mutate(stock_M = n_units_fuel / 1e6) %>%
+        filter(stock_M > 0 & !is.na(stock_M)) %>%
+        select_at(c(geo_levels, paste(c(
+          "urt", "clim", "inc_cl", "arch", "mat",
+          "eneff", "fuel_heat", "fuel_cool",
+          "scenario", "year", "stock_M", "floor_Mm2",
+          "heat_TJ", "cool_TJ", "cool_ac_TJ", "cool_fans_TJ",
+          "hotwater_TJ", "other_uses_TJ"
+        ))))
+    }
+    if (sector == "comm") {
+      en_stock_i <- en_stock_i %>% # To avoid NAs with non-available combination of eneff - fuel (slums)
+        # left_join(en_stock_i) %>%
+        left_join(shr_need_heat) %>%
+        mutate(n_units_fuel = ifelse(fuel_heat == "v_no_heat", # Rescale number of units based on fuel # Heating access not considered here!!
+          n_units_eneff * (1 - shr_need_heat),
+          n_units_fuel * shr_need_heat
+        )) %>%
+        # left_join(hh_size) %>%
+        # left_join(floor) %>%
+        # left_join(shr_acc_cool) %>%
+        left_join(en_m2_scen_heat) %>%
+        left_join(en_m2_scen_cool) %>%
+        left_join(en_m2_hw_scen) %>%
+        left_join(en_m2_others) %>%
+        mutate(floor_Mm2 = n_units_fuel / 1e6) %>%
+        mutate(floor_heat_Mm2 = floor_Mm2) %>%
+        # mutate(floor_heat_Mm2 = ifelse(acc_heat == 1, floor_Mm2, 0)) %>%
+        mutate(floor_cool_Mm2 = ifelse(shr_acc_cool == 1, floor_Mm2 * shr_acc_cool, 0)) %>%
+        mutate(heat_TJ = ifelse(fuel_heat == "v_no_heat", 0, en_dem_heat * n_units_fuel / 1e6 * 3.6)) %>% # converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
+        mutate(cool_TJ = en_dem_cool * shr_acc_cool * n_units_fuel / 1e6 * 3.6) %>% # converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
+        mutate(cool_ac_TJ = en_dem_c_ac * shr_acc_cool * n_units_fuel / 1e6 * 3.6) %>% # converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
+        mutate(cool_fans_TJ = en_dem_c_fans * shr_acc_cool * n_units_fuel / 1e6 * 3.6) %>% # Note:shr_acc_cool=1 for all cases (access calculated before) #converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
+        # mutate(hotwater_TJ = ifelse(fuel_heat == "v_no_heat", 0, en_dem_dhw * n_units_fuel / 1e6 * 3.6)) %>% # converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
+        mutate(hotwater_TJ = ifelse(fuel_heat == "v_no_heat", 0, en_dem_dhw * n_units_fuel / 1e6 * 3.6)) %>% # converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
+        mutate(other_uses_TJ = en_dem_others * n_units_fuel / 1e6 * 3.6) %>% # converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
+        mutate(stock_M = n_units_fuel / 1e6) %>%
+        filter(stock_M > 0 & !is.na(stock_M)) %>%
+        select_at(c(geo_levels, paste(c(
+          "urt", "clim", "inc_cl", "arch", "mat", "eneff", "fuel_heat", "fuel_cool",
+          "scenario", # "ssp",
+          "year", "stock_M", "floor_Mm2",
+          # "floor_tot_heat_Mm2", "floor_tot_cool_Mm2",
+          "heat_TJ", "cool_TJ", "cool_ac_TJ", "cool_fans_TJ", "hotwater_TJ", "other_uses_TJ"
+        ))))
+    }
+
+    report$en_stock <- bind_rows(report$en_stock, en_stock_i)
   }
-
-  if (sector == "comm") {
-    en_stock_i <- en_stock_i %>% # To avoid NAs with non-available combination of eneff - fuel (slums)
-      # left_join(en_stock_i) %>%
-      left_join(shr_need_heat) %>%
-      mutate(n_units_fuel = ifelse(fuel_heat == "v_no_heat", # Rescale number of units based on fuel # Heating access not considered here!!
-        n_units_eneff * (1 - shr_need_heat),
-        n_units_fuel * shr_need_heat
-      )) %>%
-      # left_join(hh_size) %>%
-      # left_join(floor) %>%
-      # left_join(shr_acc_cool) %>%
-      left_join(en_m2_scen_heat) %>%
-      left_join(en_m2_scen_cool) %>%
-      left_join(en_m2_hw_scen) %>%
-      left_join(en_m2_others) %>%
-      mutate(floor_Mm2 = n_units_fuel / 1e6) %>%
-      mutate(floor_heat_Mm2 = floor_Mm2) %>%
-      # mutate(floor_heat_Mm2 = ifelse(acc_heat == 1, floor_Mm2, 0)) %>%
-      mutate(floor_cool_Mm2 = ifelse(shr_acc_cool == 1, floor_Mm2 * shr_acc_cool, 0)) %>%
-      mutate(heat_TJ = ifelse(fuel_heat == "v_no_heat", 0, en_dem_heat * n_units_fuel / 1e6 * 3.6)) %>% # converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
-      mutate(cool_TJ = en_dem_cool * shr_acc_cool * n_units_fuel / 1e6 * 3.6) %>% # converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
-      mutate(cool_ac_TJ = en_dem_c_ac * shr_acc_cool * n_units_fuel / 1e6 * 3.6) %>% # converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
-      mutate(cool_fans_TJ = en_dem_c_fans * shr_acc_cool * n_units_fuel / 1e6 * 3.6) %>% # Note:shr_acc_cool=1 for all cases (access calculated before) #converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
-      # mutate(hotwater_TJ = ifelse(fuel_heat == "v_no_heat", 0, en_dem_dhw * n_units_fuel / 1e6 * 3.6)) %>% # converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
-      mutate(hotwater_TJ = ifelse(fuel_heat == "v_no_heat", 0, en_dem_dhw * n_units_fuel / 1e6 * 3.6)) %>% # converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
-      mutate(other_uses_TJ = en_dem_others * n_units_fuel / 1e6 * 3.6) %>% # converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
-      mutate(stock_M = n_units_fuel / 1e6) %>%
-      filter(stock_M > 0 & !is.na(stock_M)) %>%
-      select_at(c(geo_levels, paste(c(
-        "urt", "clim", "inc_cl", "arch", "mat", "eneff", "fuel_heat", "fuel_cool",
-        "scenario", # "ssp",
-        "year", "stock_M", "floor_Mm2",
-        # "floor_tot_heat_Mm2", "floor_tot_cool_Mm2",
-        "heat_TJ", "cool_TJ", "cool_ac_TJ", "cool_fans_TJ", "hotwater_TJ", "other_uses_TJ"
-      ))))
-  }
-
-  # Stock results - Material
-
-  # Aggregate results at eneff level
-  # demolitions
-  dem_eneff_i <- dem_det_age_i %>%
-    group_by_at(setdiff(names(dem_det_age_i), c(
-      "bld_age", "fuel_heat", "fuel_cool", "n_units_fuel_p", "n_dem", "n_empty"
-    ))) %>%
-    summarise(
-      n_dem = sum(n_dem)
-    ) %>%
-    ungroup()
-
-  # new constructions
-  new_eneff_i <- bind_rows(new_det_age_i, new_det_slum_age_i) %>%
-    group_by_at(setdiff(names(new_det_age_i), c(
-      "bld_age", "mod_decision",
-      "fuel_heat", "fuel_cool", "n_units_fuel"
-    ))) %>%
-    summarise(n_new = sum(n_units_fuel)) %>%
-    ungroup()
-
-  # stock
-  bld_eneff_i <- bld_det_age_i %>%
-    group_by_at(setdiff(names(bld_det_age_i), c(
-      "bld_age", "fuel_heat", "fuel_cool", "n_units_fuel"
-    ))) %>%
-    summarise(n_units = sum(n_units_fuel)) %>%
-    ungroup()
-
 
   if ("material" %in% report_var) {
+    # Stock results - Material
+
+    # Aggregate results at eneff level demolitions
+    dem_eneff_i <- dem_det_age_i %>%
+      group_by_at(setdiff(names(dem_det_age_i), c(
+        "bld_age", "fuel_heat", "fuel_cool",
+        "n_units_fuel_p", "n_dem", "n_empty"
+      ))) %>%
+      summarise(
+        n_dem = sum(n_dem)
+      ) %>%
+      ungroup()
+
+    # new constructions
+    new_eneff_i <- bind_rows(new_det_age_i, new_det_slum_age_i) %>%
+      group_by_at(setdiff(names(new_det_age_i), c(
+        "bld_age", "mod_decision",
+        "fuel_heat", "fuel_cool", "n_units_fuel"
+      ))) %>%
+      summarise(n_new = sum(n_units_fuel)) %>%
+      ungroup()
+
+    # stock
+    bld_eneff_i <- bld_det_age_i %>%
+      group_by_at(setdiff(names(bld_det_age_i), c(
+        "bld_age", "fuel_heat", "fuel_cool", "n_units_fuel"
+      ))) %>%
+      summarise(n_units = sum(n_units_fuel)) %>%
+      ungroup()
+
     if (sector == "resid") {
       # Calculate material stock
       mat_stock_i <- bld_cases_eneff %>%
@@ -577,13 +577,6 @@ fun_stock_dyn <- function(sector,
         mutate(mat_stock_Mt = n_units * hh_size * floor_cap * mat_int / 1e3 / 1e6) %>% # Mt/y
         mutate(mat_demand_Mt = n_new * hh_size * floor_cap * mat_int / stp / 1e3 / 1e6) %>% # Mt/y
         mutate(mat_scrap_Mt = n_dem * hh_size * floor_cap * mat_int / stp / 1e3 / 1e6) %>% # Mt/y
-        # select_at(c(geo_levels, paste(c("urt", "clim", "inc_cl", "arch", "mat", "eneff", "material", ##### CHECK yr_con
-        #                                 "scenario", "ssp", "year",
-        #                                 "floor_tot_Mm2",
-        #                                 "floor_new_Mm2", "floor_dem_Mm2",
-        #                                 "mat_int",
-        #                                 "mat_stock_Mt",
-        #                                 "mat_demand_Mt", "mat_scrap_Mt")))) %>%
         group_by_at(c(
           geo_levels,
           paste(c(
@@ -667,29 +660,19 @@ fun_stock_dyn <- function(sector,
       )
 
     mat_stock_i <- rbind(mat_stock_i, mat_stock_cem_i)
+    report$mat_stock <- bind_rows(report$mat_stock, mat_stock_i)
   }
 
-  # Report stock by eneff - vintage
   if ("vintage" %in% report_var) {
-    # Stock by eneff and vintage (for reporting)
     report$bld_eneff_age <- bind_rows(
       report$bld_eneff_age,
       bld_det_age_i %>%
-        group_by_at(setdiff(names(bld_det_age_i), c( # "arch",
+        group_by_at(setdiff(names(bld_det_age_i), c(
           "fuel_heat", "fuel_cool", "n_units_fuel"
         ))) %>%
         summarise(n_units_eneff = sum(n_units_fuel)) %>%
         ungroup()
     )
-  }
-
-  # Update energy demand/material results (for reporting)
-  if ("energy" %in% report_var) {
-    report$en_stock <- bind_rows(report$en_stock, en_stock_i)
-  }
-
-  if ("material" %in% report_var) {
-    report$mat_stock <- bind_rows(report$mat_stock, mat_stock_i)
   }
 
   output <- list(

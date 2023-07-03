@@ -48,10 +48,6 @@ yrs <- seq(base_year, end_year, step_year)
 #' @param path_prices: name of the price file, default is "input_prices_R12.csv"
 #' @param file_inputs: name of the input file, default is "input_list_resid"
 #' @param file_scenarios: name of the scenario file, default is "scenarios_TEST"
-#' @param geo_level: level for analysis, default is "region_bld"
-#' @param geo_level_aggr: level for aggregation, default is "region_gea"
-#' @param geo_levels: levels to keep track of,
-#' default is c("region_bld","region_gea")
 #' @param geo_level_report: level for reporting, default is "R12"
 #' @param yrs: years to be analysed, default is seq(2015,2050,5)
 #' @param mod_arch: model architecture, default is "stock"

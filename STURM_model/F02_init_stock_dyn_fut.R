@@ -144,7 +144,7 @@ fun_stock_det_ini <- function(sector,
     mutate(n_units_fuel =
       round(n_units_eneff * shr_fuel_heat_base, rnd)) %>%
     mutate_cond(mat == "sub", n_units_fuel = n_units_eneff) %>%
-    select(-c(shr_fuel_heat_base, n_units_eneff, mod_decision)) %>%
+    select(-c(shr_fuel_heat_base, n_units_eneff)) %>%
     filter(n_units_fuel != 0)
 
   if (sum(is.na(bld_det_age_i$n_units_fuel)) > 0) {

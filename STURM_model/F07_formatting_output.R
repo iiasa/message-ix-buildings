@@ -62,8 +62,7 @@ fun_format_output <- function(i,
         # new constructions
         new_eneff_i <- bind_rows(new_det_age_i, new_det_slum_age_i) %>%
             group_by_at(setdiff(names(new_det_age_i), c(
-                "bld_age", "mod_decision",
-                "fuel_heat", "fuel_cool", "n_units_fuel"
+                "bld_age", "fuel_heat", "fuel_cool", "n_units_fuel"
             ))) %>%
             summarise(n_new = sum(n_units_fuel)) %>%
             ungroup()
@@ -235,7 +234,6 @@ fun_format_bld_stock_energy <- function(
         # Issue matching periods of construction when definition is different!
         left_join(bld_det_i) %>%
         # Add "v_no_heat" category
-        select(-c(mod_decision)) %>%
         pivot_wider(
             names_from = "fuel_heat",
             values_from = "n_units_fuel"

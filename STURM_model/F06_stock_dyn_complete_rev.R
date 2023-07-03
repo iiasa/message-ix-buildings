@@ -228,7 +228,6 @@ fun_stock_dyn <- function(i,
     left_join(ms_ren_i %>%
       rename(eneff = eneff_i, fuel_heat = fuel_heat_i)) %>%
     mutate(
-      mod_decision = ifelse(is.na(ms_ren), 0, mod_decision),
       eneff_f = ifelse(is.na(ms_ren), eneff, eneff_f),
       fuel_heat_f = ifelse(is.na(ms_ren), fuel_heat, fuel_heat_f)
     ) %>%
@@ -239,7 +238,7 @@ fun_stock_dyn <- function(i,
       round(n_units_fuel_exst * rate_ren * stp * ms_ren, rnd)) %>%
     select(-c(
       n_units_fuel_p, n_dem, n_empty, n_units_fuel_exst, rate_ren,
-      mod_decision, ms_ren
+      ms_ren
     ))
 
   print(
@@ -295,7 +294,7 @@ fun_stock_dyn <- function(i,
     filter(n_units_fuel > 0) %>%
     # Calculate renovation rate - mat level
     select(-c(
-      n_units_fuel_exst, bld_age_min, rate_switch_fuel_heat, mod_decision, ms
+      n_units_fuel_exst, bld_age_min, rate_switch_fuel_heat, ms
     ))
 
 

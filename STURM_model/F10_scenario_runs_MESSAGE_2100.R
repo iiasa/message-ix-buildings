@@ -86,7 +86,7 @@ run_scenario <- function(run,
 
   # Selecting only useful fuel for the run
   fuel <- unique(d$shr_fuel_heat_base$fuel_heat)
-  cat$ct_fuel_comb <- cat$ct_fuel_comb %>%
+  cat$ct_fuel <- cat$ct_fuel %>%
     filter(fuel_heat %in% fuel)
 
   # Read energy prices
@@ -109,12 +109,12 @@ run_scenario <- function(run,
               relationship = "many-to-many") %>%
     left_join(cat$ct_eneff, by = "mat",
               relationship = "many-to-many") %>%
-    inner_join(cat$ct_fuel_comb, by = c("mat" = "mat"),
+    inner_join(cat$ct_fuel, by = c("mat" = "mat"),
                relationship = "many-to-many")
                
   # Romve bld_cases_eneff and aggregate bld_cases_fuel when needed
   bld_cases_eneff <- bld_cases_fuel %>%
-    select(-c(fuel_heat, fuel_cool, mod_decision)) %>%
+    select(-c(fuel_heat, fuel_cool)) %>%
     distinct()
 
   ### RESIDENTIAL SECTOR
@@ -132,7 +132,7 @@ run_scenario <- function(run,
       d$hh_size,
       d$floor_cap,
       cat$ct_eneff,
-      cat$ct_fuel_comb,
+      cat$ct_fuel,
       d$shr_mat,
       d$shr_arch
     )
@@ -143,7 +143,7 @@ run_scenario <- function(run,
                            d$stock_arch_base,
                            cat$geo_data,
                            cat$ct_eneff,
-                           cat$ct_fuel_comb,
+                           cat$ct_fuel,
                            d$shr_fuel_heat_base,
                            report_var)
     # Extract dataframes from list
@@ -237,13 +237,13 @@ run_scenario <- function(run,
       # Market share for renovation and fuel switches options
       print(paste("Calculate market share for renovation and fuel switches"))
       if (energy_efficiency == "endogenous") {
-        lst_ms_ren_sw_i <- fun_ms_ren_sw(
+        lst_ms_ren_sw_i <- fun_ms_ren_sw_endogenous(
           yrs,
           i,
           bld_cases_fuel,
           cat$ct_bld_age,
           cat$ct_hh_tenr,
-          cat$ct_fuel_comb,
+          cat$ct_fuel,
           cat$ct_ren_eneff,
           d$ct_ren_fuel_heat,
           d$hh_size,
@@ -251,34 +251,34 @@ run_scenario <- function(run,
           d$hh_tenure,
           d$cost_invest_ren_shell,
           d$cost_invest_ren_heat,
-          d$cost_intang_ren_shell,
-          d$cost_intang_ren_heat,
           d$ct_fuel_excl_ren,
           d$ct_fuel_excl_reg,
           d$discount_ren,
-          d$heterog_ren,
           d$lifetime_ren,
-          d$rate_ren_low,
-          d$rate_ren_high,
           en_hh_tot
         )
         } else {
-        lst_ms_ren_sw_i <- fun_ms_ren_sw_exogenous(
+        lst_ms_ren_sw_i <- fun_ms_ren_shell_exogenous(
                               yrs,
                               i,
                               bld_cases_fuel,
                               cat$ct_bld_age,
                               d$rate_shell_ren_exo,
-                              d$ms_shell_ren_exo,
-                              d$ms_switch_fuel_exo
+                              d$ms_shell_ren_exo
         )
       }
       # Extract dataframes from list
       ms_ren_i <- lst_ms_ren_sw_i$ms_ren_i
       rate_ren_i <- lst_ms_ren_sw_i$rate_ren_i
-      ms_sw_i <- lst_ms_ren_sw_i$ms_sw_i
       rm(lst_ms_ren_sw_i)
 
+      ms_sw_i <- fun_ms_fuel_sw_exogenous(yrs,
+                                i,
+                           bld_cases_fuel,
+                           cat$ct_bld_age,
+                           d$ms_switch_fuel_exo)
+
+  
       try(if (nrow(ms_ren_i) == 0)
         stop("Error in renovation calculation! Empty dataframe ms_ren_i"))
       try(if (nrow(ms_sw_i) == 0)
@@ -311,7 +311,7 @@ run_scenario <- function(run,
                               bld_det_age_i,
                               bld_cases_eneff,
                               bld_cases_fuel,
-                              cat$ct_fuel_comb,
+                              cat$ct_fuel,
                               d$shr_need_heat,
                               d$floor_cap,
                               d$hh_size,
@@ -339,7 +339,7 @@ run_scenario <- function(run,
       hh_size, # used for residential
       floor_cap, # used for commercial
       ct_hh_inc,
-      ct_eneff, ct_fuel_comb,
+      ct_eneff, ct_fuel,
       stock_arch_base,
       shr_mat, shr_arch, shr_fuel_heat_base, shr_distr_heat,
       # eff_cool_scen, eff_heat_scen,eff_hotwater_scen,
@@ -419,7 +419,7 @@ run_scenario <- function(run,
         run, ssp_r,
         "region_bld", "region_gea",
         bld_cases_fuel, bld_cases_eneff,
-        ct_bld_age, ct_fuel_comb,
+        ct_bld_age, ct_fuel,
         hh_size = NULL, # Not used for commercial
         floor_cap,
         stock_aggr, bld_det_age_i, # bld_det,

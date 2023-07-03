@@ -61,7 +61,6 @@ print(paste0("generate lcc_new_hh "))
 # Filter rows based on constraints and calc settings
 lcc_new_hh <- lcc_new_hh %>%
   filter(bld_age %in% ct_bld_age_id_i) %>% # only current construction period allowed
-  filter(mod_decision == 1) %>% # cases out of modelling decisions (e.g. district heating, substandard buildings)
   filter(ct_fuel_excl_new == 0 & ct_fuel_excl_reg == 0) %>% # excluded non-permitted fuels (e.g. coal for passive houses)
   filter(cost_intang_new_shell != 99999) %>% # FILTERING BASED ON INTANGIBLE COSTS
   filter(cost_intang_new_heat != 99999) %>% # FILTERING BASED ON INTANGIBLE COSTS
@@ -74,7 +73,7 @@ lcc_new_hh_exp <- lcc_new_hh %>% select(-c(hh_size, floor_cap, #cost_inv,
                                            #fuel_heat, fuel_cool, ## here they should stay!!! they represent different choices 
                                            #en_m2, en_hh,      
                                            # price_en,
-                                           mod_decision, ct_fuel_excl_new,ct_fuel_excl_reg,
+                                           ct_fuel_excl_new,ct_fuel_excl_reg,
                                            cost_invest_new_shell, cost_invest_new_heat,
                                            cost_op_m2, cost_op_hh, 
                                            cost_intang_new_shell, cost_intang_new_heat,

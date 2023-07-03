@@ -107,7 +107,7 @@ read_categories <- function(path_in_csv,
     ct_bld_age = paste0("input_", sector, "/categories/ct_bld_age.csv"),
     ct_bld = paste0("input_", sector, "/categories/ct_arch.csv"),
     ct_eneff = paste0("input_", sector, "/categories/ct_eneff.csv"),
-    ct_fuel_comb = paste0("input_", sector, "/categories/ct_fuel.csv"),
+    ct_fuel = paste0("input_", sector, "/categories/ct_fuel.csv"),
     ct_fuel_dhw = paste0("input_", sector, "/categories/ct_fuel_res.csv"),
     ct_ren_eneff = paste0("input_", sector, "/categories/ct_ren_eneff2.csv")
   )

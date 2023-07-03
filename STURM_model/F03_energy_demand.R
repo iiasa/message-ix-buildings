@@ -99,7 +99,7 @@ fun_en_sim <- function(sector,
 
   en_m2_scen_S <- en_m2_scen_det %>%
     select(-c(
-      eff_cool, eff_heat, mod_decision, f_h, f_c,
+      eff_cool, eff_heat, f_h, f_c,
       shr_floor_heat, shr_floor_cool, hours_heat, hours_cool,
       en_sav_ren
     )) %>%
@@ -114,8 +114,7 @@ fun_en_sim <- function(sector,
       en_dem_c_ac,
       en_dem_c_fans,
       shr_acc_cool,
-      fuel_cool,
-      mod_decision
+      fuel_cool
     ))
 
   en_m2_scen_cool <- bld_cases_fuel %>%
@@ -123,8 +122,6 @@ fun_en_sim <- function(sector,
     select(-c(
       fuel_heat,
       en_dem_heat,
-      # eneff_fuel,
-      mod_decision
     )) %>%
     distinct()
 
@@ -198,7 +195,7 @@ fun_hw_resid <- function(yrs, i,
     mutate(en_dem_dhw = hh_size * en_int_hotwater * acc_hw / eff_hotwater) %>% # DHW energy demand (final) [GJ/hh/y]
     mutate_cond(en_int_heat == 0, en_dem_dhw = 0) %>% # no hot water demand where there is no heating
     select(-year) %>%
-    select(-c(hh_size, eff_hotwater, en_int_hotwater, en_int_heat, mod_decision))
+    select(-c(hh_size, eff_hotwater, en_int_hotwater, en_int_heat))
 
   output <- en_hh_hw_scen
 }
@@ -224,7 +221,7 @@ fun_hw_comm <- function(yrs,
     left_join(en_m2_dhw) %>%
     mutate(en_dem_dhw = en_dhw_useful_kwh_m2 / eff_hotwater) %>% # DHW energy demand (final) [kWh/m2/y]
     select(-year) %>%
-    select(-c(eff_hotwater, en_dhw_useful_kwh_m2, mod_decision))
+    select(-c(eff_hotwater, en_dhw_useful_kwh_m2))
 
   output <- en_m2_hw_scen
 }

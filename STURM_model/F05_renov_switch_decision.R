@@ -320,13 +320,11 @@ fun_ms_ren_sw_endogenous <- function(yrs,
                           i,
                           bld_cases_fuel,
                           ct_bld_age,
-                          ct_hh_tenr,
                           ct_fuel_comb,
                           ct_ren_eneff,
                           ct_ren_fuel_heat,
                           hh_size,
                           floor_cap,
-                          hh_tenure,
                           cost_invest_ren_shell,
                           cost_invest_ren_heat,
                           ct_fuel_excl_ren,
@@ -339,10 +337,6 @@ fun_ms_ren_sw_endogenous <- function(yrs,
   ## Define timestep
   stp <- yrs[i] - yrs[i - 1]
 
-  # Building cases fuels + tenure
-  bld_cases_fuel_tenr <- merge(bld_cases_fuel,
-    as.data.frame(ct_hh_tenr)) %>%
-    rename(tenr = ct_hh_tenr)
 
   # Operational energy costs before/after renovation
   # Final energy costs to be used in renovation decisions
@@ -388,9 +382,6 @@ fun_ms_ren_sw_endogenous <- function(yrs,
       rename(fuel_heat_f = fuel_heat) %>%
       # Constraint (after renovation): fuels not used in specific regions
       rename(ct_fuel_excl_f_reg = ct_fuel_excl_reg)) %>%
-    # Exclude cases out of modelling decisions
-    #  (e.g. district heating, substandard buildings)
-    filter(mod_decision == 1) %>%
     # Exclude non-permitted fuels (e.g. coal for passive houses)
     filter(
       is.na(ct_fuel_excl_ren),
@@ -411,15 +402,11 @@ fun_ms_ren_sw_endogenous <- function(yrs,
       (eneff != eneff_f & ct_ren_fuel_heat == 1)) %>%
     # Attach year (in the loop)
     mutate(year = yrs[i]) %>%
-    # Add HH size
     left_join(hh_size) %>%
-    # Add floor per capita
     left_join(floor_cap) %>%
     # Add lifetime ren construction (for investment: based on loan duration)
     left_join(lifetime_ren) %>%
-    # Add investment costs for shell renovation
     left_join(cost_invest_ren_shell_i) %>%
-    # Add investment costs for heating renovation
     left_join(cost_invest_ren_heat_i) %>% #
     # No renovation
     mutate_cond(eneff == eneff_f & fuel_heat == fuel_heat_f,

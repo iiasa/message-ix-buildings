@@ -192,7 +192,6 @@ fun_stock_det_ini <- function(sector,
       mutate(n_units_fuel = n_units_fuel * hh_tenure) %>%
       select(-hh_tenure)
     
-    # print(head(filter(bld_det_age_i, is.na(n_units_fuel))))
     # Test consistency.
     if (round(temp / 1e6, 0) !=
       round(sum(bld_det_age_i$n_units_fuel) / 1e6, 0)) {
@@ -200,6 +199,7 @@ fun_stock_det_ini <- function(sector,
         Inconsistent income shares.")
     }
   }
+
   print(paste("Number of buildings for base year:",
     round(sum(bld_det_age_i$n_units_fuel) / 1e6, 0),
     "million units."))

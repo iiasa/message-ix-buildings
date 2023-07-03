@@ -101,16 +101,19 @@ run_scenario <- function(run,
     urt = cat$urts,
     inc_cl = cat$ct_hh_inc,
     stringsAsFactors = FALSE
-  ) %>%
-    left_join(cat$geo_data %>% select_at(c("region_bld", "region_gea"))) %>%
-    left_join(cat$clim_zones, by = c("region_bld", "urt")
-              ) %>%
+    ) %>%
+    left_join(cat$geo_data %>%
+      select_at(c("region_bld", "region_gea"))) %>%
+    left_join(cat$clim_zones,
+      by = c("region_bld", "urt")) %>%
     left_join(cat$ct_bld,
-              relationship = "many-to-many") %>%
+      relationship = "many-to-many") %>%
     left_join(cat$ct_eneff, by = "mat",
-              relationship = "many-to-many") %>%
+      relationship = "many-to-many") %>%
     inner_join(cat$ct_fuel, by = c("mat" = "mat"),
-               relationship = "many-to-many")
+      relationship = "many-to-many") %>%
+    merge(as.data.frame(cat$ct_hh_tenr)) %>%
+    rename("tenr" = "cat$ct_hh_tenr")
                
   # Romve bld_cases_eneff and aggregate bld_cases_fuel when needed
   bld_cases_eneff <- bld_cases_fuel %>%
@@ -243,13 +246,11 @@ run_scenario <- function(run,
           i,
           bld_cases_fuel,
           cat$ct_bld_age,
-          cat$ct_hh_tenr,
           cat$ct_fuel,
           cat$ct_ren_eneff,
           d$ct_ren_fuel_heat,
           d$hh_size,
           d$floor_cap,
-          d$hh_tenure,
           d$cost_invest_ren_shell,
           d$cost_invest_ren_heat,
           d$ct_fuel_excl_ren,

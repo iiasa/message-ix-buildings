@@ -145,6 +145,7 @@ run_scenario <- function(run,
                            cat$ct_eneff,
                            cat$ct_fuel,
                            d$shr_fuel_heat_base,
+                           d$hh_tenure,
                            report_var)
     # Extract dataframes from list
     bld_det_age_i <- temp$bld_det_age_i
@@ -203,7 +204,7 @@ run_scenario <- function(run,
 
       # Market share - new construction options
       print(paste("Calculate market share for new construction"))
-      if (energy_efficiency == "endogenous") {
+      if (energy_efficiency == FALSE) {
         ms_new_i <- fun_ms_new(
           yrs,
           i,

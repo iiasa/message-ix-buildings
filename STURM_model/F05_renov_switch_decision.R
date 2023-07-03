@@ -344,10 +344,6 @@ fun_ms_ren_sw_endogenous <- function(yrs,
     as.data.frame(ct_hh_tenr)) %>%
     rename(tenr = ct_hh_tenr)
 
-  # Fuel types in renovation decisions
-  ct_fuel_heat_mod <- sort(unique(
-      ct_fuel_comb$fuel_heat[which(ct_fuel_comb$mod_decision == 1)]))
-
   # Operational energy costs before/after renovation
   # Final energy costs to be used in renovation decisions
   # (fuels and eneff are after renovation)
@@ -356,7 +352,6 @@ fun_ms_ren_sw_endogenous <- function(yrs,
     rename(fuel_heat_f = fuel_heat) %>%
     # should be removed, otherwise no match with eneff
     # (e.g. an older building can switch to a newer eneff standard)
-    select(-bld_age)
 
   # Initial energy costs to be used in renovation decisions
   # (fuels and eneff are before renovation)
@@ -365,21 +360,11 @@ fun_ms_ren_sw_endogenous <- function(yrs,
     rename(cost_op_m2_init = cost_op_m2) %>%
     # should be removed, otherwise no match with eneff
     # (e.g. an older building can switch to a newer eneff standard)
-    select(-bld_age)
 
   # Prepare investment cost data
   cost_invest_ren_shell_i <- cost_invest_ren_shell %>% filter(year == yrs[i])
   cost_invest_ren_heat_i <- cost_invest_ren_heat %>% filter(year == yrs[i])
 
-  # Prepare intangible cost data
-  cost_intang_ren_shell_i <- cost_intang_ren_shell %>% filter(year == yrs[i])
-  cost_intang_ren_heat_i <- cost_intang_ren_heat
-
-  # Test inputs - age categories
-  print("Test inputs - Building vintage")
-  print(paste0("DF ct_bld_age: ", ct_bld_age))
-  print(paste0("Class ct_bld_age: ", class(ct_bld_age)))
-  print(paste0("Year: ", yrs[i]))
 
   bld_age_exst <- ct_bld_age %>%
     filter(year_i < yrs[i]) %>%

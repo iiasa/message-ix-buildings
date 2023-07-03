@@ -116,6 +116,7 @@ fun_stock_det_ini <- function(sector,
                            ct_eneff,
                            ct_fuel_comb,
                            shr_fuel_heat_base,
+                           shr_tenure_status,
                            report_var) {
   
   # Assumption: one intial eneff (the lower) per period of construction
@@ -182,9 +183,29 @@ fun_stock_det_ini <- function(sector,
     }
 
   }
+
+  if (!"tenr" %in% names(bld_det_age_i)) {
+
+    temp <- sum(bld_det_age_i$n_units_fuel)
+    bld_det_age_i <- bld_det_age_i %>%
+      left_join(shr_tenure_status, relationship = "many-to-many") %>%
+      mutate(n_units_fuel = n_units_fuel * hh_tenure) %>%
+      select(-hh_tenure)
+    
+    # print(head(filter(bld_det_age_i, is.na(n_units_fuel))))
+    # Test consistency.
+    if (round(temp / 1e6, 0) !=
+      round(sum(bld_det_age_i$n_units_fuel) / 1e6, 0)) {
+      print("Error:
+        Inconsistent income shares.")
+    }
+  }
   print(paste("Number of buildings for base year:",
-  round(sum(bld_det_age_i$n_units_fuel) / 1e6, 0),
-  "million units."))
+    round(sum(bld_det_age_i$n_units_fuel) / 1e6, 0),
+    "million units."))
+
+  print(paste("Resolution of detailed building stock:",
+    paste(names(bld_det_age_i), collapse = ", ")))
 
   report <- list()
   if ("energy" %in% report_var) {

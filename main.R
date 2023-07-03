@@ -6,6 +6,7 @@ library(readxl)
 
 # rounding (number of decimals)
 rnd <- 5
+u_EJ_GWa <- 31.71
 
 source("./STURM_model/F10_scenario_runs_MESSAGE_2100.R")
 

@@ -54,7 +54,6 @@ yrs <- seq(base_year, end_year, step_year)
 #' default is c("region_bld","region_gea")
 #' @param geo_level_report: level for reporting, default is "R12"
 #' @param yrs: years to be analysed, default is seq(2015,2050,5)
-#' @param input_mode: input mode, default is "csv"
 #' @param mod_arch: model architecture, default is "stock"
 #' @param report_type: type of report, default is "STURM"
 #' available is c("MESSAGE","STURM","IRP","NGFS","NAVIGATE")
@@ -72,12 +71,8 @@ sturm_scenarios <- run_scenario(
     path_prices = path_prices,
     file_inputs = file_inputs,
     file_scenarios = file_scenarios,
-    geo_level = "region_bld",
-    geo_level_aggr = "region_gea",
-    geo_levels = c("region_bld", "region_gea"),
     geo_level_report = report$geo_level,
     yrs = yrs,
-    input_mode = "csv",
     report_var = report$var,
     report_type = report$type,
     region = region,

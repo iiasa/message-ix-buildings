@@ -5,8 +5,6 @@ library(dplyr)
 #' @param sector: sector to run, "resid" or "comm"
 #' @param yrs: years to run, e.g. c(2015,2020,2025,2030,2035,2040,2045,2050)
 #' @param geo_data: data with geographical information
-#' @param geo_levels: levels to keep track of, e.g. c("region_bld","region_gea")
-#' @param geo_level: level for analysis, e.g. "region_bld", "region_gea"
 #' @param bld_cases_eneff: building cases for energy efficiency,
 #' @param pop: population data
 #' @param hh_size: household size data, used for residential
@@ -22,8 +20,6 @@ library(dplyr)
 fun_stock_aggr <- function(sector,
                                yrs,
                                geo_data,
-                               geo_levels,
-                               geo_level,
                                bld_cases_fuel,
                                pop,
                                hh_size,
@@ -108,8 +104,6 @@ fun_stock_aggr <- function(sector,
 #' @param sector: sector to be analysed, default is "resid"
 #' @param stock_arch_base: stock baseyear
 #' @param geo_data: geo data
-#' @param geo_levels: levels to keep track of,
-#' default is c("region_bld","region_gea")
 #' @param ct_eneff: energy efficiency catagories
 #' @param ct_fuel_comb: fuel combinations catagories
 #' @param shr_fuel_heat_base: share of heat fuel in baseyear
@@ -119,7 +113,6 @@ fun_stock_det_ini <- function(sector,
                            stock_aggr,
                            stock_arch_base,
                            geo_data,
-                           geo_levels,
                            ct_eneff,
                            ct_fuel_comb,
                            shr_fuel_heat_base,

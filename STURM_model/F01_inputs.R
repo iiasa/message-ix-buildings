@@ -100,7 +100,6 @@ fun_inputs_csv <- function(path_in, file_inputs, file_scenarios, sector, run
 #' @return list of dimensions
 read_categories <- function(path_in_csv,
                             sector,
-                            geo_level,
                             region = NULL) {
   input_list <- list(
     geo_data = "/input_basic_geo/regions.csv",

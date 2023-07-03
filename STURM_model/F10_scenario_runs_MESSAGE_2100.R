@@ -14,13 +14,8 @@ library(dplyr)
 #' @param prices: prices to use, e.g. "input_prices_R12.csv"
 #' @param file_inputs: file with input data, e.g. "input_list_resid.csv"
 #' @param file_scenarios: file with scenarios, e.g. "scenarios_TEST.csv"
-#' @param geo_level: level for analysis, e.g. "region_bld"
-#' @param geo_level_aggr: level for aggregation, e.g. "region_gea"
-#' @param geo_levels: levels to keep track of,
-#' e.g. c("region_bld", "region_gea")
 #' @param geo_level_report: level for reporting, e.g. "R12"
 #' @param yrs: years to run, if NULL run all years, e.g. seq(2015, 2050, 5)
-#' @param input_mode: input mode, available: "csv", "xlsx"
 #' @param report_type: available reports,
 #' available: "MESSAGE","STURM","IRP","NGFS","NAVIGATE"
 #' @param report_var: available report variables,
@@ -36,12 +31,8 @@ run_scenario <- function(run,
                          path_prices,
                          file_inputs,
                          file_scenarios,
-                         geo_level,
-                         geo_level_aggr,
-                         geo_levels,
                          geo_level_report,
                          yrs,
-                         input_mode,
                          report_type,
                          report_var,
                          region = NULL,
@@ -61,6 +52,8 @@ run_scenario <- function(run,
   source(file.path(path_rcode, "F05_renov_switch_decision.R"))
   source(file.path(path_rcode, "F02_init_stock_dyn_fut.R"))
   source(file.path(path_rcode, "F06_stock_dyn_complete_rev.R"))
+  source(file.path(path_rcode, "F07_formatting_output.R"))
+
   
   if ("STURM" %in% report_type) {
     source(file.path(path_rcode, "R00_report_basic.R"))
@@ -77,48 +70,40 @@ run_scenario <- function(run,
   source(file.path(path_rcode, "R05_report_NAVIGATE.R"))
   print("Functions loaded!")
 
-  # Load input data
-  if (input_mode == "csv") {
+  # Read categories
+  print("Load categories")
+  path_in_csv <- paste0(path_in, "./input_csv/")
+  cat <- read_categories(path_in_csv, sector, region)
 
-    # Read categories
-    print("Load categories")
-    path_in_csv <- paste0(path_in, "./input_csv/")
-    cat <- read_categories(path_in_csv, sector, geo_level, region)
+  # Source - input data
+  print("Load data")
+  d <- fun_inputs_csv(path_in, file_inputs, file_scenarios, sector, run)
+  
+  # TODO properly
+  cat$geo_data <- cat$geo_data %>%
+    filter(region_bld %in% unique(d$shr_fuel_heat_base$region_bld))
+  cat$regions <- unique(pull(cat$geo_data["region_bld"]))
 
-    # Source - input data
-    print("Load data")
-    d <- fun_inputs_csv(path_in, file_inputs, file_scenarios, sector, run)
-    
-    print("Initialize building stock for base year")
-    # d$stock_arch_base <- fun_parse_stock(d$stock_arch_base, cat, d$pop)
+  # Selecting only useful fuel for the run
+  fuel <- unique(d$shr_fuel_heat_base$fuel_heat)
+  cat$ct_fuel_comb <- cat$ct_fuel_comb %>%
+    filter(fuel_heat %in% fuel)
 
-    # TODO properly
-    cat$geo_data <- cat$geo_data %>%
-      filter(region_bld %in% unique(d$shr_fuel_heat_base$region_bld))
-    cat$regions = unique(pull(cat$geo_data[geo_level]))
+  # Read energy prices
+  print("Load energy prices")
+  price_en <- read_energy_prices(path_prices, cat$geo_data, "region_bld")
 
-    # Selecting only useful fuel for the run
-    fuel <- unique(d$shr_fuel_heat_base$fuel_heat)
-    cat$ct_fuel_comb <- cat$ct_fuel_comb %>%
-      filter(fuel_heat %in% fuel)
-
-    # Read energy prices
-    print("Load energy prices")
-    price_en <- read_energy_prices(path_prices, cat$geo_data, geo_level)
-
-    print("Data loaded!")
-  }
+  print("Data loaded!")
 
   # Create matrix of all dimensions
   bld_cases_fuel <- expand.grid(
-    geo_level = cat$regions,
+    region_bld = cat$regions,
     urt = cat$urts,
     inc_cl = cat$ct_hh_inc,
     stringsAsFactors = FALSE
   ) %>%
-    rename_at("geo_level", ~ paste0(geo_level)) %>%
-    left_join(cat$geo_data %>% select_at(geo_levels)) %>%
-    left_join(cat$clim_zones, by = c(geo_level, "urt")
+    left_join(cat$geo_data %>% select_at(c("region_bld", "region_gea"))) %>%
+    left_join(cat$clim_zones, by = c("region_bld", "urt")
               ) %>%
     left_join(cat$ct_bld,
               relationship = "many-to-many") %>%
@@ -142,8 +127,6 @@ run_scenario <- function(run,
       sector,
       yrs,
       cat$geo_data,
-      geo_levels,
-      geo_level,
       bld_cases_fuel,
       d$pop,
       d$hh_size,
@@ -159,7 +142,6 @@ run_scenario <- function(run,
                           stock_aggr,
                            d$stock_arch_base,
                            cat$geo_data,
-                           geo_levels,
                            cat$ct_eneff,
                            cat$ct_fuel_comb,
                            d$shr_fuel_heat_base,
@@ -305,20 +287,12 @@ run_scenario <- function(run,
       # Stock turnover
       # TODO: check if stock_aggr is necessary
       print(paste("Calculate stock turnover"))
-      lst_stock_i <- fun_stock_dyn(
-        sector,
-        yrs,
+      bld_det_age_i <- fun_stock_dyn(
         i,
-        run,
-        geo_level,
-        geo_level_aggr,
-        geo_levels,
+        yrs,
+        sector,
         bld_cases_fuel,
-        bld_cases_eneff,
         cat$ct_bld_age,
-        cat$ct_fuel_comb,
-        d$hh_size,
-        d$floor_cap,
         stock_aggr,
         bld_det_age_i,
         d$prob_dem,
@@ -327,21 +301,27 @@ run_scenario <- function(run,
         ms_ren_i,
         rate_ren_i,
         ms_sw_i,
-        d$shr_need_heat,
-        en_m2_scen_heat,
-        en_m2_scen_cool,
-        en_hh_hw_scen,
-        en_m2_hw_scen,
-        en_m2_others,
-        d$mat_int,
-        report_var,
-        report
+        shr_distr_heat = NULL
       )
       # Extract dataframes from list
-      report <- lst_stock_i$report
-      stock_aggr <- lst_stock_i$stock_aggr
-      bld_det_age_i <- lst_stock_i$bld_det_age_i
-      rm(lst_stock_i)
+      report <- fun_format_output(i,
+                              yrs,
+                              sector,
+                              run,
+                              bld_det_age_i,
+                              bld_cases_eneff,
+                              bld_cases_fuel,
+                              cat$ct_fuel_comb,
+                              d$shr_need_heat,
+                              d$floor_cap,
+                              d$hh_size,
+                              report_var,
+                              report,
+                              en_m2_scen_heat,
+                              en_m2_scen_cool,
+                              en_hh_hw_scen,
+                              en_m2_hw_scen,
+                              en_m2_others)
     }
   }
 
@@ -353,7 +333,7 @@ run_scenario <- function(run,
     lst_stock_init <- fun_stock_init_fut(
       sector, "stock",
       yrs,
-      geo_data, geo_levels, geo_level,
+      geo_data, "region_bld",
       bld_cases_eneff, bld_cases_fuel,
       pop_fut,
       hh_size, # used for residential
@@ -437,7 +417,7 @@ run_scenario <- function(run,
       lst_stock_i <- fun_stock_dyn(sector,
         yrs, i,
         run, ssp_r,
-        geo_level, geo_level_aggr, geo_levels,
+        "region_bld", "region_gea",
         bld_cases_fuel, bld_cases_eneff,
         ct_bld_age, ct_fuel_comb,
         hh_size = NULL, # Not used for commercial
@@ -475,30 +455,30 @@ run_scenario <- function(run,
   ## MESSAGE report -  Aggregate results for reporting
   if ("MESSAGE" %in% report_type) {
     output <- fun_report_MESSAGE(sector, report_var, report,
-      cat$geo_data, geo_level, geo_level_report)
+      cat$geo_data, "region_bld", geo_level_report)
   }
 
   ## STURM basic report (results written as csv)
   if ("STURM" %in% report_type) {
     output <- fun_report_basic(report, report_var, cat$geo_data,
-      geo_level, geo_level_report, sector, scenario_name, path_out)
+      "region_bld", geo_level_report, sector, scenario_name, path_out)
   }
 
   ## Report results - IRP template (results written as csv)
   if ("IRP" %in% report_type) {
-    output <- fun_report_IRP(report, report_var, cat$geo_data, geo_level,
+    output <- fun_report_IRP(report, report_var, cat$geo_data, "region_bld",
       geo_level_report, sector, scenario_name, yrs, path_out)
   }
 
   ## Report results - NGFS template (results written as csv)
   if ("NGFS" %in% report_type) {
-    output <- fun_report_NGFS(report, report_var, geo_data, geo_level,
+    output <- fun_report_NGFS(report, report_var, geo_data, "region_bld",
       geo_level_report, sector, scenario_name, yrs, path_out)
   }
 
   ## Report results - NGFS template (results written as csv)
   if ("NAVIGATE" %in% report_type) {
-    output <- fun_report_NAVIGATE(report, report_var, cat$geo_data, geo_level,
+    output <- fun_report_NAVIGATE(report, report_var, cat$geo_data, "region_bld",
       geo_level_report, sector, scenario_name, yrs, path_out, path_in,
       cat$ct_bld,cat$ct_ren_eneff, ren_en_sav_scen)
   }

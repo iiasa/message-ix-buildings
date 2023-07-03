@@ -9,14 +9,8 @@ library(tidyr)
 #' @param sector: sector to run, "resid" or "comm"
 #' @param yrs: years to run, e.g. c(2015,2020,2025,2030,2035,2040,2045,2050)
 #' @param i: index of the year to run
-#' @param run: run number
-#' @param geo_level: level for analysis, e.g. "region_bld", "region_gea"
-#' @param geo_level_aggr: level for aggregation, e.g. "region_bld", "region_gea"
-#' @param geo_levels: levels to keep track of, e.g. c("region_bld","region_gea")
-#' @param bld_cases_eneff: building cases for energy efficiency,
 #' @param bld_cases_fuel: building cases for fuel,
 #' @param ct_bld_age: building age data
-#' @param ct_fuel_comb: fuel combination data
 #' @param hh_size: household size data, used for residential
 #' @param floor_cap: floor space data, used for commercial
 #' @param stock_aggr: aggregated building stock data
@@ -28,19 +22,11 @@ library(tidyr)
 #' @param rate_ren_i: renovation rate
 #' @param ms_sw_i: switched building stock
 #' @param en_m2_scen_heat: energy demand per m2 for heating
-fun_stock_dyn <- function(sector,
+fun_stock_dyn <- function(i,
                           yrs,
-                          i,
-                          run,
-                          geo_level,
-                          geo_level_aggr,
-                          geo_levels,
+                          sector,
                           bld_cases_fuel,
-                          bld_cases_eneff,
                           ct_bld_age,
-                          ct_fuel_comb,
-                          hh_size,
-                          floor_cap,
                           stock_aggr,
                           bld_det_age_i,
                           prob_dem,
@@ -49,21 +35,12 @@ fun_stock_dyn <- function(sector,
                           ms_ren_i,
                           rate_ren_i,
                           ms_sw_i,
-                          shr_need_heat,
-                          en_m2_scen_heat,
-                          en_m2_scen_cool,
-                          en_hh_hw_scen,
-                          en_m2_hw_scen,
-                          en_m2_others,
-                          mat_int,
-                          report_var,
-                          report,
                           shr_distr_heat = NULL) {
 
 
-  print(paste0("Running stock turnover - scenario ", run, " - year ", yrs[i]))
+  print(paste("Running stock turnover year:", yrs[i]))
 
-  # what happen for last year?
+  # what happen for the last year?
   stp <- yrs[i] - yrs[i - 1]
 
   # Vintage category for the current year...
@@ -203,7 +180,7 @@ fun_stock_dyn <- function(sector,
 
 
 
-  if ("sub" %in% unique(bld_cases_eneff$mat)) {
+  if ("sub" %in% unique(bld_cases_fuel$mat)) {
     # Slum buildings
     new_det_slum_age_i <-
       bld_aggr_i %>%
@@ -376,8 +353,6 @@ fun_stock_dyn <- function(sector,
                 pull()) / 10^6, 0),
                 "million units."))
 
-  # Results
-
   # Bind all datasets - fuel level + vintage
   bld_det_age_i <- bind_rows(exst_det_age_i,
                             exst_sw_det_age_i,
@@ -391,295 +366,5 @@ fun_stock_dyn <- function(sector,
     summarise(n_units_fuel = sum(n_units_fuel)) %>%
     ungroup()
 
-
-  if ("energy" %in% report_var) {
-
-    # Aggregate at fuel level for keeping track of the stock
-    bld_det_i <- bld_det_age_i %>%
-      # Select all variables, except the ones indicated, for grouping
-      group_by_at(setdiff(names(bld_det_age_i),
-        c("yr_con", "n_units_fuel", "n_dem", "n_empty"))) %>%
-      summarise(
-        n_units_fuel = sum(n_units_fuel)
-      ) %>%
-      ungroup()
-
-    # Report Energy Demand
-    en_stock_i <- bld_cases_fuel %>%
-      mutate(scenario = run) %>%
-      mutate(year = yrs[i]) %>%
-      # Issue matching periods of construction when definition is different!
-      left_join(bld_det_i) %>%
-      # Add "v_no_heat" category
-      select(-c(mod_decision)) %>%
-      pivot_wider(
-        names_from = "fuel_heat",
-        values_from = "n_units_fuel"
-      ) %>%
-      mutate(v_no_heat = 0) %>%
-      pivot_longer(
-        cols = c(sort(unique(ct_fuel_comb$fuel_heat)), "v_no_heat"),
-        names_to = "fuel_heat",
-        values_to = "n_units_fuel"
-      ) %>%
-      filter(!is.na(n_units_fuel)) %>%
-      group_by_at(paste(c(geo_level,
-        "urt", "inc_cl", "arch", "year", "clim", "bld_age", "eneff"))) %>%
-      # Calculate n_units_eneff to account later for buildings with no heating
-      mutate(n_units_eneff = sum(n_units_fuel)) %>%
-      ungroup()
-
-    if (sector == "resid") {
-      en_stock_i <- en_stock_i %>%
-        left_join(shr_need_heat) %>%
-        # Rescale number of units based on fuel
-        # Heating access not considered here!
-        mutate(n_units_fuel = ifelse(fuel_heat == "v_no_heat",
-          n_units_eneff * (1 - shr_need_heat),
-          n_units_fuel * shr_need_heat
-        )) %>%
-        left_join(hh_size) %>%
-        left_join(floor_cap) %>%
-        # left_join(shr_acc_cool) %>%
-        left_join(en_m2_scen_heat) %>%
-        left_join(en_m2_scen_cool) %>%
-        left_join(en_hh_hw_scen) %>%
-        # convert n. units to millions
-        mutate(floor_Mm2 = n_units_fuel / 1e6 * hh_size * floor_cap) %>%
-        mutate(floor_heat_Mm2 = floor_Mm2) %>%
-        # mutate(floor_heat_Mm2 = ifelse(acc_heat == 1, floor_Mm2, 0)) %>%
-        mutate(floor_cool_Mm2 =
-          ifelse(shr_acc_cool == 1, floor_Mm2 * shr_acc_cool, 0)) %>%
-        # Converted from kWh to MJ (3.6).
-        #  Houssing units are in million, so results are in TJ.
-        mutate(heat_TJ = ifelse(fuel_heat == "v_no_heat", 0,
-          en_dem_heat * n_units_fuel / 1e6 * hh_size * floor_cap * 3.6)) %>%
-        # Converted from kWh to MJ (3.6).
-        #  Houssing units are in million, so results are in TJ.
-        mutate(cool_TJ = en_dem_cool * shr_acc_cool *
-          n_units_fuel / 1e6 * hh_size * floor_cap * 3.6) %>%
-        mutate(cool_ac_TJ = en_dem_c_ac * shr_acc_cool *
-          n_units_fuel / 1e6 * hh_size * floor_cap * 3.6) %>%
-        # Note:shr_acc_cool=1 for all cases (access calculated before)
-        # Converted from kWh to MJ (3.6). 
-        #   Houssing units are in million, so results are in TJ.
-        mutate(cool_fans_TJ = en_dem_c_fans * shr_acc_cool *
-          n_units_fuel / 1e6 * hh_size * floor_cap * 3.6) %>% 
-        # converted from GJ/hh/yr to TJ
-        mutate(hotwater_TJ = ifelse(fuel_heat == "v_no_heat", 0,
-          en_dem_dhw * n_units_fuel / 1e3)) %>%
-        # Other uses not covered for residential
-        mutate(other_uses_TJ = 0) %>%
-        mutate(stock_M = n_units_fuel / 1e6) %>%
-        filter(stock_M > 0 & !is.na(stock_M)) %>%
-        select_at(c(geo_levels, paste(c(
-          "urt", "clim", "inc_cl", "arch", "mat",
-          "eneff", "fuel_heat", "fuel_cool",
-          "scenario", "year", "stock_M", "floor_Mm2",
-          "heat_TJ", "cool_TJ", "cool_ac_TJ", "cool_fans_TJ",
-          "hotwater_TJ", "other_uses_TJ"
-        ))))
-    }
-    if (sector == "comm") {
-      en_stock_i <- en_stock_i %>% # To avoid NAs with non-available combination of eneff - fuel (slums)
-        # left_join(en_stock_i) %>%
-        left_join(shr_need_heat) %>%
-        mutate(n_units_fuel = ifelse(fuel_heat == "v_no_heat", # Rescale number of units based on fuel # Heating access not considered here!!
-          n_units_eneff * (1 - shr_need_heat),
-          n_units_fuel * shr_need_heat
-        )) %>%
-        # left_join(hh_size) %>%
-        # left_join(floor) %>%
-        # left_join(shr_acc_cool) %>%
-        left_join(en_m2_scen_heat) %>%
-        left_join(en_m2_scen_cool) %>%
-        left_join(en_m2_hw_scen) %>%
-        left_join(en_m2_others) %>%
-        mutate(floor_Mm2 = n_units_fuel / 1e6) %>%
-        mutate(floor_heat_Mm2 = floor_Mm2) %>%
-        # mutate(floor_heat_Mm2 = ifelse(acc_heat == 1, floor_Mm2, 0)) %>%
-        mutate(floor_cool_Mm2 = ifelse(shr_acc_cool == 1, floor_Mm2 * shr_acc_cool, 0)) %>%
-        mutate(heat_TJ = ifelse(fuel_heat == "v_no_heat", 0, en_dem_heat * n_units_fuel / 1e6 * 3.6)) %>% # converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
-        mutate(cool_TJ = en_dem_cool * shr_acc_cool * n_units_fuel / 1e6 * 3.6) %>% # converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
-        mutate(cool_ac_TJ = en_dem_c_ac * shr_acc_cool * n_units_fuel / 1e6 * 3.6) %>% # converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
-        mutate(cool_fans_TJ = en_dem_c_fans * shr_acc_cool * n_units_fuel / 1e6 * 3.6) %>% # Note:shr_acc_cool=1 for all cases (access calculated before) #converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
-        # mutate(hotwater_TJ = ifelse(fuel_heat == "v_no_heat", 0, en_dem_dhw * n_units_fuel / 1e6 * 3.6)) %>% # converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
-        mutate(hotwater_TJ = ifelse(fuel_heat == "v_no_heat", 0, en_dem_dhw * n_units_fuel / 1e6 * 3.6)) %>% # converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
-        mutate(other_uses_TJ = en_dem_others * n_units_fuel / 1e6 * 3.6) %>% # converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
-        mutate(stock_M = n_units_fuel / 1e6) %>%
-        filter(stock_M > 0 & !is.na(stock_M)) %>%
-        select_at(c(geo_levels, paste(c(
-          "urt", "clim", "inc_cl", "arch", "mat", "eneff", "fuel_heat", "fuel_cool",
-          "scenario", # "ssp",
-          "year", "stock_M", "floor_Mm2",
-          # "floor_tot_heat_Mm2", "floor_tot_cool_Mm2",
-          "heat_TJ", "cool_TJ", "cool_ac_TJ", "cool_fans_TJ", "hotwater_TJ", "other_uses_TJ"
-        ))))
-    }
-
-    report$en_stock <- bind_rows(report$en_stock, en_stock_i)
-  }
-
-  if ("material" %in% report_var) {
-    # Stock results - Material
-
-    # Aggregate results at eneff level demolitions
-    dem_eneff_i <- dem_det_age_i %>%
-      group_by_at(setdiff(names(dem_det_age_i), c(
-        "bld_age", "fuel_heat", "fuel_cool",
-        "n_units_fuel_p", "n_dem", "n_empty"
-      ))) %>%
-      summarise(
-        n_dem = sum(n_dem)
-      ) %>%
-      ungroup()
-
-    # new constructions
-    new_eneff_i <- bind_rows(new_det_age_i, new_det_slum_age_i) %>%
-      group_by_at(setdiff(names(new_det_age_i), c(
-        "bld_age", "mod_decision",
-        "fuel_heat", "fuel_cool", "n_units_fuel"
-      ))) %>%
-      summarise(n_new = sum(n_units_fuel)) %>%
-      ungroup()
-
-    # stock
-    bld_eneff_i <- bld_det_age_i %>%
-      group_by_at(setdiff(names(bld_det_age_i), c(
-        "bld_age", "fuel_heat", "fuel_cool", "n_units_fuel"
-      ))) %>%
-      summarise(n_units = sum(n_units_fuel)) %>%
-      ungroup()
-
-    if (sector == "resid") {
-      # Calculate material stock
-      mat_stock_i <- bld_cases_eneff %>%
-        mutate(scenario = run) %>%
-        # mutate(ssp = ssp_r) %>%
-        mutate(year = yrs[i]) %>%
-        left_join(hh_size) %>%
-        left_join(floor_cap) %>%
-        left_join(bld_eneff_i) %>%
-        left_join(dem_eneff_i) %>%
-        left_join(new_eneff_i) %>%
-        mutate(
-          n_units = ifelse(is.na(n_units), 0, n_units),
-          n_new = ifelse(is.na(n_new), 0, n_new),
-          n_dem = ifelse(is.na(n_dem), 0, n_dem)
-        ) %>%
-        filter(n_units + n_new + n_dem != 0) %>%
-        filter(mat != "sub") %>% # Exclude slums (no material intensity data)
-        left_join(mat_int) %>%
-        # filter(arch != "inf") %>% # Materials not calculated for slums
-        mutate(floor_tot_Mm2 = n_units * hh_size * floor_cap / 1e6) %>% # Mm2
-        mutate(floor_new_Mm2 = n_new * hh_size * floor_cap / stp / 1e6) %>% # Mm2/yr
-        mutate(floor_dem_Mm2 = n_dem * hh_size * floor_cap / stp / 1e6) %>% # Mm2/yr
-        mutate(mat_stock_Mt = n_units * hh_size * floor_cap * mat_int / 1e3 / 1e6) %>% # Mt/y
-        mutate(mat_demand_Mt = n_new * hh_size * floor_cap * mat_int / stp / 1e3 / 1e6) %>% # Mt/y
-        mutate(mat_scrap_Mt = n_dem * hh_size * floor_cap * mat_int / stp / 1e3 / 1e6) %>% # Mt/y
-        group_by_at(c(
-          geo_levels,
-          paste(c(
-            "urt", "clim", "inc_cl", "arch", "mat", "eneff", "material", "scenario", # "ssp",
-            "year"
-          ))
-        )) %>% # Drop yr_con dimension
-
-        summarise(
-          floor_tot_Mm2 = sum(floor_tot_Mm2),
-          floor_new_Mm2 = sum(floor_new_Mm2),
-          floor_dem_Mm2 = sum(floor_dem_Mm2),
-          # mat_int = weighted.mean(mat_int, floor_tot_Mm2),
-          mat_stock_Mt = sum(mat_stock_Mt),
-          mat_demand_Mt = sum(mat_demand_Mt),
-          mat_scrap_Mt = sum(mat_scrap_Mt)
-        ) %>%
-        ungroup() %>%
-        mutate(mat_int = 1e3 * mat_stock_Mt / floor_tot_Mm2) # Recalculate average material intensity
-    } else {
-      mat_stock_i <- bld_cases_eneff %>%
-        mutate(scenario = run) %>%
-        # mutate(ssp = ssp_r) %>%
-        mutate(year = yrs[i]) %>%
-        # left_join(floor_cap) %>%
-        left_join(bld_eneff_i) %>%
-        left_join(dem_eneff_i) %>%
-        left_join(new_eneff_i) %>%
-        mutate(
-          n_units = ifelse(is.na(n_units), 0, n_units),
-          n_new = ifelse(is.na(n_new), 0, n_new),
-          n_dem = ifelse(is.na(n_dem), 0, n_dem)
-        ) %>%
-        filter(n_units + n_new + n_dem != 0) %>%
-        left_join(mat_int) %>%
-        # filter(arch != "inf") %>% # Materials not calculated for slums
-        mutate(floor_tot_Mm2 = n_units / 1e6) %>% # Mm2
-        mutate(floor_new_Mm2 = n_new / stp / 1e6) %>% # Mm2/yr
-        mutate(floor_dem_Mm2 = n_dem / stp / 1e6) %>% # Mm2/yr
-        mutate(mat_stock_Mt = n_units * mat_int / 1e3 / 1e6) %>% # Mt
-        mutate(mat_demand_Mt = n_new * mat_int / stp / 1e3 / 1e6) %>% # Mt/y
-        mutate(mat_scrap_Mt = n_dem * mat_int / stp / 1e3 / 1e6) %>% # Mt/y
-        # select_at(c(geo_levels, paste(c("urt", "clim", "inc_cl", "arch", "mat", "eneff", "material",
-        #                                 "scenario", "ssp", "year",
-        #                                 "floor_tot_Mm2",
-        #                                 "floor_new_Mm2", "floor_dem_Mm2",
-        #                                 "mat_int",
-        #                                 "mat_stock_Mt",
-        #                                 "mat_demand_Mt", "mat_scrap_Mt"))))
-        group_by_at(c(
-          geo_levels,
-          paste(c(
-            "urt", "clim", "inc_cl", "arch", "mat", "eneff", "material", "scenario", # "ssp",
-            "year"
-          ))
-        )) %>% # Drop yr_con dimension
-        summarise(
-          floor_tot_Mm2 = sum(floor_tot_Mm2),
-          floor_new_Mm2 = sum(floor_new_Mm2),
-          floor_dem_Mm2 = sum(floor_dem_Mm2),
-          # mat_int = weighted.mean(mat_int, floor_tot_Mm2),
-          mat_stock_Mt = sum(mat_stock_Mt),
-          mat_demand_Mt = sum(mat_demand_Mt),
-          mat_scrap_Mt = sum(mat_scrap_Mt)
-        ) %>%
-        ungroup() %>%
-        mutate(mat_int = 1e3 * mat_stock_Mt / floor_tot_Mm2) # Recalculate average material intensity
-    }
-
-    ## Stock results - Material - Add Cement
-
-    cement_content <- 0.15 ## Cement content in concrete
-
-    mat_stock_cem_i <- mat_stock_i %>%
-      filter(material == "concrete") %>%
-      mutate(material = "cement") %>%
-      mutate(
-        mat_stock_Mt = mat_stock_Mt * cement_content,
-        mat_demand_Mt = mat_demand_Mt * cement_content,
-        mat_scrap_Mt = mat_scrap_Mt * cement_content
-      )
-
-    mat_stock_i <- rbind(mat_stock_i, mat_stock_cem_i)
-    report$mat_stock <- bind_rows(report$mat_stock, mat_stock_i)
-  }
-
-  if ("vintage" %in% report_var) {
-    report$bld_eneff_age <- bind_rows(
-      report$bld_eneff_age,
-      bld_det_age_i %>%
-        group_by_at(setdiff(names(bld_det_age_i), c(
-          "fuel_heat", "fuel_cool", "n_units_fuel"
-        ))) %>%
-        summarise(n_units_eneff = sum(n_units_fuel)) %>%
-        ungroup()
-    )
-  }
-
-  output <- list(
-    report = report,
-    stock_aggr = stock_aggr,
-    bld_det_age_i = bld_det_age_i
-  )
-
-  return(output)
+  return(bld_det_age_i)
 }

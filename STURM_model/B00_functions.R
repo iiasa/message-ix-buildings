@@ -183,11 +183,7 @@ fun_rename <- function(DF,name){ ## DF = dataframe; name = name to relabel the "
 ################################################
 
 ## Life Cycle Cost function (bybuilding type, en. std., fuel and time)
-fun_lcc <- function(c_inv, c_op, c_int, r, l) 
-{
-  lcc <- c_inv + c_op * ((1-(1+r)^(-l))/r) + c_int
-  return(lcc)
-}
+
 
 ## Market share function
 ## Formulation: Giraudet et al.

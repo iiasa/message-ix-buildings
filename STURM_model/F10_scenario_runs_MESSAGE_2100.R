@@ -29,6 +29,7 @@ run_scenario <- function(run,
                          path_rcode,
                          path_out,
                          path_prices,
+                         path_prices_message,
                          file_inputs,
                          file_scenarios,
                          geo_level_report,
@@ -53,6 +54,7 @@ run_scenario <- function(run,
   source(file.path(path_rcode, "F02_init_stock_dyn_fut.R"))
   source(file.path(path_rcode, "F06_stock_dyn_complete_rev.R"))
   source(file.path(path_rcode, "F07_formatting_output.R"))
+  source(file.path(path_rcode, "F08_calibration.R"))
 
   
   if ("STURM" %in% report_type) {
@@ -91,7 +93,7 @@ run_scenario <- function(run,
 
   # Read energy prices
   print("Load energy prices")
-  price_en <- read_energy_prices(path_prices, cat$geo_data, "region_bld")
+  price_en <- read_energy_prices(path_prices, path_prices_message, cat$geo_data)
 
   print("Data loaded!")
 
@@ -114,11 +116,6 @@ run_scenario <- function(run,
       relationship = "many-to-many") %>%
     merge(as.data.frame(cat$ct_hh_tenr)) %>%
     rename("tenr" = "cat$ct_hh_tenr")
-               
-  # Romve bld_cases_eneff and aggregate bld_cases_fuel when needed
-  bld_cases_eneff <- bld_cases_fuel %>%
-    select(-c(fuel_heat, fuel_cool)) %>%
-    distinct()
 
   ### RESIDENTIAL SECTOR
 
@@ -231,6 +228,8 @@ run_scenario <- function(run,
                       i,
                       stock_aggr,
                       cat$ct_bld_age,
+                      cat$ct_hh_inc,
+                      d$hh_tenure,
                       d$ms_shell_new_exo,
                       d$ms_switch_fuel_exo
         )
@@ -239,26 +238,36 @@ run_scenario <- function(run,
         stop("Error in new construction calculation! Empty dataframe ms_new_i"))
 
       # Market share for renovation and fuel switches options
-      print(paste("Calculate market share for renovation and fuel switches"))
+      print("Calculate market share for renovation and fuel switches")
+      if (energy_efficiency == "endogenous" && i == 2) {
+        print("Calibration of market shares")
+        fun_calibration_ren_shell(yrs,
+                                i,
+                                bld_det_age_i,
+                                cat$ct_bld_age,
+                                cat$ct_ren_eneff,
+                                d$hh_size,
+                                d$floor_cap,
+                                d$cost_invest_ren_shell,
+                                d$lifetime_ren,
+                                en_hh_tot,
+                                d$rate_shell_ren_exo,
+                                d$ms_shell_ren_exo
+                                )
+      }
+
+
       if (energy_efficiency == "endogenous") {
-        lst_ms_ren_sw_i <- fun_ms_ren_sw_endogenous(
-          yrs,
-          i,
-          bld_cases_fuel,
-          cat$ct_bld_age,
-          cat$ct_fuel,
-          cat$ct_ren_eneff,
-          d$ct_ren_fuel_heat,
-          d$hh_size,
-          d$floor_cap,
-          d$cost_invest_ren_shell,
-          d$cost_invest_ren_heat,
-          d$ct_fuel_excl_ren,
-          d$ct_fuel_excl_reg,
-          d$discount_ren,
-          d$lifetime_ren,
-          en_hh_tot
-        )
+      lst_ms_ren_sw_i <- fun_ms_ren_shell_endogenous(yrs,
+                                i,
+                                bld_cases_fuel,
+                                cat$ct_bld_age,
+                                cat$ct_ren_eneff,
+                                d$hh_size,
+                                d$floor_cap,
+                                d$cost_invest_ren_shell,
+                                d$lifetime_ren,
+                                en_hh_tot)
         } else {
         lst_ms_ren_sw_i <- fun_ms_ren_shell_exogenous(
                               yrs,
@@ -311,7 +320,6 @@ run_scenario <- function(run,
                               sector,
                               run,
                               bld_det_age_i,
-                              bld_cases_eneff,
                               bld_cases_fuel,
                               cat$ct_fuel,
                               d$shr_need_heat,

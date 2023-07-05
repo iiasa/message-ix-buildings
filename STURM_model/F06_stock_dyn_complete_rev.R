@@ -50,9 +50,13 @@ fun_stock_dyn <- function(i,
     select(mat, bld_age_id) %>%
     rename(bld_age = bld_age_id)
 
+  print(stock_aggr %>% group_by_at("year") %>% summarize(total = sum(n_units_aggr)))
   # Stock Dynamics
   print(paste("Number of existing buildings during the previous time step is",
-    round(sum(bld_det_age_i$n_units_fuel) / 10^6, 0), "million units."))
+    round(sum(bld_det_age_i$n_units_fuel) / 1e6, 0), "million units."))
+  print(paste("Number of existing buildings for this step is",
+    round(sum(filter(stock_aggr, year == yrs[i])$n_units_aggr) / 1e6, 0),
+    "million units."))
 
   # Calculate number of demolitions by detailed segment.
   dem_det_age_i <- bld_det_age_i %>%
@@ -179,7 +183,6 @@ fun_stock_dyn <- function(i,
     select(-c(ms))
 
 
-
   if ("sub" %in% unique(bld_cases_fuel$mat)) {
     # Slum buildings
     new_det_slum_age_i <-
@@ -243,7 +246,7 @@ fun_stock_dyn <- function(i,
 
   print(
     paste("Renovated buildings:",
-      round(sum(ren_det_age_i$n_units_fuel) / 10^6, 0),
+      round(sum(ren_det_age_i$n_units_fuel) / 1e6, 0),
       "million units in", stp, "years.",
       "i.e.",
       round(sum(ren_det_age_i$n_units_fuel) /
@@ -321,49 +324,50 @@ fun_stock_dyn <- function(i,
     "Number of existing units (detailed):",
     round(c(sum(exst_det_age_i$n_units_fuel) +
       sum(exst_sw_det_age_i$n_units_fuel) +
-      sum(ren_det_age_i$n_units_fuel)) / 10^6, 0),
+      sum(ren_det_age_i$n_units_fuel)) / 1e6, 0),
     "million units."
   ))
   # Sum disaggregated buildings
   print(paste("Number of existing units (detailed):",
     round(sum(dem_det_age_i$n_units_fuel_p -
-      dem_det_age_i$n_dem - dem_det_age_i$n_empty) / 10^6, 0),
+      dem_det_age_i$n_dem - dem_det_age_i$n_empty) / 1e6, 0),
       "million units."))
   # Sum aggregated buildings
   print(paste("Existing units (aggregated):",
-    round(sum(bld_aggr_i$n_units_aggr - bld_aggr_i$n_new) / 10^6, 0),
+    round(sum(bld_aggr_i$n_units_aggr - bld_aggr_i$n_new) / 1e6, 0),
     "million units."))
 
 
   ### TEST: TOTAL NUMBER OF HOUSING UNITS
   print(paste(
     "Total units (detailed):",
-    round(c(sum(new_det_age_i$n_units_fuel) +
-      sum(new_det_slum_age_i$n_units_fuel) +
+    round(c(
       sum(exst_det_age_i$n_units_fuel) +
       sum(exst_sw_det_age_i$n_units_fuel) +
-      sum(ren_det_age_i$n_units_fuel)) / 10^6, 0),
-    "million units."
-  )) # Sum disaggregated buildings
-  print(paste("Total units (aggregated):",
-    round(sum(stock_aggr %>%
-                filter(year == yrs[i]) %>%
-                select(n_units_aggr) %>%
-                pull()) / 10^6, 0),
-                "million units."))
+      sum(ren_det_age_i$n_units_fuel) +
+      sum(new_det_age_i$n_units_fuel) +
+      sum(new_det_slum_age_i$n_units_fuel)) / 1e6, 0),
+    "million units."))
+  print(paste("Total units (aggregated)",
+    round(sum(filter(stock_aggr, year == yrs[i])$n_units_aggr) / 1e6, 0),
+    "million units."))
 
   # Bind all datasets - fuel level + vintage
   bld_det_age_i <- bind_rows(exst_det_age_i,
-                            exst_sw_det_age_i,
-                            ren_det_age_i,
-                            new_det_age_i,
-                            new_det_slum_age_i) %>%
+                             exst_sw_det_age_i,
+                             ren_det_age_i,
+                             new_det_age_i,
+                             new_det_slum_age_i) %>%
     # Remove negative values (due to approximation)
     mutate(n_units_fuel = ifelse(n_units_fuel < 0, 0, n_units_fuel)) %>%
     # Aggregate to remove doubled categories
     group_by_at(setdiff(names(bld_det_age_i), c("n_units_fuel"))) %>%
     summarise(n_units_fuel = sum(n_units_fuel)) %>%
     ungroup()
+
+  print(paste("Number of units:",
+    round(sum(bld_det_age_i$n_units_fuel) / 1e6, 0),
+    "million units."))
 
   return(bld_det_age_i)
 }

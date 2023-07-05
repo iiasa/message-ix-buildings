@@ -8,7 +8,6 @@ fun_format_output <- function(i,
                               sector,
                               run,
                               bld_det_age_i,
-                              bld_cases_eneff,
                               bld_cases_fuel,
                               ct_fuel_comb,
                               shr_need_heat,
@@ -47,6 +46,9 @@ fun_format_output <- function(i,
 
     if ("material" %in% report_var) {
         # Stock results - Material
+        bld_cases_eneff <- bld_cases_fuel %>%
+            select(-c(fuel_heat, fuel_cool)) %>%
+            distinct()
 
         # Aggregate results at eneff level demolitions
         dem_eneff_i <- dem_det_age_i %>%

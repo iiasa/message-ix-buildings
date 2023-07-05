@@ -3,8 +3,11 @@
 library(rstudioapi)
 library(tidyverse)
 library(readxl)
+library(dplyr)
 
-# rounding (number of decimals)
+options(dplyr.width = Inf)
+
+# rounding (number of decimals)#
 rnd <- 5
 u_EJ_GWa <- 31.71
 
@@ -18,17 +21,21 @@ rout_path <- paste(getwd(), "/STURM_output/", sep = "")
 
 # configuration file STURM
 base_year <- 2015
-end_year <- 2025
+end_year <- 2030
 step_year <- 5
 run <- "EU_implementation"
 region <- c("WEU", "EEU")
 sector <- "resid"
 file_inputs <- "input_list_resid_EU.csv"
-path_prices <- paste0(data_path,
+path_prices_message <- paste0(data_path,
     "input_csv/input_price/input_prices_R12.csv")
+path_prices <- paste0(data_path,
+    "input_csv/input_price/input_prices_EU.csv")
+
 file_scenarios <- "scenarios_TEST.csv"
 
 mod_arch <- "stock"
+# energy_efficiency <- "endogenous"
 energy_efficiency <- "exogenous"
 report <- list(var = c("energy"),
                type = c("STURM"),
@@ -65,6 +72,7 @@ sturm_scenarios <- run_scenario(
     path_rcode = rcode_path,
     path_out = rout_path,
     path_prices = path_prices,
+    path_prices_message = path_prices_message,
     file_inputs = file_inputs,
     file_scenarios = file_scenarios,
     geo_level_report = report$geo_level,

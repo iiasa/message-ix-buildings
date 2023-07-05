@@ -203,22 +203,14 @@ fun_parse_stock <- function(stock, cat, population) {
 
 }
 
+#' @description Parse energy prices from MESSAGE
+read_message_prices <- function(path_prices_message, geo_data) {
 
-#' @title Read energy prices
-#' @description Read energy prices
-#' @param path_prices: path to energy prices
-#' @param geo_data: list of dimensions
-#' @param geo_level: level of geographical aggregation
-#' @return list of energy prices
-read_energy_prices <- function(path_prices, geo_data, geo_level) {
-  prices <- read.csv(path_prices)
+  prices <- read.csv(path_prices_message)
 
-  # Parse energy prices from MESSAGE
-  if (is.null(prices) == FALSE) {
-    price_en <- prices %>%
+  price_en <- prices %>%
     mutate(price_en = lvl / all_of(u_EJ_GWa)) %>%
     mutate(region = substr(node, 5, 7)) %>%
-    # mutate(region_gea = ifelse(region_gea == "LAM", "LAC", region_gea)) %>%
     mutate(fuel = commodity) %>%
     mutate(fuel = ifelse(commodity == "biomass", "biomass_solid", fuel)) %>%
     mutate(fuel = ifelse(commodity == "electr", "electricity", fuel)) %>%
@@ -228,12 +220,53 @@ read_energy_prices <- function(path_prices, geo_data, geo_level) {
     select(region, year, fuel, price_en) %>%
     # Rename region column based on R11/R12
     rename_at("region", ~ paste(substr(prices$node[1], 1, 3)))
-    # Use the most granular level for prices
-    price_en <- geo_data %>%
+    
+  price_en <- geo_data %>%
     # Join R11/R12 data with prices
-    left_join(price_en) %>% 
-    select_at(c(paste(geo_level), "year", "fuel", "price_en"))
-  } else {
-    price_en <- NULL
-  }
+    left_join(price_en) %>%
+    select_at(c("region_bld", "year", "fuel", "price_en"))
+  
+  return(price_en)
+}
+
+#' @title Read energy prices
+#' @description Read energy prices
+#' @param path_prices: path to energy prices
+#' @param geo_data: list of dimensions
+#' @param geo_level: level of geographical aggregation
+#' @return list of energy prices
+read_energy_prices <- function(path_prices, path_prices_message, geo_data) {
+
+  price_en <- read_message_prices(path_prices_message, geo_data)
+
+  evolution_rate <- price_en %>%
+    group_by(region_bld, fuel) %>%
+    arrange(year) %>%
+    mutate(evolution_rate = price_en / first(price_en)) %>%
+    ungroup() %>%
+    filter(!is.na(evolution_rate)) %>%
+    select(-c(price_en))
+
+
+  price_base_year <- read.csv(path_prices)
+
+  price_en <- price_base_year %>%
+    left_join(evolution_rate, by = c("region_bld", "fuel")) %>%
+    mutate(value_new = value * evolution_rate) %>%
+    select(region_bld, fuel, year = year.y, value = value_new) %>%
+    filter(!is.na(value)) %>%
+    bind_rows(price_base_year)
+
+  # Complete data if missing
+  price_expanded <- price_en %>%
+    expand(region_bld, fuel, year = unique(price_en$year)) %>%
+    left_join(price_en, by = c("region_bld", "fuel", "year")) %>%
+    group_by(region_bld, fuel) %>%
+    fill(value, .direction = "down") %>%
+    rename(price_en = value)
+
+  # print(sum(is.na(price_expanded$value)))
+  # print(any(duplicated(price_expanded)))
+
+  return(price_expanded)
 }

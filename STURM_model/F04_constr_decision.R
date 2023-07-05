@@ -131,6 +131,8 @@ fun_ms_new_exogenous <- function(yrs,
                               i,
                               stock_aggr,
                               ct_bld_age,
+                              ct_hh_inc,
+                              share_hh_tenr,
                               ms_shell_new_exo,
                               ms_switch_fuel_exo) {
   print(paste0("Running construction target - year ", yrs[i]))
@@ -193,10 +195,16 @@ fun_ms_new_exogenous <- function(yrs,
     mutate(ms = ms * share) %>%
     select(-share)
 
+  # Add hh_tenure
+  ms_new_i <- ms_new_i %>%
+    left_join(share_hh_tenr) %>%
+    mutate(ms = ms * hh_tenure) %>%
+    select(-hh_tenure)
+
 
   # Test sum of ms_shell_new_exo equal to 1
   test <- ms_new_i %>% group_by_at(setdiff(names(ms_new_i),
-            c("ms", "fuel_heat", "eneff", "inc_cl"))) %>%
+            c("ms", "fuel_heat", "eneff", "inc_cl", "tenr"))) %>%
             summarise(total = sum(ms)) %>%
             ungroup()
   # All ms value of test should be equal to 1

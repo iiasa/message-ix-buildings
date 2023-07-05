@@ -134,10 +134,7 @@ fun_en_sim <- function(sector,
       rename(en_m2 = en_dem_heat) %>%
       mutate(fuel = fuel_heat) %>%
       left_join(hh_size) %>%
-      filter(year == yrs[i])
-
-    # TODO: change to use average surface by dwelling
-    en_hh <- en_hh %>%
+      filter(year == yrs[i]) %>%
      # Add floor surface area
       left_join(floor_cap) %>%
       # Calculate total energy demand per household
@@ -145,8 +142,9 @@ fun_en_sim <- function(sector,
       # Associate energy prices to en_perm
       left_join(price_en) %>%
       # Calculate the total costs for operational energy
-      mutate(cost_op = u1 * en_hh * price_en)
+      mutate(cost_op = en_hh * price_en)
 
+    # print(summary(en_hh$en_m2))
 
     # Sum total energy costs for all fuels
     en_hh_tot <- en_hh %>%
@@ -186,21 +184,25 @@ fun_hw_resid <- function(yrs, i,
 
   en_hh_hw_scen <- bld_cases_fuel %>%
     mutate(year = yrs[i]) %>%
-    # left_join(ct_eneff) %>% # to have "mat" for joining ct_access ## needed for DHW?
     left_join(hh_size) %>%
     # left_join(ct_fuel_dhw) %>%
     left_join(eff_hotwater) %>%
     left_join(en_int_hotwater) %>%
-    left_join(en_int_heat) %>% # join data energy demand - filter where heating is needed
-    mutate(en_dem_dhw = hh_size * en_int_hotwater * acc_hw / eff_hotwater) %>% # DHW energy demand (final) [GJ/hh/y]
-    mutate_cond(en_int_heat == 0, en_dem_dhw = 0) %>% # no hot water demand where there is no heating
+    # join data energy demand - filter where heating is needed
+    left_join(en_int_heat) %>%
+    # DHW energy demand (final) [GJ/hh/y]
+    mutate(en_dem_dhw =
+      hh_size * en_int_hotwater * acc_hw / eff_hotwater) %>%
+    # no hot water demand where there is no heating
+    mutate_cond(en_int_heat == 0, en_dem_dhw = 0) %>%
     select(-year) %>%
     select(-c(hh_size, eff_hotwater, en_int_hotwater, en_int_heat))
 
   output <- en_hh_hw_scen
 }
 
-#' @title Function to calculate energy demand for domestic hot water for commercial buildings
+#' @title Function to calculate energy demand for domestic hot water
+#' for commercial buildings
 #' @param yrs vector of years to be calculated
 #' @param i index of the year to be calculated
 #' @param bld_cases_fuel data frame with building cases and fuel
@@ -219,7 +221,8 @@ fun_hw_comm <- function(yrs,
     # left_join(ct_eneff) %>% # to have "mat" for joining ct_access ## needed for DHW?
     left_join(eff_hotwater) %>%
     left_join(en_m2_dhw) %>%
-    mutate(en_dem_dhw = en_dhw_useful_kwh_m2 / eff_hotwater) %>% # DHW energy demand (final) [kWh/m2/y]
+    # DHW energy demand (final) [kWh/m2/y]
+    mutate(en_dem_dhw = en_dhw_useful_kwh_m2 / eff_hotwater) %>%
     select(-year) %>%
     select(-c(eff_hotwater, en_dhw_useful_kwh_m2))
 

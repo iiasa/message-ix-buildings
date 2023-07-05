@@ -55,7 +55,7 @@ plot_settings <- list(
   "size_title" = 24, # axes and legend
   "size_text" = 24,
   "width" = 16, #width cm
-  "height" = 1.3 * 16, #height cm
+  "height" = 1 * 16, #height cm
   "dpi" = 300, #DPI
   "font_family" = "Arial",
   "colors" = c(colors_efficiency, colors_fuels),
@@ -126,6 +126,7 @@ plot_variable_evolution <- function(data,
     x_column,
     y_column,
     group_column,
+    ncol = 3,
     subplot = FALSE,
     y_label = "",
     save_path = NULL) {
@@ -142,9 +143,14 @@ plot_variable_evolution <- function(data,
   if (subplot) {
     # Create subplot for each instance of group_column
     p <- ggplot(summarized_data, aes(x = .data[[x_column]], y = value)) +
-                geom_line() +
-                facet_wrap(group_column) +
-                message_building_theme
+                geom_line(size = 1.5) +
+                facet_wrap(group_column, ncol = ncol) +
+                message_building_theme +
+                scale_x_continuous(breaks = c(2020, 2040)) +
+                labs(title = y_label) +
+                scale_y_continuous(labels =
+                  function(x) format(x, big.mark = ",", scientific = FALSE))
+
   } else {
     # Create line plot on the same axis
     p <- ggplot(summarized_data, aes(x = .data[[x_column]],

@@ -65,7 +65,7 @@ plot_stacked_area(data, "year", "stock_M", "fuel_heat",
 ```{r}
 plot_stacked_area(data, "year", "stock_M", "efficiency",
                   y_label = "Stock households\nMillion buildings",
-                  save_path = paste(save_dir, "stock_hh_countries.png", sep = "/"))
+                  save_path = paste(save_dir, "stock_hh_efficiency.png", sep = "/"))
 ```
 
 ## Final energy consumption for space heating in the Residential sector (TWh)
@@ -77,10 +77,15 @@ plot_stacked_area(data, "year", "heat_ktoe", "fuel_heat",
 ```
 
 ```{r}
-plot_variable_evolution(data,
+sub_data <- data %>%
+  filter(region_bld %in% c("C-WEU-FRA", "C-WEU-DEU", "C-WEU-GBR", "C-WEU-ITA"))
+
+plot_variable_evolution(sub_data,
                         x_column = "year",
-                        y_column = "heat_TWh",
+                        y_column = "heat_ktoe",
                         group_column = "region_bld",
+                        ncol = 4,
+                        y_label = "Final energy consumption for space heating\nResidential sector\nktoe",
                         subplot = TRUE,
                         save_path = paste(save_dir, "heat_evolution.png", sep="/"))
 ```

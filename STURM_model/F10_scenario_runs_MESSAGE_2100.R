@@ -153,7 +153,66 @@ run_scenario <- function(run,
     print(paste("Initial building stock based on detailed data:",
       round(sum(bld_det_age_i$n_units_fuel) / 1e6, 0), "million units."))
     rm(temp)
-    
+
+    print(paste("Calculate energy demand intensities 
+      for space heating and cooling"))
+    lst_en_i <- fun_en_sim(
+      sector,
+      yrs,
+      1,
+      bld_cases_fuel,
+      d$en_int_heat,
+      d$en_int_cool,
+      d$days_cool,
+      d$eff_cool,
+      d$eff_heat,
+      d$en_sav_ren,
+      d$hours_heat,
+      d$shr_floor_heat,
+      d$hours_cool,
+      d$shr_floor_cool,
+      d$hours_fans,
+      d$power_fans,
+      d$shr_acc_cool,
+      d$hh_size,
+      d$floor_cap,
+      price_en
+    )
+    # Extract dataframes from list
+    en_m2_scen_heat <- lst_en_i$en_m2_scen_heat
+    en_m2_scen_cool <- lst_en_i$en_m2_scen_cool
+    en_hh_tot <- lst_en_i$en_hh_tot
+    rm(lst_en_i)
+
+    # Energy demand intensities - hot water
+    print(paste("Calculate energy demand intensities for hot water"))
+    en_hh_hw_scen <- fun_hw_resid(
+      yrs, 1,
+      bld_cases_fuel,
+      d$hh_size,
+      d$eff_hotwater,
+      d$en_int_hotwater,
+      d$en_int_heat
+    )
+
+    report <- fun_format_output(1,
+                    yrs,
+                    sector,
+                    run,
+                    bld_det_age_i,
+                    bld_cases_fuel,
+                    cat$ct_fuel,
+                    d$shr_need_heat,
+                    d$floor_cap,
+                    d$hh_size,
+                    report_var,
+                    report,
+                    en_m2_scen_heat,
+                    en_m2_scen_cool,
+                    en_hh_hw_scen,
+                    en_m2_hw_scen,
+                    en_m2_others)
+
     # Loop over timesteps
     print(paste("Start scenario run", sector))
 

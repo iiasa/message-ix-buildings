@@ -7,14 +7,30 @@ library(stringr)
 
 
 # Energy efficiency cohorts
+rename_eneff <- c("adv" = "Renovated advanced",
+  "avg" = "Average",
+  "std" = "Renovated standard",
+  "p1" = "Existing <1945",
+  "p2" = "Existing 1946-1990",
+  "p3" = "Existing 1991-2015",
+  "p5" = "New standard"
+)
+
+order_eneff <- c("Existing <1945", "Existing 1946-1990", "Existing 1991-2015",
+  "Renovated standard", "Renovated advanced", "New standard")
+
+
 colors_efficiency <- c("Slum" = "grey30",
                 "Existing <1945" = "coral4",
                 "Existing 1946-1990" = "coral3",
                 "Existing 1991-2015" = "coral2",
+                "Average" = "grey30",
                 "Renovated standard" = "khaki1",
                 "Renovated advanced" = "goldenrod1",
                 "New standard" = "palegreen3",
                 "New advanced" = "palegreen4")
+
+
 
 # Heating fuels
 rename_fuels <- c("biomass_solid" = "Biomass",
@@ -24,6 +40,7 @@ rename_fuels <- c("biomass_solid" = "Biomass",
             "gas" = "Gas",
             "oil" = "Oil")
 
+order_fuels <- c("Coal", "Oil", "Gas", "District heating", "Electricity", "Biomass")
 
 colors_fuels <- c("No Heating" = "grey92",
   "Electricity" = "slateblue",
@@ -38,11 +55,12 @@ plot_settings <- list(
   "size_title" = 24, # axes and legend
   "size_text" = 24,
   "width" = 16, #width cm
-  "height" = 1.5 * 16, #height cm
+  "height" = 1.3 * 16, #height cm
   "dpi" = 300, #DPI
   "font_family" = "Arial",
   "colors" = c(colors_efficiency, colors_fuels),
-  "rename" = c(rename_fuels)
+  "rename" = c(rename_eneff, rename_fuels),
+  "order" = c(order_fuels, order_eneff)
 )
 
 
@@ -59,6 +77,7 @@ message_building_theme <- theme_minimal() +
           panel.grid.minor = element_blank(),
           strip.background = element_blank(),
           legend.title = element_blank(),
+          legend.text = element_text(size = plot_settings[["size_text"]]),
           legend.position = "right",
           # Top, Right, Bottom and Left margin
           plot.margin = margin(t = 0,
@@ -75,18 +94,22 @@ plot_stacked_area <- function(data, x_column, y_column, fill_column,
   # Create the stacked area plot
   group <- c(x_column, fill_column)
   p <- data %>%
-    mutate(!!fill_column := rename_fuels[.data[[fill_column]]]) %>%
+    mutate(!!fill_column := plot_settings[["rename"]][.data[[fill_column]]]) %>%
     group_by(across(all_of(group))) %>%
     summarise(total = sum(.data[[y_column]])) %>%
     ungroup() %>%
+    mutate(!!sym(fill_column) := factor(!!sym(fill_column), levels = rev(plot_settings[["order"]]))) %>%
     ggplot(aes(x = .data[[x_column]],
                y = total,
                fill = .data[[fill_column]])) +
-    geom_area() +
+    geom_area(position = "stack") +
+    # guides(fill = guide_legend(reverse=TRUE)) +
     scale_fill_manual(values = plot_settings[["colors"]]) +
     labs(title = y_label,
          fill = str_replace_all(str_to_title(fill_column), "_", " ")) +
-    message_building_theme
+    message_building_theme  +
+    scale_y_continuous(labels =
+      function(x) format(x, big.mark = ",", scientific = FALSE))
 
   # Save the plot as PNG if save_path is specified
   if (!is.null(save_path)) {

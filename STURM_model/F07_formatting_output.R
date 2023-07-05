@@ -304,7 +304,7 @@ fun_format_bld_stock_energy <- function(
             filter(stock_M > 0 & !is.na(stock_M)) %>%
             select_at(paste(c("region_gea", "region_bld",
                 "urt", "clim", "inc_cl", "arch", "mat",
-                "eneff", "fuel_heat", "fuel_cool",
+                "eneff", "bld_age", "fuel_heat", "fuel_cool",
                 "scenario", "year", "stock_M", "floor_Mm2",
                 "heat_TJ", "cool_TJ", "cool_ac_TJ", "cool_fans_TJ",
                 "hotwater_TJ", "other_uses_TJ"

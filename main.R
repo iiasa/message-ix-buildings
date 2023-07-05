@@ -1,9 +1,11 @@
 # Script to be run in Rstudio
 
 library(rstudioapi)
-library(tidyverse)
+library(tidyverse, quietly = TRUE)
 library(readxl)
 library(dplyr)
+
+suppressPackageStartupMessages(library(tidyverse))
 
 options(dplyr.width = Inf)
 
@@ -21,7 +23,7 @@ rout_path <- paste(getwd(), "/STURM_output/", sep = "")
 
 # configuration file STURM
 base_year <- 2015
-end_year <- 2030
+end_year <- 2050
 step_year <- 5
 run <- "EU_implementation"
 region <- c("WEU", "EEU")

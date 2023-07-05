@@ -6,6 +6,7 @@ library(tidyverse)
 library(tibble)
 library(tidyr)
 
+
 #' @param sector: sector to run, "resid" or "comm"
 #' @param yrs: years to run, e.g. c(2015,2020,2025,2030,2035,2040,2045,2050)
 #' @param i: index of the year to run
@@ -50,7 +51,6 @@ fun_stock_dyn <- function(i,
     select(mat, bld_age_id) %>%
     rename(bld_age = bld_age_id)
 
-  print(stock_aggr %>% group_by_at("year") %>% summarize(total = sum(n_units_aggr)))
   # Stock Dynamics
   print(paste("Number of existing buildings during the previous time step is",
     round(sum(bld_det_age_i$n_units_fuel) / 1e6, 0), "million units."))

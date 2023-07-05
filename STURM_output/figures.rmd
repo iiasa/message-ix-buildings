@@ -39,10 +39,20 @@ print(summary(data))
 ```{r}
 data <- data %>%
     mutate(heat_TWh = heat_TJ / 3.6 / 1e3) %>%
-    mutate(heat_hh_kWh = heat_TWh * 1e3 / stock_M)
+    mutate(heat_ktoe = heat_TWh * 85.980) %>%
+    mutate(heat_hh_kWh = heat_TWh * 1e3 / stock_M) %>%
+    mutate()
+
+data <- data %>%
+  mutate("efficiency" = ifelse(eneff == "avg" | bld_age == "p5",
+    bld_age, eneff))
 ```
 
 ## Figures
+
+```{r}
+source("STURM_output/plot_settings.R")
+```
 
 ### Buidling stock evolution by space heating fuels
 ```{r}
@@ -53,15 +63,15 @@ plot_stacked_area(data, "year", "stock_M", "fuel_heat",
 
 ### Buidling stock evolution by country
 ```{r}
-plot_stacked_area(data, "year", "stock_M", "region_bld",
+plot_stacked_area(data, "year", "stock_M", "efficiency",
                   y_label = "Stock households\nMillion buildings",
                   save_path = paste(save_dir, "stock_hh_countries.png", sep = "/"))
 ```
 
 ## Final energy consumption for space heating in the Residential sector (TWh)
 ```{r}
-plot_stacked_area(data, "year", "heat_TWh", "fuel_heat",
-                  y_label = "Final energy consumption for space heating\nResidential sector\nTWh",
+plot_stacked_area(data, "year", "heat_ktoe", "fuel_heat",
+                  y_label = "Final energy consumption for space heating\nResidential sector\nktoe",
                   save_path = paste(save_dir, "heating_fuel.png", sep = "/")
                   )
 ```

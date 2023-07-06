@@ -46,7 +46,6 @@ report <- list(var = c("energy"),
 yrs <- seq(base_year, end_year, step_year)
 
 
-
 # call STURM
 #' @param run: name of the run
 #' @param scenario_name: name of the scenario

@@ -357,7 +357,7 @@ run_scenario <- function(run,
       # Stock turnover
       # TODO: check if stock_aggr is necessary
       print(paste("Calculate stock turnover"))
-      bld_det_age_i <- fun_stock_dyn(
+      temp <- fun_stock_dyn(
         i,
         yrs,
         sector,
@@ -373,6 +373,9 @@ run_scenario <- function(run,
         ms_sw_i,
         shr_distr_heat = NULL
       )
+      bld_det_age_i <- temp$bld_det_age_i
+      ren_det_i <- temp$ren_det_i
+      rm(temp)
       # Extract dataframes from list
       report <- fun_format_output(i,
                               yrs,
@@ -390,7 +393,9 @@ run_scenario <- function(run,
                               en_m2_scen_cool,
                               en_hh_hw_scen,
                               en_m2_hw_scen,
-                              en_m2_others)
+                              en_m2_others,
+                              ren_det_i,
+                              cost_renovation = d$cost_invest_ren_shell)
     }
   }
 

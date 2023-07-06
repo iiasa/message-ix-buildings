@@ -210,6 +210,7 @@ fun_stock_det_ini <- function(sector,
   report <- list()
   if ("energy" %in% report_var) {
     report <- append(report, list(en_stock = as.data.frame(NULL)))
+    report <- append(report, list(renovation = as.data.frame(NULL)))
   }
   if ("material" %in% report_var) {
     report <- append(report, list(mat_stock = as.data.frame(NULL)))

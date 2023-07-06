@@ -20,6 +20,8 @@ fun_format_output <- function(i,
                               en_hh_hw_scen,
                               en_m2_hw_scen,
                               en_m2_others,
+                              ren_det_i = NULL,
+                              cost_renovation = NULL,
                               dem_det_age_i = NULL,
                               dem_det_slum_age_i = NULL,
                               new_det_age_i = NULL,
@@ -40,8 +42,20 @@ fun_format_output <- function(i,
             en_m2_scen_cool,
             en_hh_hw_scen
         )
-
         report$en_stock <- bind_rows(report$en_stock, en_stock_i)
+        if (!is.null(cost_renovation) && !is.null(ren_det_i)) {
+            cost_renovation <- cost_renovation %>%
+                left_join(hh_size) %>%
+                left_join(floor_cap) %>%
+                mutate(cost = hh_size * floor_cap * cost_invest_ren_shell)
+
+            ren_det_i <- ren_det_i %>%
+                left_join(cost_renovation) %>%
+                mutate(total_cost = cost * n_units_fuel)
+            
+            report <- append(report,
+                list(cost_ren_shell = sum(ren_det_i$total_cost) / 1e9))
+        }
     }
 
     if ("material" %in% report_var) {

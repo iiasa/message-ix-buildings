@@ -36,6 +36,7 @@ fun_stock_dyn <- function(i,
                           ms_ren_i,
                           rate_ren_i,
                           ms_sw_i,
+                          ren_age_i,
                           shr_distr_heat = NULL) {
 
 
@@ -243,6 +244,7 @@ fun_stock_dyn <- function(i,
       n_units_fuel_p, n_dem, n_empty, n_units_fuel_exst, rate_ren,
       ms_ren
     ))
+  # -------------------------------------------------------
 
   print(
     paste("Renovated buildings:",
@@ -385,7 +387,8 @@ fun_stock_dyn <- function(i,
     "Number of existing units (detailed):",
     round(c(sum(exst_det_age_i$n_units_fuel) +
       sum(exst_sw_det_age_i$n_units_fuel) +
-      sum(ren_det_age_i$n_units_fuel)) / 1e6, 0),
+      sum(ren_det_age_i$n_units_fuel) +
+      sum(ren_sw_det_age_i$n_units_fuel)) / 1e6, 0),
     "million units."
   ))
   # Sum disaggregated buildings
@@ -406,6 +409,7 @@ fun_stock_dyn <- function(i,
       sum(exst_det_age_i$n_units_fuel) +
       sum(exst_sw_det_age_i$n_units_fuel) +
       sum(ren_det_age_i$n_units_fuel) +
+      sum(ren_sw_det_age_i$n_units_fuel) +
       sum(new_det_age_i$n_units_fuel) +
       sum(new_det_slum_age_i$n_units_fuel)) / 1e6, 0),
     "million units."))
@@ -417,6 +421,7 @@ fun_stock_dyn <- function(i,
   bld_det_age_i <- bind_rows(exst_det_age_i,
                              exst_sw_det_age_i,
                              ren_det_age_i,
+                             ren_sw_det_age_i,
                              new_det_age_i,
                              new_det_slum_age_i) %>%
     # Remove negative values (due to approximation)
@@ -426,9 +431,18 @@ fun_stock_dyn <- function(i,
     summarise(n_units_fuel = sum(n_units_fuel)) %>%
     ungroup()
 
+  ren_det_i <- NULL
+  ren_det_i <- bind_rows(ren_det_age_i, ren_sw_det_age_i) %>%
+    # Remove negative values (due to approximation)
+    mutate(n_units_fuel = ifelse(n_units_fuel < 0, 0, n_units_fuel)) %>%
+    # Aggregate to remove doubled categories
+    group_by_at(setdiff(names(ren_det_age_i), c("n_units_fuel"))) %>%
+    summarise(n_units_fuel = sum(n_units_fuel)) %>%
+    ungroup()
+
   print(paste("Number of units:",
     round(sum(bld_det_age_i$n_units_fuel) / 1e6, 0),
     "million units."))
 
-  return(bld_det_age_i)
+  return(list(bld_det_age_i = bld_det_age_i, ren_det_i = ren_det_i))
 }

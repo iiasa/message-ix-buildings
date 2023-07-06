@@ -18,7 +18,8 @@ source("STURM_output/plot_settings.R")
 ```
 
 ```{r}
-file <- "report_STURM_EU_implementation_resid_region_bld_energy.csv"
+scenario <- "EU_implementation_nomfhq1rent"
+file <- paste0("report_STURM_", scenario, "_resid_region_bld_energy.csv")
 file <- paste("STURM_output", file, sep = "/")
 
 if (!file.exists(file)) {
@@ -58,21 +59,21 @@ source("STURM_output/plot_settings.R")
 ```{r}
 plot_stacked_area(data, "year", "stock_M", "fuel_heat",
                   y_label = "Stock households\nMillion buildings",
-                  save_path = paste(save_dir, "stock_hh_fuel.png", sep = "/"))
+                  save_path = paste(save_dir, paste0(scenario, "_stock_hh_fuel.png"), sep = "/"))
 ```
 
 ### Buidling stock evolution by country
 ```{r}
 plot_stacked_area(data, "year", "stock_M", "efficiency",
                   y_label = "Stock households\nMillion buildings",
-                  save_path = paste(save_dir, "stock_hh_efficiency.png", sep = "/"))
+                  save_path = paste(save_dir, paste0(scenario, "_stock_hh_efficiency.png"), sep = "/"))
 ```
 
 ## Final energy consumption for space heating in the Residential sector (TWh)
 ```{r}
 plot_stacked_area(data, "year", "heat_ktoe", "fuel_heat",
                   y_label = "Final energy consumption for space heating\nResidential sector\nktoe",
-                  save_path = paste(save_dir, "heating_fuel.png", sep = "/")
+                  save_path = paste(save_dir, paste0(scenario, "_heating_fuel.png"), sep = "/")
                   )
 ```
 
@@ -87,7 +88,7 @@ plot_variable_evolution(sub_data,
                         ncol = 4,
                         y_label = "Final energy consumption for space heating\nResidential sector\nktoe",
                         subplot = TRUE,
-                        save_path = paste(save_dir, "heat_evolution.png", sep="/"))
+                        save_path = paste(save_dir, paste0(scenario, "_heat_evolution.png", sep="/"))
 ```
 
 

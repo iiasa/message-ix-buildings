@@ -1,4 +1,3 @@
-### WRAPPER FUNCTION
 
 library(tidyverse)
 library(readxl)
@@ -118,7 +117,6 @@ run_scenario <- function(run,
     rename("tenr" = "cat$ct_hh_tenr")
 
   ### RESIDENTIAL SECTOR
-
   if (sector == "resid") {
     # Initialize housing stock (fun)
     print(paste("Initialize scenario run", sector))

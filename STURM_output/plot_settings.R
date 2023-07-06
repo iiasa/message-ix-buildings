@@ -122,10 +122,11 @@ plot_stacked_area <- function(data, x_column, y_column, fill_column,
 }
 
 
-plot_variable_evolution <- function(data,
+plot_variable_evolution <- function(df,
     x_column,
     y_column,
     group_column,
+    rename_group,
     ncol = 3,
     subplot = FALSE,
     y_label = "",
@@ -133,17 +134,22 @@ plot_variable_evolution <- function(data,
   # Group and summarize data
   group <- c(x_column, group_column)
 
-  summarized_data <- data %>%
+
+
+  summarized_data <- df %>%
+    mutate(!!group_column := rename_group[.data[[group_column]]]) %>%
     # Group by year and group_column
     group_by(across(all_of(group))) %>%
     summarise(value = sum(.data[[y_column]])) %>%
     ungroup()
+
   # Convert year column to numeric
   summarized_data$year <- as.numeric(summarized_data$year)
   if (subplot) {
     # Create subplot for each instance of group_column
     p <- ggplot(summarized_data, aes(x = .data[[x_column]], y = value)) +
                 geom_line(size = 1.5) +
+                expand_limits(y = 0) +
                 facet_wrap(group_column, ncol = ncol) +
                 message_building_theme +
                 scale_x_continuous(breaks = c(2020, 2040)) +
@@ -156,8 +162,13 @@ plot_variable_evolution <- function(data,
     p <- ggplot(summarized_data, aes(x = .data[[x_column]],
                                 y = value,
                                 color = .data[[group_column]])) +
-      geom_line() +
-      message_building_theme
+      geom_line(size = 1.5) +
+      message_building_theme +
+      theme(legend.position = "bottom") +
+      labs(title = y_label) +
+      scale_y_continuous(labels =
+        function(x) format(x, big.mark = ",", scientific = FALSE)) +
+      expand_limits(y = 0)
   }
   # Save the plot as PNG if save_path is specified
   if (!is.null(save_path)) {

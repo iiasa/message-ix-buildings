@@ -4,6 +4,7 @@ library(rstudioapi)
 library(tidyverse, quietly = TRUE)
 library(readxl)
 library(dplyr)
+library(parallel)
 
 suppressPackageStartupMessages(library(tidyverse))
 
@@ -25,7 +26,11 @@ rout_path <- paste(getwd(), "/STURM_output/", sep = "")
 base_year <- 2015
 end_year <- 2050
 step_year <- 5
-run <- "EU_implementation"
+runs <- c("EU_implementation",
+    "EU_implementation_nomfhq1rent",
+    "EU_implementation_double",
+    "EU_implementation_triple")
+    
 region <- c("WEU", "EEU")
 sector <- "resid"
 file_inputs <- "input_list_resid_EU.csv"
@@ -34,7 +39,7 @@ path_prices_message <- paste0(data_path,
 path_prices <- paste0(data_path,
     "input_csv/input_price/input_prices_EU.csv")
 
-file_scenarios <- "scenarios_TEST.csv"
+file_scenarios <- "scenarios_EU.csv"
 
 mod_arch <- "stock"
 # energy_efficiency <- "endogenous"
@@ -45,41 +50,23 @@ report <- list(var = c("energy"),
 
 yrs <- seq(base_year, end_year, step_year)
 
-
-# call STURM
-#' @param run: name of the run
-#' @param scenario_name: name of the scenario
-#' @param sector: sector to be analysed, default is "resid"
-#' @param path_in: path to input data, default is current working directory
-#' @param path_rcode: path to R code, default is current working directory
-#' @param path_out: path to output data, default is current working directory
-#' @param path_prices: name of the price file, default is "input_prices_R12.csv"
-#' @param file_inputs: name of the input file, default is "input_list_resid"
-#' @param file_scenarios: name of the scenario file, default is "scenarios_TEST"
-#' @param geo_level_report: level for reporting, default is "R12"
-#' @param yrs: years to be analysed, default is seq(2015,2050,5)
-#' @param mod_arch: model architecture, default is "stock"
-#' @param report_type: type of report, default is "STURM"
-#' available is c("MESSAGE","STURM","IRP","NGFS","NAVIGATE")
-#' @param report_var: variables to be reported,
-#' available is c("energy","material","vintage","dle")
-#' @return: results of the STURM model
-#' @export
-sturm_scenarios <- run_scenario(
-    run = run,
-    scenario_name = run,
-    sector = sector,
-    path_in = data_path,
-    path_rcode = rcode_path,
-    path_out = rout_path,
-    path_prices = path_prices,
-    path_prices_message = path_prices_message,
-    file_inputs = file_inputs,
-    file_scenarios = file_scenarios,
-    geo_level_report = report$geo_level,
-    yrs = yrs,
-    report_var = report$var,
-    report_type = report$type,
-    region = region,
-    energy_efficiency = energy_efficiency
-)
+for (run in runs) {
+    sturm_scenarios <- run_scenario(
+        run = run,
+        scenario_name = run,
+        sector = sector,
+        path_in = data_path,
+        path_rcode = rcode_path,
+        path_out = rout_path,
+        path_prices = path_prices,
+        path_prices_message = path_prices_message,
+        file_inputs = file_inputs,
+        file_scenarios = file_scenarios,
+        geo_level_report = report$geo_level,
+        yrs = yrs,
+        report_var = report$var,
+        report_type = report$type,
+        region = region,
+        energy_efficiency = energy_efficiency
+    )
+}

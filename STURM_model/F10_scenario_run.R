@@ -292,6 +292,7 @@ run_scenario <- function(run,
       if (energy_efficiency == "endogenous" && i == 2 && FALSE) {
         print("Calibration of market shares")
         stp <- yrs[i] - yrs[i - 1]
+
         parameters_renovation <- fun_calibration_ren_shell(yrs,
                                 i,
                                 bld_det_age_i,

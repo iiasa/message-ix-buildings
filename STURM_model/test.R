@@ -57,3 +57,14 @@
   cost_invest_ren_shell <- bind_rows(cost_invest_ren_shell, temp)
 
     
+        parameters_heater <- fun_calibration_switch_heat(yrs,
+                          i,
+                          bld_cases_fuel,
+                          cat$ct_bld_age,
+                          cat$ct_switch_heat,
+                          d$cost_invest_heat,
+                          en_hh_tot,
+                          d$ms_switch_fuel_exo,
+                          lifetime_heat = 20,
+                          discount_heat = 0.05
+                        )

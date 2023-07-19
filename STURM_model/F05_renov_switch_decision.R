@@ -36,29 +36,8 @@ left_join_variable <- function(df1, variable) {
   return(result)
 }
 
-#' @title Renovation switch decision - STURM
-#' @description Calculate renovation switch decision
-#' @param yrs Years to be calculated
-#' @param i Time step
-#' @param bld_cases_fuel Building cases and fuel
-#' @param ct_bld_age Building age
-#' @param ct_hh_tenr Household tenure
-#' @param ct_fuel_comb Fuel combination
-#' @param ct_ren_eneff Renovation energy efficiency
-#' @param ct_ren_fuel_heat Renovation fuel for heating
-#' @param hh_size Household size
-#' @param floor_cap Floor capacity
-#' @param hh_tenure Household tenure
-#' @param cost_invest_ren_shell Investment costs
-#'  for renovation of the building shell
-#' @param cost_invest_ren_heat Investment costs
-#'  for renovation of the heating system
-#' @param ct_fuel_excl_ren Fuel excluded for renovation
-#' @param ct_fuel_excl_reg Fuel excluded for specific regions
-#' @param discount_ren Discount rate for renovation
-#' @param lifetime_ren Lifetime of renovation
-#' @param en_hh_tot Energy demand
-fun_ms_ren_shell_endogenous <- function(yrs,
+
+fun_utility_ren_shell <- function(yrs,
                           i,
                           bld_cases_fuel,
                           ct_bld_age,
@@ -68,28 +47,14 @@ fun_ms_ren_shell_endogenous <- function(yrs,
                           cost_invest_ren_shell,
                           en_hh_tot,
                           lifetime_ren,
-                          discount_ren = 0.05,
-                          parameters = NULL) {
-  print(paste0("Running renovation decisions - year ", yrs[i]))
+                          discount_ren) {
 
-  ## Define timestep
-  stp <- yrs[i] - yrs[i - 1]
-
-  # Operational energy costs before/after renovation
-  # Final energy costs to be used in renovation decisions
-  # (fuels and eneff are after renovation)
+    # Operational energy costs before/after renovation
   en_hh_tot_ren_fin <- en_hh_tot %>%
     rename(eneff_f = eneff)
-    # should be removed, otherwise no match with eneff
-    # (e.g. an older building can switch to a newer eneff standard)
 
-  # Initial energy costs to be used in renovation decisions
-  # (fuels and eneff are before renovation)
-  # This is used to filter out hh with zero operation costs before renovation
   en_hh_tot_ren_init <- en_hh_tot %>%
     rename(cost_op_init = cost_op)
-    # should be removed, otherwise no match with eneff
-    # (e.g. an older building can switch to a newer eneff standard)
 
   # Prepare investment cost data
   if ("year" %in% names(cost_invest_ren_shell)) {
@@ -138,6 +103,61 @@ fun_ms_ren_shell_endogenous <- function(yrs,
           "hh_size", "floor_cap", "cost_invest_ren_shell",
           "cost_invest_hh", "cost_op", "cost_op_init",
           "cost_op_saving", "discount_factor"))
+
+  return(utility_ren_hh)
+}
+
+
+#' @title Renovation switch decision - STURM
+#' @description Calculate renovation switch decision
+#' @param yrs Years to be calculated
+#' @param i Time step
+#' @param bld_cases_fuel Building cases and fuel
+#' @param ct_bld_age Building age
+#' @param ct_hh_tenr Household tenure
+#' @param ct_fuel_comb Fuel combination
+#' @param ct_ren_eneff Renovation energy efficiency
+#' @param ct_ren_fuel_heat Renovation fuel for heating
+#' @param hh_size Household size
+#' @param floor_cap Floor capacity
+#' @param hh_tenure Household tenure
+#' @param cost_invest_ren_shell Investment costs
+#'  for renovation of the building shell
+#' @param cost_invest_ren_heat Investment costs
+#'  for renovation of the heating system
+#' @param ct_fuel_excl_ren Fuel excluded for renovation
+#' @param ct_fuel_excl_reg Fuel excluded for specific regions
+#' @param discount_ren Discount rate for renovation
+#' @param lifetime_ren Lifetime of renovation
+#' @param en_hh_tot Energy demand
+fun_ms_ren_shell_endogenous <- function(yrs,
+                          i,
+                          bld_cases_fuel,
+                          ct_bld_age,
+                          ct_ren_eneff,
+                          hh_size,
+                          floor_cap,
+                          cost_invest_ren_shell,
+                          en_hh_tot,
+                          lifetime_ren,
+                          discount_ren = 0.05,
+                          parameters = NULL) {
+  print(paste0("Running renovation decisions - year ", yrs[i]))
+
+  ## Define timestep
+  stp <- yrs[i] - yrs[i - 1]
+
+  utility_ren_hh <- fun_utility_ren_shell(yrs,
+                          i,
+                          bld_cases_fuel,
+                          ct_bld_age,
+                          ct_ren_eneff,
+                          hh_size,
+                          floor_cap,
+                          cost_invest_ren_shell,
+                          en_hh_tot,
+                          lifetime_ren,
+                          discount_ren)
 
   if ((!is.null(parameters))) {
     utility_ren_hh <- utility_ren_hh %>%
@@ -248,20 +268,15 @@ fun_ms_ren_shell_exogenous <- function(yrs,
 
 
 
-fun_ms_switch_heat_endogenous <- function(yrs,
-                          i,
-                          bld_cases_fuel,
-                          ct_bld_age,
-                          ct_switch_heat,
-                          cost_invest_heat,
-                          en_hh_tot,
-                          lifetime_heat = 20,
-                          discount_heat = 0.05,
-                          parameters_heat = NULL) {
-  print(paste0("Running renovation decisions - year ", yrs[i]))
-
-  ## Define timestep
-  stp <- yrs[i] - yrs[i - 1]
+fun_utility_heat <- function(yrs,
+                        i,
+                        bld_cases_fuel,
+                        en_hh_tot,
+                        ct_bld_age,
+                        ct_switch_heat,
+                        cost_invest_heat,
+                        lifetime_heat,
+                        discount_heat) {
 
   # Operational energy costs before/after renovation
   en_hh_tot_switch_fin <- en_hh_tot %>%
@@ -277,13 +292,16 @@ fun_ms_switch_heat_endogenous <- function(yrs,
   cost_invest_heat <- cost_invest_heat %>%
     mutate(cost_invest_heat = as.numeric(cost_invest_heat))
 
+  # Discount factor
   discount_factor <- (1 - (1 + discount_heat)^-lifetime_heat) / discount_heat
 
+  # Filter building age cohorts - past periods of construction
   bld_age_exst <- ct_bld_age %>%
     filter(year_i < yrs[i]) %>%
     select(bld_age_id) %>%
     pull(bld_age_id)
 
+  # Calculate utility
   utility_heat_hh <- bld_cases_fuel %>%
       filter(bld_age %in% bld_age_exst) %>%
       left_join(ct_switch_heat %>%
@@ -310,6 +328,32 @@ fun_ms_switch_heat_endogenous <- function(yrs,
           "cost_invest_heat", "cost_op", "cost_op_init",
           "cost_op_saving", "ct_switch_heat"))
 
+    return(utility_heat_hh)
+}
+
+
+fun_ms_switch_heat_endogenous <- function(yrs,
+                          i,
+                          bld_cases_fuel,
+                          ct_bld_age,
+                          ct_switch_heat,
+                          cost_invest_heat,
+                          en_hh_tot,
+                          lifetime_heat = 20,
+                          discount_heat = 0.05,
+                          parameters_heat = NULL) {
+  print(paste0("Running renovation decisions - year ", yrs[i]))
+
+  utility_heat_hh <- fun_utility_heat(yrs,
+                        i,
+                        bld_cases_fuel,
+                        en_hh_tot,
+                        ct_bld_age,
+                        ct_switch_heat,
+                        cost_invest_heat,
+                        lifetime_heat,
+                        discount_heat)
+
   if ((!is.null(parameters_heat))) {
     utility_heat_hh <- utility_heat_hh %>%
       left_join(parameters_heat) %>%
@@ -325,7 +369,7 @@ fun_ms_switch_heat_endogenous <- function(yrs,
     mutate(ms = exp(utility_heat) / utility_exp_sum) %>%
     ungroup() %>%
     select(-c("utility_heat", "utility_exp_sum"))
-    
+
   return(ms_i)
 }
 

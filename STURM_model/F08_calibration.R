@@ -17,55 +17,17 @@ fun_calibration_ren_shell <- function(yrs,
                           stp,
                           discount_ren = 0.05) {
 
-    en_hh_tot_ren_fin <- en_hh_tot %>%
-        rename(eneff_f = eneff)
-    en_hh_tot_ren_init <- en_hh_tot %>%
-        rename(cost_op_init = cost_op)
-
-    temp <- tibble(
-        region_bld = unique(cost_invest_ren_shell$region_bld),
-        eneff_f = "avg",
-        cost_invest_ren_shell = 0)
-    # Combine the new row with your tibble
-    # cost_invest_ren_shell <- bind_rows(cost_invest_ren_shell, temp)
-
-    discount_factor <- fun_discount_factor(discount_ren, lifetime_ren)
-
-
-    utility_ren_hh <- bld_det_age_i %>%
-        left_join(ct_ren_eneff %>%
-            rename(eneff = eneff_i),
-            relationship = "many-to-many") %>%
-        filter(!is.na(eneff_f)) %>%
-        filter(eneff_f %in% c("adv", "std")) %>%
-        # Attach year (in the loop)
-        mutate(year = yrs[i]) %>%
-        left_join(hh_size) %>%
-        left_join(floor_cap) %>%
-        # Add lifetime ren construction (for investment: based on loan duration)
-        left_join(lifetime_ren) %>%
-        left_join(discount_factor) %>%
-        left_join(cost_invest_ren_shell) %>%
-        # Calculate total investment costs
-        mutate(cost_invest_hh =
-        cost_invest_ren_shell * floor_cap * hh_size / 1e3) %>%
-        # Operation costs after renovation
-        left_join(en_hh_tot_ren_fin) %>%
-        # Operation costs before renovation
-        left_join(en_hh_tot_ren_init) %>%
-        # Filter out hh with no operational cost
-        filter(cost_op_init > 0) %>%
-        # Add operative costs (total)
-        mutate(cost_op_saving = (cost_op_init - cost_op) / 1e3) %>%
-        # Calculate utility
-        mutate(utility_ren =
-        - cost_invest_hh + cost_op_saving * discount_factor) %>%
-        # Rename eneff column
-        rename(eneff_i = eneff) %>%
-        select(-c(
-            "hh_size", "floor_cap", "cost_invest_ren_shell",
-            "cost_invest_hh", "cost_op", "cost_op_init",
-            "cost_op_saving", "lifetime_ren", "discount_factor"))
+    utility_ren_hh <- fun_utility_ren_shell(yrs,
+                          i,
+                          bld_det_age_i,
+                          ct_bld_age,
+                          ct_ren_eneff,
+                          hh_size,
+                          floor_cap,
+                          cost_invest_ren_shell,
+                          en_hh_tot,
+                          lifetime_ren,
+                          discount_ren)
 
     scaling_factor <- utility_ren_hh %>%
         group_by(region_bld) %>%
@@ -151,3 +113,25 @@ fun_calibration_ren_shell <- function(yrs,
 
     return(output)
     }
+
+fun_calibration_switch_heat <- function(yrs,
+                          i,
+                          bld_cases_fuel,
+                          ct_bld_age,
+                          ct_switch_heat,
+                          cost_invest_heat,
+                          en_hh_tot,
+                          ms_switch_fuel_exo,
+                          lifetime_heat = 20,
+                          discount_heat = 0.05) {
+
+    utility_heat_hh <- fun_utility_heat(yrs,
+                        i,
+                        bld_cases_fuel,
+                        en_hh_tot,
+                        ct_bld_age,
+                        ct_switch_heat,
+                        cost_invest_heat,
+                        lifetime_heat,
+                        discount_heat)
+}

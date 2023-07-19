@@ -9,12 +9,13 @@ library(parallel)
 suppressPackageStartupMessages(library(tidyverse))
 
 options(dplyr.width = Inf)
+options(dplyr.summarise.inform = FALSE)
 
 # rounding (number of decimals)#
 rnd <- 5
 u_EJ_GWa <- 31.71
 
-source("./STURM_model/F10_scenario_runs_MESSAGE_2100.R")
+source("./STURM_model/F10_scenario_run.R")
 
 # Paths
 rcode_path <- paste(getwd(), "/STURM_model/", sep = "")
@@ -24,12 +25,13 @@ rout_path <- paste(getwd(), "/STURM_output/", sep = "")
 
 # configuration file STURM
 base_year <- 2015
-end_year <- 2050
+end_year <- 2025
 step_year <- 5
 runs <- c("EU_implementation",
     "EU_implementation_nomfhq1rent",
     "EU_implementation_double",
     "EU_implementation_triple")
+runs <- c("EU_implementation")
     
 region <- c("WEU", "EEU")
 sector <- "resid"
@@ -42,8 +44,8 @@ path_prices <- paste0(data_path,
 file_scenarios <- "scenarios_EU.csv"
 
 mod_arch <- "stock"
-# energy_efficiency <- "endogenous"
-energy_efficiency <- "exogenous"
+energy_efficiency <- "endogenous"
+# energy_efficiency <- "exogenous"
 report <- list(var = c("energy"),
                type = c("STURM"),
                geo_level = "region_bld")
@@ -70,3 +72,4 @@ for (run in runs) {
         energy_efficiency = energy_efficiency
     )
 }
+

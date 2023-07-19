@@ -109,9 +109,9 @@ read_categories <- function(path_in_csv,
     ct_bld_age = paste0("input_", sector, "/categories/ct_bld_age.csv"),
     ct_bld = paste0("input_", sector, "/categories/ct_arch.csv"),
     ct_eneff = paste0("input_", sector, "/categories/ct_eneff.csv"),
-    ct_fuel = paste0("input_", sector, "/categories/ct_fuel.csv"),
-    ct_fuel_dhw = paste0("input_", sector, "/categories/ct_fuel_res.csv"),
-    ct_ren_eneff = paste0("input_", sector, "/categories/ct_ren_eneff2.csv")
+    ct_ren_eneff = paste0("input_", sector, "/categories/ct_ren_eneff.csv"),
+    ct_fuel = paste0("input_", sector, "/categories/ct_fuel.csv")
+    # ct_fuel_dhw = paste0("input_", sector, "/categories/ct_fuel_res.csv")
   )
   
   # Read all categories, and return a list
@@ -142,7 +142,6 @@ fun_parse_stock <- function(stock, cat, population) {
   if (!"clim" %in% names(stock)) {
     # Adding climatic zones and urban/rural dimension based on share of population
     # No correlation between housing type and these dimensions.
-
     shr_clim <- population %>%
                   filter(year == 2015) %>%
                   filter(region_bld %in%
@@ -192,11 +191,9 @@ fun_parse_stock <- function(stock, cat, population) {
   }
 
   if (!"region_gea" %in% names(stock)) {
-
     stock <- stock %>%
       left_join(cat$geo_data %>%
         select(c(region_bld, region_gea)))
-
   }
 
   # Add tenure status as a dimension

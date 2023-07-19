@@ -17,6 +17,7 @@ fun_format_output <- function(i,
                               report,
                               en_m2_scen_heat,
                               en_m2_scen_cool,
+                              en_hh_tot,
                               en_hh_hw_scen,
                               en_m2_hw_scen,
                               en_m2_others,
@@ -40,6 +41,7 @@ fun_format_output <- function(i,
             floor_cap,
             en_m2_scen_heat,
             en_m2_scen_cool,
+            en_hh_tot,
             en_hh_hw_scen
         )
         report$en_stock <- bind_rows(report$en_stock, en_stock_i)
@@ -53,8 +55,11 @@ fun_format_output <- function(i,
                 left_join(cost_renovation) %>%
                 mutate(total_cost = cost * n_units_fuel)
             
-            report <- append(report,
-                list(cost_ren_shell = sum(ren_det_i$total_cost) / 1e9))
+            report$ren_shell <- bind_rows(report$ren_shell,
+                data.frame(year = yrs[i], value = sum(ren_det_i$n_units_fuel) / 1e6))
+
+            report$cost_ren_shell <- bind_rows(report$cost_ren_shell,
+                data.frame(year = yrs[i], value = sum(ren_det_i$total_cost) / 1e9))
         }
     }
 
@@ -231,13 +236,15 @@ fun_format_bld_stock_energy <- function(
                                         floor_cap,
                                         en_m2_scen_heat,
                                         en_m2_scen_cool,
-                                        en_hh_hw_scen) {
+                                        en_hh_tot,
+                                        en_hh_hw_scen
+                                        ) {
     # Aggregate at fuel level for keeping track of the stock
     bld_det_i <- bld_det_age_i %>%
         # Select all variables, except the ones indicated, for grouping
         group_by_at(setdiff(
             names(bld_det_age_i),
-            c("yr_con", "n_units_fuel", "n_dem", "n_empty")
+            c("yr_con", "n_units_fuel", "fuel")
         )) %>%
         summarise(
             n_units_fuel = sum(n_units_fuel)
@@ -283,6 +290,8 @@ fun_format_bld_stock_energy <- function(
             # left_join(shr_acc_cool) %>%
             left_join(en_m2_scen_heat) %>%
             left_join(en_m2_scen_cool) %>%
+            left_join(en_hh_tot %>% rename(cost_energy_hh = cost_op)) %>%
+            mutate(cost_energy_hh = cost_energy_hh * n_units_fuel) %>%
             left_join(en_hh_hw_scen) %>%
             # convert n. units to millions
             mutate(floor_Mm2 = n_units_fuel / 1e6 * hh_size * floor_cap) %>%
@@ -293,7 +302,7 @@ fun_format_bld_stock_energy <- function(
                     ifelse(shr_acc_cool == 1, floor_Mm2 * shr_acc_cool, 0)
             ) %>%
             # Converted from kWh to MJ (3.6).
-            #  Houssing units are in million, so results are in TJ.
+            #  Housing units are in million, so results are in TJ.
             mutate(heat_TJ = ifelse(fuel_heat == "v_no_heat", 0,
                 en_dem_heat * n_units_fuel / 1e6 * hh_size * floor_cap * 3.6
             )) %>%
@@ -305,7 +314,7 @@ fun_format_bld_stock_energy <- function(
                 n_units_fuel / 1e6 * hh_size * floor_cap * 3.6) %>%
             # Note:shr_acc_cool=1 for all cases (access calculated before)
             # Converted from kWh to MJ (3.6).
-            #   Houssing units are in million, so results are in TJ.
+            #   Housing units are in million, so results are in TJ.
             mutate(cool_fans_TJ = en_dem_c_fans * shr_acc_cool *
                 n_units_fuel / 1e6 * hh_size * floor_cap * 3.6) %>%
             # converted from GJ/hh/yr to TJ
@@ -315,14 +324,17 @@ fun_format_bld_stock_energy <- function(
             # Other uses not covered for residential
             mutate(other_uses_TJ = 0) %>%
             mutate(stock_M = n_units_fuel / 1e6) %>%
+            mutate(cost_energy_hh = ifelse(is.na(cost_energy_hh),
+                0, cost_energy_hh)) %>%
             filter(stock_M > 0 & !is.na(stock_M)) %>%
             select_at(paste(c("region_gea", "region_bld",
                 "urt", "clim", "inc_cl", "arch", "mat",
                 "eneff", "bld_age", "fuel_heat", "fuel_cool",
                 "scenario", "year", "stock_M", "floor_Mm2",
                 "heat_TJ", "cool_TJ", "cool_ac_TJ", "cool_fans_TJ",
-                "hotwater_TJ", "other_uses_TJ"
+                "hotwater_TJ", "other_uses_TJ", "cost_energy_hh"
             )))
+
     }
     if (sector == "comm") {
         en_stock_i <- en_stock_i %>%

@@ -28,6 +28,7 @@ fun_stock_dyn <- function(i,
                           sector,
                           bld_cases_fuel,
                           ct_bld_age,
+                          ct_fuel,
                           stock_aggr,
                           bld_det_age_i,
                           prob_dem,
@@ -304,7 +305,6 @@ fun_stock_dyn <- function(i,
       n_units_fuel_exst, bld_age_min, rate_switch_fuel_heat, ms
     ))
 
-
   # Update Existing buildings - non-renovated - without fuel switch
   exst_det_age_i <- exst_det_age_i %>%
     left_join(exst_sw_det_age_i %>%
@@ -320,8 +320,9 @@ fun_stock_dyn <- function(i,
 
   # Format DF non-renovated buildings - fuel switches
   exst_sw_det_age_i <- exst_sw_det_age_i %>%
-    select(-fuel_heat) %>%
-    rename(fuel_heat = fuel_heat_f)
+    select(-c("fuel_heat", "fuel")) %>%
+    rename(fuel_heat = fuel_heat_f) %>%
+    left_join(ct_fuel)
 
   if (temp != round((sum(exst_det_age_i$n_units_fuel) +
    sum(exst_sw_det_age_i$n_units_fuel)) / 1e6, 0)) {
@@ -359,17 +360,24 @@ fun_stock_dyn <- function(i,
     # Select all variables, except the ones indicated, for grouping
       group_by_at(setdiff(names(ren_sw_det_age_i),
         c("fuel_heat_f", "n_units_fuel"))) %>%
-    summarise(n_sw = sum(n_units_fuel)) %>%
-    ungroup()) %>%
+      summarise(n_sw = sum(n_units_fuel)) %>%
+      ungroup()) %>%
     mutate(n_sw = ifelse(is.na(n_sw), 0, n_sw)) %>%
     mutate(n_units_fuel = n_units_fuel_exst - n_sw) %>%
     select(-c(n_units_fuel_exst, n_sw))
 
+  test <- ren_det_age_i %>%
+    left_join(ren_sw_det_age_i %>%
+        group_by_at(setdiff(names(ren_sw_det_age_i),
+          c("fuel_heat_f", "n_units_fuel"))) %>%
+      mutate(n_sw = sum(n_units_fuel)) %>%
+      ungroup()) 
 
   # Format DF non-renovated buildings - fuel switches
   ren_sw_det_age_i <- ren_sw_det_age_i %>%
-    select(-fuel_heat) %>%
-    rename(fuel_heat = fuel_heat_f)
+    select(-c("fuel_heat", "fuel")) %>%
+    rename(fuel_heat = fuel_heat_f) %>%
+    left_join(ct_fuel)
 
   if (temp != round((sum(ren_det_age_i$n_units_fuel) +
    sum(ren_sw_det_age_i$n_units_fuel)) / 1e6, 0)) {

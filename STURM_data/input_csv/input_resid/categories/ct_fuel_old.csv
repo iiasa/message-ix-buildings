@@ -1,8 +1,0 @@
-mat,fuel_heat,fuel_cool,mod_decision
-perm,biomass_solid,electricity,1
-perm,coal,electricity,1
-perm,district_heat,electricity,0
-perm,electricity,electricity,1
-perm,gas,electricity,1
-perm,oil,electricity,1
-sub,electricity,electricity,0

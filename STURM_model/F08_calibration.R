@@ -14,12 +14,13 @@ fun_calibration_ren_shell <- function(yrs,
                           en_hh_tot,
                           rate_shell_ren,
                           ms_shell_ren,
+                          stp,
                           discount_ren = 0.05) {
-    
+
     en_hh_tot_ren_fin <- en_hh_tot %>%
         rename(eneff_f = eneff)
     en_hh_tot_ren_init <- en_hh_tot %>%
-        rename(cost_op_m2_init = cost_op_m2)
+        rename(cost_op_init = cost_op)
 
     temp <- tibble(
         region_bld = unique(cost_invest_ren_shell$region_bld),
@@ -30,7 +31,6 @@ fun_calibration_ren_shell <- function(yrs,
 
     discount_factor <- fun_discount_factor(discount_ren, lifetime_ren)
 
-    scaling_factor <- (10 - -10) / (10000 - -10000)
 
     utility_ren_hh <- bld_det_age_i %>%
         left_join(ct_ren_eneff %>%
@@ -48,28 +48,35 @@ fun_calibration_ren_shell <- function(yrs,
         left_join(cost_invest_ren_shell) %>%
         # Calculate total investment costs
         mutate(cost_invest_hh =
-        cost_invest_ren_shell * floor_cap * hh_size) %>%
+        cost_invest_ren_shell * floor_cap * hh_size / 1e3) %>%
         # Operation costs after renovation
         left_join(en_hh_tot_ren_fin) %>%
         # Operation costs before renovation
         left_join(en_hh_tot_ren_init) %>%
         # Filter out hh with no operational cost
-        filter(cost_op_m2_init > 0) %>%
+        filter(cost_op_init > 0) %>%
         # Add operative costs (total)
-        mutate(cost_op_hh = cost_op_m2_init - cost_op_m2) %>%
-        # mutate(cost_op_hh = cost_op_m2 * floor_cap * hh_size) %>%
+        mutate(cost_op_saving = (cost_op_init - cost_op) / 1e3) %>%
         # Calculate utility
         mutate(utility_ren =
-        - cost_invest_hh + cost_op_hh * discount_factor) %>%
-        mutate(utility_ren = utility_ren * scaling_factor) %>%
+        - cost_invest_hh + cost_op_saving * discount_factor) %>%
         # Rename eneff column
         rename(eneff_i = eneff) %>%
         select(-c(
             "hh_size", "floor_cap", "cost_invest_ren_shell",
-            "cost_invest_hh", "cost_op_m2", "cost_op_m2_init",
-            "cost_op_hh", "lifetime_ren", "discount_factor"))
+            "cost_invest_hh", "cost_op", "cost_op_init",
+            "cost_op_saving", "lifetime_ren", "discount_factor"))
 
-    # write.csv(utility_ren_hh, "utility_ren_hh.csv")
+    scaling_factor <- utility_ren_hh %>%
+        group_by(region_bld) %>%
+        summarize(min_value = min(utility_ren),
+                    max_value = max(utility_ren)) %>%
+        mutate(scaling_factor = (5 - (-5)) / (max_value - min_value)) %>%
+        select(-c("min_value", "max_value"))
+
+    utility_ren_hh <- utility_ren_hh %>%
+        left_join(scaling_factor) %>%
+        mutate(utility_ren = utility_ren * scaling_factor)
 
     target <- ms_shell_ren %>%
         left_join(rate_shell_ren) %>%
@@ -88,7 +95,7 @@ fun_calibration_ren_shell <- function(yrs,
                 c("eneff_f", "utility_ren"))) %>%
             mutate(utility_exp_sum = sum(exp(utility)) + 1) %>%
             ungroup() %>%
-            mutate(ms = exp(utility) / utility_exp_sum) %>%
+            mutate(ms = (1 / stp) * exp(utility) / utility_exp_sum) %>%
             select(-c("utility_ren", "utility_exp_sum")) %>%
             mutate(n_renovation = ms * n_units_fuel) %>%
             group_by_at(setdiff(names(target), c("target"))) %>%
@@ -97,7 +104,6 @@ fun_calibration_ren_shell <- function(yrs,
             ungroup() %>%
             mutate(ms = n_renovation / n_units_fuel) %>%
             left_join(target, by = c("region_bld", "mat", "eneff_f"))
-
         return(ms_agg)
     }
 
@@ -130,7 +136,8 @@ fun_calibration_ren_shell <- function(yrs,
     result <- left_join(target, result)
 
     report <- market_share_agg(utility_ren_hh, result$constant, target)
-    ms_ini <- market_share_agg(utility_ren_hh, rep(0, times = nrow(target)), target) %>%
+    ms_ini <- market_share_agg(utility_ren_hh,
+        rep(0, times = nrow(target)), target) %>%
         rename(ms_ini = ms)
     report <- left_join(report, select(ms_ini,
         c("region_bld", "mat", "eneff_f", "ms_ini")))
@@ -138,4 +145,9 @@ fun_calibration_ren_shell <- function(yrs,
 
     write.csv(report, "report_calibration.csv")
 
+    output <- result %>%
+        select(-c("target")) %>%
+        left_join(scaling_factor)
+
+    return(output)
     }

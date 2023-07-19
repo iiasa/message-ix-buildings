@@ -3,8 +3,6 @@
 
 library(dplyr)
 
-# Set the verbosity level to suppress the message
-options(dplyr.summarise.inform = FALSE)
 
 u1 <- 3.6 / 1000 # kWh to GJ (to calculate operational costs)
 
@@ -132,7 +130,6 @@ fun_en_sim <- function(sector,
     # Add hh size, only for heating
     en_hh <- en_m2_scen_heat %>%
       rename(en_m2 = en_dem_heat) %>%
-      mutate(fuel = fuel_heat) %>%
       left_join(hh_size) %>%
       filter(year == yrs[i]) %>%
      # Add floor surface area
@@ -142,23 +139,16 @@ fun_en_sim <- function(sector,
       # Associate energy prices to en_perm
       left_join(price_en) %>%
       # Calculate the total costs for operational energy
-      mutate(cost_op = en_hh * price_en)
-
-    # print(summary(en_hh$en_m2))
-
-    # Sum total energy costs for all fuels
-    en_hh_tot <- en_hh %>%
-      select(-c(en_m2, hh_size, floor_cap, en_hh, price_en)) %>%
-      group_by_at(setdiff(names(.), c("fuel", "cost_op"))) %>%
-      summarise(cost_op_m2 = sum(cost_op)) %>%
-      ungroup() %>%
+      mutate(cost_op = en_hh * price_en) %>%
+      select(-c(en_m2, hh_size, floor_cap, en_hh, price_en, fuel)) %>%
       left_join(bld_cases_fuel)
+
   }
 
   output <- list(
     en_m2_scen_heat = en_m2_scen_heat,
     en_m2_scen_cool = en_m2_scen_cool,
-    en_hh_tot = en_hh_tot
+    en_hh_tot = en_hh
   )
   return(output)
 } 

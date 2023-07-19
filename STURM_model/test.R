@@ -44,4 +44,16 @@
     # Print the constant solution
     cat("Constant solution:", constant_solution)
 
+
+
+
+  # Create a new row with eneff_f as "avg" and cost_invest_ren_shell as 0
+  temp <- tibble(
+    region_bld = unique(cost_invest_ren_shell$region_bld),
+    eneff_f = "avg",
+    cost_invest_ren_shell = 0
+  )
+  # Combine the new row with your tibble
+  cost_invest_ren_shell <- bind_rows(cost_invest_ren_shell, temp)
+
     

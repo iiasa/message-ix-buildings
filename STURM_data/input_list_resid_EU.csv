@@ -42,3 +42,5 @@ ct_fuel_excl_reg,ct_fuel_excluded_reg,decision
 ct_ren_fuel_heat,ct_ren_fuel_heat_scen,decision
 cost_factor,cost_factor_countries_EU,decision
 ct_switch_heat,ct_switch_heat_EU,decision
+sub_heat,sub_heat_EU,policies
+sub_ren_shell,sub_ren_shell_EU,policies

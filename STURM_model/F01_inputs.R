@@ -54,6 +54,8 @@ fun_inputs_csv <- function(path_in, file_inputs, file_scenarios, sector, run
       path_file)) %>%
     mutate(path_file = paste0(path_file, ".csv"))
 
+  print(filter(input, name_parameter == "sub_ren_shell")$path_file)
+
   #print(filter(input, name_parameter == "rate_shell_ren_exo")$path_file)
 
 

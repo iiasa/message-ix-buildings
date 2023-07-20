@@ -47,7 +47,8 @@ fun_utility_ren_shell <- function(yrs,
                           cost_invest_ren_shell,
                           en_hh_tot,
                           lifetime_ren,
-                          discount_ren) {
+                          discount_ren,
+                          sub_ren_shell = NULL) {
 
     # Operational energy costs before/after renovation
   en_hh_tot_ren_fin <- en_hh_tot %>%
@@ -62,7 +63,17 @@ fun_utility_ren_shell <- function(yrs,
   }
   cost_invest_ren_shell <- cost_invest_ren_shell %>%
     mutate(cost_invest_ren_shell = as.numeric(cost_invest_ren_shell))
-  
+    
+  # Apply subsidy
+  if (!is.null(sub_ren_shell)) {
+    cost_invest_ren_shell <- cost_invest_ren_shell %>%
+      left_join(sub_ren_shell) %>%
+      mutate(cost_invest_ren_shell =
+        cost_invest_ren_shell * (1 - sub_ren_shell)) %>%
+      select(-c("sub_ren_shell"))
+  }
+
+
   discount_factor <- fun_discount_factor(discount_ren, lifetime_ren)
 
   bld_age_exst <- ct_bld_age %>%
@@ -138,6 +149,7 @@ fun_ms_ren_shell_endogenous <- function(yrs,
                           hh_size,
                           floor_cap,
                           cost_invest_ren_shell,
+                          sub_ren_shell,
                           en_hh_tot,
                           lifetime_ren,
                           discount_ren = 0.05,
@@ -157,7 +169,8 @@ fun_ms_ren_shell_endogenous <- function(yrs,
                           cost_invest_ren_shell,
                           en_hh_tot,
                           lifetime_ren,
-                          discount_ren)
+                          discount_ren,
+                          sub_ren_shell = sub_ren_shell)
 
   if ((!is.null(parameters))) {
     utility_ren_hh <- utility_ren_hh %>%
@@ -277,7 +290,8 @@ fun_utility_heat <- function(yrs,
                         ct_fuel_excl_reg,
                         cost_invest_heat,
                         lifetime_heat,
-                        discount_heat) {
+                        discount_heat,
+                        sub_heat = NULL) {
 
   # Operational energy costs before/after renovation
   en_hh_tot_switch_fin <- en_hh_tot %>%
@@ -292,6 +306,18 @@ fun_utility_heat <- function(yrs,
   }
   cost_invest_heat <- cost_invest_heat %>%
     mutate(cost_invest_heat = as.numeric(cost_invest_heat))
+
+  if ("year" %in% names(sub_heat)) {
+    sub_heat <- sub_heat %>%
+      filter(year == yrs[i])
+  }
+  # Apply subsidy
+  if (!is.null(sub_heat)) {
+    cost_invest_heat <- cost_invest_heat %>%
+      left_join(sub_heat) %>%
+      mutate(cost_invest_heat = cost_invest_heat * (1 - sub_heat)) %>%
+      select(-c("sub_heat"))
+  }
 
   # Discount factor
   discount_factor <- (1 - (1 + discount_heat)^-lifetime_heat) / discount_heat
@@ -340,6 +366,7 @@ fun_ms_switch_heat_endogenous <- function(yrs,
                           ct_switch_heat,
                           ct_fuel_excl_reg,
                           cost_invest_heat,
+                          sub_heat,
                           en_hh_tot,
                           lifetime_heat = 20,
                           discount_heat = 0.05,
@@ -355,7 +382,8 @@ fun_ms_switch_heat_endogenous <- function(yrs,
                         ct_fuel_excl_reg,
                         cost_invest_heat,
                         lifetime_heat,
-                        discount_heat)
+                        discount_heat,
+                        sub_heat = sub_heat)
 
   if ((!is.null(parameters))) {
     utility_heat_hh <- utility_heat_hh %>%

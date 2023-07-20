@@ -226,7 +226,7 @@ run_scenario <- function(run,
     # Loop over timesteps
     print(paste("Start scenario run", sector))
     parameters_renovation <- NULL
-    parameters_heat <- NULL
+    parameters_heater <- NULL
 
     for (i in 2:length(yrs)) {
       print(paste("Start scenario run", sector, "for year", yrs[i]))
@@ -335,6 +335,7 @@ run_scenario <- function(run,
                           d$ct_switch_heat,
                           d$ct_fuel_excl_reg,
                           d$cost_invest_heat,
+                          d$sub_heat,
                           en_hh_tot,
                           lifetime_heat = 20,
                           discount_heat = 0.05,
@@ -348,6 +349,7 @@ run_scenario <- function(run,
                                   d$hh_size,
                                   d$floor_cap,
                                   d$cost_invest_ren_shell,
+                                  d$sub_ren_shell,
                                   en_hh_tot,
                                   d$lifetime_ren,
                                   parameters = parameters_renovation)

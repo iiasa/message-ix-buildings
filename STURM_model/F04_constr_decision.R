@@ -91,7 +91,7 @@ fun_ms_new_exogenous <- function(yrs,
 
   # Test sum of ms_shell_new_exo equal to 1
   test <- ms_new_i %>% group_by_at(setdiff(names(ms_new_i),
-            c("ms", "fuel_heat", "eneff", "inc_cl", "tenr"))) %>%
+            c("ms", "fuel_heat_f", "eneff", "inc_cl", "tenr"))) %>%
             summarise(total = sum(ms)) %>%
             ungroup()
   # All ms value of test should be equal to 1

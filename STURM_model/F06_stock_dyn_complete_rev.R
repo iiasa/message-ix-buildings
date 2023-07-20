@@ -182,7 +182,9 @@ fun_stock_dyn <- function(i,
     mutate(n_new = round(n_new * ms, rnd)) %>%
     filter(n_new > 0) %>%
     relocate(n_units_fuel = n_new, .after = last_col()) %>%
-    select(-c(ms))
+    select(-c(ms)) %>%
+    rename(fuel_heat = fuel_heat_f) %>%
+    left_join(ct_fuel)
 
 
   if ("sub" %in% unique(bld_cases_fuel$mat)) {

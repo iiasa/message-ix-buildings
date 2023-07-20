@@ -23,6 +23,9 @@ documentation = "https://docs.messageix.org/buildings/"
 [project.optional-dependencies]
 docs = [
   "Sphinx",
+  # required for sphinx-rtd-theme 1.2.2, remove support is added
+  # see https://github.com/readthedocs/sphinx_rtd_theme/issues/1323
+  "docutils < 0.19",
 ]
 tests = [
   "pytest",

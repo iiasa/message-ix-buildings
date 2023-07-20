@@ -1,4 +1,4 @@
-region_bld,fuel_heat,value
+region_bld,fuel_heat_f,value
 C-WEU-AUT,heat_pump,0.094857732
 C-WEU-AUT,biomass_solid,0.346028725
 C-WEU-AUT,coal,0.001271401

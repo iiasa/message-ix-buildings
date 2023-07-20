@@ -1,4 +1,4 @@
-region_bld,fuel_heat,value
+region_bld,fuel_heat_f,value
 C-WEU-AUT,biomass_solid,0.346028725
 C-WEU-AUT,coal,0.001271401
 C-WEU-AUT,district_heat,0.092524376
@@ -135,7 +135,7 @@ C-WEU-SWE,biomass_solid,0
 C-WEU-SWE,coal,0
 C-WEU-SWE,district_heat,0.105338561
 C-WEU-SWE,electricity,0.894567509
-C-WEU-SWE,gas,9.39293E-05
+C-WEU-SWE,gas,9.39E-05
 C-WEU-SWE,oil,0
 C-EEU-SVN,biomass_solid,0.311472724
 C-EEU-SVN,coal,0

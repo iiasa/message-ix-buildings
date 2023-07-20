@@ -87,7 +87,10 @@ run_scenario <- function(run,
       mutate(cost_invest_heat = cost_invest_heat * cost_factor) %>%
       select(-cost_factor)
   }
-  
+  d$ct_fuel_excl_reg <- d$ms_switch_fuel_exo %>%
+    filter(ms_switch_fuel_exo == 0) %>%
+    mutate(ct_fuel_excl_reg = 1) %>%
+    select(-ms_switch_fuel_exo)
 
   # TODO properly
   cat$geo_data <- cat$geo_data %>%
@@ -289,9 +292,22 @@ run_scenario <- function(run,
 
       # Market share for renovation and fuel switches options
       print("Calculate market share for renovation and fuel switches")
-      if (energy_efficiency == "endogenous" && i == 2 && FALSE) {
+      if (energy_efficiency == "endogenous" && i == 2) {
         print("Calibration of market shares")
         stp <- yrs[i] - yrs[i - 1]
+
+      parameters_heater <- fun_calibration_switch_heat(yrs,
+                  i,
+                  bld_det_age_i,
+                  cat$ct_bld_age,
+                  d$ct_switch_heat,
+                  d$ct_fuel_excl_reg,
+                  d$cost_invest_heat,
+                  en_hh_tot,
+                  d$ms_switch_fuel_exo,
+                  lifetime_heat = 20,
+                  discount_heat = 0.05
+                )
 
         parameters_renovation <- fun_calibration_ren_shell(yrs,
                                 i,
@@ -307,6 +323,8 @@ run_scenario <- function(run,
                                 d$ms_shell_ren_exo,
                                 stp
                                 )
+
+
       }
 
       if (energy_efficiency == "endogenous") {
@@ -315,6 +333,7 @@ run_scenario <- function(run,
                           bld_cases_fuel,
                           cat$ct_bld_age,
                           d$ct_switch_heat,
+                          d$ct_fuel_excl_reg,
                           d$cost_invest_heat,
                           en_hh_tot,
                           lifetime_heat = 20,
@@ -570,13 +589,10 @@ run_scenario <- function(run,
   }
 
   # Tracking time
-  end_time <- Sys.time()
-  print(paste("Time to run script 04_run_future: ", end_time - start_time))
-  print(paste0("Start: ", start_time))
-  print(paste0("End: ", end_time))
-  rm(start_time, end_time)
-
   print("Senario run completed!")
+  print(paste("Time to run scenario:",
+    round(Sys.time() - start_time, 0), "seconds."))
+  rm(start_time)
 
   return(output)
 }

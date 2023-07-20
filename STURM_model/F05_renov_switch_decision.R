@@ -274,6 +274,7 @@ fun_utility_heat <- function(yrs,
                         en_hh_tot,
                         ct_bld_age,
                         ct_switch_heat,
+                        ct_fuel_excl_reg,
                         cost_invest_heat,
                         lifetime_heat,
                         discount_heat) {
@@ -308,7 +309,8 @@ fun_utility_heat <- function(yrs,
           rename(fuel_heat = fuel_heat_i),
           relationship = "many-to-many") %>%
       filter(!is.na(fuel_heat_f)) %>%
-      # Attach year (in the loop)
+      left_join(ct_fuel_excl_reg) %>%
+      filter(is.na(ct_fuel_excl_reg)) %>%
       mutate(year = yrs[i]) %>%
       left_join(cost_invest_heat) %>%
       # Operation costs after renovation
@@ -322,11 +324,10 @@ fun_utility_heat <- function(yrs,
       # Calculate utility
       mutate(utility_heat =
       - cost_invest_heat / 1e3 + cost_op_saving * discount_factor) %>%
-      # Rename eneff column
       filter(ct_switch_heat == 1) %>%
       select(-c(
           "cost_invest_heat", "cost_op", "cost_op_init",
-          "cost_op_saving", "ct_switch_heat"))
+          "cost_op_saving", "ct_switch_heat", "ct_fuel_excl_reg"))
 
     return(utility_heat_hh)
 }
@@ -337,6 +338,7 @@ fun_ms_switch_heat_endogenous <- function(yrs,
                           bld_cases_fuel,
                           ct_bld_age,
                           ct_switch_heat,
+                          ct_fuel_excl_reg,
                           cost_invest_heat,
                           en_hh_tot,
                           lifetime_heat = 20,
@@ -350,6 +352,7 @@ fun_ms_switch_heat_endogenous <- function(yrs,
                         en_hh_tot,
                         ct_bld_age,
                         ct_switch_heat,
+                        ct_fuel_excl_reg,
                         cost_invest_heat,
                         lifetime_heat,
                         discount_heat)
@@ -399,8 +402,7 @@ fun_ms_fuel_sw_exogenous <- function(yrs,
     mutate(year = yrs[i]) %>%
     filter(bld_age %in% p_past) %>%
     left_join(ms_switch_fuel_exo %>%
-      rename(ms = ms_switch_fuel_exo) %>%
-      rename(fuel_heat_f = fuel_heat)
+      rename(ms = ms_switch_fuel_exo)
       ) %>%
     filter(!is.na(ms)) %>%
     filter(ms > 0)

@@ -12,6 +12,7 @@ options(dplyr.width = Inf)
 options(dplyr.summarise.inform = FALSE)
 
 # rounding (number of decimals)#
+start_script_time <- Sys.time()
 rnd <- 5
 u_EJ_GWa <- 31.71
 
@@ -28,9 +29,9 @@ base_year <- 2015
 end_year <- 2025
 step_year <- 5
 runs <- c("EU_implementation",
-    "EU_implementation_nomfhq1rent",
-    "EU_implementation_double",
-    "EU_implementation_triple")
+        "EU_implementation_nomfhq1rent",
+        "EU_implementation_double",
+        "EU_implementation_triple")
 runs <- c("EU_implementation")
     
 region <- c("WEU", "EEU")
@@ -71,5 +72,10 @@ for (run in runs) {
         region = region,
         energy_efficiency = energy_efficiency
     )
+
+print("Script completed!")
+print(paste("Time to run script:",
+round(Sys.time() - start_script_time, 0), "seconds."))
+rm(start_script_time)
 }
 

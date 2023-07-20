@@ -28,11 +28,8 @@ rout_path <- paste(getwd(), "/STURM_output/", sep = "")
 base_year <- 2015
 end_year <- 2025
 step_year <- 5
-runs <- c("EU_implementation",
-        "EU_implementation_nomfhq1rent",
-        "EU_implementation_double",
-        "EU_implementation_triple")
-runs <- c("EU_implementation")
+runs <- c("EU", "EU_nomfhq1rent", "EU_double", "EU_triple")
+runs <- c("EU")
     
 region <- c("WEU", "EEU")
 sector <- "resid"
@@ -44,7 +41,6 @@ path_prices <- paste0(data_path,
 
 file_scenarios <- "scenarios_EU.csv"
 
-mod_arch <- "stock"
 energy_efficiency <- "endogenous"
 # energy_efficiency <- "exogenous"
 report <- list(var = c("energy"),
@@ -54,6 +50,8 @@ report <- list(var = c("energy"),
 yrs <- seq(base_year, end_year, step_year)
 
 for (run in runs) {
+    run <- paste(run, energy_efficiency, sep = "_")
+
     sturm_scenarios <- run_scenario(
         run = run,
         scenario_name = run,
@@ -78,4 +76,3 @@ print(paste("Time to run script:",
 round(Sys.time() - start_script_time, 0), "seconds."))
 rm(start_script_time)
 }
-

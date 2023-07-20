@@ -343,7 +343,7 @@ fun_ms_switch_heat_endogenous <- function(yrs,
                           en_hh_tot,
                           lifetime_heat = 20,
                           discount_heat = 0.05,
-                          parameters_heat = NULL) {
+                          parameters = NULL) {
   print(paste0("Running renovation decisions - year ", yrs[i]))
 
   utility_heat_hh <- fun_utility_heat(yrs,
@@ -357,9 +357,9 @@ fun_ms_switch_heat_endogenous <- function(yrs,
                         lifetime_heat,
                         discount_heat)
 
-  if ((!is.null(parameters_heat))) {
+  if ((!is.null(parameters))) {
     utility_heat_hh <- utility_heat_hh %>%
-      left_join(parameters_heat) %>%
+      left_join(parameters) %>%
       mutate(utility_heat = utility_heat * scaling_factor + constant) %>%
       select(-c("scaling_factor", "constant"))
   }

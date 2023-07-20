@@ -1,7 +1,7 @@
 scenario_id,scenario_name,rate_shell_ren_exo
-1,EU_implementation_ref,
-2,EU_implementation_norent,norent
-3,EU_implementation_nomfh,nomfh
-4,EU_implementation_nomfhq1rent,nomfhq1rent
-5,EU_implementation_double,double
-6,EU_implementation_triple,triple
+1,EU_baseline,
+2,EU_norent,norent
+3,EU_nomfh,nomfh
+4,EU_nomfhq1rent,nomfhq1rent
+5,EU_double,double
+6,EU_triple,triple

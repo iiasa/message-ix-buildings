@@ -338,7 +338,7 @@ run_scenario <- function(run,
                           en_hh_tot,
                           lifetime_heat = 20,
                           discount_heat = 0.05,
-                          parameters_heat = NULL)
+                          parameters = parameters_heater)
 
         lst_ms_ren_sw_i <- fun_ms_ren_shell_endogenous(yrs,
                                   i,
@@ -589,7 +589,7 @@ run_scenario <- function(run,
   }
 
   # Tracking time
-  print("Senario run completed!")
+  print("Scenario run completed!")
   print(paste("Time to run scenario:",
     round(Sys.time() - start_time, 0), "seconds."))
   rm(start_time)

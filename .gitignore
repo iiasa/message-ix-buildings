@@ -1,5 +1,6 @@
 
 STURM_output/*
+STURM_model/test.R
 
 # History files
 .Rhistory

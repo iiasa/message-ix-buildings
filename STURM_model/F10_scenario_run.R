@@ -37,7 +37,7 @@ run_scenario <- function(run,
                          report_var,
                          region = NULL,
                          energy_efficiency = "endogenous") {
-  print(paste("Start scenario run: ", run, "_", sector))
+  print(paste("Start scenario run: ", run))
   # Track time
   start_time <- Sys.time()
 
@@ -87,10 +87,11 @@ run_scenario <- function(run,
       mutate(cost_invest_heat = cost_invest_heat * cost_factor) %>%
       select(-cost_factor)
   }
-  d$ct_fuel_excl_reg <- d$ms_switch_fuel_exo %>%
-    filter(ms_switch_fuel_exo == 0) %>%
-    mutate(ct_fuel_excl_reg = 1) %>%
-    select(-ms_switch_fuel_exo)
+  d$inertia <- d$cost_factor %>%
+    mutate(cost_factor =
+      cost_factor / cost_factor[region_bld == "C-WEU-FRA"]) %>%
+    mutate(cost_factor = 4.3 * cost_factor) %>%
+    rename(inertia = cost_factor)
 
   # TODO properly
   cat$geo_data <- cat$geo_data %>%
@@ -98,8 +99,68 @@ run_scenario <- function(run,
   cat$regions <- unique(pull(cat$geo_data["region_bld"]))
 
   # Selecting only useful fuel for the run
+  d$shr_fuel_heat_base <- d$shr_fuel_heat_base %>%
+    mutate(shr_fuel_heat_base = ifelse((fuel_heat != "heat_pump")
+      & (shr_fuel_heat_base < 0.01), 0, shr_fuel_heat_base)) %>%
+    filter(shr_fuel_heat_base > 0)
+  
   cat$ct_fuel <- cat$ct_fuel %>%
     filter(fuel_heat %in% unique(d$shr_fuel_heat_base$fuel_heat))
+
+  # print(filter(d$ms_switch_fuel_exo, region_bld == "C-EEU-ROU"))
+
+  d$ms_switch_fuel_exo <- d$ms_switch_fuel_exo %>%
+    # Remove fuel if market-share is too low (except heat_pump)
+    mutate(ms_switch_fuel_exo = ifelse(
+      !fuel_heat_f %in% c("heat_pump")
+      & (ms_switch_fuel_exo < 0.05), 0, ms_switch_fuel_exo)) %>%
+    # Join with existing market-shares
+    rename(fuel_heat = fuel_heat_f) %>%
+    left_join(d$shr_fuel_heat_base) %>%
+    # Remove fuel if it doesn't exist (except heat_pump)
+    mutate(ms_switch_fuel_exo =
+      ifelse((shr_fuel_heat_base == 0 | is.na(shr_fuel_heat_base))
+      & !(fuel_heat %in% c("heat_pump")),
+      0, ms_switch_fuel_exo)) %>%
+    # Oil and coal shares cannot increase
+    mutate(ms_switch_fuel_exo =
+      ifelse(fuel_heat %in% c("oil", "coal") &
+        ms_switch_fuel_exo > shr_fuel_heat_base,
+        shr_fuel_heat_base, ms_switch_fuel_exo)) %>%
+    # Heat pumps
+    #  should at least be equal to the existing market-share
+    mutate(ms_switch_fuel_exo =
+      ifelse(fuel_heat %in% c("heat_pump") &
+        ms_switch_fuel_exo < shr_fuel_heat_base,
+        shr_fuel_heat_base, ms_switch_fuel_exo)) %>%
+    mutate(ms_switch_fuel_exo = ifelse(is.na(ms_switch_fuel_exo),
+      0, ms_switch_fuel_exo)) %>%
+    group_by_at("region_bld") %>%
+    mutate(ms_switch_fuel_exo =
+      ms_switch_fuel_exo / sum(ms_switch_fuel_exo)) %>%
+    ungroup() %>%
+    rename(fuel_heat_f = fuel_heat) %>%
+    select(-shr_fuel_heat_base)
+  
+  # Exlcude fuel if it is not used in any region
+  d$ct_fuel_excl_reg <- d$ms_switch_fuel_exo %>%
+    filter(ms_switch_fuel_exo == 0) %>%
+    mutate(ct_fuel_excl_reg = 1) %>%
+    select(-ms_switch_fuel_exo)
+
+  # For each region_bld if fuel_heat is not add to ct_fuel_excl_reg  
+  temp <- cross_join(cat$ct_fuel, select_at(cat$geo_data, "region_bld")) %>%
+    left_join(d$shr_fuel_heat_base) %>%
+    mutate(ct_fuel_excl_reg = ifelse(is.na(shr_fuel_heat_base),
+      1, 0)) %>%
+    select(c("region_bld", "fuel_heat", "ct_fuel_excl_reg")) %>%
+    filter(ct_fuel_excl_reg == 1) %>%
+    rename(fuel_heat_f = fuel_heat)
+
+  d$ct_fuel_excl_reg <- bind_rows(d$ct_fuel_excl_reg, temp) %>%
+    distinct()
+
+  d$ms_switch_fuel_exo <- filter(d$ms_switch_fuel_exo, ms_switch_fuel_exo > 0)
 
   # Read energy prices
   print("Load energy prices")
@@ -153,6 +214,7 @@ run_scenario <- function(run,
                            cat$geo_data,
                            cat$ct_eneff,
                            cat$ct_fuel,
+                           d$ct_heat,
                            d$shr_fuel_heat_base,
                            d$hh_tenure,
                            report_var)
@@ -286,45 +348,42 @@ run_scenario <- function(run,
                     d$ms_shell_new_exo,
                     d$ms_switch_fuel_exo
       )
-      
       try(if (nrow(ms_new_i) == 0)
         stop("Error in new construction calculation! Empty dataframe ms_new_i"))
 
       # Market share for renovation and fuel switches options
       print("Calculate market share for renovation and fuel switches")
-      if (energy_efficiency == "endogenous" && i == 2) {
+      if (energy_efficiency == "endogenous" && i == 2 && FALSE) {
         print("Calibration of market shares")
         stp <- yrs[i] - yrs[i - 1]
 
-      parameters_heater <- fun_calibration_switch_heat(yrs,
-                  i,
-                  bld_det_age_i,
-                  cat$ct_bld_age,
-                  d$ct_switch_heat,
-                  d$ct_fuel_excl_reg,
-                  d$cost_invest_heat,
-                  en_hh_tot,
-                  d$ms_switch_fuel_exo,
-                  lifetime_heat = 20,
-                  discount_heat = 0.05
-                )
-
         parameters_renovation <- fun_calibration_ren_shell(yrs,
-                                i,
-                                bld_det_age_i,
-                                cat$ct_bld_age,
-                                cat$ct_ren_eneff,
-                                d$hh_size,
-                                d$floor_cap,
-                                d$cost_invest_ren_shell,
-                                d$lifetime_ren,
-                                en_hh_tot,
-                                d$rate_shell_ren_exo,
-                                d$ms_shell_ren_exo,
-                                stp
+                                  i,
+                                  bld_det_age_i,
+                                  cat$ct_bld_age,
+                                  cat$ct_ren_eneff,
+                                  d$hh_size,
+                                  d$floor_cap,
+                                  d$cost_invest_ren_shell,
+                                  d$lifetime_ren,
+                                  en_hh_tot,
+                                  d$rate_shell_ren_exo,
+                                  d$ms_shell_ren_exo,
+                                  stp
                                 )
 
-
+        parameters_heater <- fun_calibration_switch_heat(yrs,
+                    i,
+                    bld_det_age_i,
+                    cat$ct_bld_age,
+                    d$ct_switch_heat,
+                    d$ct_fuel_excl_reg,
+                    d$cost_invest_heat,
+                    en_hh_tot,
+                    d$ms_switch_fuel_exo,
+                    lifetime_heat = 20,
+                    discount_heat = 0.05,
+                    inertia = d$inertia)
       }
 
       if (energy_efficiency == "endogenous") {
@@ -339,6 +398,7 @@ run_scenario <- function(run,
                           en_hh_tot,
                           lifetime_heat = 20,
                           discount_heat = 0.05,
+                          inertia = d$inertia,
                           parameters = parameters_heater)
 
         lst_ms_ren_sw_i <- fun_ms_ren_shell_endogenous(yrs,
@@ -385,7 +445,6 @@ run_scenario <- function(run,
         stop("Error in renovation calculation! Empty dataframe ms_sw_i"))
 
       # Stock turnover
-      # TODO: check if stock_aggr is necessary
       print(paste("Calculate stock turnover"))
       temp <- fun_stock_dyn(
         i,

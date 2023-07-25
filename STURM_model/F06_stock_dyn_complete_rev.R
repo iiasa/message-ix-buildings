@@ -76,7 +76,7 @@ fun_stock_dyn <- function(i,
     select(-c(shape, scale, pdem))
 
   print(paste("Number of demolitions is",
-    round(sum(dem_det_age_i$n_dem) / 10^6, 0), "million units.",
+    round(sum(dem_det_age_i$n_dem) / 1e6, 0), "million units.",
     "i.e. ", round(sum(dem_det_age_i$n_dem) /
       sum(bld_det_age_i$n_units_fuel) * 100, 1), "% of the existing stock."))
 
@@ -149,7 +149,7 @@ fun_stock_dyn <- function(i,
     print("Test passed. Empty buildings.")
   }
     
-  # New buildings
+  # Exogenous share of district heating for new buildings
   if (!is.null(shr_distr_heat)) {
     temp <- sum(ms_new_i$ms)
     ms_new_i <- ms_new_i %>%
@@ -224,6 +224,7 @@ fun_stock_dyn <- function(i,
     print("Test passed. New construction buildings.")
   }
 
+  # -------------------------------------------------------
   # Existing buildings - renovated
   ren_det_age_i <- dem_det_age_i %>%
     add_column(year = yrs[i], .before = "yr_con") %>%
@@ -247,7 +248,6 @@ fun_stock_dyn <- function(i,
       n_units_fuel_p, n_dem, n_empty, n_units_fuel_exst, rate_ren,
       ms_ren
     ))
-  # -------------------------------------------------------
 
   print(
     paste("Renovated buildings:",
@@ -275,7 +275,6 @@ fun_stock_dyn <- function(i,
     filter(n_units_fuel != 0) %>%
     select(-c(eneff, fuel_heat)) %>%
     rename(eneff = eneff_f, fuel_heat = fuel_heat_f)
-
 
   # Test for existing buildings
   if (round(c(sum(exst_det_age_i$n_units_fuel_exst) +

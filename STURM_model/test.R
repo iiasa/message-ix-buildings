@@ -67,4 +67,18 @@
                           d$ms_switch_fuel_exo,
                           lifetime_heat = 20,
                           discount_heat = 0.05
-                        )
+                        
+        )
+
+          region <- "C-WEU-FRA"
+  target <- filter(shr_fuel_heat_base, region_bld == region)
+  factors <- rep(0, times = nrow(target))
+
+  target <- bld_det_age_i %>%
+    group_by_at(setdiff(names(shr_fuel_heat_base),
+      c("fuel_heat", "shr_fuel_heat_base"))) %>%
+    summarise(n_units_eneff = sum(n_units_eneff)) %>%
+    ungroup() %>%
+    left_join(shr_fuel_heat_base) %>%
+    mutate(n_units_fuel = n_units_eneff * shr_fuel_heat_base) %>%
+    select(-c(n_units_eneff, shr_fuel_heat_base))

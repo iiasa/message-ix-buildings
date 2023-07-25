@@ -107,7 +107,7 @@ fun_stock_aggr <- function(sector,
 #' @param ct_eneff: energy efficiency catagories
 #' @param ct_fuel_comb: fuel combinations catagories
 #' @param shr_fuel_heat_base: share of heat fuel in baseyear
-#' @param shr_distr_heat: share of district heating
+#' @param ct_heat: heat catagories
 #' @param report_var: variables to be reported,
 fun_stock_det_ini <- function(sector,
                            stock_aggr,
@@ -115,6 +115,7 @@ fun_stock_det_ini <- function(sector,
                            geo_data,
                            ct_eneff,
                            ct_fuel_comb,
+                           ct_heat,
                            shr_fuel_heat_base,
                            shr_tenure_status,
                            report_var) {
@@ -139,7 +140,27 @@ fun_stock_det_ini <- function(sector,
       "many-to-many") %>%
     mutate(n_units_eneff = share * n_units_aggr) %>%
     select(-c(n_units_aggr, share)) %>%
-    left_join(ct_eneff_ini) %>%
+    left_join(ct_eneff_ini)
+
+  # TODO: Mapping fuel shares with building stock
+  target_fuel <- bld_det_age_i %>%
+    group_by_at("region_bld") %>%
+    summarise(n_units_eneff = sum(n_units_eneff)) %>%
+    left_join(shr_fuel_heat_base) %>%
+    mutate(n_fuels = n_units_eneff * shr_fuel_heat_base) %>%
+    select(-c("n_units_eneff", "shr_fuel_heat_base"))
+
+  temp <- bld_det_age_i %>%
+    group_by_at(c("region_bld",
+      intersect(names(ct_heat), names(bld_det_age_i)))) %>%
+    summarise(n_units = sum(n_units_eneff)) %>%
+    ungroup() %>%
+    left_join(ct_heat, relationship = "many-to-many") %>%
+    left_join(target_fuel) %>%
+    mutate(n_fuels = ifelse(is.na(n_fuels), 0, n_fuels))
+
+    
+  bld_det_age_i <- bld_det_age_i %>%
     left_join(ct_fuel_comb, relationship = "many-to-many") %>%
     left_join(shr_fuel_heat_base) %>%
     mutate(n_units_fuel =

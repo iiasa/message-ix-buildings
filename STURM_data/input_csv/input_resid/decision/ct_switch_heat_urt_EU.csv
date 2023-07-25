@@ -6,10 +6,10 @@ perm,rur,biomass_solid,gas,0
 perm,rur,biomass_solid,oil,0
 perm,rur,biomass_solid,district_heat,0
 perm,rur,biomass_solid,heat_pump,1
-perm,urb,biomass_solid,biomass_solid,0
+perm,urb,biomass_solid,biomass_solid,1
 perm,urb,biomass_solid,electricity,1
 perm,urb,biomass_solid,coal,0
-perm,urb,biomass_solid,gas,0
+perm,urb,biomass_solid,gas,1
 perm,urb,biomass_solid,oil,0
 perm,urb,biomass_solid,district_heat,1
 perm,urb,biomass_solid,heat_pump,1
@@ -23,7 +23,7 @@ perm,rur,electricity,heat_pump,1
 perm,urb,electricity,biomass_solid,1
 perm,urb,electricity,electricity,1
 perm,urb,electricity,coal,0
-perm,urb,electricity,gas,0
+perm,urb,electricity,gas,1
 perm,urb,electricity,oil,0
 perm,urb,electricity,district_heat,1
 perm,urb,electricity,heat_pump,1
@@ -79,7 +79,7 @@ perm,rur,district_heat,heat_pump,0
 perm,urb,district_heat,biomass_solid,0
 perm,urb,district_heat,electricity,0
 perm,urb,district_heat,coal,0
-perm,urb,district_heat,gas,0
+perm,urb,district_heat,gas,1
 perm,urb,district_heat,oil,0
 perm,urb,district_heat,district_heat,1
 perm,urb,district_heat,heat_pump,0

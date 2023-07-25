@@ -291,7 +291,8 @@ fun_utility_heat <- function(yrs,
                         cost_invest_heat,
                         lifetime_heat,
                         discount_heat,
-                        sub_heat = NULL) {
+                        sub_heat = NULL,
+                        inertia = NULL) {
 
   # Operational energy costs before/after renovation
   en_hh_tot_switch_fin <- en_hh_tot %>%
@@ -327,7 +328,7 @@ fun_utility_heat <- function(yrs,
     filter(year_i < yrs[i]) %>%
     select(bld_age_id) %>%
     pull(bld_age_id)
-
+  
   # Calculate utility
   utility_heat_hh <- bld_cases_fuel %>%
       filter(bld_age %in% bld_age_exst) %>%
@@ -355,7 +356,16 @@ fun_utility_heat <- function(yrs,
           "cost_invest_heat", "cost_op", "cost_op_init",
           "cost_op_saving", "ct_switch_heat", "ct_fuel_excl_reg"))
 
-    return(utility_heat_hh)
+  if (!is.null(inertia)) {
+    utility_heat_hh <- utility_heat_hh %>%
+      left_join(inertia) %>%
+      mutate(inertia = inertia *
+                ifelse(fuel_heat == fuel_heat_f, 1, 0)) %>%
+      mutate(utility_heat = utility_heat + inertia) %>%
+      select(-c("inertia"))
+  }
+
+  return(utility_heat_hh)
 }
 
 
@@ -370,6 +380,7 @@ fun_ms_switch_heat_endogenous <- function(yrs,
                           en_hh_tot,
                           lifetime_heat = 20,
                           discount_heat = 0.05,
+                          inertia = NULL,
                           parameters = NULL) {
   print(paste0("Running renovation decisions - year ", yrs[i]))
 
@@ -383,6 +394,7 @@ fun_ms_switch_heat_endogenous <- function(yrs,
                         cost_invest_heat,
                         lifetime_heat,
                         discount_heat,
+                        inertia = inertia,
                         sub_heat = sub_heat)
 
   if ((!is.null(parameters))) {

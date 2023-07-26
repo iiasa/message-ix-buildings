@@ -42,8 +42,8 @@ path_prices <- paste0(data_path,
 
 file_scenarios <- "scenarios_EU.csv"
 
-energy_efficiency <- "exogenous"
 # energy_efficiency <- "exogenous"
+energy_efficiency <- "endogenous"
 report <- list(var = c("energy"),
                type = c("STURM"),
                geo_level = "region_bld")

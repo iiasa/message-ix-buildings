@@ -18,17 +18,17 @@ library(dplyr)
 #' @return: data frame with results
 #' @export fun_stock_init_fut
 fun_stock_aggr <- function(sector,
-                               yrs,
-                               geo_data,
-                               bld_cases_fuel,
-                               pop,
-                               hh_size,
-                               floor_cap,
-                               ct_eneff,
-                               ct_fuel_comb,
-                               shr_mat,
-                               shr_arch
-                               ) {
+                            yrs,
+                            geo_data,
+                            bld_cases_fuel,
+                            pop,
+                            hh_size,
+                            floor_cap,
+                            ct_eneff,
+                            ct_fuel_comb,
+                            shr_mat,
+                            shr_arch
+                            ) {
 
   # Total number of residential building units:
   #  population / average household size
@@ -143,31 +143,68 @@ fun_stock_det_ini <- function(sector,
     left_join(ct_eneff_ini)
 
   # TODO: Mapping fuel shares with building stock
+  ct_heat <- filter(ct_heat, ct_heat == 1)
+
   target_fuel <- bld_det_age_i %>%
-    group_by_at("region_bld") %>%
+    group_by_at(setdiff(names(shr_fuel_heat_base),
+      c("fuel_heat", "shr_fuel_heat_base"))) %>%
     summarise(n_units_eneff = sum(n_units_eneff)) %>%
+    ungroup() %>%
     left_join(shr_fuel_heat_base) %>%
     mutate(n_fuels = n_units_eneff * shr_fuel_heat_base) %>%
-    select(-c("n_units_eneff", "shr_fuel_heat_base"))
+    select(-c(n_units_eneff, shr_fuel_heat_base))
 
-  temp <- bld_det_age_i %>%
-    group_by_at(c("region_bld",
-      intersect(names(ct_heat), names(bld_det_age_i)))) %>%
-    summarise(n_units = sum(n_units_eneff)) %>%
-    ungroup() %>%
+  shr_fuel_heat_constraint <- bld_det_age_i %>%
     left_join(ct_heat, relationship = "many-to-many") %>%
+    mutate(n_units_eneff = ct_heat * n_units_eneff) %>%
+    filter(ct_heat ==  1) %>%
+    group_by_at(setdiff(names(target_fuel), c("n_fuels"))) %>%
+    summarise(n_units_eneff = sum(n_units_eneff)) %>%
+    ungroup() %>%
     left_join(target_fuel) %>%
-    mutate(n_fuels = ifelse(is.na(n_fuels), 0, n_fuels))
+    mutate(share = n_fuels / n_units_eneff) %>%
+    mutate(share = ifelse(share > 1, 1, share)) %>%
+    left_join(ct_heat) %>%
+    select(-c(n_units_eneff, n_fuels, ct_heat))
 
-    
+  shr_fuel_heat <- shr_fuel_heat_base %>%
+    filter(!fuel_heat %in% unique(ct_heat$fuel_heat)) %>%
+    group_by_at(setdiff(names(shr_fuel_heat_base),
+      c("fuel_heat", "shr_fuel_heat_base"))) %>%
+    mutate(shr_fuel_heat_base =
+      shr_fuel_heat_base / sum(shr_fuel_heat_base)) %>%
+    ungroup()
+
   bld_det_age_i <- bld_det_age_i %>%
     left_join(ct_fuel_comb, relationship = "many-to-many") %>%
-    left_join(shr_fuel_heat_base) %>%
+    left_join(shr_fuel_heat_constraint) %>%
+    mutate(share = ifelse(is.na(share), 0, share)) %>%
+    left_join(shr_fuel_heat) %>%
+    mutate(shr_fuel_heat_base = ifelse(is.na(shr_fuel_heat_base),
+      0, shr_fuel_heat_base)) %>%
+    group_by_at(names(bld_det_age_i)) %>%
+    mutate(shr_fuel_heat_base = (1 - sum(share)) * shr_fuel_heat_base) %>%
+    ungroup() %>%
+    mutate(shr_fuel_heat_base =
+      ifelse(share > 0, share, shr_fuel_heat_base)) %>%
     mutate(n_units_fuel =
       round(n_units_eneff * shr_fuel_heat_base, rnd)) %>%
     mutate_cond(mat == "sub", n_units_fuel = n_units_eneff) %>%
-    select(-c(shr_fuel_heat_base, n_units_eneff)) %>%
+    select(-c(share, shr_fuel_heat_base, n_units_eneff)) %>%
     filter(n_units_fuel != 0)
+
+  # Test consistency with target fuels after distribution in the building stock
+  test <- bld_det_age_i %>%
+    group_by_at(setdiff(names(target_fuel), c("n_fuels"))) %>%
+    summarise(n_units_fuel = sum(n_units_fuel)) %>%
+    ungroup() %>%
+    left_join(target_fuel)
+
+  if (round(sum(test$n_units_fuel) / 1e6, 0) !=
+    round(sum(test$n_fuels) / 1e6, 0)) {
+    print("Error:
+      Inconsistent fuel shares.")
+  }
 
   if (sum(is.na(bld_det_age_i$n_units_fuel)) > 0) {
     print("NA value in bld_det_age_i")

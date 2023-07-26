@@ -82,3 +82,52 @@
     left_join(shr_fuel_heat_base) %>%
     mutate(n_units_fuel = n_units_eneff * shr_fuel_heat_base) %>%
     select(-c(n_units_eneff, shr_fuel_heat_base))
+
+  temp <- bld_det_age_i %>%
+    group_by_at(c("region_bld",
+      intersect(names(ct_heat), names(bld_det_age_i)))) %>%
+    summarise(n_units = sum(n_units_eneff)) %>%
+    ungroup() %>%
+    group_by_at("region_bld") %>%
+    mutate(sh = n_units / sum(n_units)) %>%
+    ungroup() %>%
+    left_join(ct_heat, relationship = "many-to-many") %>%
+    left_join(target_fuel) %>%
+    mutate(n_fuels = ifelse(is.na(n_fuels), 0, n_fuels)) %>%
+
+
+
+  objective_function <- function(factor, bld_det_age_i, tgt) {
+      
+      factor <- tgt %>%
+        mutate(share = factor) %>%
+        select(-n_fuels)
+
+      bld <- filter(bld_det_age_i, region_bld == region) %>%
+        left_join(ct_heat, relationship = "many-to-many", by = "urt") %>%
+        left_join(factor, by = c("region_bld", "fuel_heat")) %>%
+        mutate(n = ct_heat * abs(share) * n_units_eneff) %>%
+        group_by_at(setdiff(names(tgt), c("n_fuels"))) %>%
+        summarize(n = sum(n)) %>%
+        ungroup() %>%
+        left_join(tgt, by = c("region_bld", "fuel_heat")) %>%
+        filter(!is.na(n_fuels))
+
+      return(bld$n - bld$n_fuels)
+  }
+
+
+  for (region in unique(bld_det_age_i$region_bld)) {
+        region <- "C-WEU-FRA"
+        print(paste("Region:", region))
+        t <- filter(target_fuel, region_bld == region)
+        initial_factor <- rep(0.5, times = nrow(t))
+        # objective_function(factor, bld_det_age_i, tgt)
+
+        root <- multiroot(objective_function, start = initial_factor,
+            maxiter = 1e3, bld_det_age_i = bld_det_age_i, tgt = t)
+        
+        result <- t %>%
+          mutate(share = root$root)
+
+    }

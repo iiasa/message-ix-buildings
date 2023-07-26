@@ -1,15 +1,3 @@
 urt,fuel_heat,value
-rur,biomass_solid,1
-rur,electricity,1
-rur,coal,1
-rur,gas,1
-rur,oil,1
-rur,district_heat,0
-rur,heat_pump,1
-urb,biomass_solid,0
-urb,electricity,1
-urb,coal,1
-urb,gas,1
-urb,oil,1
 urb,district_heat,1
-urb,heat_pump,1
+rur,district_heat,0

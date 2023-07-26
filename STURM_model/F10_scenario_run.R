@@ -102,7 +102,11 @@ run_scenario <- function(run,
   d$shr_fuel_heat_base <- d$shr_fuel_heat_base %>%
     mutate(shr_fuel_heat_base = ifelse((fuel_heat != "heat_pump")
       & (shr_fuel_heat_base < 0.01), 0, shr_fuel_heat_base)) %>%
-    filter(shr_fuel_heat_base > 0)
+    filter(shr_fuel_heat_base > 0) %>%
+    group_by_at("region_bld") %>%
+    mutate(shr_fuel_heat_base =
+      shr_fuel_heat_base / sum(shr_fuel_heat_base)) %>%
+    ungroup()
   
   cat$ct_fuel <- cat$ct_fuel %>%
     filter(fuel_heat %in% unique(d$shr_fuel_heat_base$fuel_heat))
@@ -353,9 +357,23 @@ run_scenario <- function(run,
 
       # Market share for renovation and fuel switches options
       print("Calculate market share for renovation and fuel switches")
-      if (energy_efficiency == "endogenous" && i == 2 && FALSE) {
+      if (energy_efficiency == "endogenous" && i == 2) {
         print("Calibration of market shares")
         stp <- yrs[i] - yrs[i - 1]
+
+        parameters_heater <- fun_calibration_switch_heat(yrs,
+                    i,
+                    bld_det_age_i,
+                    cat$ct_bld_age,
+                    d$ct_switch_heat,
+                    d$ct_fuel_excl_reg,
+                    d$cost_invest_heat,
+                    en_hh_tot,
+                    d$ms_switch_fuel_exo,
+                    d$ct_heat,
+                    lifetime_heat = 20,
+                    discount_heat = 0.05,
+                    inertia = d$inertia)
 
         parameters_renovation <- fun_calibration_ren_shell(yrs,
                                   i,
@@ -372,18 +390,7 @@ run_scenario <- function(run,
                                   stp
                                 )
 
-        parameters_heater <- fun_calibration_switch_heat(yrs,
-                    i,
-                    bld_det_age_i,
-                    cat$ct_bld_age,
-                    d$ct_switch_heat,
-                    d$ct_fuel_excl_reg,
-                    d$cost_invest_heat,
-                    en_hh_tot,
-                    d$ms_switch_fuel_exo,
-                    lifetime_heat = 20,
-                    discount_heat = 0.05,
-                    inertia = d$inertia)
+
       }
 
       if (energy_efficiency == "endogenous") {
@@ -396,6 +403,7 @@ run_scenario <- function(run,
                           d$cost_invest_heat,
                           d$sub_heat,
                           en_hh_tot,
+                          ct_heat,
                           lifetime_heat = 20,
                           discount_heat = 0.05,
                           inertia = d$inertia,
@@ -435,8 +443,6 @@ run_scenario <- function(run,
       ms_ren_i <- lst_ms_ren_sw_i$ms_ren_i
       rate_ren_i <- lst_ms_ren_sw_i$rate_ren_i
       rm(lst_ms_ren_sw_i)
-
-
 
   
       try(if (nrow(ms_ren_i) == 0)

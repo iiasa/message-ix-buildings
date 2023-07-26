@@ -99,9 +99,9 @@ fun_calibration_ren_shell <- function(yrs,
     constant <- select(result, -c("target"))
 
     ms_ini <- market_share_agg(utility_ren_hh,
-            mutate(constant, constant = 0)) %>%
-            rename(ms_ini = ms) %>%
-            select(-c("n_renovation", "n_units_fuel"))
+        mutate(constant, constant = 0)) %>%
+        rename(ms_ini = ms) %>%
+        select(-c("n_renovation", "n_units_fuel"))
 
     ms <- market_share_agg(utility_ren_hh, constant) %>%
         left_join(target) %>%
@@ -134,6 +134,7 @@ fun_calibration_switch_heat <- function(yrs,
                           cost_invest_heat,
                           en_hh_tot,
                           ms_switch_fuel_exo,
+                          ct_heat,
                           lifetime_heat = 20,
                           discount_heat = 0.05,
                           inertia = NULL) {
@@ -147,6 +148,7 @@ fun_calibration_switch_heat <- function(yrs,
                         ct_bld_age,
                         ct_switch_heat,
                         ct_fuel_excl_reg,
+                        ct_heat,
                         cost_invest_heat,
                         lifetime_heat,
                         discount_heat,

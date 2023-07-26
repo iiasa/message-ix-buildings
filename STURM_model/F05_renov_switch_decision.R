@@ -288,6 +288,7 @@ fun_utility_heat <- function(yrs,
                         ct_bld_age,
                         ct_switch_heat,
                         ct_fuel_excl_reg,
+                        ct_heat,
                         cost_invest_heat,
                         lifetime_heat,
                         discount_heat,
@@ -338,6 +339,9 @@ fun_utility_heat <- function(yrs,
       filter(!is.na(fuel_heat_f)) %>%
       left_join(ct_fuel_excl_reg) %>%
       filter(is.na(ct_fuel_excl_reg)) %>%
+      left_join(ct_heat %>% rename(fuel_heat_f = fuel_heat)) %>%
+      mutate(ct_heat = ifelse(
+          is.na(ct_heat) | ct_heat == 1, 1, 0)) %>%
       mutate(year = yrs[i]) %>%
       left_join(cost_invest_heat) %>%
       # Operation costs after renovation
@@ -352,9 +356,11 @@ fun_utility_heat <- function(yrs,
       mutate(utility_heat =
       - cost_invest_heat / 1e3 + cost_op_saving * discount_factor) %>%
       filter(ct_switch_heat == 1) %>%
+      filter(ct_heat == 1) %>%
       select(-c(
           "cost_invest_heat", "cost_op", "cost_op_init",
-          "cost_op_saving", "ct_switch_heat", "ct_fuel_excl_reg"))
+          "cost_op_saving", "ct_switch_heat", "ct_fuel_excl_reg",
+          "ct_heat"))
 
   if (!is.null(inertia)) {
     utility_heat_hh <- utility_heat_hh %>%
@@ -378,6 +384,7 @@ fun_ms_switch_heat_endogenous <- function(yrs,
                           cost_invest_heat,
                           sub_heat,
                           en_hh_tot,
+                          ct_heat,
                           lifetime_heat = 20,
                           discount_heat = 0.05,
                           inertia = NULL,
@@ -391,6 +398,7 @@ fun_ms_switch_heat_endogenous <- function(yrs,
                         ct_bld_age,
                         ct_switch_heat,
                         ct_fuel_excl_reg,
+                        ct_heat,
                         cost_invest_heat,
                         lifetime_heat,
                         discount_heat,

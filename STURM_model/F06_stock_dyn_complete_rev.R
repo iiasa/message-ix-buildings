@@ -7,43 +7,9 @@ library(tibble)
 library(tidyr)
 
 
-#' @param sector: sector to run, "resid" or "comm"
-#' @param yrs: years to run, e.g. c(2015,2020,2025,2030,2035,2040,2045,2050)
-#' @param i: index of the year to run
-#' @param bld_cases_fuel: building cases for fuel,
-#' @param ct_bld_age: building age data
-#' @param hh_size: household size data, used for residential
-#' @param floor_cap: floor space data, used for commercial
-#' @param stock_aggr: aggregated building stock data
-#' @param bld_det_age_i: building age data
-#' @param prob_dem: probability of demolition data
-#' @param rate_switch_fuel_heat: rate of switching fuel for heating
-#' @param ms_new_i: new building stock
-#' @param ms_ren_i: renovated building stock
-#' @param rate_ren_i: renovation rate
-#' @param ms_sw_i: switched building stock
-#' @param en_m2_scen_heat: energy demand per m2 for heating
-fun_stock_dyn <- function(i,
-                          yrs,
-                          sector,
-                          bld_cases_fuel,
-                          ct_bld_age,
-                          ct_fuel,
-                          stock_aggr,
-                          bld_det_age_i,
-                          prob_dem,
-                          rate_switch_fuel_heat,
-                          ms_new_i,
-                          ms_ren_i,
-                          rate_ren_i,
-                          ms_sw_i,
-                          ren_age_i,
-                          shr_distr_heat = NULL) {
+fun_stock_turnover_dyn <- function(i, yrs, bld_cases_fuel, ct_bld_age,
+                                   stock_aggr, bld_det_ini, prob_dem) {
 
-
-  print(paste("Running stock turnover year:", yrs[i]))
-
-  # what happen for the last year?
   stp <- yrs[i] - yrs[i - 1]
 
   # Vintage category for the current year...
@@ -55,13 +21,13 @@ fun_stock_dyn <- function(i,
 
   # Stock Dynamics
   print(paste("Number of existing buildings during the previous time step is",
-    round(sum(bld_det_age_i$n_units_fuel) / 1e6, 0), "million units."))
+    round(sum(bld_det_ini$n_units_fuel) / 1e6, 0), "million units."))
   print(paste("Number of existing buildings for this step is",
     round(sum(filter(stock_aggr, year == yrs[i])$n_units_aggr) / 1e6, 0),
     "million units."))
 
-  # Calculate number of demolitions by detailed segment.
-  dem_det_age_i <- bld_det_age_i %>%
+  # 1. Calculate number of demolitions by detailed segment.
+  bld_det_i <- bld_det_ini %>%
     # Stock from previous year
     filter(year == yrs[i - 1]) %>%
     select(-year) %>%
@@ -76,16 +42,16 @@ fun_stock_dyn <- function(i,
     select(-c(shape, scale, pdem))
 
   print(paste("Number of demolitions is",
-    round(sum(dem_det_age_i$n_dem) / 1e6, 0), "million units.",
-    "i.e. ", round(sum(dem_det_age_i$n_dem) /
-      sum(bld_det_age_i$n_units_fuel) * 100, 1), "% of the existing stock."))
+    round(sum(bld_det_i$n_dem) / 1e6, 0), "million units.",
+    "i.e. ", round(sum(bld_det_i$n_dem) /
+      sum(bld_det_ini$n_units_fuel) * 100, 1), "% of the existing stock."))
 
-  # Calculate new constructions or abandoned buildings by aggregated segment.
+  # 2. Calculate new constructions or abandoned buildings by aggregated segment.
   bld_aggr_i <- stock_aggr %>%
     filter(year == yrs[i]) %>%
     # Aggregate demolitions by aggregated segment.
-    left_join(dem_det_age_i %>%
-        group_by_at(intersect(names(dem_det_age_i), names(stock_aggr))) %>%
+    left_join(bld_det_i %>%
+        group_by_at(intersect(names(bld_det_i), names(stock_aggr))) %>%
         summarise(n_dem = sum(n_dem)) %>%
         ungroup()) %>%
     mutate(n_dem = ifelse(var_aggr == n_units_aggr
@@ -104,24 +70,19 @@ fun_stock_dyn <- function(i,
     )
   
   print(paste("Number of constructions is",
-    round(sum(bld_aggr_i$n_new) / 10^6, 0), "million units.",
+    round(sum(bld_aggr_i$n_new) / 1e6, 0), "million units.",
     "i.e. ", round(sum(bld_aggr_i$n_new) /
-      sum(bld_det_age_i$n_units_fuel) * 100, 1), "% of the existing stock."))
+      sum(bld_det_ini$n_units_fuel) * 100, 1), "% of the existing stock."))
 
   print(paste("Number of empty buildings is",
-    round(sum(bld_aggr_i$n_empty) / 10^6, 0), "million units.",
+    round(sum(bld_aggr_i$n_empty) / 1e6, 0), "million units.",
     "i.e. ", round(sum(bld_aggr_i$n_empty) /
-      sum(bld_det_age_i$n_units_fuel) * 100, 1), "% of the existing stock."))
-
+      sum(bld_det_ini$n_units_fuel) * 100, 1), "% of the existing stock."))
 
   # Distribute abandoned buildings across vintage cohorts and archetypes
-  # Problem: empty units exceeding n.units(previous stes) - n.units demolished
-  # First calculate share of buildings by vintage in the previous timestep,
-  #  to allocate empty buildings.
-  dem_det_age_i <- dem_det_age_i %>%
-    # Select all variables, except "eneff" and "n_dem" for grouping
+  bld_det_i <- bld_det_i %>%
     group_by_at(
-        setdiff(intersect(names(dem_det_age_i), names(bld_aggr_i)),
+        setdiff(intersect(names(bld_det_i), names(bld_aggr_i)),
         "n_dem")) %>%
     # Surviving units
     mutate(n_units_fuel_upd_tot = sum(n_units_fuel_p - n_dem)) %>%
@@ -136,47 +97,44 @@ fun_stock_dyn <- function(i,
     # Correct exceeding empty buildings
     mutate(n_empty = ifelse(n_units_fuel_p - n_dem - n_empty < 0, 0,
       n_empty)) %>%
-    select(-c(n_units_fuel_upd_tot, shr_aggr_age))
+    select(-c(n_units_fuel_upd_tot, shr_aggr_age)) %>%
+    add_column(year = yrs[i], .before = "yr_con") %>%
+    # Update results existing buildings (before renovation)
+    mutate(n_units_fuel_exst = n_units_fuel_p - n_dem - n_empty)
 
   # Test: number of empty buildings
-  if (round(sum(dem_det_age_i$n_empty), 0) !=
+  if (round(sum(bld_det_i$n_empty), 0) !=
     round(sum(bld_aggr_i$n_empty), 0)) {
     print(paste("Test failed. Number of empty buildings is not consistent.",
       "Error is:",
-      round((sum(dem_det_age_i$n_empty) - sum(bld_aggr_i$n_empty)) / 10^6, 0),
+      round((sum(bld_det_i$n_empty) - sum(bld_aggr_i$n_empty)) / 1e6, 0),
       "million units."))
   } else {
     print("Test passed. Empty buildings.")
   }
-    
-  # Exogenous share of district heating for new buildings
-  if (!is.null(shr_distr_heat)) {
-    temp <- sum(ms_new_i$ms)
-    ms_new_i <- ms_new_i %>%
-      left_join(shr_distr_heat) %>%
-      mutate(
-        ms = ms * (1 - shr_distr_heat)) %>%
-      bind_rows(
-        ms_new_i %>%
-          left_join(shr_distr_heat) %>%
-            mutate(
-              fuel_heat = "district_heat",
-              ms = ms * shr_distr_heat
-            )) %>%
-      select(-shr_distr_heat) %>%
-      filter(ms > 0)
-    # Test if sum of ms_new_i is consistent with temp
-    if (round(sum(ms_new_i$ms), 0) != round(temp, 0)) {
-      print("Test failed. District heating.")
-      }
-    }
+  
+  bld_det_i <- bld_det_i %>%
+    select(-c(n_units_fuel_p, n_dem, n_empty))
+
+  bld_aggr_i <- bld_aggr_i %>%
+    select(-c(var_aggr, n_dem, n_empty)) %>%
+    add_column(yr_con = yrs[i], .after = "year") %>%
+    left_join(ct_bld_age_i)
+
+  output <- list(
+    bld_aggr_i = bld_aggr_i,
+    bld_det_i = bld_det_i
+  )
+  return(output)
+}
+
+
+fun_stock_construction_dyn <- function(bld_aggr_i, ms_new_i, ct_fuel) {
 
   # Disaggregate results based on market shares
-  new_det_age_i <- bld_aggr_i %>%
+  new_det_i <- bld_aggr_i %>%
+    select(-c(n_units_aggr)) %>%
     filter(mat != "sub") %>%
-    select(-c(n_units_aggr, var_aggr, n_dem, n_empty)) %>%
-    add_column(yr_con = yrs[i], .after = "year") %>%
-    left_join(ct_bld_age_i) %>%
     # Join shares of eneff and fuel_heat in new construction
     left_join(ms_new_i) %>%
     mutate(n_new = round(n_new * ms, rnd)) %>%
@@ -187,19 +145,15 @@ fun_stock_dyn <- function(i,
     left_join(ct_fuel)
 
 
-  if ("sub" %in% unique(bld_cases_fuel$mat)) {
+  if ("sub" %in% bld_aggr_i$mat) {
     # Slum buildings
-    new_det_slum_age_i <-
-      bld_aggr_i %>%
+    new_det_slum_age_i <- bld_aggr_i %>%
       filter(mat == "sub") %>%
-      select(-c(n_units_aggr, var_aggr, n_dem, n_empty)) %>%
-      add_column(yr_con = yrs[i], .after = "year") %>%
-      left_join(ct_bld_age_i) %>%
-      # CHANGE THIS!!!!
+      select(-c(n_units_aggr)) %>%
       mutate(
         arch = "inf",
-         eneff = "ns",
-        fuel_heat = "electric",
+        eneff = "ns",
+        fuel_heat = "electricity",
         fuel_cool = "electricity"
       ) %>%
       filter(n_new > 0) %>%
@@ -210,12 +164,12 @@ fun_stock_dyn <- function(i,
   }
 
   # Test for new construction - total
-  if (round(sum(new_det_age_i$n_units_fuel) / 1e6 +
+  if (round(sum(new_det_i$n_units_fuel) / 1e6 +
       sum(new_det_slum_age_i$n_units_fuel) / 1e6, 0) !=
       round(sum(bld_aggr_i$n_new) / 1e6, 0)) {
     print(paste("Test failed. New construction buildings.",
       "Error is:",
-      round((sum(new_det_age_i$n_units_fuel) +
+      round((sum(new_det_i$n_units_fuel) +
         sum(new_det_slum_age_i$n_units_fuel) -
         sum(bld_aggr_i$n_new)), 0),
       "units.")
@@ -224,12 +178,27 @@ fun_stock_dyn <- function(i,
     print("Test passed. New construction buildings.")
   }
 
-  # -------------------------------------------------------
+    # Bind all datasets - fuel level + vintage
+  new_det_i <- bind_rows(new_det_i, new_det_slum_age_i) %>%
+    # Remove negative values (due to approximation)
+    mutate(n_units_fuel = ifelse(n_units_fuel < 0, 0, n_units_fuel)) %>%
+    # Aggregate to remove doubled categories
+    group_by_at(setdiff(names(new_det_i), c("n_units_fuel"))) %>%
+    summarise(n_units_fuel = sum(n_units_fuel)) %>%
+    ungroup()
+
+  return(new_det_i)
+
+}
+
+
+fun_stock_renovation_dyn <- function(bld_det_i,
+                                     rate_ren_i, ms_ren_i, stp) {
+
+  temp <- sum(bld_det_i$n_units_fuel_exst)
+  
   # Existing buildings - renovated
-  ren_det_age_i <- dem_det_age_i %>%
-    add_column(year = yrs[i], .before = "yr_con") %>%
-    # Update results existing buildings (before renovation)
-    mutate(n_units_fuel_exst = n_units_fuel_p - n_dem - n_empty) %>%
+  ren_det_i <- bld_det_i  %>%
     # Account for renovations
     left_join(rate_ren_i) %>%
     mutate(rate_ren = ifelse(is.na(rate_ren), 0, rate_ren)) %>%
@@ -245,51 +214,74 @@ fun_stock_dyn <- function(i,
     mutate(n_units_fuel =
       round(n_units_fuel_exst * rate_ren * stp * ms_ren, rnd)) %>%
     select(-c(
-      n_units_fuel_p, n_dem, n_empty, n_units_fuel_exst, rate_ren,
-      ms_ren
+      n_units_fuel_exst, rate_ren, ms_ren
     ))
 
   print(
     paste("Renovated buildings:",
-      round(sum(ren_det_age_i$n_units_fuel) / 1e6, 0),
+      round(sum(ren_det_i$n_units_fuel) / 1e6, 0),
       "million units in", stp, "years.",
       "i.e.",
-      round(sum(ren_det_age_i$n_units_fuel) /
-        sum(bld_det_age_i$n_units_fuel), 2) * 100 / stp,
+      round(sum(ren_det_i$n_units_fuel) /
+        sum(bld_det_i$n_units_fuel_exst), 2) * 100 / stp,
       "percent per year."))
 
   # Existing buildings - non-renovated
-  exst_det_age_i <- dem_det_age_i %>%
-    left_join(ren_det_age_i %>%
+  woren_det_i <- bld_det_i %>%
+    left_join(ren_det_i %>%
       # Select all variables, except the ones indicated, for grouping
       group_by_at(setdiff(
-        names(ren_det_age_i),
+        names(ren_det_i),
         c("eneff_f", "fuel_heat_f", "n_units_fuel"))) %>%
       summarise(n_ren = sum(n_units_fuel)) %>%
       ungroup()) %>%
-    mutate(n_units_fuel_exst = n_units_fuel_p - n_dem - n_empty - n_ren) %>%
-    select(-c(n_units_fuel_p, n_dem, n_empty, n_ren))
+    mutate(n_units_fuel = n_units_fuel_exst - n_ren) %>%
+    select(-c(n_ren))
 
   # Format renovated buildings by renaming columns
-  ren_det_age_i <- ren_det_age_i %>%
+  ren_det_i <- ren_det_i %>%
     filter(n_units_fuel != 0) %>%
     select(-c(eneff, fuel_heat)) %>%
     rename(eneff = eneff_f, fuel_heat = fuel_heat_f)
 
   # Test for existing buildings
-  if (round(c(sum(exst_det_age_i$n_units_fuel_exst) +
-      sum(ren_det_age_i$n_units_fuel)), 0) !=
-      round(sum(dem_det_age_i$n_units_fuel_p -
-      dem_det_age_i$n_dem - dem_det_age_i$n_empty), 0)) {
+  if (round(c(sum(woren_det_i$n_units_fuel) +
+      sum(ren_det_i$n_units_fuel)), 0) !=
+      round(temp, 0)) {
     print("Test failed. Existing buildings.")
   } else {
     print("Test passed. Existing buildings.")
   }
 
-  # -------------------------------------------------------
+  # Bind all datasets - fuel level + vintage
+  bld_det_i <- bind_rows(woren_det_i,
+                              ren_det_i) %>%
+    # Remove negative values (due to approximation)
+    mutate(n_units_fuel = ifelse(n_units_fuel < 0, 0, n_units_fuel)) %>%
+    # Aggregate to remove doubled categories
+    group_by_at(setdiff(names(bld_det_i), c("n_units_fuel_exst"))) %>%
+    summarise(n_units_fuel = sum(n_units_fuel)) %>%
+    ungroup()
+
+  output <- list(
+    bld_det_i = bld_det_i,
+    ren_det_i = ren_det_i
+  )
+
+  return(output)
+  
+}
+
+
+fun_stock_switch_fuel_dyn <- function(bld_det_i,
+                                      rate_switch_fuel_heat,
+                                      ms_sw_i,
+                                      ct_fuel,
+                                      stp) {
   # Existing buildings - non-renovated - fuel switch
-  temp <- round(sum(exst_det_age_i$n_units_fuel_exst) / 1e6, 0)
-  exst_sw_det_age_i <- exst_det_age_i %>%
+  temp <- round(sum(bld_det_i$n_units_fuel) / 1e6, 0)
+
+  bld_det_i_sw <- bld_det_i %>%
     # left_join(bld_fuel_switch) %>%
     left_join(rate_switch_fuel_heat) %>%
     left_join(ms_sw_i) %>%
@@ -298,160 +290,50 @@ fun_stock_dyn <- function(i,
       ifelse(year - yr_con > bld_age_min, rate_switch_fuel_heat, 0)) %>%
     # Calculate n.units - after renovation
     mutate(n_units_fuel =
-      round(n_units_fuel_exst * (rate_switch_fuel_heat * stp) * ms, rnd)) %>%
+      round(n_units_fuel * (rate_switch_fuel_heat * stp) * ms, rnd)) %>%
     # No fuel switches with NAs
     filter(n_units_fuel > 0) %>%
     # Calculate renovation rate - mat level
-    select(-c(
-      n_units_fuel_exst, bld_age_min, rate_switch_fuel_heat, ms
-    ))
+    select(-c(bld_age_min, rate_switch_fuel_heat, ms))
 
   # Update Existing buildings - non-renovated - without fuel switch
-  exst_det_age_i <- exst_det_age_i %>%
-    left_join(exst_sw_det_age_i %>%
+  bld_det_i <- bld_det_i %>%
+    left_join(bld_det_i_sw %>%
     # Select all variables, except the ones indicated, for grouping
-      group_by_at(setdiff(names(exst_sw_det_age_i),
+      group_by_at(setdiff(names(bld_det_i_sw),
         c("fuel_heat_f", "n_units_fuel"))) %>%
     summarise(n_sw = sum(n_units_fuel)) %>%
     ungroup()) %>%
     mutate(n_sw = ifelse(is.na(n_sw), 0, n_sw)) %>%
-    mutate(n_units_fuel = n_units_fuel_exst - n_sw) %>%
-    select(-c(n_units_fuel_exst, n_sw))
+    mutate(n_units_fuel = n_units_fuel - n_sw) %>%
+    select(-c(n_sw))
 
 
   # Format DF non-renovated buildings - fuel switches
-  exst_sw_det_age_i <- exst_sw_det_age_i %>%
+  bld_det_i_sw <- bld_det_i_sw %>%
     select(-c("fuel_heat", "fuel")) %>%
     rename(fuel_heat = fuel_heat_f) %>%
     left_join(ct_fuel)
 
-  if (temp != round((sum(exst_det_age_i$n_units_fuel) +
-   sum(exst_sw_det_age_i$n_units_fuel)) / 1e6, 0)) {
+  if (temp != round((sum(bld_det_i$n_units_fuel) +
+   sum(bld_det_i_sw$n_units_fuel)) / 1e6, 0)) {
     print("Test failed. Error during switching fuel.")
    } else {
     print(paste("Test passed.", "Switch",
-      round(sum(exst_sw_det_age_i$n_units_fuel) / 1e6, 0),
+      round(sum(bld_det_i_sw$n_units_fuel) / 1e6, 0),
       "million units."))
    }
 
-  # -------------------------------------------------------
-  ren_det_age_i <- rename(ren_det_age_i, n_units_fuel_exst = n_units_fuel)
-  temp <- round(sum(ren_det_age_i$n_units_fuel_exst) / 1e6, 0)
-  ren_sw_det_age_i <- ren_det_age_i %>%
-    # left_join(bld_fuel_switch) %>%
-    left_join(rate_switch_fuel_heat) %>%
-    left_join(ms_sw_i) %>%
-    # Fuel switches only over the minimum age of buildings
-    mutate(rate_switch_fuel_heat =
-      ifelse(year - yr_con > bld_age_min, rate_switch_fuel_heat, 0)) %>%
-    # Calculate n.units - after renovation
-    mutate(n_units_fuel =
-      round(n_units_fuel_exst * (rate_switch_fuel_heat * stp) * ms, rnd)) %>%
-    # No fuel switches with NAs
-    filter(n_units_fuel > 0) %>%
-    # Calculate renovation rate - mat level
-    select(-c(
-      n_units_fuel_exst, bld_age_min, rate_switch_fuel_heat, ms
-    ))
-
-
-  # Update Existing buildings - non-renovated - without fuel switch
-  ren_det_age_i <- ren_det_age_i %>%
-    left_join(ren_sw_det_age_i %>%
-    # Select all variables, except the ones indicated, for grouping
-      group_by_at(setdiff(names(ren_sw_det_age_i),
-        c("fuel_heat_f", "n_units_fuel"))) %>%
-      summarise(n_sw = sum(n_units_fuel)) %>%
-      ungroup()) %>%
-    mutate(n_sw = ifelse(is.na(n_sw), 0, n_sw)) %>%
-    mutate(n_units_fuel = n_units_fuel_exst - n_sw) %>%
-    select(-c(n_units_fuel_exst, n_sw))
-
-  test <- ren_det_age_i %>%
-    left_join(ren_sw_det_age_i %>%
-        group_by_at(setdiff(names(ren_sw_det_age_i),
-          c("fuel_heat_f", "n_units_fuel"))) %>%
-      mutate(n_sw = sum(n_units_fuel)) %>%
-      ungroup()) 
-
-  # Format DF non-renovated buildings - fuel switches
-  ren_sw_det_age_i <- ren_sw_det_age_i %>%
-    select(-c("fuel_heat", "fuel")) %>%
-    rename(fuel_heat = fuel_heat_f) %>%
-    left_join(ct_fuel)
-
-  if (temp != round((sum(ren_det_age_i$n_units_fuel) +
-   sum(ren_sw_det_age_i$n_units_fuel)) / 1e6, 0)) {
-    print("Test failed. Error during switching fuel.")
-   } else {
-    print(paste("Test passed.", "Switch",
-      round(sum(ren_sw_det_age_i$n_units_fuel) / 1e6, 0),
-      "million units."))
-   }
-
-  # -------------------------------------------------------
-
-  # Test for existing buildings
-  print(paste(
-    "Number of existing units (detailed):",
-    round(c(sum(exst_det_age_i$n_units_fuel) +
-      sum(exst_sw_det_age_i$n_units_fuel) +
-      sum(ren_det_age_i$n_units_fuel) +
-      sum(ren_sw_det_age_i$n_units_fuel)) / 1e6, 0),
-    "million units."
-  ))
-  # Sum disaggregated buildings
-  print(paste("Number of existing units (detailed):",
-    round(sum(dem_det_age_i$n_units_fuel_p -
-      dem_det_age_i$n_dem - dem_det_age_i$n_empty) / 1e6, 0),
-      "million units."))
-  # Sum aggregated buildings
-  print(paste("Existing units (aggregated):",
-    round(sum(bld_aggr_i$n_units_aggr - bld_aggr_i$n_new) / 1e6, 0),
-    "million units."))
-
-
-  ### TEST: TOTAL NUMBER OF HOUSING UNITS
-  print(paste(
-    "Total units (detailed):",
-    round(c(
-      sum(exst_det_age_i$n_units_fuel) +
-      sum(exst_sw_det_age_i$n_units_fuel) +
-      sum(ren_det_age_i$n_units_fuel) +
-      sum(ren_sw_det_age_i$n_units_fuel) +
-      sum(new_det_age_i$n_units_fuel) +
-      sum(new_det_slum_age_i$n_units_fuel)) / 1e6, 0),
-    "million units."))
-  print(paste("Total units (aggregated)",
-    round(sum(filter(stock_aggr, year == yrs[i])$n_units_aggr) / 1e6, 0),
-    "million units."))
-
-  # Bind all datasets - fuel level + vintage
-  bld_det_age_i <- bind_rows(exst_det_age_i,
-                             exst_sw_det_age_i,
-                             ren_det_age_i,
-                             ren_sw_det_age_i,
-                             new_det_age_i,
-                             new_det_slum_age_i) %>%
+    # Bind all datasets - fuel level + vintage
+  bld_det_i <- bind_rows(bld_det_i,
+                         bld_det_i_sw) %>%
     # Remove negative values (due to approximation)
     mutate(n_units_fuel = ifelse(n_units_fuel < 0, 0, n_units_fuel)) %>%
     # Aggregate to remove doubled categories
-    group_by_at(setdiff(names(bld_det_age_i), c("n_units_fuel"))) %>%
+    group_by_at(setdiff(names(bld_det_i), c("n_units_fuel"))) %>%
     summarise(n_units_fuel = sum(n_units_fuel)) %>%
     ungroup()
 
-  ren_det_i <- NULL
-  ren_det_i <- bind_rows(ren_det_age_i, ren_sw_det_age_i) %>%
-    # Remove negative values (due to approximation)
-    mutate(n_units_fuel = ifelse(n_units_fuel < 0, 0, n_units_fuel)) %>%
-    # Aggregate to remove doubled categories
-    group_by_at(setdiff(names(ren_det_age_i), c("n_units_fuel"))) %>%
-    summarise(n_units_fuel = sum(n_units_fuel)) %>%
-    ungroup()
+  return(bld_det_i)
 
-  print(paste("Number of units:",
-    round(sum(bld_det_age_i$n_units_fuel) / 1e6, 0),
-    "million units."))
-
-  return(list(bld_det_age_i = bld_det_age_i, ren_det_i = ren_det_i))
 }

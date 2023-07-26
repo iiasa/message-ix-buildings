@@ -7,7 +7,7 @@ fun_format_output <- function(i,
                               yrs,
                               sector,
                               run,
-                              bld_det_age_i,
+                              bld_det_i,
                               bld_cases_fuel,
                               ct_fuel_comb,
                               shr_need_heat,
@@ -33,7 +33,7 @@ fun_format_output <- function(i,
             yrs,
             sector,
             run,
-            bld_det_age_i,
+            bld_det_i,
             bld_cases_fuel,
             ct_fuel_comb,
             shr_need_heat,
@@ -89,8 +89,8 @@ fun_format_output <- function(i,
             ungroup()
 
         # stock
-        bld_eneff_i <- bld_det_age_i %>%
-            group_by_at(setdiff(names(bld_det_age_i), c(
+        bld_eneff_i <- bld_det_i %>%
+            group_by_at(setdiff(names(bld_det_i), c(
                 "bld_age", "fuel_heat", "fuel_cool", "n_units_fuel"
             ))) %>%
             summarise(n_units = sum(n_units_fuel)) %>%
@@ -202,8 +202,8 @@ fun_format_output <- function(i,
     if ("vintage" %in% report_var) {
         report$bld_eneff_age <- bind_rows(
             report$bld_eneff_age,
-            bld_det_age_i %>%
-                group_by_at(setdiff(names(bld_det_age_i), c(
+            bld_det_i %>%
+                group_by_at(setdiff(names(bld_det_i), c(
                     "fuel_heat", "fuel_cool", "n_units_fuel"
                 ))) %>%
                 summarise(n_units_eneff = sum(n_units_fuel)) %>%
@@ -217,7 +217,7 @@ fun_format_output <- function(i,
 
 #' @title Format building stock output
 #' @description Format building stock output
-#' @param bld_det_age_i Data frame with building stock information
+#' @param bld_det_i Data frame with building stock information
 #' @param bld_cases_fuel Data frame with building cases information
 #' @param yrs: years to be analysed
 #' @param sector: sector to be analysed
@@ -228,7 +228,7 @@ fun_format_bld_stock_energy <- function(
                                         yrs,
                                         sector,
                                         run,
-                                        bld_det_age_i,
+                                        bld_det_i,
                                         bld_cases_fuel,
                                         ct_fuel_comb,
                                         shr_need_heat,
@@ -240,10 +240,10 @@ fun_format_bld_stock_energy <- function(
                                         en_hh_hw_scen
                                         ) {
     # Aggregate at fuel level for keeping track of the stock
-    bld_det_i <- bld_det_age_i %>%
+    bld_det_i <- bld_det_i %>%
         # Select all variables, except the ones indicated, for grouping
         group_by_at(setdiff(
-            names(bld_det_age_i),
+            names(bld_det_i),
             c("yr_con", "n_units_fuel", "fuel")
         )) %>%
         summarise(

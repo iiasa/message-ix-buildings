@@ -133,7 +133,7 @@ fun_stock_det_ini <- function(sector,
     ungroup() %>%
     select(-stock_arch_base)
 
-  bld_det_age_i <- stock_aggr %>%
+  bld_det_i <- stock_aggr %>%
     select(-var_aggr) %>%
     filter(year == 2015) %>%
     left_join(shr_arch_base, relationship =
@@ -145,7 +145,7 @@ fun_stock_det_ini <- function(sector,
   # TODO: Mapping fuel shares with building stock
   ct_heat <- filter(ct_heat, ct_heat == 1)
 
-  target_fuel <- bld_det_age_i %>%
+  target_fuel <- bld_det_i %>%
     group_by_at(setdiff(names(shr_fuel_heat_base),
       c("fuel_heat", "shr_fuel_heat_base"))) %>%
     summarise(n_units_eneff = sum(n_units_eneff)) %>%
@@ -154,7 +154,7 @@ fun_stock_det_ini <- function(sector,
     mutate(n_fuels = n_units_eneff * shr_fuel_heat_base) %>%
     select(-c(n_units_eneff, shr_fuel_heat_base))
 
-  shr_fuel_heat_constraint <- bld_det_age_i %>%
+  shr_fuel_heat_constraint <- bld_det_i %>%
     left_join(ct_heat, relationship = "many-to-many") %>%
     mutate(n_units_eneff = ct_heat * n_units_eneff) %>%
     filter(ct_heat ==  1) %>%
@@ -175,14 +175,14 @@ fun_stock_det_ini <- function(sector,
       shr_fuel_heat_base / sum(shr_fuel_heat_base)) %>%
     ungroup()
 
-  bld_det_age_i <- bld_det_age_i %>%
+  bld_det_i <- bld_det_i %>%
     left_join(ct_fuel_comb, relationship = "many-to-many") %>%
     left_join(shr_fuel_heat_constraint) %>%
     mutate(share = ifelse(is.na(share), 0, share)) %>%
     left_join(shr_fuel_heat) %>%
     mutate(shr_fuel_heat_base = ifelse(is.na(shr_fuel_heat_base),
       0, shr_fuel_heat_base)) %>%
-    group_by_at(names(bld_det_age_i)) %>%
+    group_by_at(names(bld_det_i)) %>%
     mutate(shr_fuel_heat_base = (1 - sum(share)) * shr_fuel_heat_base) %>%
     ungroup() %>%
     mutate(shr_fuel_heat_base =
@@ -194,7 +194,7 @@ fun_stock_det_ini <- function(sector,
     filter(n_units_fuel != 0)
 
   # Test consistency with target fuels after distribution in the building stock
-  test <- bld_det_age_i %>%
+  test <- bld_det_i %>%
     group_by_at(setdiff(names(target_fuel), c("n_fuels"))) %>%
     summarise(n_units_fuel = sum(n_units_fuel)) %>%
     ungroup() %>%
@@ -206,11 +206,11 @@ fun_stock_det_ini <- function(sector,
       Inconsistent fuel shares.")
   }
 
-  if (sum(is.na(bld_det_age_i$n_units_fuel)) > 0) {
-    print("NA value in bld_det_age_i")
+  if (sum(is.na(bld_det_i$n_units_fuel)) > 0) {
+    print("NA value in bld_det_i")
   }
 
-  if (round(sum(bld_det_age_i$n_units_fuel) / 1e6, 0) !=
+  if (round(sum(bld_det_i$n_units_fuel) / 1e6, 0) !=
       round(sum(filter(stock_aggr, year == 2015)$n_units_aggr) / 1e6, 0)) {
         print("Test failed.
           Problem during detailing builing stock for base year")
@@ -218,7 +218,7 @@ fun_stock_det_ini <- function(sector,
     print("Test passed. Building stock detailing for base year successful")
   }
 
-  if (!"inc_cl" %in% names(bld_det_age_i)) {
+  if (!"inc_cl" %in% names(bld_det_i)) {
     # Subdivising equally between three classes of income (q1, q2, q3)
     # Assumption of no correlation with other dimension
 
@@ -227,43 +227,43 @@ fun_stock_det_ini <- function(sector,
         inc_cl = c("q1", "q2", "q3"),
         share = 1 / 3)
 
-    temp <- sum(bld_det_age_i$n_units_fuel)
-    bld_det_age_i <- bld_det_age_i %>%
+    temp <- sum(bld_det_i$n_units_fuel)
+    bld_det_i <- bld_det_i %>%
       left_join(shr_inc, relationship = "many-to-many") %>%
       mutate(n_units_fuel = n_units_fuel * share) %>%
       select(-share)
 
     # Test consistency.
     if (round(temp, 0) !=
-      round(sum(bld_det_age_i$n_units_fuel), 0)) {
+      round(sum(bld_det_i$n_units_fuel), 0)) {
       print("Error:
         Inconsistent income shares.")
     }
 
   }
 
-  if (!"tenr" %in% names(bld_det_age_i)) {
+  if (!"tenr" %in% names(bld_det_i)) {
 
-    temp <- sum(bld_det_age_i$n_units_fuel)
-    bld_det_age_i <- bld_det_age_i %>%
+    temp <- sum(bld_det_i$n_units_fuel)
+    bld_det_i <- bld_det_i %>%
       left_join(shr_tenure_status, relationship = "many-to-many") %>%
       mutate(n_units_fuel = n_units_fuel * hh_tenure) %>%
       select(-hh_tenure)
     
     # Test consistency.
     if (round(temp / 1e6, 0) !=
-      round(sum(bld_det_age_i$n_units_fuel) / 1e6, 0)) {
+      round(sum(bld_det_i$n_units_fuel) / 1e6, 0)) {
       print("Error:
         Inconsistent income shares.")
     }
   }
 
   print(paste("Number of buildings for base year:",
-    round(sum(bld_det_age_i$n_units_fuel) / 1e6, 0),
+    round(sum(bld_det_i$n_units_fuel) / 1e6, 0),
     "million units."))
 
   print(paste("Resolution of detailed building stock:",
-    paste(names(bld_det_age_i), collapse = ", ")))
+    paste(names(bld_det_i), collapse = ", ")))
 
   report <- list()
   if ("energy" %in% report_var) {
@@ -281,8 +281,8 @@ fun_stock_det_ini <- function(sector,
   }
   if ("vintage" %in% report_var) {
     # Report stock by eneff - vintage
-    bld_eneff_age <- bld_det_age_i %>%
-      group_by_at(setdiff(names(bld_det_age_i),
+    bld_eneff_age <- bld_det_i %>%
+      group_by_at(setdiff(names(bld_det_i),
         c("fuel_heat", "fuel_cool", "n_units_fuel"))) %>%
       summarise(n_units_eneff = sum(n_units_fuel)) %>%
       ungroup()
@@ -291,7 +291,7 @@ fun_stock_det_ini <- function(sector,
   }
 
   output <- list(
-    bld_det_age_i = bld_det_age_i,
+    bld_det_i = bld_det_i,
     report = report
   )
 

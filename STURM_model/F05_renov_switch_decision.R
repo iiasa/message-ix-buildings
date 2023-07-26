@@ -295,6 +295,7 @@ fun_utility_heat <- function(yrs,
                         sub_heat = NULL,
                         inertia = NULL) {
 
+  print("ISSUE HERE: NO COST SAVING BUT DIRECT COST")                      
   # Operational energy costs before/after renovation
   en_hh_tot_switch_fin <- en_hh_tot %>%
     rename(fuel_heat_f = fuel_heat)

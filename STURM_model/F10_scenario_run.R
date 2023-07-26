@@ -223,10 +223,10 @@ run_scenario <- function(run,
                            d$hh_tenure,
                            report_var)
     # Extract dataframes from list
-    bld_det_age_i <- temp$bld_det_age_i
+    bld_det_ini <- temp$bld_det_i
     report <- temp$report
     print(paste("Initial building stock based on detailed data:",
-      round(sum(bld_det_age_i$n_units_fuel) / 1e6, 0), "million units."))
+      round(sum(bld_det_ini$n_units_fuel) / 1e6, 0), "million units."))
     rm(temp)
 
     print(paste("Calculate energy demand intensities 
@@ -274,7 +274,7 @@ run_scenario <- function(run,
                     yrs,
                     sector,
                     run,
-                    bld_det_age_i,
+                    bld_det_ini,
                     bld_cases_fuel,
                     cat$ct_fuel,
                     d$shr_need_heat,
@@ -293,9 +293,10 @@ run_scenario <- function(run,
     print(paste("Start scenario run", sector))
     parameters_renovation <- NULL
     parameters_heater <- NULL
-
+    bld_det_i <- bld_det_ini
     for (i in 2:length(yrs)) {
       print(paste("Start scenario run", sector, "for year", yrs[i]))
+      stp <- yrs[i] - yrs[i - 1]
 
       print(paste("Calculate energy demand intensities 
         for space heating and cooling"))
@@ -327,7 +328,6 @@ run_scenario <- function(run,
       en_hh_tot <- lst_en_i$en_hh_tot
       rm(lst_en_i)
 
-
       # Energy demand intensities - hot water
       print(paste("Calculate energy demand intensities for hot water"))
       en_hh_hw_scen <- fun_hw_resid(
@@ -355,15 +355,88 @@ run_scenario <- function(run,
       try(if (nrow(ms_new_i) == 0)
         stop("Error in new construction calculation! Empty dataframe ms_new_i"))
 
-      # Market share for renovation and fuel switches options
-      print("Calculate market share for renovation and fuel switches")
-      if (energy_efficiency == "endogenous" && i == 2) {
-        print("Calibration of market shares")
-        stp <- yrs[i] - yrs[i - 1]
+      print(paste("1. Running stock turnover year:", yrs[i]))
+      temp <- fun_stock_turnover_dyn(i, yrs, bld_cases_fuel, cat$ct_bld_age,
+                                     stock_aggr, bld_det_i, d$prob_dem)
+      bld_aggr_i <- temp$bld_aggr_i
+      bld_det_i <- temp$bld_det_i
 
+      new_det_i <- fun_stock_construction_dyn(bld_aggr_i,
+                                              ms_new_i,
+                                              cat$ct_fuel)
+
+      print("2. Shell renovation decisions")
+      if (energy_efficiency == "endogenous" && i == 2 && FALSE) {
+        print("2.0 Calibration of renovation rate")
+
+        parameters_renovation <- fun_calibration_ren_shell(yrs,
+                        i,
+                        bld_det_ini,
+                        cat$ct_bld_age,
+                        cat$ct_ren_eneff,
+                        d$hh_size,
+                        d$floor_cap,
+                        d$cost_invest_ren_shell,
+                        d$lifetime_ren,
+                        en_hh_tot,
+                        d$rate_shell_ren_exo,
+                        d$ms_shell_ren_exo,
+                        stp
+                      )
+      }
+      if (energy_efficiency == "endogenous") {
+        print("2.1 Calibration of renovation rate")
+        temp <- fun_ms_ren_shell_endogenous(yrs,
+                          i,
+                          bld_cases_fuel,
+                          cat$ct_bld_age,
+                          cat$ct_ren_eneff,
+                          d$hh_size,
+                          d$floor_cap,
+                          d$cost_invest_ren_shell,
+                          d$sub_ren_shell,
+                          en_hh_tot,
+                          d$lifetime_ren,
+                          parameters = parameters_renovation)
+      } else {
+        temp <- fun_ms_ren_shell_exogenous(
+                      yrs,
+                      i,
+                      bld_cases_fuel,
+                      cat$ct_bld_age,
+                      d$rate_shell_ren_exo,
+                      d$ms_shell_ren_exo)
+      }
+      # Extract dataframes from list
+      ms_ren_i <- temp$ms_ren_i
+      rate_ren_i <- temp$rate_ren_i
+      rm(temp)
+
+      print("2.2 Intergration of renovation in the existing stock")
+      temp <- fun_stock_renovation_dyn(bld_det_i,
+                               rate_ren_i,
+                               ms_ren_i,
+                               stp)
+      bld_det_i <- temp$bld_det_i
+      ren_det_i <- temp$ren_det_i
+      rm(temp)
+      bld_det_i <- bind_rows(bld_det_i, new_det_i)
+
+      # Test consistency of stock turnover
+      if (round(sum(bld_det_i$n_units_fuel) / 1e6, 0) !=
+        round(sum(filter(stock_aggr, year == yrs[i])$n_units_aggr) / 1e6, 0)) {
+        stop("Error in stock turnover calculation! 
+          Sum of new and existing buildings is not equal to the total stock.")
+      } else {
+        print("Test stock turnover passed")
+      }
+      
+      print("3. Switch heating system decisions")
+      if (energy_efficiency == "endogenous" && i == 2 && FALSE) {
+        print("3.0 Calibration of market shares switch fuel")
         parameters_heater <- fun_calibration_switch_heat(yrs,
                     i,
-                    bld_det_age_i,
+                    bld_det_i,
                     cat$ct_bld_age,
                     d$ct_switch_heat,
                     d$ct_fuel_excl_reg,
@@ -374,27 +447,11 @@ run_scenario <- function(run,
                     lifetime_heat = 20,
                     discount_heat = 0.05,
                     inertia = d$inertia)
-
-        parameters_renovation <- fun_calibration_ren_shell(yrs,
-                                  i,
-                                  bld_det_age_i,
-                                  cat$ct_bld_age,
-                                  cat$ct_ren_eneff,
-                                  d$hh_size,
-                                  d$floor_cap,
-                                  d$cost_invest_ren_shell,
-                                  d$lifetime_ren,
-                                  en_hh_tot,
-                                  d$rate_shell_ren_exo,
-                                  d$ms_shell_ren_exo,
-                                  stp
-                                )
-
-
       }
 
       if (energy_efficiency == "endogenous") {
-          ms_sw_i <- fun_ms_switch_heat_endogenous(yrs,
+        print("3.1 Calculate market share for fuel switches")
+        ms_sw_i <- fun_ms_switch_heat_endogenous(yrs,
                           i,
                           bld_cases_fuel,
                           cat$ct_bld_age,
@@ -403,81 +460,33 @@ run_scenario <- function(run,
                           d$cost_invest_heat,
                           d$sub_heat,
                           en_hh_tot,
-                          ct_heat,
+                          d$ct_heat,
                           lifetime_heat = 20,
                           discount_heat = 0.05,
                           inertia = d$inertia,
                           parameters = parameters_heater)
 
-        lst_ms_ren_sw_i <- fun_ms_ren_shell_endogenous(yrs,
-                                  i,
-                                  bld_cases_fuel,
-                                  cat$ct_bld_age,
-                                  cat$ct_ren_eneff,
-                                  d$hh_size,
-                                  d$floor_cap,
-                                  d$cost_invest_ren_shell,
-                                  d$sub_ren_shell,
-                                  en_hh_tot,
-                                  d$lifetime_ren,
-                                  parameters = parameters_renovation)
-
-
       } else {
-        lst_ms_ren_sw_i <- fun_ms_ren_shell_exogenous(
-                              yrs,
-                              i,
-                              bld_cases_fuel,
-                              cat$ct_bld_age,
-                              d$rate_shell_ren_exo,
-                              d$ms_shell_ren_exo)
-        
         ms_sw_i <- fun_ms_fuel_sw_exogenous(yrs,
                           i,
                           bld_cases_fuel,
                           cat$ct_bld_age,
                           d$ms_switch_fuel_exo)
-        
       }
-      # Extract dataframes from list
-      ms_ren_i <- lst_ms_ren_sw_i$ms_ren_i
-      rate_ren_i <- lst_ms_ren_sw_i$rate_ren_i
-      rm(lst_ms_ren_sw_i)
+      print("3.2 Intergration of switch fuel in the stock")
+      bld_det_i <- fun_stock_switch_fuel_dyn(bld_det_i,
+                                            d$rate_switch_fuel_heat,
+                                            ms_sw_i,
+                                            cat$ct_fuel,
+                                            stp
+                               )
 
-  
-      try(if (nrow(ms_ren_i) == 0)
-        stop("Error in renovation calculation! Empty dataframe ms_ren_i"))
-      try(if (nrow(ms_sw_i) == 0)
-        stop("Error in renovation calculation! Empty dataframe ms_sw_i"))
-
-      # Stock turnover
-      print(paste("Calculate stock turnover"))
-      temp <- fun_stock_dyn(
-        i,
-        yrs,
-        sector,
-        bld_cases_fuel,
-        cat$ct_bld_age,
-        cat$ct_fuel,
-        stock_aggr,
-        bld_det_age_i,
-        d$prob_dem,
-        d$rate_switch_fuel_heat,
-        ms_new_i,
-        ms_ren_i,
-        rate_ren_i,
-        ms_sw_i,
-        shr_distr_heat = NULL
-      )
-      bld_det_age_i <- temp$bld_det_age_i
-      ren_det_i <- temp$ren_det_i
-      rm(temp)
       # Extract dataframes from list
       report <- fun_format_output(i,
                               yrs,
                               sector,
                               run,
-                              bld_det_age_i,
+                              bld_det_i,
                               bld_cases_fuel,
                               cat$ct_fuel,
                               d$shr_need_heat,

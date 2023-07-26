@@ -35,6 +35,7 @@ fun_ms_new_exogenous <- function(yrs,
             c("ms_shell_new_exo", "eneff"))) %>%
             summarise(total = sum(ms_shell_new_exo)) %>%
             ungroup()
+
   # All ms value of test should be equal to 1
   if (any(round(test$total, 2) != 1)) {
     print("Test failed. Market shares ms_shell_new_exo.")
@@ -42,8 +43,6 @@ fun_ms_new_exogenous <- function(yrs,
     print("Test passed. Market shares ms_shell_new_exo.")
   }
   
-  # ms_switch_fuel_exo <- ms_switch_fuel_exo %>%
-    # left_join(ct_fuel %>% select(fuel_heat, fuel) %>% distinct())
 
   # Test sum of ms_shell_new_exo equal to 1
   test <- ms_switch_fuel_exo %>% group_by_at("region_bld") %>%

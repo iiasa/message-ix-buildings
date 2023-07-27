@@ -1,7 +1,6 @@
 region_gea,mat,eneff,bld_age,fuel_heat,fuel_cool,value
 AFR,perm,std,p5,coal,electricity,1
 CPA,perm,std,p5,coal,electricity,1
-EEU,perm,std,p5,biomass_solid,electricity,1
 EEU,perm,std,p5,coal,electricity,1
 EEU,perm,std,p5,oil,electricity,1
 FSU,perm,std,p5,biomass_solid,electricity,1
@@ -56,6 +55,5 @@ SAS,perm,adv,p5,biomass_solid,electricity,1
 SAS,perm,adv,p5,coal,electricity,1
 SAS,perm,adv,p5,gas,electricity,1
 SAS,perm,adv,p5,oil,electricity,1
-WEU,perm,adv,p5,biomass_solid,electricity,1
 WEU,perm,adv,p5,coal,electricity,1
 WEU,perm,adv,p5,oil,electricity,1

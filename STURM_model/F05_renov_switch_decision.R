@@ -143,7 +143,7 @@ fun_utility_ren_shell <- function(yrs,
 #' @param en_hh_tot Energy demand
 fun_ms_ren_shell_endogenous <- function(yrs,
                           i,
-                          bld_cases_fuel,
+                          bld_stock,
                           ct_bld_age,
                           ct_ren_eneff,
                           hh_size,
@@ -161,7 +161,7 @@ fun_ms_ren_shell_endogenous <- function(yrs,
 
   utility_ren_hh <- fun_utility_ren_shell(yrs,
                           i,
-                          bld_cases_fuel,
+                          bld_stock,
                           ct_bld_age,
                           ct_ren_eneff,
                           hh_size,
@@ -229,7 +229,7 @@ fun_ms_ren_shell_endogenous <- function(yrs,
 #' @return data frame with renovation rates
 fun_ms_ren_shell_exogenous <- function(yrs,
                                         i,
-                                        bld_cases_fuel,
+                                        bld_stock,
                                         ct_bld_age,
                                         rate_shell_ren_exo,
                                         ms_shell_ren_exo
@@ -241,7 +241,7 @@ fun_ms_ren_shell_exogenous <- function(yrs,
     filter(year_f < yrs[i]) %>%
     pull(bld_age_id)
 
-  rate_ren_i <- bld_cases_fuel %>%
+  rate_ren_i <- bld_stock %>%
     filter(bld_age %in% p_past) %>%
     # Filter based on eneff
     filter(eneff == "avg") %>%
@@ -254,7 +254,7 @@ fun_ms_ren_shell_exogenous <- function(yrs,
     filter(!is.na(rate_ren)) %>%
     filter(rate_ren > 0)
 
-  ms_ren_i <- bld_cases_fuel %>%
+  ms_ren_i <- bld_stock %>%
     filter(bld_age %in% p_past) %>%
     # Add years columns
     mutate(year = yrs[i]) %>%
@@ -283,24 +283,21 @@ fun_ms_ren_shell_exogenous <- function(yrs,
 
 fun_utility_heat <- function(yrs,
                         i,
-                        bld_cases_fuel,
+                        bld_stock,
                         en_hh_tot,
-                        ct_bld_age,
                         ct_switch_heat,
                         ct_fuel_excl_reg,
                         ct_heat,
+                        ct_heat_new,
                         cost_invest_heat,
                         lifetime_heat,
                         discount_heat,
                         sub_heat = NULL,
                         inertia = NULL) {
 
-  print("ISSUE HERE: NO COST SAVING BUT DIRECT COST")                      
   # Operational energy costs before/after renovation
   en_hh_tot_switch_fin <- en_hh_tot %>%
     rename(fuel_heat_f = fuel_heat)
-  en_hh_tot_switch_init <- en_hh_tot %>%
-    rename(cost_op_init = cost_op)
 
   # Prepare investment cost data
   if ("year" %in% names(cost_invest_heat)) {
@@ -324,50 +321,41 @@ fun_utility_heat <- function(yrs,
 
   # Discount factor
   discount_factor <- (1 - (1 + discount_heat)^-lifetime_heat) / discount_heat
-
-  # Filter building age cohorts - past periods of construction
-  bld_age_exst <- ct_bld_age %>%
-    filter(year_i < yrs[i]) %>%
-    select(bld_age_id) %>%
-    pull(bld_age_id)
   
   # Calculate utility
-  utility_heat_hh <- bld_cases_fuel %>%
-      filter(bld_age %in% bld_age_exst) %>%
-      left_join(ct_switch_heat %>%
-          rename(fuel_heat = fuel_heat_i),
-          relationship = "many-to-many") %>%
-      filter(!is.na(fuel_heat_f)) %>%
-      left_join(ct_fuel_excl_reg) %>%
-      filter(is.na(ct_fuel_excl_reg)) %>%
-      left_join(ct_heat %>% rename(fuel_heat_f = fuel_heat)) %>%
-      mutate(ct_heat = ifelse(
-          is.na(ct_heat) | ct_heat == 1, 1, 0)) %>%
-      mutate(year = yrs[i]) %>%
-      left_join(cost_invest_heat) %>%
-      # Operation costs after renovation
-      left_join(en_hh_tot_switch_fin %>% select(-c("fuel"))) %>%
-      # Operation costs before renovation
-      left_join(en_hh_tot_switch_init) %>%
-      # Filter out hh with no operational cost
-      filter(cost_op_init > 0) %>%
-      # Add operative costs (total)
-      mutate(cost_op_saving = (cost_op_init - cost_op) / 1e3) %>%
-      # Calculate utility
-      mutate(utility_heat =
-      - cost_invest_heat / 1e3 + cost_op_saving * discount_factor) %>%
-      filter(ct_switch_heat == 1) %>%
-      filter(ct_heat == 1) %>%
-      select(-c(
-          "cost_invest_heat", "cost_op", "cost_op_init",
-          "cost_op_saving", "ct_switch_heat", "ct_fuel_excl_reg",
-          "ct_heat"))
+  utility_heat_hh <- bld_stock %>%
+    left_join(ct_switch_heat %>%
+        rename(fuel_heat = fuel_heat_i),
+        relationship = "many-to-many") %>%
+    left_join(ct_heat_new) %>%
+    mutate(fuel_heat_f = ifelse(
+        !is.na(fuel_heat_new), fuel_heat_new, fuel_heat_f)) %>%
+    select(-c("fuel_heat_new", "ct_heat_new")) %>%
+    filter(!is.na(fuel_heat_f)) %>%
+    left_join(ct_fuel_excl_reg) %>%
+    filter(is.na(ct_fuel_excl_reg)) %>%
+    left_join(ct_heat %>% rename(fuel_heat_f = fuel_heat)) %>%
+    mutate(ct_heat = ifelse(
+        is.na(ct_heat) | ct_heat == 1, 1, 0)) %>%
+    mutate(year = yrs[i]) %>%
+    left_join(cost_invest_heat) %>%
+    # Operation costs after renovation
+    left_join(en_hh_tot_switch_fin %>% select(-c("fuel", "fuel_cool"))) %>%
+    # Calculate utility
+    mutate(utility_heat =
+      (- cost_invest_heat + cost_op * discount_factor) / 1e3) %>%
+    filter((ct_switch_heat == 1) | (bld_age == "p5")) %>%
+    filter(ct_heat == 1) %>%
+    select(-c("cost_invest_heat", "cost_op",
+      "ct_switch_heat", "ct_fuel_excl_reg", "ct_heat"))
 
   if (!is.null(inertia)) {
     utility_heat_hh <- utility_heat_hh %>%
       left_join(inertia) %>%
       mutate(inertia = inertia *
                 ifelse(fuel_heat == fuel_heat_f, 1, 0)) %>%
+      mutate(inertia =
+          ifelse(bld_age == "p5", 0, inertia)) %>%
       mutate(utility_heat = utility_heat + inertia) %>%
       select(-c("inertia"))
   }
@@ -378,7 +366,7 @@ fun_utility_heat <- function(yrs,
 
 fun_ms_switch_heat_endogenous <- function(yrs,
                           i,
-                          bld_cases_fuel,
+                          bld_stock,
                           ct_bld_age,
                           ct_switch_heat,
                           ct_fuel_excl_reg,
@@ -386,20 +374,23 @@ fun_ms_switch_heat_endogenous <- function(yrs,
                           sub_heat,
                           en_hh_tot,
                           ct_heat,
+                          ct_heat_new,
                           lifetime_heat = 20,
                           discount_heat = 0.05,
                           inertia = NULL,
                           parameters = NULL) {
   print(paste0("Running renovation decisions - year ", yrs[i]))
 
+  
+  
   utility_heat_hh <- fun_utility_heat(yrs,
                         i,
-                        bld_cases_fuel,
+                        bld_stock,
                         en_hh_tot,
-                        ct_bld_age,
                         ct_switch_heat,
                         ct_fuel_excl_reg,
                         ct_heat,
+                        ct_heat_new,
                         cost_invest_heat,
                         lifetime_heat,
                         discount_heat,
@@ -436,7 +427,7 @@ fun_ms_switch_heat_endogenous <- function(yrs,
 #' @return data frame
 fun_ms_fuel_sw_exogenous <- function(yrs,
                                       i,
-                                      bld_cases_fuel,
+                                      bld_stock,
                                       ct_bld_age,
                                       ms_switch_fuel_exo) {
   print(paste0("Running fuel switch target - year ", yrs[i]))
@@ -446,7 +437,7 @@ fun_ms_fuel_sw_exogenous <- function(yrs,
     filter(year_f < yrs[i]) %>%
     pull(bld_age_id)
 
-  ms_sw_i <- bld_cases_fuel %>%
+  ms_sw_i <- bld_stock %>%
    # Add years columns
     mutate(year = yrs[i]) %>%
     filter(bld_age %in% p_past) %>%

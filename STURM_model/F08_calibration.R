@@ -127,7 +127,7 @@ fun_calibration_ren_shell <- function(yrs,
 
 fun_calibration_switch_heat <- function(yrs,
                           i,
-                          bld_cases_fuel,
+                          bld_stock,
                           ct_bld_age,
                           ct_switch_heat,
                           ct_fuel_excl_reg,
@@ -135,6 +135,7 @@ fun_calibration_switch_heat <- function(yrs,
                           en_hh_tot,
                           ms_switch_fuel_exo,
                           ct_heat,
+                          ct_heat_new,
                           lifetime_heat = 20,
                           discount_heat = 0.05,
                           inertia = NULL) {
@@ -143,12 +144,12 @@ fun_calibration_switch_heat <- function(yrs,
 
     utility_heat_hh <- fun_utility_heat(yrs,
                         i,
-                        bld_cases_fuel,
+                        bld_stock,
                         en_hh_tot,
-                        ct_bld_age,
                         ct_switch_heat,
                         ct_fuel_excl_reg,
                         ct_heat,
+                        ct_heat_new,
                         cost_invest_heat,
                         lifetime_heat,
                         discount_heat,
@@ -157,7 +158,7 @@ fun_calibration_switch_heat <- function(yrs,
     scaling_factor <- utility_heat_hh %>%
         group_by(region_bld) %>%
         summarize(min_value = min(utility_heat),
-                    max_value = max(utility_heat)) %>%
+                  max_value = max(utility_heat)) %>%
         mutate(scaling_factor = (5 - (-5)) / (max_value - min_value)) %>%
         select(-c("min_value", "max_value"))
 
@@ -215,7 +216,6 @@ fun_calibration_switch_heat <- function(yrs,
                     target = double(),
                     constant = double())
     for (region in unique(utility_heat_hh$region_bld)) {
-        
         print(paste("Region:", region))
         u <- filter(utility_heat_hh, region_bld == region)
         t <- ms_switch_fuel_exo %>%
@@ -248,13 +248,14 @@ fun_calibration_switch_heat <- function(yrs,
     ms <- market_share_agg(utility_heat_hh, select(result, -c("target"))) %>%
         select(-c("n_switch_aggr"))
 
-    stock <- bld_cases_fuel %>%
+    stock <- bld_stock %>%
         group_by_at(c("region_bld", "fuel_heat")) %>%
         summarize(n_units_fuel = sum(n_units_fuel)) %>%
         ungroup() %>%
         group_by_at(c("region_bld")) %>%
         mutate(n_units_fuel = n_units_fuel / sum(n_units_fuel)) %>%
         ungroup() %>%
+        filter(!is.na(fuel_heat)) %>%
         rename(fuel_heat_f = fuel_heat) %>%
         rename(share_stock = n_units_fuel)
 

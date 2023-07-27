@@ -111,8 +111,7 @@ run_scenario <- function(run,
   cat$ct_fuel <- cat$ct_fuel %>%
     filter(fuel_heat %in% unique(d$shr_fuel_heat_base$fuel_heat))
 
-  # print(filter(d$ms_switch_fuel_exo, region_bld == "C-EEU-ROU"))
-
+  # Formatting market-shares switch fuels to keep consistency
   d$ms_switch_fuel_exo <- d$ms_switch_fuel_exo %>%
     # Remove fuel if market-share is too low (except heat_pump)
     mutate(ms_switch_fuel_exo = ifelse(
@@ -349,8 +348,7 @@ run_scenario <- function(run,
                     cat$ct_hh_inc,
                     cat$ct_fuel,
                     d$hh_tenure,
-                    d$ms_shell_new_exo,
-                    d$ms_switch_fuel_exo
+                    d$ms_shell_new_exo
       )
       try(if (nrow(ms_new_i) == 0)
         stop("Error in new construction calculation! Empty dataframe ms_new_i"))
@@ -361,12 +359,12 @@ run_scenario <- function(run,
       bld_aggr_i <- temp$bld_aggr_i
       bld_det_i <- temp$bld_det_i
 
+      print("2. Shell renovation decisions")
       new_det_i <- fun_stock_construction_dyn(bld_aggr_i,
                                               ms_new_i,
                                               cat$ct_fuel)
 
-      print("2. Shell renovation decisions")
-      if (energy_efficiency == "endogenous" && i == 2 && FALSE) {
+      if (energy_efficiency == "endogenous" && i == 2) {
         print("2.0 Calibration of renovation rate")
 
         parameters_renovation <- fun_calibration_ren_shell(yrs,
@@ -412,7 +410,7 @@ run_scenario <- function(run,
       rate_ren_i <- temp$rate_ren_i
       rm(temp)
 
-      print("2.2 Intergration of renovation in the existing stock")
+      print("2.2 Integration of renovation in the existing stock")
       temp <- fun_stock_renovation_dyn(bld_det_i,
                                rate_ren_i,
                                ms_ren_i,
@@ -432,7 +430,7 @@ run_scenario <- function(run,
       }
       
       print("3. Switch heating system decisions")
-      if (energy_efficiency == "endogenous" && i == 2 && FALSE) {
+      if (energy_efficiency == "endogenous" && i == 2) {
         print("3.0 Calibration of market shares switch fuel")
         parameters_heater <- fun_calibration_switch_heat(yrs,
                     i,
@@ -444,6 +442,7 @@ run_scenario <- function(run,
                     en_hh_tot,
                     d$ms_switch_fuel_exo,
                     d$ct_heat,
+                    d$ct_heat_new,
                     lifetime_heat = 20,
                     discount_heat = 0.05,
                     inertia = d$inertia)
@@ -453,7 +452,7 @@ run_scenario <- function(run,
         print("3.1 Calculate market share for fuel switches")
         ms_sw_i <- fun_ms_switch_heat_endogenous(yrs,
                           i,
-                          bld_cases_fuel,
+                          bld_det_i,
                           cat$ct_bld_age,
                           d$ct_switch_heat,
                           d$ct_fuel_excl_reg,
@@ -461,6 +460,7 @@ run_scenario <- function(run,
                           d$sub_heat,
                           en_hh_tot,
                           d$ct_heat,
+                          d$ct_heat_new,
                           lifetime_heat = 20,
                           discount_heat = 0.05,
                           inertia = d$inertia,
@@ -469,16 +469,17 @@ run_scenario <- function(run,
       } else {
         ms_sw_i <- fun_ms_fuel_sw_exogenous(yrs,
                           i,
-                          bld_cases_fuel,
+                          bld_det_i,
                           cat$ct_bld_age,
                           d$ms_switch_fuel_exo)
       }
-      print("3.2 Intergration of switch fuel in the stock")
+      print("3.2 Integration of switch fuel in the stock")
       bld_det_i <- fun_stock_switch_fuel_dyn(bld_det_i,
                                             d$rate_switch_fuel_heat,
                                             ms_sw_i,
                                             cat$ct_fuel,
-                                            stp
+                                            stp,
+                                            yrs[i]
                                )
 
       # Extract dataframes from list

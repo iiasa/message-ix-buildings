@@ -26,7 +26,7 @@ rout_path <- paste(getwd(), "/STURM_output/", sep = "")
 
 # configuration file STURM
 base_year <- 2015
-end_year <- 2020
+end_year <- 2025
 step_year <- 5
 runs <- c("EU", "EU_nomfhq1rent", "EU_double", "EU_triple")
 runs <- c("EU", "EU_strong", "EU_medium")
@@ -42,8 +42,8 @@ path_prices <- paste0(data_path,
 
 file_scenarios <- "scenarios_EU.csv"
 
-energy_efficiency <- "exogenous"
-# energy_efficiency <- "endogenous"
+# energy_efficiency <- "exogenous"
+energy_efficiency <- "endogenous"
 report <- list(var = c("energy"),
                type = c("STURM"),
                geo_level = "region_bld")

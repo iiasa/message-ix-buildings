@@ -135,14 +135,12 @@ fun_stock_construction_dyn <- function(bld_aggr_i, ms_new_i, ct_fuel) {
   new_det_i <- bld_aggr_i %>%
     select(-c(n_units_aggr)) %>%
     filter(mat != "sub") %>%
-    # Join shares of eneff and fuel_heat in new construction
+    # Join shares of eneff in new construction
     left_join(ms_new_i) %>%
     mutate(n_new = round(n_new * ms, rnd)) %>%
     filter(n_new > 0) %>%
     relocate(n_units_fuel = n_new, .after = last_col()) %>%
-    select(-c(ms)) %>%
-    rename(fuel_heat = fuel_heat_f) %>%
-    left_join(ct_fuel)
+    select(-c(ms))
 
 
   if ("sub" %in% bld_aggr_i$mat) {
@@ -277,7 +275,8 @@ fun_stock_switch_fuel_dyn <- function(bld_det_i,
                                       rate_switch_fuel_heat,
                                       ms_sw_i,
                                       ct_fuel,
-                                      stp) {
+                                      stp,
+                                      year_run) {
   # Existing buildings - non-renovated - fuel switch
   temp <- round(sum(bld_det_i$n_units_fuel) / 1e6, 0)
 
@@ -287,37 +286,39 @@ fun_stock_switch_fuel_dyn <- function(bld_det_i,
     left_join(ms_sw_i) %>%
     # Fuel switches only over the minimum age of buildings
     mutate(rate_switch_fuel_heat =
-      ifelse(year - yr_con > bld_age_min, rate_switch_fuel_heat, 0)) %>%
+      ifelse(year - yr_con > bld_age_min, rate_switch_fuel_heat * stp, 0)) %>%
+    mutate(rate_switch_fuel_heat =
+      ifelse(yr_con == year_run, 1, rate_switch_fuel_heat)) %>%
     # Calculate n.units - after renovation
     mutate(n_units_fuel =
-      round(n_units_fuel * (rate_switch_fuel_heat * stp) * ms, rnd)) %>%
+      round(n_units_fuel * rate_switch_fuel_heat * ms, rnd)) %>%
     # No fuel switches with NAs
     filter(n_units_fuel > 0) %>%
     # Calculate renovation rate - mat level
     select(-c(bld_age_min, rate_switch_fuel_heat, ms))
 
+
   # Update Existing buildings - non-renovated - without fuel switch
   bld_det_i <- bld_det_i %>%
     left_join(bld_det_i_sw %>%
-    # Select all variables, except the ones indicated, for grouping
       group_by_at(setdiff(names(bld_det_i_sw),
         c("fuel_heat_f", "n_units_fuel"))) %>%
     summarise(n_sw = sum(n_units_fuel)) %>%
     ungroup()) %>%
     mutate(n_sw = ifelse(is.na(n_sw), 0, n_sw)) %>%
     mutate(n_units_fuel = n_units_fuel - n_sw) %>%
+    filter(n_units_fuel > 1e-1) %>%
     select(-c(n_sw))
-
 
   # Format DF non-renovated buildings - fuel switches
   bld_det_i_sw <- bld_det_i_sw %>%
-    select(-c("fuel_heat", "fuel")) %>%
+    select(-c("fuel_heat", "fuel", "fuel_cool")) %>%
     rename(fuel_heat = fuel_heat_f) %>%
     left_join(ct_fuel)
 
   if (temp != round((sum(bld_det_i$n_units_fuel) +
-   sum(bld_det_i_sw$n_units_fuel)) / 1e6, 0)) {
-    print("Test failed. Error during switching fuel.")
+    sum(bld_det_i_sw$n_units_fuel)) / 1e6, 0)) {
+    stop("Test failed. Error during switching fuel.")
    } else {
     print(paste("Test passed.", "Switch",
       round(sum(bld_det_i_sw$n_units_fuel) / 1e6, 0),

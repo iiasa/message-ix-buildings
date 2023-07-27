@@ -45,21 +45,80 @@ fun_format_output <- function(i,
             en_hh_hw_scen
         )
         report$en_stock <- bind_rows(report$en_stock, en_stock_i)
+
+        # Aggregate results at fuel level
+        det_rows <- en_stock_i %>%
+            group_by_at(c("region_bld", "year", "fuel_heat")) %>%
+            summarise(
+                stock_building = sum(stock_M),
+                heat_TJ = sum(heat_TJ),
+                cost_heat = sum(cost_energy_hh)
+            ) %>%
+            ungroup() %>%
+            rename(resolution = fuel_heat) %>%
+            gather(variable, value, stock_building, heat_TJ, cost_heat)
+
+        # Adding total values for all resolutions
+        agg_rows <- det_rows %>%
+            group_by_at(setdiff(names(det_rows), c("resolution", "value"))) %>%
+            summarize(value = sum(value)) %>%
+            ungroup() %>%
+            mutate(resolution = "all")
+
+        temp <- bind_rows(det_rows, agg_rows)
+
+        agg <- temp %>%
+            group_by_at(c("year", "variable")) %>%
+            summarize(value = sum(value)) %>%
+            ungroup() %>%
+            mutate(resolution = "all", region_bld = "EU")
+
+        temp <- bind_rows(temp, agg) %>%
+            select(c("region_bld", "year", "variable",
+                "resolution", "value")) %>%
+            arrange(region_bld, year, variable, resolution)
+
+        report$agg_result <- bind_rows(report$agg_result, temp)
+        
+
         if (!is.null(cost_renovation) && !is.null(ren_det_i)) {
             cost_renovation <- cost_renovation %>%
                 left_join(hh_size) %>%
                 left_join(floor_cap) %>%
                 mutate(cost = hh_size * floor_cap * cost_invest_ren_shell)
 
-            ren_det_i <- ren_det_i %>%
+            det_rows <- ren_det_i %>%
                 left_join(cost_renovation) %>%
-                mutate(total_cost = cost * n_units_fuel)
+                mutate(total_cost = cost * n_units_fuel) %>%
+                group_by_at(c("region_bld", "year", "eneff")) %>%
+                summarize(cost_renovation = sum(total_cost),
+                    n_renovation = sum(n_units_fuel)) %>%
+                ungroup() %>%
+                rename(resolution = eneff) %>%
+                gather(variable, value, cost_renovation, n_renovation)
             
-            report$ren_shell <- bind_rows(report$ren_shell,
-                data.frame(year = yrs[i], value = sum(ren_det_i$n_units_fuel) / 1e6))
+            # Adding total values for all resolutions
+            agg_rows <- det_rows %>%
+                group_by_at(setdiff(names(det_rows),
+                    c("resolution", "value"))) %>%
+                summarize(value = sum(value)) %>%
+                ungroup() %>%
+                mutate(resolution = "all")
 
-            report$cost_ren_shell <- bind_rows(report$cost_ren_shell,
-                data.frame(year = yrs[i], value = sum(ren_det_i$total_cost) / 1e9))
+            temp <- bind_rows(det_rows, agg_rows)
+            
+            agg <- temp %>%
+                group_by_at(c("year", "variable")) %>%
+                summarize(value = sum(value)) %>%
+                ungroup() %>%
+                mutate(resolution = "all", region_bld = "EU")
+
+            temp <- bind_rows(temp, agg) %>%
+                select(c("region_bld", "year", "variable",
+                    "resolution", "value")) %>%
+                arrange(region_bld, year, variable, resolution)
+
+            report$agg_result <- bind_rows(report$agg_result, temp)
         }
     }
 

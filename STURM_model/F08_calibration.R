@@ -50,7 +50,7 @@ fun_calibration_ren_shell <- function(yrs,
         mutate(target = if_else(target == 0, 0.001, target))
 
     market_share_agg <- function(utility_obs, constant) {
-        ms_agg <- utility_obs %>%
+        ren_det <- utility_obs %>%
             left_join(constant,
                 by = c("region_bld", "mat", "eneff_f")) %>%
             mutate(utility = utility_ren + constant) %>%
@@ -60,7 +60,9 @@ fun_calibration_ren_shell <- function(yrs,
             ungroup() %>%
             mutate(ms = (1 / stp) * exp(utility) / utility_exp_sum) %>%
             select(-c("utility_ren", "utility_exp_sum")) %>%
-            mutate(n_renovation = ms * n_units_fuel) %>%
+            mutate(n_renovation = ms * n_units_fuel)
+
+        ms_agg <- ren_det %>%
             group_by_at(setdiff(names(constant), c("constant"))) %>%
             summarize(n_renovation = sum(n_renovation),
                     n_units_fuel = sum(n_units_fuel)) %>%

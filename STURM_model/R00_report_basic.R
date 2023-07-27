@@ -47,19 +47,7 @@ fun_report_basic <- function(report, report_var, geo_data, geo_level, geo_level_
       paste0(path_out, "report_STURM_", scenario_name, "_",
         sector, "_", geo_level_report, "_energy.csv"))
 
-    report_agg <- en_stock_rep %>%
-      group_by_at("year") %>%
-      summarise(heat_TJ = sum(heat_TJ),
-        cost_energy = sum(cost_energy_hh) / 1e9) %>%
-      ungroup() %>%
-      left_join(report$ren_shell %>%
-        rename(number_renovation = value) %>%
-        mutate(number_renovation = number_renovation/ 5)) %>%
-      left_join(report$cost_ren_shell %>%
-        rename(cost_renovation = value) %>%
-        mutate(cost_renovation = cost_renovation / 5))
-
-    write_csv(report_agg,
+    write_csv(report$agg_result,
       paste0(path_out, "report_agg_STURM_", scenario_name, "_",
         sector, "_", geo_level_report, "_energy.csv"))
     

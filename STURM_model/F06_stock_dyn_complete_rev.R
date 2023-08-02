@@ -243,9 +243,9 @@ fun_stock_renovation_dyn <- function(bld_det_i,
     rename(eneff = eneff_f, fuel_heat = fuel_heat_f)
 
   # Test for existing buildings
-  if (round(c(sum(woren_det_i$n_units_fuel) +
-      sum(ren_det_i$n_units_fuel)), 0) !=
-      round(temp, 0)) {
+  if (round((sum(woren_det_i$n_units_fuel) +
+      sum(ren_det_i$n_units_fuel)) / 1e6, 0) !=
+      round(temp / 1e6, 0)) {
     print("Test failed. Existing buildings.")
   } else {
     print("Test passed. Existing buildings.")

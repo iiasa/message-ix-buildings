@@ -57,7 +57,6 @@ fun_en_sim <- function(sector,
 
   en_m2_scen_det <- bld_cases_fuel %>%
     mutate(year = yrs[i]) %>%
-    # left_join(ct_eneff) %>% # to have "mat" for joining ct_access
     left_join(eff_cool) %>%
     left_join(eff_heat) %>%
     left_join(en_sav_ren) %>%
@@ -140,9 +139,8 @@ fun_en_sim <- function(sector,
       left_join(price_en) %>%
       # Calculate the total costs for operational energy
       mutate(cost_op = en_hh * price_en) %>%
-      select(-c(en_m2, hh_size, floor_cap, en_hh, price_en, fuel)) %>%
-      left_join(bld_cases_fuel)
-
+      select(-c(en_m2, hh_size, floor_cap, price_en, fuel)) %>%
+        left_join(bld_cases_fuel)
   }
 
   output <- list(

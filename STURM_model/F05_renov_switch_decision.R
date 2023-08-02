@@ -48,14 +48,15 @@ fun_utility_ren_shell <- function(yrs,
                           en_hh_tot,
                           lifetime_ren,
                           discount_ren,
-                          sub_ren_shell = NULL) {
+                          sub_ren_shell = NULL,
+                          full = FALSE) {
 
     # Operational energy costs before/after renovation
   en_hh_tot_ren_fin <- en_hh_tot %>%
     rename(eneff_f = eneff)
 
   en_hh_tot_ren_init <- en_hh_tot %>%
-    rename(cost_op_init = cost_op)
+    rename(cost_op_init = cost_op, en_hh_init = en_hh)
 
   # Prepare investment cost data
   if ("year" %in% names(cost_invest_ren_shell)) {
@@ -72,7 +73,6 @@ fun_utility_ren_shell <- function(yrs,
         cost_invest_ren_shell * (1 - sub_ren_shell)) %>%
       select(-c("sub_ren_shell"))
   }
-
 
   discount_factor <- fun_discount_factor(discount_ren, lifetime_ren)
 
@@ -92,11 +92,12 @@ fun_utility_ren_shell <- function(yrs,
       mutate(year = yrs[i]) %>%
       left_join(hh_size) %>%
       left_join(floor_cap) %>%
+      mutate(floor_size = floor_cap * hh_size) %>%
       left_join(discount_factor) %>%
       left_join(cost_invest_ren_shell) %>%
       # Calculate total investment costs
       mutate(cost_invest_hh =
-      cost_invest_ren_shell * floor_cap * hh_size / 1e3) %>%
+        cost_invest_ren_shell * floor_size / 1e3) %>%
       # Operation costs after renovation
       left_join(en_hh_tot_ren_fin) %>%
       # Operation costs before renovation
@@ -104,6 +105,7 @@ fun_utility_ren_shell <- function(yrs,
       # Filter out hh with no operational cost
       filter(cost_op_init > 0) %>%
       # Add operative costs (total)
+      mutate(en_saving = en_hh_init - en_hh) %>%
       mutate(cost_op_saving = (cost_op_init - cost_op) / 1e3) %>%
       # Calculate utility
       mutate(utility_ren =
@@ -111,9 +113,15 @@ fun_utility_ren_shell <- function(yrs,
       # Rename eneff column
       rename(eneff_i = eneff) %>%
       select(-c(
-          "hh_size", "floor_cap", "cost_invest_ren_shell",
-          "cost_invest_hh", "cost_op", "cost_op_init",
-          "cost_op_saving", "discount_factor"))
+          "hh_size", "floor_cap", "en_hh",
+          "cost_invest_ren_shell", "cost_op", "cost_op_init",
+          "discount_factor"))
+
+  if (!full) {
+    utility_ren_hh <- select(utility_ren_hh, -c("floor_size",
+      "cost_invest_hh", "en_hh_init", "en_saving", "cost_op_saving"))
+  }
+
 
   return(utility_ren_hh)
 }
@@ -171,7 +179,6 @@ fun_ms_ren_shell_endogenous <- function(yrs,
                           lifetime_ren,
                           discount_ren,
                           sub_ren_shell = sub_ren_shell)
-
   if ((!is.null(parameters))) {
     utility_ren_hh <- utility_ren_hh %>%
       left_join(parameters) %>%
@@ -346,7 +353,7 @@ fun_utility_heat <- function(yrs,
       (- cost_invest_heat + cost_op * discount_factor) / 1e3) %>%
     filter((ct_switch_heat == 1) | (bld_age == "p5")) %>%
     filter(ct_heat == 1) %>%
-    select(-c("cost_invest_heat", "cost_op",
+    select(-c("cost_invest_heat", "cost_op", "en_hh",
       "ct_switch_heat", "ct_fuel_excl_reg", "ct_heat"))
 
   if (!is.null(inertia)) {

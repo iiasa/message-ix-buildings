@@ -364,7 +364,7 @@ run_scenario <- function(run,
                                               ms_new_i,
                                               cat$ct_fuel)
 
-      if (energy_efficiency == "endogenous" && i == 2 && FALSE) {
+      if (energy_efficiency == "endogenous" && i == 2) {
         print("2.0 Calibration of renovation rate")
 
         parameters_renovation <- fun_calibration_ren_shell(yrs,
@@ -430,7 +430,7 @@ run_scenario <- function(run,
       }
       
       print("3. Switch heating system decisions")
-      if (energy_efficiency == "endogenous" && i == 2 && FALSE) {
+      if (energy_efficiency == "endogenous" && i == 2) {
         print("3.0 Calibration of market shares switch fuel")
         parameters_heater <- fun_calibration_switch_heat(yrs,
                     i,

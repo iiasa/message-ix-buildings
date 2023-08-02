@@ -366,21 +366,25 @@ run_scenario <- function(run,
 
       if (energy_efficiency == "endogenous" && i == 2) {
         print("2.0 Calibration of renovation rate")
-
-        parameters_renovation <- fun_calibration_ren_shell(yrs,
-                        i,
-                        bld_det_ini,
-                        cat$ct_bld_age,
-                        cat$ct_ren_eneff,
-                        d$hh_size,
-                        d$floor_cap,
-                        d$cost_invest_ren_shell,
-                        d$lifetime_ren,
-                        en_hh_tot,
-                        d$rate_shell_ren_exo,
-                        d$ms_shell_ren_exo,
-                        stp
-                      )
+        if ("parameters_renovation" %in% names(d)) {
+          parameters_renovation <- d$parameters_renovation %>%
+            rename(constant = parameters_renovation)
+        } else {
+          parameters_renovation <- fun_calibration_ren_shell(yrs,
+                          i,
+                          bld_det_ini,
+                          cat$ct_bld_age,
+                          cat$ct_ren_eneff,
+                          d$hh_size,
+                          d$floor_cap,
+                          d$cost_invest_ren_shell,
+                          d$lifetime_ren,
+                          en_hh_tot,
+                          d$rate_shell_ren_exo,
+                          d$ms_shell_ren_exo,
+                          stp
+                        )
+        }
       }
       if (energy_efficiency == "endogenous") {
         print("2.1 Calibration of renovation rate")
@@ -432,7 +436,11 @@ run_scenario <- function(run,
       print("3. Switch heating system decisions")
       if (energy_efficiency == "endogenous" && i == 2) {
         print("3.0 Calibration of market shares switch fuel")
-        parameters_heater <- fun_calibration_switch_heat(yrs,
+        if ("parameters_heater" %in% names(d)) {
+          parameters_heater <- d$parameters_heater %>%
+            rename(constant = parameters_heater)
+        } else {
+          parameters_heater <- fun_calibration_switch_heat(yrs,
                     i,
                     bld_det_i,
                     cat$ct_bld_age,
@@ -446,6 +454,8 @@ run_scenario <- function(run,
                     lifetime_heat = 20,
                     discount_heat = 0.05,
                     inertia = d$inertia)
+        }
+
       }
 
       if (energy_efficiency == "endogenous") {

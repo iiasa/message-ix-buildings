@@ -21,7 +21,8 @@ fun_inputs_csv <- function(path_in, file_inputs, file_scenarios, sector, run
   path_in_csv <- paste0(path_in, "./input_csv/")
 
   # IMPORT LIST OF INPUT DATA FILES
-  input <- read_csv(paste0(path_in, file_inputs), show_col_types = FALSE)
+  input <- read_csv(paste0(path_in, file_inputs), show_col_types = FALSE) %>%
+    filter(!is.na(name_file))
 
   # IMPORT LIST OF SCENARIOS
   scenarios <- read_csv(paste0(path_in, file_scenarios), show_col_types = FALSE)

@@ -177,6 +177,8 @@ fun_calibration_ren_shell <- function(yrs,
         select(c("region_bld", "mat", "eneff_f", "constant")) %>%
         left_join(scaling_factor)
 
+    write.csv(output %>% rename(value = constant),
+        "STURM_output/parameters_renovation.csv", row.names = FALSE)
     print("End of the calibration process of home shell renovation")
     print(paste("Time to run calibration:",
     round(Sys.time() - start_calibration, 0), "seconds."))
@@ -322,8 +324,9 @@ fun_calibration_switch_heat <- function(yrs,
         left_join(result) %>%
         left_join(ms) %>%
         left_join(ms_ini) %>%
+        left_join(scaling_factor) %>%
         select(c("region_bld", "fuel_heat_f", "share_stock", "ms_ini",
-            "target", "ms", "constant"))
+            "target", "ms", "constant", "scaling_factor"))
     report[is.na(report)] <- 0
 
     write.csv(report, "STURM_output/report_calibration_fuel_heat.csv")
@@ -333,6 +336,9 @@ fun_calibration_switch_heat <- function(yrs,
     output <- result %>%
         select(-c("target")) %>%
         left_join(scaling_factor)
+
+    write.csv(output %>% rename(value = constant),
+        "STURM_output/parameters_heater.csv", row.names = FALSE)
     
     print('End of the calibration process of heat switch')
     print(paste("Time to run calibration:",

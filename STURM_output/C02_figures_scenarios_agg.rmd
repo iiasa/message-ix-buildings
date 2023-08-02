@@ -1,0 +1,94 @@
+---
+output: reprex::reprex_document
+knit: reprex::reprex_render
+---
+
+Notebook to run STURM Ouput.
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(stringr)
+
+print(paste("Working directory is:", getwd()))
+
+# Loding figures setttings and functions
+source("STURM_output/plot_settings.R")
+
+scenarios <- c(
+  "EU_exogenous" = "Baseline exogenous",
+  "EU_endogenous" = "Baseline endogenous",
+  "EU_strong_endogenous" = "Strong additional policies",
+  "EU_medium_endogenous" = "Medium additional policies")
+```
+
+```{r}
+data <- data.frame(NULL)
+
+for (scenario in names(scenarios)) {
+  print(paste("Scenario:", scenario))
+  file <- paste0("report_STURM_", scenario, "_resid_region_bld_energy.csv")
+  file <- paste("STURM_output", file, sep = "/")
+
+  if (!file.exists(file)) {
+    print("Check file name or directory!")
+  }
+
+  save_dir <- paste("STURM_output", "figures", sep = "/")
+  print(dir.exists(save_dir))
+
+  # Read output files
+  data <- bind_rows(data, read.csv(file))
+}
+
+```
+
+
+## Data formatting
+```{r}
+data <- data %>%
+    mutate(heat_TWh = heat_TJ / 3.6 / 1e3) %>%
+    mutate(heat_ktoe = heat_TWh * 85.980) %>%
+    mutate(heat_hh_kWh = heat_TWh * 1e3 / stock_M) %>%
+    mutate()
+
+data <- data %>%
+  mutate("efficiency" = ifelse(eneff == "avg" | bld_age == "p5",
+    bld_age, eneff))
+```
+
+## Figures
+
+```{r}
+source("STURM_output/plot_settings.R")
+```
+
+
+
+```{r}
+sub_data <- data %>%
+  filter(region_bld %in% c("C-WEU-FRA", "C-WEU-DEU", "C-WEU-GBR", "C-WEU-ITA"))
+
+y_label <- "Final energy consumption for space heating\nResidential sector\nktoe"
+
+
+plot_variable_evolution(data,
+                        x_column = "year",
+                        y_column = "heat_ktoe",
+                        group_column = "scenario",
+                        rename_group = scenarios,
+                        ncol = 4,
+                        y_label = y_label,
+                        subplot = FALSE,
+                        save_path = paste(save_dir, "heat_evolution.png",
+                          sep="/")
+)
+```
+
+```{r}
+df_renamed <- data %>%
+  mutate(scenario = recode(scenario, !!!scenarios))
+
+```
+
+

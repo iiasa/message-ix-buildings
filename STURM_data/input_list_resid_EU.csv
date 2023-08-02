@@ -46,5 +46,5 @@ sub_heat,sub_heat_EU,policies
 sub_ren_shell,sub_ren_shell_EU,policies
 ct_heat,ct_heat_EU,decision
 ct_heat_new,ct_heat_new_EU,decision
-parameters_renovation,parameters_renovation,calibration
-parameters_heater,parameters_heater,calibration
+parameters_renovation,,calibration
+parameters_heater,,calibration

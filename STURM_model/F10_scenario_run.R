@@ -382,7 +382,8 @@ run_scenario <- function(run,
                           en_hh_tot,
                           d$rate_shell_ren_exo,
                           d$ms_shell_ren_exo,
-                          stp
+                          stp,
+                          path_out
                         )
         }
       }
@@ -451,6 +452,7 @@ run_scenario <- function(run,
                     d$ms_switch_fuel_exo,
                     d$ct_heat,
                     d$ct_heat_new,
+                    path_out,
                     lifetime_heat = 20,
                     discount_heat = 0.05,
                     inertia = d$inertia)

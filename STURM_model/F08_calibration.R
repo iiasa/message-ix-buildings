@@ -15,6 +15,7 @@ fun_calibration_ren_shell <- function(yrs,
                           rate_shell_ren,
                           ms_shell_ren,
                           stp,
+                          path_out,
                           discount_ren = 0.05) {
     
     start_calibration <- Sys.time()
@@ -39,7 +40,7 @@ fun_calibration_ren_shell <- function(yrs,
         mutate(profitability = profitability * 1e3) %>%
         rename(energy_savings = en_saving)
 
-    write.csv(report, "STURM_output/report_static_ren_shell.csv")
+    write.csv(report, paste0(path_out, "report_static_ren_shell.csv"))
     print("Dumped static analysis results in
         STURM_output/report_static_ren_shell.csv")
     
@@ -169,7 +170,7 @@ fun_calibration_ren_shell <- function(yrs,
         mutate(scaling_factor = scale_ini * scale) %>%
         select(c("region_bld", "mat", "eneff_f", "ms_ini",
             "target", "ms", "constant", "scale", "scale_ini", "scaling_factor"))
-    write.csv(ms, "STURM_output/report_calibration_ren_shell.csv")
+    write.csv(ms, paste0(path_out, "report_calibration_ren_shell.csv"))
     print("Dumped calibration results in
         STURM_output/report_calibration_ren_shell.csv")
 
@@ -178,7 +179,7 @@ fun_calibration_ren_shell <- function(yrs,
         left_join(scaling_factor)
 
     write.csv(output %>% rename(value = constant),
-        "STURM_output/parameters_renovation.csv", row.names = FALSE)
+        paste0(path_out, "parameters_renovation.csv"), row.names = FALSE)
     print("End of the calibration process of home shell renovation")
     print(paste("Time to run calibration:",
     round(Sys.time() - start_calibration, 0), "seconds."))
@@ -197,6 +198,7 @@ fun_calibration_switch_heat <- function(yrs,
                           ms_switch_fuel_exo,
                           ct_heat,
                           ct_heat_new,
+                          path_out,
                           lifetime_heat = 20,
                           discount_heat = 0.05,
                           inertia = NULL) {
@@ -329,16 +331,16 @@ fun_calibration_switch_heat <- function(yrs,
             "target", "ms", "constant", "scaling_factor"))
     report[is.na(report)] <- 0
 
-    write.csv(report, "STURM_output/report_calibration_fuel_heat.csv")
+    write.csv(report, paste0(path_out, "report_calibration_fuel_heat.csv"))
     print("Dumped calibration results in
-        STURM_output/report_calibration_fuel_heat.csv")
+        report_calibration_fuel_heat.csv")
 
     output <- result %>%
         select(-c("target")) %>%
         left_join(scaling_factor)
 
     write.csv(output %>% rename(value = constant),
-        "STURM_output/parameters_heater.csv", row.names = FALSE)
+        paste0(path_out, "parameters_heater.csv"), row.names = FALSE)
     
     print('End of the calibration process of heat switch')
     print(paste("Time to run calibration:",

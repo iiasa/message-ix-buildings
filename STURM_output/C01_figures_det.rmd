@@ -1,0 +1,148 @@
+---
+output: reprex::reprex_document
+knit: reprex::reprex_render
+---
+
+Notebook to run STURM Ouput.
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(stringr)
+
+print(paste("Working directory is:", getwd()))
+
+# Loding figures setttings and functions
+source("STURM_output/C00_plot_settings.R")
+
+```
+
+```{r}
+scenario <- "EU_endogenous"
+file <- paste0("report_STURM_", scenario, "_resid_region_bld_energy.csv")
+file <- paste("STURM_output/results", file, sep = "/")
+
+if (!file.exists(file)) {
+  print("Check file name or directory!")
+}
+
+save_dir <- paste("STURM_output", "figures", sep = "/")
+print(dir.exists(save_dir))
+```
+
+```{r}
+# Read output files
+data <- read.csv(file)
+print(summary(data))
+```
+
+## Data formatting
+```{r}
+data <- data %>%
+    mutate(heat_TWh = heat_TJ / 3.6 / 1e3) %>%
+    mutate(heat_ktoe = heat_TWh * 85.980) %>%
+    mutate(heat_hh_kWh = heat_TWh * 1e3 / stock_M) %>%
+    mutate()
+
+data <- data %>%
+  mutate("efficiency" = ifelse(eneff == "avg" | bld_age == "p5",
+    bld_age, eneff))
+```
+
+```{r}
+data_consumption_historic <- read.csv(
+  "STURM_output/ressources/final_energy_consumption_historic_data_ktoe_jrcidees.csv")
+
+data_stock_historic <- read.csv(
+  "STURM_output/ressources/stock_historic_data_jrcidees.csv")
+
+data_full_consumption <- data %>%
+  rename(value = heat_ktoe) %>%
+  group_by_at(setdiff(names(data_consumption_historic), "value")) %>%
+  summarise(value = sum(value))
+data_full_consumption <- bind_rows(filter(data_consumption_historic, year < 2015), data_full_consumption)
+
+data_full_stock <- data %>%
+  rename(value = stock_M) %>%
+  group_by_at(setdiff(names(data_stock_historic), "value")) %>%
+  summarise(value = sum(value))
+data_full_stock <- bind_rows(filter(data_stock_historic, year < 2015), data_full_stock)
+
+```
+
+
+## Figures 
+
+### Building stock and Fuel consumption evolution compare to historic data
+
+```{r}
+plot_stacked_areas(data_full_stock, "year", "value", "fuel_heat", "region_bld",
+                  vertical = 2015,
+                  y_label = "Simulation development of heating technologies’ relative shares in total building stock,\nby EU Member State.",
+                  save_path = paste(save_dir, paste0(scenario, "_stock_hh_fuel_country_historic.png"), sep = "/")
+)
+
+plot_stacked_areas(data_full_consumption, "year", "value", "fuel_heat", "region_bld",
+                  vertical = 2015,
+                  y_label = "Final energy consumption for space heating\nResidential sector\nktoe",
+                  save_path = paste(save_dir, paste0(scenario, "_heating_fuel_ktoe_country_historic.png"), sep = "/")
+                  )
+```
+
+
+### Buidling stock evolution by space heating fuels
+```{r}
+plot_stacked_area(data, "year", "stock_M", "fuel_heat",
+                  y_label = "Stock housing units\nMillion",
+                  save_path = paste(save_dir, paste0(scenario, "_stock_hh_fuel.png"),
+                  sep = "/"))
+
+plot_stacked_areas(data, "year", "stock_M", "fuel_heat", "region_bld",
+                  y_label = "Stock housing units\nMillion",
+                  save_path = paste(save_dir, paste0(scenario, "_stock_hh_fuel_country.png"),
+                  sep = "/"))
+```
+
+### Buidling stock evolution by efficency
+```{r}
+plot_stacked_area(data, "year", "stock_M", "efficiency",
+                  y_label = "Stock housing units\nMillion",
+                  save_path = paste(save_dir, paste0(scenario, "_stock_hh_efficiency.png"), sep = "/"))
+
+plot_stacked_areas(data, "year", "stock_M", "efficiency", "region_bld",
+                  y_label = "Stock housing units\nMillion",
+                  save_path = paste(save_dir, paste0(scenario, "_stock_hh_efficiency_country.png"), sep = "/"))
+```
+
+### Final energy consumption for space heating in the Residential sector (TWh)
+```{r}
+plot_stacked_area(data, "year", "heat_ktoe", "fuel_heat",
+                  y_label = "Final energy consumption for space heating\nResidential sector\nktoe",
+                  save_path = paste(save_dir, paste0(scenario, "_heating_fuel_ktoe.png"), sep = "/")
+                  )
+
+plot_stacked_area(data, "year", "heat_TJ", "fuel_heat",
+                  y_label = "Final energy consumption for space heating\nResidential sector\nTJ",
+                  save_path = paste(save_dir, paste0(scenario, "_heating_fuel_tj.png"), sep = "/")
+                  )
+```
+
+
+
+```{r}
+sub_data <- data %>%
+  filter(region_bld %in% c("C-WEU-FRA", "C-WEU-DEU", "C-WEU-GBR", "C-WEU-ITA"))
+
+plot_variable_evolution(sub_data,
+                        x_column = "year",
+                        y_column = "heat_ktoe",
+                        group_column = "region_bld",
+                        ncol = 4,
+                        y_label = "Final energy consumption for space heating\nResidential sector\nktoe",
+                        subplot = TRUE,
+                        save_path = paste(save_dir, paste0(scenario, "_heat_evolution.png", sep="/")))
+```
+
+
+
+

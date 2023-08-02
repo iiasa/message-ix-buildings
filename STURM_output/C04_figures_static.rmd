@@ -1,0 +1,128 @@
+---
+output: reprex::reprex_document
+knit: reprex::reprex_render
+---
+
+Notebook to run STURM Ouput.
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(stringr)
+library(tidyr)
+
+
+print(paste("Working directory is:", getwd()))
+
+# Loding figures setttings and functions
+source("STURM_output/C00_plot_settings.R")
+
+```
+
+```{r}
+file <- paste0("report_static_ren_shell.csv")
+file <- paste("STURM_output", file, sep = "/")
+
+if (!file.exists(file)) {
+  print("Check file name or directory!")
+}
+
+save_figs <- paste("STURM_output", "figures", sep = "/")
+save_tables <- paste("STURM_output", "tables", sep = "/")
+
+print(dir.exists(save_figs))
+print(dir.exists(save_tables))
+
+```
+
+## Loading Data
+```{r}
+# Read output files
+data <- read.csv(file)
+print(summary(data))
+```
+
+### Loading external data
+
+
+## Data formatting
+```{r}
+data <- mutate(data, cost = - profitability)
+data <- mutate(data, energy_savings_tot = energy_savings * n_units_fuel)
+data <- filter(data, eneff_f == "std")
+```
+
+## Table about the distribution
+
+```{r}
+# Distribution of the building age
+temp <- data %>%
+  group_by_at(c("region_bld", "bld_age")) %>%
+  summarise(n = sum(n_units_fuel)) %>%
+  group_by_at("region_bld") %>%
+  mutate(n = n / sum(n)) %>%
+  pivot_wider(names_from = "bld_age", values_from = "n")
+
+report <- temp
+
+# Distribution of the building type
+temp <- data %>%
+  group_by_at(c("region_bld", "arch")) %>%
+  summarise(n = sum(n_units_fuel)) %>%
+  group_by_at("region_bld") %>%
+  mutate(n = n / sum(n)) %>%
+  pivot_wider(names_from = "arch", values_from = "n")
+
+report <- left_join(report, temp, by = "region_bld")
+
+# Total energy consumption
+temp <- data %>%
+  group_by_at(c("region_bld")) %>%
+  summarise(
+    n_units = sum(n_units_fuel),
+    floor_tot = sum(floor_size * n_units_fuel),
+    heat_tot = sum(en_hh_init * n_units_fuel)
+    ) %>%
+  ungroup() %>%
+  mutate(
+    floor_hh = floor_tot / n_units,
+    heat_hh_kWh = heat_tot / n_units,
+    heat_hh_toe = heat_hh_kWh / (11.63 * 1e3),
+    heat_floor_kWh = heat_tot / floor_tot,
+    heat_floor_koe = heat_floor_kWh / 11.63,
+    n_units = n_units / 1e6,
+    floor_tot = floor_tot / 1e6,
+    heat_tot = heat_tot / 1e9,
+    heat_tot_mtoe = heat_tot / 11.63
+  ) %>%
+  rename(
+    "n_units (M)" = n_units,
+    "floor_tot (M m2)" = floor_tot,
+    "heat_tot (TWh)" = heat_tot,
+    "floor_hh (m2)" = floor_hh,
+    "heat_hh (kWh/hh)" = heat_hh_kWh,
+    "heat_hh (toe/hh)" = heat_hh_toe,
+    "heat_floor (koe/m2)" = heat_floor_koe,
+    "heat_floor (kWh/m2)" = heat_floor_kWh
+  )
+report <- left_join(temp, report, by = "region_bld")
+
+write.csv(report, paste(save_tables, paste0("description_ini.csv"), sep = "/"))
+
+```
+
+## Figures of the Marginal Net Present Cost
+
+```{r}
+source("STURM_output/C00_plot_settings.R")
+
+profitability_curve(filter(data, eneff_f == "std"), "n_units_fuel", "cost",
+  save_path = paste(save_figs, paste0("marginal_cost_curve_n_units.png"), sep = "/")
+)
+
+profitability_curve(filter(data, eneff_f == "std"), "energy_savings_tot", "cost",
+  save_path = paste(save_figs, paste0("marginal_cost_curve_energy_savings_tot.png"), sep = "/")
+)
+```
+
+

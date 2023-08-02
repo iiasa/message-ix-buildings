@@ -19,14 +19,13 @@ u_EJ_GWa <- 31.71
 source("./STURM_model/F10_scenario_run.R")
 
 # Paths
-rcode_path <- paste(getwd(), "/STURM_model/", sep = "")
-data_path <- paste(getwd(), "/STURM_data/", sep = "")
-# Lucas: Should we add date to output folder?
-rout_path <- paste(getwd(), "/STURM_output/", sep = "")
+path_rcode <- paste(getwd(), "/STURM_model/", sep = "")
+path_in <- paste(getwd(), "/STURM_data/", sep = "")
+path_out <- paste(getwd(), "/STURM_output/results/", sep = "")
 
 # configuration file STURM
 base_year <- 2015
-end_year <- 2050
+end_year <- 2020
 step_year <- 5
 runs <- c("EU", "EU_nomfhq1rent", "EU_double", "EU_triple")
 runs <- c("EU", "EU_strong", "EU_medium")
@@ -57,9 +56,9 @@ for (run in runs) {
         run = run,
         scenario_name = run,
         sector = sector,
-        path_in = data_path,
-        path_rcode = rcode_path,
-        path_out = rout_path,
+        path_in = path_in,
+        path_rcode = path_rcode,
+        path_out = path_out,
         path_prices = path_prices,
         path_prices_message = path_prices_message,
         file_inputs = file_inputs,

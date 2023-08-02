@@ -4,53 +4,7 @@ library(dplyr)
 library(ggplot2)
 library(stringr)
 
-
-
-# Energy efficiency cohorts
-rename_eneff <- c("adv" = "Renovated advanced",
-  "avg" = "Average",
-  "std" = "Renovated standard",
-  "p1" = "Existing <1945",
-  "p2" = "Existing 1946-1990",
-  "p3" = "Existing 1991-2015",
-  "p5" = "New standard"
-)
-
-order_eneff <- c("Existing <1945", "Existing 1946-1990", "Existing 1991-2015",
-  "Renovated standard", "Renovated advanced", "New standard")
-
-
-colors_efficiency <- c("Slum" = "grey30",
-                "Existing <1945" = "coral4",
-                "Existing 1946-1990" = "coral3",
-                "Existing 1991-2015" = "coral2",
-                "Average" = "grey30",
-                "Renovated standard" = "khaki1",
-                "Renovated advanced" = "goldenrod1",
-                "New standard" = "palegreen3",
-                "New advanced" = "palegreen4")
-
-
-
-# Heating fuels
-rename_fuels <- c("biomass_solid" = "Biomass",
-            "coal" = "Coal",
-            "district_heat" = "District heating",
-            "electricity" = "Direct electric",
-            "heat_pump" = "Heat pump",
-            "gas" = "Gas",
-            "oil" = "Oil")
-
-order_fuels <- c("Coal", "Oil", "Gas", "District heating", "Direct electric", "Heat pump", "Biomass")
-
-colors_fuels <- c("No Heating" = "grey92",
-  "Direct electric" = "slateblue",
-  "Heat pump" = "slateblue4",
-  "Gas" = "skyblue2",
-  "District heating" = "lightgoldenrod3",
-  "Oil" = "navajowhite4",
-  "Coal" = "grey5",
-  "Biomass" = "palegreen4")
+source("STURM_output/C00_plots_settings.R")
 
 plot_settings <- list(
   "size_axis" = 5, # axes
@@ -62,9 +16,9 @@ plot_settings <- list(
   "height" = 1 * 16, #height cm
   "dpi" = 300, #DPI
   "font_family" = "Arial",
-  "colors" = c(colors_efficiency, colors_fuels),
-  "rename" = c(rename_eneff, rename_fuels),
-  "order" = c(order_fuels, order_eneff)
+  "colors" = c(colors_efficiency, colors_fuels, colors_countries),
+  "rename" = c(rename_eneff, rename_fuels, rename_countries),
+  "order" = c(order_fuels, order_eneff, order_countries)
 )
 
 
@@ -101,8 +55,9 @@ message_building_subplot_theme <- theme_minimal() +
           axis.text.x = element_text(size = plot_settings[["small_size_text"]]),
           axis.title.y = element_blank(),
           axis.text.y = element_text(size = plot_settings[["small_size_text"]]),
-          panel.grid.major = element_blank(),
-          panel.grid.minor = element_blank(),
+          panel.grid.major.x = element_blank(),
+          panel.grid.minor.x = element_blank(),
+          panel.grid.minor.y = element_blank(),
           strip.background = element_blank(),
           legend.title = element_blank(),
           legend.text = element_text(size = plot_settings[["size_text"]]),
@@ -220,48 +175,53 @@ plot_stacked_areas <- function(data, x_column, y_column, fill_column, subplot_co
   print(p)
 }
 
-
-
-plot_variable_evolution <- function(df,
+plot_lines <- function(df,
     x_column,
     y_column,
     group_column,
-    rename_group,
-    ncol = 3,
+    ncol = 4,
     subplot = FALSE,
     y_label = "",
-    save_path = NULL) {
+    save_path = NULL,
+    free_y = FALSE) {
   # Group and summarize data
   group <- c(x_column, group_column)
 
-
   summarized_data <- df %>%
-    mutate(!!group_column := rename_group[.data[[group_column]]]) %>%
+    mutate(!!group_column := plot_settings[["rename"]][.data[[group_column]]]) %>%
     # Group by year and group_column
-    group_by(across(all_of(group))) %>%
+    group_by_at(group) %>%
     summarise(value = sum(.data[[y_column]])) %>%
     ungroup()
 
-  # Convert year column to numeric
-  summarized_data$year <- as.numeric(summarized_data$year)
+
   if (subplot) {
     # Create subplot for each instance of group_column
-    p <- ggplot(summarized_data, aes(x = .data[[x_column]], y = value)) +
+    p <- ggplot(summarized_data, aes(x = .data[[x_column]], y = value,
+                )) +
                 geom_line(size = 1.5) +
-                expand_limits(y = 0) +
-                facet_wrap(group_column, ncol = ncol) +
-                message_building_theme +
-                scale_x_continuous(breaks = c(2020, 2040)) +
-                labs(title = y_label) +
-                scale_y_continuous(labels =
-                  function(x) format(x, big.mark = ",", scientific = FALSE))
+                expand_limits(y = 0)
+    if (free_y) {
+      p <- p + facet_wrap(group_column, ncol = ncol, scales = "free_y")
+    } else {
+      p <- p + facet_wrap(group_column, ncol = ncol)
+    }
+    p <- p +
+        message_building_subplot_theme +
+        labs(title = y_label) +
+        scale_x_continuous(
+          breaks = c(min(summarized_data[[x_column]]), max(summarized_data[[x_column]])),
+          labels = c(min(summarized_data[[x_column]]), max(summarized_data[[x_column]]))
+          ) +
+        scale_y_continuous(labels =
+          function(x) format(x, big.mark = ",", scientific = FALSE))
 
   } else {
     # Create line plot on the same axis
     p <- ggplot(summarized_data, aes(x = .data[[x_column]],
-                                y = value,
-                                color = .data[[group_column]])) +
+                                y = value, color = .data[[group_column]])) +
       geom_line(size = 1.5) +
+      scale_color_manual(values = plot_settings[["colors"]]) +
       message_building_theme +
       theme(legend.position = "right") +
       labs(title = y_label) +
@@ -279,7 +239,7 @@ plot_variable_evolution <- function(df,
   print(p)
 }
 
-profitability_curve <- function(data, x_column, y_column, save_path, ncol = 4) {
+cost_curve <- function(data, x_column, y_column, save_path, ncol = 4) {
   # Calculate cumulative values of energy_savings or n_units_fuel
   data <- data %>%
     group_by_at("region_bld") %>%

@@ -25,7 +25,7 @@ path_out <- paste(getwd(), "/STURM_output/results/", sep = "")
 
 # configuration file STURM
 base_year <- 2015
-end_year <- 2020
+end_year <- 2050
 step_year <- 5
 runs <- c("EU", "EU_nomfhq1rent", "EU_double", "EU_triple")
 runs <- c("EU", "EU_strong", "EU_medium")
@@ -34,9 +34,9 @@ runs <- c("EU")
 region <- c("WEU", "EEU")
 sector <- "resid"
 file_inputs <- "input_list_resid_EU.csv"
-path_prices_message <- paste0(data_path,
+path_prices_message <- paste0(path_in,
     "input_csv/input_price/input_prices_R12.csv")
-path_prices <- paste0(data_path,
+path_prices <- paste0(path_in,
     "input_csv/input_price/input_prices_EU.csv")
 
 file_scenarios <- "scenarios_EU.csv"

@@ -92,11 +92,13 @@ plot_stacked_areas(data_full_consumption, "year", "value", "fuel_heat", "region_
 
 ### Buidling stock evolution by space heating fuels
 ```{r}
+# all region_bld
 plot_stacked_area(data, "year", "stock_M", "fuel_heat",
                   y_label = "Stock housing units\nMillion",
                   save_path = paste(save_dir, paste0(scenario, "_stock_hh_fuel.png"),
                   sep = "/"))
 
+# subplots by region_bld
 plot_stacked_areas(data, "year", "stock_M", "fuel_heat", "region_bld",
                   y_label = "Stock housing units\nMillion",
                   save_path = paste(save_dir, paste0(scenario, "_stock_hh_fuel_country.png"),

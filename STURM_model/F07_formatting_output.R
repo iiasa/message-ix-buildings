@@ -50,13 +50,15 @@ fun_format_output <- function(i,
         det_rows <- en_stock_i %>%
             group_by_at(c("region_bld", "year", "fuel_heat")) %>%
             summarise(
-                stock_building = sum(stock_M),
-                heat_TJ = sum(heat_TJ),
-                cost_heat = sum(cost_energy_hh)
+                stock_building = sum(stock_M) * 1e6,
+                heat_kWh = sum(heat_TJ) / 3.6 * 1e6,
+                cost_heat_EUR = sum(cost_energy_hh),
+                floor_m2 = sum(floor_Mm2) * 1e6
             ) %>%
             ungroup() %>%
             rename(resolution = fuel_heat) %>%
-            gather(variable, value, stock_building, heat_TJ, cost_heat)
+            gather(variable, value, stock_building,
+                heat_kWh, cost_heat_EUR, floor_m2)
 
         # Adding total values for all resolutions
         agg_rows <- det_rows %>%
@@ -66,7 +68,8 @@ fun_format_output <- function(i,
             mutate(resolution = "all")
 
         temp <- bind_rows(det_rows, agg_rows)
-
+        
+        # Adding EU total values
         agg <- temp %>%
             group_by_at(c("year", "variable")) %>%
             summarize(value = sum(value)) %>%
@@ -94,8 +97,10 @@ fun_format_output <- function(i,
                 summarize(cost_renovation = sum(total_cost),
                     n_renovation = sum(n_units_fuel)) %>%
                 ungroup() %>%
-                rename(resolution = eneff) %>%
-                gather(variable, value, cost_renovation, n_renovation)
+                rename(resolution = eneff,
+                    cost_renovation_EUR = cost_renovation
+                    ) %>%
+                gather(variable, value, cost_renovation_EUR, n_renovation)
             
             # Adding total values for all resolutions
             agg_rows <- det_rows %>%

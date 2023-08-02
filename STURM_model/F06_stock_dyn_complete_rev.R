@@ -215,6 +215,18 @@ fun_stock_renovation_dyn <- function(bld_det_i,
       n_units_fuel_exst, rate_ren, ms_ren
     ))
 
+  # Test market-share agg
+  ms_agg <- ren_det_i %>%
+    group_by_at(c("region_bld", "eneff_f")) %>%
+    summarise(n_units_fuel = sum(n_units_fuel) / stp) %>%
+    ungroup() %>%
+    left_join(bld_det_i %>%
+      group_by_at(c("region_bld")) %>%
+      summarise(n_units_fuel_exst = sum(n_units_fuel_exst))) %>%
+    mutate(rate = n_units_fuel / n_units_fuel_exst)
+
+  # print(ms_agg)
+
   print(
     paste("Renovated buildings:",
       round(sum(ren_det_i$n_units_fuel) / 1e6, 0),

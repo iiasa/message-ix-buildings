@@ -168,17 +168,18 @@ fun_ms_ren_shell_endogenous <- function(yrs,
   stp <- yrs[i] - yrs[i - 1]
 
   utility_ren_hh <- fun_utility_ren_shell(yrs,
-                          i,
-                          bld_stock,
-                          ct_bld_age,
-                          ct_ren_eneff,
-                          hh_size,
-                          floor_cap,
-                          cost_invest_ren_shell,
-                          en_hh_tot,
-                          lifetime_ren,
-                          discount_ren,
-                          sub_ren_shell = sub_ren_shell)
+                        i,
+                        bld_stock,
+                        ct_bld_age,
+                        ct_ren_eneff,
+                        hh_size,
+                        floor_cap,
+                        cost_invest_ren_shell,
+                        en_hh_tot,
+                        lifetime_ren,
+                        discount_ren,
+                        sub_ren_shell = sub_ren_shell)
+
   if ((!is.null(parameters))) {
     utility_ren_hh <- utility_ren_hh %>%
       left_join(parameters) %>%

@@ -21,7 +21,7 @@ source("STURM_output/C00_plot_settings.R")
 
 ```{r}
 file <- paste0("report_static_ren_shell.csv")
-file <- paste("STURM_output", file, sep = "/")
+file <- paste("STURM_output/results", file, sep = "/")
 
 if (!file.exists(file)) {
   print("Check file name or directory!")
@@ -44,6 +44,13 @@ print(summary(data))
 
 ### Loading external data
 
+## Energy prices
+```{r}
+energy_prices <- read.csv("STURM_output/results/energy_prices.csv")
+
+
+
+```
 
 ## Data formatting
 ```{r}

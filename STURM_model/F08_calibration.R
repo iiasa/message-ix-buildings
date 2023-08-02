@@ -2,6 +2,45 @@ library(dplyr)
 library(data.table)
 library(rootSolve)
 
+ms_agg_ren_shell <- function(utility_obs, constant, scale, stp) {
+
+    ren_det <- utility_obs %>%
+        left_join(constant,
+            by = c("region_bld", "mat", "eneff_f")) %>%
+        left_join(scale,
+            by = c("region_bld")) %>%
+        mutate(utility = utility_ren * scale + constant) %>%
+        group_by_at(setdiff(names(utility_obs),
+            c("eneff_f", "utility_ren"))) %>%
+        mutate(utility_exp_sum = sum(exp(utility)) + 1) %>%
+        ungroup() %>%
+        mutate(ms = (1 / stp) * exp(utility) / utility_exp_sum) %>%
+        select(-c("utility_ren", "utility_exp_sum")) %>%
+        mutate(n_renovation = ms * n_units_fuel)
+    
+    elasticity <- ren_det %>%
+        filter(eneff_f == "std") %>%
+        mutate(elasticity =
+            - scale * scaling_factor * cost_invest_hh * (1 - ms)) %>%
+        group_by_at("region_bld") %>%
+        summarize(elasticity =
+            sum(n_renovation * elasticity) / sum(n_renovation)) %>%
+        ungroup()
+
+    ms_agg <- ren_det %>%
+        group_by_at(setdiff(names(constant), c("constant"))) %>%
+        summarize(n_renovation = sum(n_renovation),
+                n_units_fuel = sum(n_units_fuel)) %>%
+        ungroup() %>%
+        mutate(ms = n_renovation / n_units_fuel)
+
+    output <- list(
+        elasticity = elasticity$elasticity,
+        ms_agg = ms_agg
+    )
+    return(output)
+}
+
 fun_calibration_ren_shell <- function(yrs,
                           i,
                           bld_det_age_i,
@@ -65,46 +104,8 @@ fun_calibration_ren_shell <- function(yrs,
         rename(eneff_f = eneff, target = value) %>%
         mutate(target = if_else(target == 0, 0.001, target))
 
-    market_share_agg <- function(utility_obs, constant, scale) {
 
-        ren_det <- utility_obs %>%
-            left_join(constant,
-                by = c("region_bld", "mat", "eneff_f")) %>%
-            left_join(scale,
-                by = c("region_bld")) %>%
-            mutate(utility = utility_ren * scale + constant) %>%
-            group_by_at(setdiff(names(utility_obs),
-                c("eneff_f", "utility_ren"))) %>%
-            mutate(utility_exp_sum = sum(exp(utility)) + 1) %>%
-            ungroup() %>%
-            mutate(ms = (1 / stp) * exp(utility) / utility_exp_sum) %>%
-            select(-c("utility_ren", "utility_exp_sum")) %>%
-            mutate(n_renovation = ms * n_units_fuel)
-        
-        elasticity <- ren_det %>%
-            filter(eneff_f == "std") %>%
-            mutate(elasticity =
-                - scale * scaling_factor * cost_invest_hh * (1 - ms)) %>%
-            group_by_at("region_bld") %>%
-            summarize(elasticity =
-                sum(n_renovation * elasticity) / sum(n_renovation)) %>%
-            ungroup()
-
-        ms_agg <- ren_det %>%
-            group_by_at(setdiff(names(constant), c("constant"))) %>%
-            summarize(n_renovation = sum(n_renovation),
-                    n_units_fuel = sum(n_units_fuel)) %>%
-            ungroup() %>%
-            mutate(ms = n_renovation / n_units_fuel)
-
-        output <- list(
-            elasticity = elasticity$elasticity,
-            ms_agg = ms_agg
-        )
-        return(output)
-    }
-
-    objective_function <- function(x, utility, tgt) {
+    objective_function <- function(x, utility, tgt, stp) {
         constant <- x[1:length(x) - 1]
         scale <- x[length(x)]
 
@@ -114,10 +115,9 @@ fun_calibration_ren_shell <- function(yrs,
 
         scale <- tibble(
             region_bld = unique(tgt$region_bld),
-            scale = scale
-        )
+            scale = scale)
         
-        output <- market_share_agg(utility, cst, scale)
+        output <- ms_agg_ren_shell(utility, cst, scale, stp)
 
         ms_agg <- output$ms_agg %>%
             left_join(tgt, by = c("region_bld", "mat", "eneff_f"))
@@ -142,7 +142,7 @@ fun_calibration_ren_shell <- function(yrs,
         x <- c(x, 1)
 
         root <- multiroot(objective_function, start = x,
-            maxiter = 1e3, utility = u, tgt = t)
+            maxiter = 1e3, utility = u, tgt = t, stp = stp)
         constant <- root$root[1:length(root$root) - 1]
         scale <- root$root[length(root$root)]
         result <- bind_rows(result,
@@ -155,12 +155,12 @@ fun_calibration_ren_shell <- function(yrs,
         summarise(scale = first(scale)) %>%
         mutate(scale = ifelse(is.na(scale), 1, scale))
 
-    ms_ini <- market_share_agg(utility_ren_hh,
-        mutate(constant, constant = 0), mutate(scale, scale = 1))$ms_agg %>%
+    ms_ini <- ms_agg_ren_shell(utility_ren_hh,
+        mutate(constant, constant = 0), mutate(scale, scale = 1), stp)$ms_agg %>%
         rename(ms_ini = ms) %>%
         select(-c("n_renovation", "n_units_fuel"))
 
-    ms <- market_share_agg(utility_ren_hh, constant, scale)$ms_agg %>%
+    ms <- ms_agg_ren_shell(utility_ren_hh, constant, scale, stp)$ms_agg %>%
         left_join(target) %>%
         left_join(constant) %>%
         left_join(ms_ini) %>%
@@ -170,13 +170,28 @@ fun_calibration_ren_shell <- function(yrs,
         mutate(scaling_factor = scale_ini * scale) %>%
         select(c("region_bld", "mat", "eneff_f", "ms_ini",
             "target", "ms", "constant", "scale", "scale_ini", "scaling_factor"))
+
+
+    utility_test <- utility_ren_hh %>%
+        left_join(scale) %>%
+        left_join(constant) %>%
+        mutate(utility_ren_final = utility_ren * scale + constant)
+    # write.csv(utility_test, "utility_test.csv")
+    ms_test <- ms_agg_ren_shell(select(utility_test, -c("constant", "scale")),
+        mutate(constant, constant = 0), mutate(scale, scale = 1), stp)$ms_agg
+
+
     write.csv(ms, paste0(path_out, "report_calibration_ren_shell.csv"))
     print("Dumped calibration results in
         STURM_output/report_calibration_ren_shell.csv")
 
     output <- ms %>%
         select(c("region_bld", "mat", "eneff_f", "constant")) %>%
-        left_join(scaling_factor)
+        left_join(scale) %>%
+        left_join(scaling_factor %>%
+            rename(scale_ini = scaling_factor)) %>%
+        mutate(scaling_factor = scale_ini * scale) %>%
+        select(-c("scale", "scale_ini"))
 
     write.csv(output %>% rename(value = constant),
         paste0(path_out, "parameters_renovation.csv"), row.names = FALSE)

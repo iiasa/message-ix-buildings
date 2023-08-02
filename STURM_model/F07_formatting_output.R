@@ -88,8 +88,10 @@ fun_format_output <- function(i,
             cost_renovation <- cost_renovation %>%
                 left_join(hh_size) %>%
                 left_join(floor_cap) %>%
-                mutate(cost = hh_size * floor_cap * cost_invest_ren_shell)
-
+                mutate(cost = hh_size * floor_cap * cost_invest_ren_shell) %>%
+                rename(eneff = eneff_f) %>%
+                select(-c("cost_invest_ren_shell", "hh_size", "floor_cap"))
+            
             det_rows <- ren_det_i %>%
                 left_join(cost_renovation) %>%
                 mutate(total_cost = cost * n_units_fuel) %>%

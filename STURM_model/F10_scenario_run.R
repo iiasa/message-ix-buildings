@@ -167,7 +167,7 @@ run_scenario <- function(run,
 
   # Read energy prices
   print("Load energy prices")
-  price_en <- read_energy_prices(path_prices, path_prices_message, cat$geo_data)
+  price_en <- read_energy_prices(path_prices, path_prices_message, cat$geo_data, path_out)
 
   print("Data loaded!")
 

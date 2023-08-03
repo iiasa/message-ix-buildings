@@ -81,12 +81,12 @@ make_plot_lines(data, var, ref, path)
 
 var <- "heat_kWh"
 ref <- "stock_building"
-path <- "_consumption_hh_countries.png"
+path <- "_kwh_dwelling_countries.png"
 make_plot_lines(data, var, ref, path)
 
 var <- "heat_kWh"
 ref <- "floor_m2"
-path <- "_consumption_m2_countries.png"
+path <- "_kwh_m2_countries.png"
 make_plot_lines(data, var, ref, path)
 ```
 

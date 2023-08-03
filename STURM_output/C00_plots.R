@@ -239,6 +239,45 @@ plot_lines <- function(df,
   print(p)
 }
 
+plot_multiple_lines <- function(df,
+    x_column,
+    y_column,
+    line_column,
+    group_column,
+    ncol = 4,
+    y_label = "",
+    save_path = NULL) {
+    
+  df <- df %>%
+    mutate(!!group_column := plot_settings[["rename"]][.data[[group_column]]]) %>%
+    mutate(!!line_column := plot_settings[["rename"]][.data[[line_column]]])
+
+  # Create subplot for each instance of group_column
+  p <- ggplot(df, aes(x = .data[[x_column]], y = .data[[y_column]],
+              color = .data[[line_column]])) +
+        geom_line(linewidth = 1.5) +
+        scale_color_manual(values = plot_settings[["colors"]]) +
+        expand_limits(y = 0) +
+        facet_wrap(group_column, ncol = ncol) +
+        message_building_subplot_theme +
+        labs(title = y_label) +
+        scale_x_continuous(
+          breaks = c(min(df[[x_column]]), max(df[[x_column]])),
+          labels = c(min(df[[x_column]]), max(df[[x_column]]))
+          ) +
+        scale_y_continuous(labels =
+          function(x) format(x, big.mark = ",", scientific = FALSE))
+
+# Save the plot as PNG if save_path is specified
+if (!is.null(save_path)) {
+  ggsave(save_path, plot = p, width = plot_settings[["width"]],
+          height = plot_settings[["height"]],
+          dpi = plot_settings[["dpi"]])
+}
+  # Print the plot
+  print(p)
+}
+
 cost_curve <- function(data, x_column, y_column, save_path, ncol = 4) {
   # Calculate cumulative values of energy_savings or n_units_fuel
   data <- data %>%

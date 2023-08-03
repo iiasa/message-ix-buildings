@@ -237,7 +237,11 @@ read_message_prices <- function(path_prices_message, geo_data) {
 #' @param geo_data: list of dimensions
 #' @param geo_level: level of geographical aggregation
 #' @return list of energy prices
-read_energy_prices <- function(path_prices, path_prices_message, geo_data, path_out) {
+read_energy_prices <- function(path_prices,
+                               path_prices_message,
+                               geo_data,
+                               path_out,
+                               constant = FALSE) {
 
   price_en <- read_message_prices(path_prices_message, geo_data)
 
@@ -249,9 +253,10 @@ read_energy_prices <- function(path_prices, path_prices_message, geo_data, path_
     filter(!is.na(evolution_rate)) %>%
     select(-c(price_en))
 
-  evolution_rate <- evolution_rate %>%
-    mutate(evolution_rate = 1)
-
+  if (!constant) {
+    evolution_rate <- evolution_rate %>%
+      mutate(evolution_rate = 1)
+  }
 
   price_base_year <- read.csv(path_prices)
 
@@ -270,7 +275,8 @@ read_energy_prices <- function(path_prices, path_prices_message, geo_data, path_
     fill(value, .direction = "down") %>%
     rename(price_en = value)
 
-  write.csv(price_expanded, paste0(path_out, "energy_prices.csv"), row.names = FALSE)
+  write.csv(price_expanded, paste0(path_out, "energy_prices.csv"),
+    row.names = FALSE)
 
   return(price_expanded)
 }

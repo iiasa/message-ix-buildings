@@ -40,10 +40,8 @@ print(summary(data))
 ```{r}
 data <- data %>%
     mutate(heat_TWh = heat_TJ / 3.6 / 1e3) %>%
-    mutate(heat_ktoe = heat_TWh * 85.980) %>%
-    mutate(heat_hh_kWh = heat_TWh * 1e3 / stock_M) %>%
-    mutate()
-
+    mutate(heat_ktoe = heat_TWh * 85.980)
+    
 data <- data %>%
   mutate("efficiency" = ifelse(eneff == "avg" | bld_age == "p5",
     bld_age, eneff))

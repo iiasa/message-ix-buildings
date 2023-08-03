@@ -15,7 +15,7 @@ library(tidyr)
 print(paste("Working directory is:", getwd()))
 
 # Loding figures setttings and functions
-source("STURM_output/C00_plot_settings.R")
+source("STURM_output/C00_plots.R")
 
 ```
 
@@ -47,8 +47,16 @@ print(summary(data))
 ## Energy prices
 ```{r}
 energy_prices <- read.csv("STURM_output/results/energy_prices.csv")
+energy_prices <- filter(energy_prices, region_bld %in% data$region_bld)
 
-
+plot_multiple_lines(energy_prices,
+    x_column = "year",
+    y_column = "price_en",
+    line_column = "fuel",
+    group_column = "region_bld",
+    ncol = 4,
+    y_label = "Energy prices (EUR per kWh)",
+    save_path =  paste(save_figs, paste0("energy_prices.png"), sep = "/"))
 
 ```
 

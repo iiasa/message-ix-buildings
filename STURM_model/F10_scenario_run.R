@@ -98,16 +98,28 @@ run_scenario <- function(run,
     filter(region_bld %in% unique(d$shr_fuel_heat_base$region_bld))
   cat$regions <- unique(pull(cat$geo_data["region_bld"]))
 
-  # Selecting only useful fuel for the run
+  # Preparation shr_fuel_heat_base
   d$shr_fuel_heat_base <- d$shr_fuel_heat_base %>%
     mutate(shr_fuel_heat_base = ifelse((fuel_heat != "heat_pump")
       & (shr_fuel_heat_base < 0.01), 0, shr_fuel_heat_base)) %>%
-    filter(shr_fuel_heat_base > 0) %>%
+    filter(shr_fuel_heat_base > 0)
+  
+  countries_wo_heat_pump <- d$shr_fuel_heat_base %>%
+    group_by(region_bld) %>%
+    filter(!"heat_pump" %in% fuel_heat) %>%
+    ungroup()
+  hp_missing_rows <- data.frame(
+      region_bld = rep(unique(countries_wo_heat_pump$region_bld), each = 1),
+      fuel_heat = "heat_pump",
+      shr_fuel_heat_base = 0.01
+    )
+  d$shr_fuel_heat_base <- bind_rows(d$shr_fuel_heat_base, hp_missing_rows) %>%
     group_by_at("region_bld") %>%
     mutate(shr_fuel_heat_base =
       shr_fuel_heat_base / sum(shr_fuel_heat_base)) %>%
     ungroup()
   
+  # Selecting only useful fuel for the run
   cat$ct_fuel <- cat$ct_fuel %>%
     filter(fuel_heat %in% unique(d$shr_fuel_heat_base$fuel_heat))
 
@@ -115,10 +127,11 @@ run_scenario <- function(run,
   d$ms_switch_fuel_exo <- d$ms_switch_fuel_exo %>%
     # Remove fuel if market-share is too low (except heat_pump)
     mutate(ms_switch_fuel_exo = ifelse(
-      !fuel_heat_f %in% c("heat_pump")
-      & (ms_switch_fuel_exo < 0.05), 0, ms_switch_fuel_exo)) %>%
+      !fuel_heat_f %in% c("heat_pump") & (ms_switch_fuel_exo < 0.05),
+      0, ms_switch_fuel_exo)) %>%
     # Join with existing market-shares
     rename(fuel_heat = fuel_heat_f) %>%
+    bind_rows(hp_missing_rows %>% rename(ms_switch_fuel_exo = shr_fuel_heat_base)) %>%
     left_join(d$shr_fuel_heat_base) %>%
     # Remove fuel if it doesn't exist (except heat_pump)
     mutate(ms_switch_fuel_exo =

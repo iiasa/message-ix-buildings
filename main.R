@@ -25,7 +25,7 @@ path_out <- paste(getwd(), "/STURM_output/results/", sep = "")
 
 # configuration file STURM
 base_year <- 2015
-end_year <- 2020
+end_year <- 2050
 step_year <- 5
 runs <- c("EU", "EU_nomfhq1rent", "EU_double", "EU_triple")
 runs <- c("EU", "EU_strong", "EU_medium")

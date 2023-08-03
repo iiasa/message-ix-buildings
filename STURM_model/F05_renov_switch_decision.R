@@ -301,7 +301,8 @@ fun_utility_heat <- function(yrs,
                         lifetime_heat,
                         discount_heat,
                         sub_heat = NULL,
-                        inertia = NULL) {
+                        inertia = NULL,
+                        full = FALSE) {
 
   # Operational energy costs before/after renovation
   en_hh_tot_switch_fin <- en_hh_tot %>%
@@ -354,8 +355,12 @@ fun_utility_heat <- function(yrs,
       (- cost_invest_heat + cost_op * discount_factor) / 1e3) %>%
     filter((ct_switch_heat == 1) | (bld_age == "p5")) %>%
     filter(ct_heat == 1) %>%
-    select(-c("cost_invest_heat", "cost_op", "en_hh",
+    select(-c("cost_op", "en_hh",
       "ct_switch_heat", "ct_fuel_excl_reg", "ct_heat"))
+
+  if (!full) {
+    utility_heat_hh <- select(utility_heat_hh, -c("cost_invest_heat"))
+  }
 
   if (!is.null(inertia)) {
     utility_heat_hh <- utility_heat_hh %>%

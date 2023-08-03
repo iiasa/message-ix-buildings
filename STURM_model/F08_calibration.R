@@ -231,7 +231,8 @@ fun_calibration_switch_heat <- function(yrs,
                         cost_invest_heat,
                         lifetime_heat,
                         discount_heat,
-                        inertia = inertia)
+                        inertia = inertia,
+                        full = TRUE)
 
     scaling_factor <- utility_heat_hh %>%
         group_by(region_bld) %>%
@@ -249,19 +250,33 @@ fun_calibration_switch_heat <- function(yrs,
         filter(ms_switch_fuel_exo > 0) %>%
         filter(region_bld %in% unique(utility_heat_hh$region_bld))
 
-    market_share_agg <- function(utility_obs, constant) {
-        ms_agg <- utility_obs %>%
+    market_share_agg <- function(utility_obs, constant, scale) {
+
+        switch_det <- utility_obs %>%
             left_join(constant,
                 by = c("region_bld", "fuel_heat_f")) %>%
+            left_join(scale, by = c("region_bld")) %>%
             mutate(constant = ifelse(is.na(constant), 0, constant)) %>%
-            mutate(utility = utility_heat + constant) %>%
+            mutate(utility = utility_heat * scale + constant) %>%
             group_by_at(setdiff(names(utility_obs),
-                c("fuel_heat_f", "utility_heat"))) %>%
+                c("fuel_heat_f", "utility_heat", "cost_invest_heat"))) %>%
             mutate(utility_exp_sum = sum(exp(utility))) %>%
             ungroup() %>%
             mutate(ms = exp(utility) / utility_exp_sum) %>%
             select(-c("utility", "utility_exp_sum")) %>%
-            mutate(n_switch = 1 / 20 * ms * n_units_fuel) %>%
+            mutate(n_switch = 1 / 20 * ms * n_units_fuel)
+
+
+        elasticity <- switch_det %>%
+            filter(fuel_heat_f == "heat_pump") %>%
+            mutate(elasticity =
+                - scale * scaling_factor * cost_invest_heat * (1 - ms) / 1e3) %>%
+            group_by_at("region_bld") %>%
+            summarize(elasticity =
+                sum(n_switch * elasticity) / sum(n_switch)) %>%
+            ungroup()
+
+        ms_agg <- switch_det %>%
             # Grouping all segments in target group
             group_by_at(setdiff(names(constant), c("constant"))) %>%
             summarize(n_switch_aggr = sum(n_switch)) %>%
@@ -270,29 +285,43 @@ fun_calibration_switch_heat <- function(yrs,
             mutate(ms = n_switch_aggr / sum(n_switch_aggr)) %>%
             ungroup()
 
-        return(ms_agg)
+        output <- list(ms_agg = ms_agg,
+            elasticity = elasticity$elasticity)
+
+        return(output)
     }
 
     objective_function <- function(x, utility, tgt) {
 
-        constant <- x
+        constant <- x[1:length(x) - 1]
+        scale <- x[length(x)]
 
-        cst <- tgt %>%
+        constant <- tgt %>%
             filter(target != max(target)) %>%
             mutate(constant = constant) %>%
             select(-c("target"))
+        
+        scale <- tibble(
+            region_bld = unique(utility$region_bld),
+            scale = scale
+        )
 
-        ms_agg <- market_share_agg(utility, cst) %>%
+        output <- market_share_agg(utility, constant, scale)
+
+        ms_agg <- output$ms_agg %>%
             left_join(tgt, by = c("region_bld", "fuel_heat_f")) %>%
             filter(target != max(target))
 
-        return(ms_agg$target - ms_agg$ms)
+        objective <- c(ms_agg$target - ms_agg$ms, output$elasticity - (-1))
+
+        return(objective)
     }
 
     result <- tibble(region_bld = character(),
                     fuel_heat_f = character(),
                     target = double(),
-                    constant = double())
+                    constant = double(),
+                    scale = double())
     for (region in unique(utility_heat_hh$region_bld)) {
         print(paste("Region:", region))
         u <- filter(utility_heat_hh, region_bld == region)
@@ -300,30 +329,39 @@ fun_calibration_switch_heat <- function(yrs,
             rename(target = ms_switch_fuel_exo) %>%
             filter(region_bld == region)
         x <- c(rep(0, times = nrow(t) - 1))
+        x <- c(x, 1)
         # utility <- u
         # tgt <- t
 
         root <- multiroot(objective_function, start = x,
             utility = u, tgt = t)
+        
+        constant <- root$root[1:length(root$root) - 1]
+        scale <- root$root[length(root$root)]
+
         temp <- t %>%
             filter(target != max(target)) %>%
-            mutate(constant = root$root) %>%
+            mutate(constant = constant) %>%
             right_join(t, by = c("region_bld", "fuel_heat_f", "target")) %>%
-            mutate(constant = ifelse(is.na(constant), 0, constant))
+            mutate(constant = ifelse(is.na(constant), 0, constant)) %>%
+            mutate(scale = scale)
 
         result <- bind_rows(result, temp)
-
     }
     
-    ini <- result %>%
-        mutate(result, constant = 0) %>%
-        select(-c("target"))
+    constant <- select(result, -c("target", "scale"))
+    scale <- result %>%
+        group_by_at("region_bld") %>%
+        summarize(scale = first(scale)) %>%
+        mutate(scale = ifelse(is.na(scale), 1, scale)) %>%
+        ungroup()
 
-    ms_ini <- market_share_agg(utility_heat_hh, ini) %>%
+    ms_ini <- market_share_agg(utility_heat_hh,
+        mutate(constant, constant = 0), mutate(scale, scale = 1))$ms_agg %>%
         rename(ms_ini = ms) %>%
         select(-c("n_switch_aggr"))
 
-    ms <- market_share_agg(utility_heat_hh, select(result, -c("target"))) %>%
+    ms <- market_share_agg(utility_heat_hh, constant, scale)$ms_agg %>%
         select(-c("n_switch_aggr"))
 
     stock <- bld_stock %>%
@@ -341,7 +379,10 @@ fun_calibration_switch_heat <- function(yrs,
         left_join(result) %>%
         left_join(ms) %>%
         left_join(ms_ini) %>%
-        left_join(scaling_factor) %>%
+        left_join(scale) %>%
+        left_join(scaling_factor %>%
+            rename(scale_ini = scaling_factor)) %>%
+        mutate(scaling_factor = scale_ini * scale) %>%
         select(c("region_bld", "fuel_heat_f", "share_stock", "ms_ini",
             "target", "ms", "constant", "scaling_factor"))
     report[is.na(report)] <- 0
@@ -352,7 +393,11 @@ fun_calibration_switch_heat <- function(yrs,
 
     output <- result %>%
         select(-c("target")) %>%
-        left_join(scaling_factor)
+        left_join(scale) %>%
+        left_join(scaling_factor %>%
+            rename(scale_ini = scaling_factor)) %>%
+        mutate(scaling_factor = scale_ini * scale) %>%
+        select(-c("scale", "scale_ini"))
 
     write.csv(output %>% rename(value = constant),
         paste0(path_out, "parameters_heater.csv"), row.names = FALSE)

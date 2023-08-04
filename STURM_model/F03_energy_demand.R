@@ -6,6 +6,60 @@ library(dplyr)
 
 u1 <- 3.6 / 1000 # kWh to GJ (to calculate operational costs)
 
+f_nu <- 0.9
+q_gains <- 0
+
+u_th_br <- 1 # W/m2.K, thermal bridge
+
+# ventilation parameters
+n_air_infiltr <- 0.2 # 1/h, air infiltration
+n_air_use <- 0.4 # 1/h, air infiltration
+h_room <- 2.5 # m, height of room
+c_air <- 0.34 # Wh/(m3K)
+
+
+fun_space_heating_calculation <- function(bld_cases_fuel,
+                                      u_wall,
+                                      u_roof,
+                                      u_floor,
+                                      u_windows,
+                                      area_wall,
+                                      area_roof,
+                                      area_floor,
+                                      area_windows,
+                                      hdd) {
+
+  attributes <- c("clim", "region_bld", "arch", "bld_age")
+  
+  h_ve <- c_air * (n_air_infiltr + n_air_use) * h_room              
+
+  h_tr <- bld_cases_fuel %>%
+    select(attributes) %>%
+    distinct() %>%
+    left_join(u_wall) %>%
+    left_join(u_roof) %>%
+    left_join(u_floor) %>%
+    left_join(u_windows) %>%
+    left_join(area_wall) %>%
+    left_join(area_roof) %>%
+    left_join(area_floor) %>%
+    left_join(area_windows) %>%
+    mutate(h_tr =
+      (u_wall * area_wall + u_roof * area_roof +
+        u_floor * area_floor + u_windows * area_windows)) %>%
+    mutate(h_tr = h_tr +
+      u_th_br * (area_wall + area_roof + area_floor + area_windows))
+
+  en_int_heat <- h_tr %>%
+    left_join(hdd) %>%
+    mutate(en_int_heat = 24 / 1000 * f_nu * hdd * (h_tr + h_ve) - q_gains) %>%
+    select(c(attributes, "en_int_heat"))
+
+  return(en_int_heat)
+  }
+
+
+
 #' @title Energy demand - STURM
 #' @description Calculate energy demand for heating, cooling, hot water,
 #'  fans and other uses

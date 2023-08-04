@@ -27,8 +27,6 @@ run_scenario <- function(run,
                          path_in,
                          path_rcode,
                          path_out,
-                         path_prices,
-                         path_prices_message,
                          file_inputs,
                          file_scenarios,
                          geo_level_report,
@@ -131,7 +129,8 @@ run_scenario <- function(run,
       0, ms_switch_fuel_exo)) %>%
     # Join with existing market-shares
     rename(fuel_heat = fuel_heat_f) %>%
-    bind_rows(hp_missing_rows %>% rename(ms_switch_fuel_exo = shr_fuel_heat_base)) %>%
+    bind_rows(hp_missing_rows %>%
+      rename(ms_switch_fuel_exo = shr_fuel_heat_base)) %>%
     left_join(d$shr_fuel_heat_base) %>%
     # Remove fuel if it doesn't exist (except heat_pump)
     mutate(ms_switch_fuel_exo =
@@ -180,7 +179,8 @@ run_scenario <- function(run,
 
   # Read energy prices
   print("Load energy prices")
-  price_en <- read_energy_prices(path_prices, path_prices_message, cat$geo_data, path_out)
+  price_en <- read_energy_prices(d$energy_prices_ini, d$energy_prices_message,
+    cat$geo_data, path_out)
 
   print("Data loaded!")
 
@@ -206,6 +206,22 @@ run_scenario <- function(run,
 
   ### RESIDENTIAL SECTOR
   if (sector == "resid") {
+
+    # Calculate energy consumption at dwelling level
+    print("Calculate energy consumption at dwelling level")
+    en_int_heat <- fun_space_heating_calculation(
+      bld_cases_fuel,
+      d$u_wall,
+      d$u_roof,
+      d$u_floor,
+      d$u_windows,
+      d$area_wall,
+      d$area_roof,
+      d$area_floor,
+      d$area_windows,
+      d$hdd
+    )
+
     # Initialize housing stock (fun)
     print(paste("Initialize scenario run", sector))
 

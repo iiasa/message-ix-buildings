@@ -13,22 +13,26 @@ library(stringr)
 print(paste("Working directory is:", getwd()))
 
 # Loding figures setttings and functions
-source("STURM_output/plot_settings.R")
+source("STURM_output/C00_plots.R")
 
+run <- "scenarios_EU_policies"
 scenarios <- c(
-  "EU_exogenous" = "Baseline exogenous",
-  "EU_endogenous" = "Baseline endogenous",
-  "EU_strong_endogenous" = "Strong additional policies",
-  "EU_medium_endogenous" = "Medium additional policies")
+  "EU" = "Current policies",
+  "EU_medium_mix" = "Medium additional policies",
+  "EU_strong_mix" = "Strong additional policies",
+  "EU_medium_heat" = "Medium additional policies heat-pumps",
+  "EU_medium_shell" = "Medium additional policies renovation"
+  )
 ```
 
+## Read data
 ```{r}
 data <- data.frame(NULL)
 
 for (scenario in names(scenarios)) {
   print(paste("Scenario:", scenario))
-  file <- paste0("report_STURM_", scenario, "_resid_region_bld_energy.csv")
-  file <- paste("STURM_output", file, sep = "/")
+  file <- paste0("report_agg_STURM_", scenario, "_resid_region_bld_energy.csv")
+  file <- paste("STURM_output/results", file, sep = "/")
 
   if (!file.exists(file)) {
     print("Check file name or directory!")
@@ -38,57 +42,91 @@ for (scenario in names(scenarios)) {
   print(dir.exists(save_dir))
 
   # Read output files
-  data <- bind_rows(data, read.csv(file))
+  temp <- read.csv(file) %>%
+    mutate(scenario = scenario)
+  data <- bind_rows(data, temp)
 }
 
 ```
 
-
-## Data formatting
 ```{r}
-data <- data %>%
-    mutate(heat_TWh = heat_TJ / 3.6 / 1e3) %>%
-    mutate(heat_ktoe = heat_TWh * 85.980) %>%
-    mutate(heat_hh_kWh = heat_TWh * 1e3 / stock_M) %>%
-    mutate()
 
-data <- data %>%
-  mutate("efficiency" = ifelse(eneff == "avg" | bld_age == "p5",
-    bld_age, eneff))
+test <- data %>%
+  filter(scenario == "EU", variable == "n_renovation",
+    resolution == "all", year == 2020) %>%
+  mutate(value = value / 1e3)
+
 ```
 
 ## Figures
 
+### Consumption
 ```{r}
-source("STURM_output/plot_settings.R")
+source("STURM_output/C00_plots.R")
+
+temp <- data %>%
+  filter(variable == "heat_kWh") %>%
+  filter(resolution %in% "all") %>%
+  select(-c("variable", "resolution")) %>%
+  mutate(value = value / 1e9)
+
+plot_multiple_lines(temp,
+    x_column = "year",
+    y_column = "value",
+    line_column = "scenario",
+    group_column = "region_bld",
+    ncol = 4,
+    y_label = "Consumtion\nTWh",
+    free_y = TRUE,
+    save_path = paste(save_dir, paste0(run, "_heat_kWh_countries.png"), sep = "/"))
+
+temp <- data %>%
+  filter(variable == "n_renovation") %>%
+  filter(resolution %in% "all") %>%
+  select(-c("variable", "resolution")) %>%
+  mutate(value = value / 1e3)
+
+plot_multiple_lines(temp,
+    x_column = "year",
+    y_column = "value",
+    line_column = "scenario",
+    group_column = "region_bld",
+    ncol = 4,
+    y_label = "Renovation\nThousands",
+    free_y = TRUE,
+    save_path = paste(save_dir, paste0(run, "_renovation_countries.png"), sep = "/"))
+
+
+temp <- data %>%
+  filter(variable == "stock_building") %>%
+  filter(resolution %in% "heat_pump") %>%
+  select(-c("variable", "resolution")) %>%
+  mutate(value = value / 1e6)
+
+plot_multiple_lines(temp,
+    x_column = "year",
+    y_column = "value",
+    line_column = "scenario",
+    group_column = "region_bld",
+    ncol = 4,
+    y_label = "Stock Heat-pumps\nMillion",
+    free_y = TRUE,
+    save_path = paste(save_dir, paste0(run, "_heat_pumps_countries.png"), sep = "/"))
 ```
 
-
-
 ```{r}
-sub_data <- data %>%
-  filter(region_bld %in% c("C-WEU-FRA", "C-WEU-DEU", "C-WEU-GBR", "C-WEU-ITA"))
+temp <- data %>%
+  filter(variable == "heat_kWh") %>%
+  filter(resolution %in% "all") %>%
+  select(-c("variable", "resolution")) %>%
+  mutate(value = value / 1e9)
 
-y_label <- "Final energy consumption for space heating\nResidential sector\nktoe"
-
-
-plot_variable_evolution(data,
-                        x_column = "year",
-                        y_column = "heat_ktoe",
-                        group_column = "scenario",
-                        rename_group = scenarios,
-                        ncol = 4,
-                        y_label = y_label,
-                        subplot = FALSE,
-                        save_path = paste(save_dir, "heat_evolution.png",
-                          sep="/")
-)
+plot_multiple_lines(temp,
+    x_column = "year",
+    y_column = "value",
+    line_column = "scenario",
+    group_column = "region_bld",
+    ncol = 4,
+    y_label = "Consumtion TWh",
+    save_path = paste(save_dir, paste0(run, "_heat_kWh.png"), sep = "/"))
 ```
-
-```{r}
-df_renamed <- data %>%
-  mutate(scenario = recode(scenario, !!!scenarios))
-
-```
-
-

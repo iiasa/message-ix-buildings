@@ -69,12 +69,30 @@ fun_format_output <- function(i,
 
         temp <- bind_rows(det_rows, agg_rows)
         
+        # Aggregating at eneff level
+        det_rows <- en_stock_i %>%
+            mutate("efficiency" = ifelse(eneff == "avg" | bld_age == "p5",
+                bld_age, eneff)) %>%
+            group_by_at(c("region_bld", "year", "efficiency")) %>%
+            summarise(
+                stock_building = sum(stock_M) * 1e6,
+                heat_kWh = sum(heat_TJ) / 3.6 * 1e6,
+                cost_heat_EUR = sum(cost_energy_hh),
+                floor_m2 = sum(floor_Mm2) * 1e6
+            ) %>%
+            ungroup() %>%
+            rename(resolution = efficiency) %>%
+            gather(variable, value, stock_building,
+                heat_kWh, cost_heat_EUR, floor_m2)
+
+        temp <- bind_rows(temp, det_rows)
+
         # Adding EU total values
         agg <- temp %>%
-            group_by_at(c("year", "variable")) %>%
+            group_by_at(c("year", "variable", "resolution")) %>%
             summarize(value = sum(value)) %>%
             ungroup() %>%
-            mutate(resolution = "all", region_bld = "EU")
+            mutate(region_bld = "EU")
 
         temp <- bind_rows(temp, agg) %>%
             select(c("region_bld", "year", "variable",
@@ -83,7 +101,6 @@ fun_format_output <- function(i,
 
         report$agg_result <- bind_rows(report$agg_result, temp)
         
-
         if (!is.null(cost_renovation) && !is.null(ren_det_i)) {
             cost_renovation <- cost_renovation %>%
                 left_join(hh_size) %>%
@@ -115,10 +132,10 @@ fun_format_output <- function(i,
             temp <- bind_rows(det_rows, agg_rows)
             
             agg <- temp %>%
-                group_by_at(c("year", "variable")) %>%
+                group_by_at(c("year", "variable", "resolution")) %>%
                 summarize(value = sum(value)) %>%
                 ungroup() %>%
-                mutate(resolution = "all", region_bld = "EU")
+                mutate(region_bld = "EU")
 
             temp <- bind_rows(temp, agg) %>%
                 select(c("region_bld", "year", "variable",

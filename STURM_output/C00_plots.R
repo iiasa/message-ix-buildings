@@ -246,20 +246,32 @@ plot_multiple_lines <- function(df,
     group_column,
     ncol = 4,
     y_label = "",
-    save_path = NULL) {
+    save_path = NULL,
+    free_y = FALSE) {
     
   df <- df %>%
-    mutate(!!group_column := plot_settings[["rename"]][.data[[group_column]]]) %>%
-    mutate(!!line_column := plot_settings[["rename"]][.data[[line_column]]])
+    mutate(!!group_column := plot_settings[["rename"]][.data[[group_column]]])
+
+  if (all(unique(df[[line_column]]) %in% plot_settings[["rename"]])) {
+    df <- df %>%
+      mutate(!!line_column := plot_settings[["rename"]][.data[[line_column]]])
+  }
 
   # Create subplot for each instance of group_column
   p <- ggplot(df, aes(x = .data[[x_column]], y = .data[[y_column]],
               color = .data[[line_column]])) +
         geom_line(linewidth = 1.5) +
-        scale_color_manual(values = plot_settings[["colors"]]) +
-        expand_limits(y = 0) +
-        facet_wrap(group_column, ncol = ncol) +
+        # scale_color_manual(values = plot_settings[["colors"]]) +
+        expand_limits(y = 0)
+
+  if (free_y) {
+      p <- p + facet_wrap(group_column, ncol = ncol, scales = "free_y")
+    } else {
+      p <- p + facet_wrap(group_column, ncol = ncol)
+  }
+  p <- p +
         message_building_subplot_theme +
+        theme(legend.position = "right") +
         labs(title = y_label) +
         scale_x_continuous(
           breaks = c(min(df[[x_column]]), max(df[[x_column]])),

@@ -19,7 +19,7 @@ source("STURM_output/C00_plots.R")
 ```
 
 ```{r}
-scenario <- "EU_endogenous"
+scenario <- "EU"
 file <- paste0("report_agg_STURM_", scenario, "_resid_region_bld_energy.csv")
 file <- paste("STURM_output/results", file, sep = "/")
 
@@ -92,8 +92,8 @@ make_plot_lines(data, var, ref, path)
 
 
 ### Absolute values charts
-```{r}
 #### Stock
+```{r}
 temp <- data %>%
   filter(variable == "stock_building") %>%
   filter(resolution %in% "all") %>%
@@ -108,9 +108,11 @@ plot_lines(temp,
           y_label = "Stock housing units\nMillion",
           subplot = TRUE,
           free_y = TRUE,
-          save_path = paste(save_dir, paste0(scenario, "_stock_housing_agg_countries.png"), sep = "/"))
+          save_path = paste(save_dir, paste0(scenario, "_stock_countries.png"), sep = "/"))
+```
 
 #### Space heating consumption
+```{r}
 temp <- data %>%
   filter(variable == "heat_kWh") %>%
   filter(resolution %in% "all") %>%
@@ -125,9 +127,43 @@ plot_lines(temp,
           y_label = "Space heating consumption\nTWh",
           subplot = TRUE,
           free_y = TRUE,
-          save_path = paste(save_dir, paste0(scenario, "_consumption_agg_countries.png"), sep = "/"))
+          save_path = paste(save_dir, paste0(scenario, "_twh_countries.png"), sep = "/"))
+
+temp <- data %>%
+  filter(variable == "heat_kWh") %>%
+  filter(resolution %in% "all") %>%
+  select(-c("variable", "resolution")) %>%
+  mutate(value = value * 3.6 * 1e-6)
+
+plot_lines(temp,
+          x_column = "year",
+          y_column = "value",
+          group_column = "region_bld",
+          ncol = 4,
+          y_label = "Space heating consumption\nTJ",
+          subplot = TRUE,
+          free_y = TRUE,
+          save_path = paste(save_dir, paste0(scenario, "_tj_countries.png"), sep = "/"))
+
+temp <- data %>%
+  filter(variable == "heat_kWh") %>%
+  filter(resolution %in% "all") %>%
+  select(-c("variable", "resolution")) %>%
+  mutate(value = value / (11630 * 1e6))
+
+plot_lines(temp,
+          x_column = "year",
+          y_column = "value",
+          group_column = "region_bld",
+          ncol = 4,
+          y_label = "Space heating consumption\nMtoe",
+          subplot = TRUE,
+          free_y = TRUE,
+          save_path = paste(save_dir, paste0(scenario, "_mtoe_countries.png"), sep = "/"))
+```
 
 #### Number of renovations
+```{r}
 temp <- data %>%
   filter(variable == "n_renovation") %>%
   filter(resolution %in% "all") %>%
@@ -142,11 +178,43 @@ plot_lines(temp,
           y_label = "Number of renovations\nThousands",
           subplot = TRUE,
           free_y = TRUE,
-          save_path = paste(save_dir, paste0(scenario, "_renovation_agg_countries.png"), sep = "/"))
+          save_path = paste(save_dir, paste0(scenario, "_renovation_countries.png"), sep = "/"))
+
+temp <- data %>%
+  filter(variable == "cost_renovation_EUR") %>%
+  filter(resolution %in% "all") %>%
+  select(-c("variable", "resolution")) %>%
+  mutate(value = value / 1e9)
+
+plot_lines(temp,
+          x_column = "year",
+          y_column = "value",
+          group_column = "region_bld",
+          ncol = 4,
+          y_label = "Cost shell energy renovation\nBillion EUR",
+          subplot = TRUE,
+          free_y = TRUE,
+          save_path = paste(save_dir, paste0(scenario, "_cost_renovation_countries.png"), sep = "/"))
+
+temp <- data %>%
+  filter(variable == "cost_heat_EUR") %>%
+  filter(resolution %in% "all") %>%
+  select(-c("variable", "resolution")) %>%
+  mutate(value = value / 1e9)
+
+plot_lines(temp,
+          x_column = "year",
+          y_column = "value",
+          group_column = "region_bld",
+          ncol = 4,
+          y_label = "Cost heat\nBillion EUR",
+          subplot = TRUE,
+          free_y = TRUE,
+          save_path = paste(save_dir, paste0(scenario, "_cost_heat_countries.png"), sep = "/"))
 
 ```
 
-### Unit space heating energy consumption
+### Share in total stock and energy consumption
 ```{r}
 temp <- data %>%
   filter(variable == "stock_building") %>%
@@ -155,16 +223,38 @@ temp <- data %>%
 
 plot_stacked_areas(temp, "year", "value", "resolution", "region_bld",
                     y_label = "Stock housing units",
-                    save_path = paste(save_dir, paste0(scenario, "_stock_fuels_countries.png"),
+                    save_path = paste(save_dir, paste0(scenario, "_share_fuels_stock_countries.png"),
                     sep = "/"))
 
+temp <- data %>%
+  filter(variable == "stock_building") %>%
+  filter(resolution %in% names(rename_eneff)) %>%
+  select(-c("variable"))
+
+plot_stacked_areas(temp, "year", "value", "resolution", "region_bld",
+                    y_label = "Stock housing units",
+                    save_path = paste(save_dir, paste0(scenario, "_share_eff_stock_countries.png"),
+                    sep = "/"))
+```
+
+```{r}
 temp <- data %>%
   filter(variable == "heat_kWh") %>%
   filter(resolution %in% names(rename_fuels)) %>%
   select(-c("variable"))
 
 plot_stacked_areas(temp, "year", "value", "resolution", "region_bld",
-                    y_label = "Stock housing units\nMillion",
-                    save_path = paste(save_dir, paste0(scenario, "_consumption_fuels_countries.png"),
+                    y_label = "Space heating consumption",
+                    save_path = paste(save_dir, paste0(scenario, "_share_fuels_consumption_countries.png"),
+                    sep = "/"))
+
+temp <- data %>%
+  filter(variable == "heat_kWh") %>%
+  filter(resolution %in% names(rename_eneff)) %>%
+  select(-c("variable"))
+
+plot_stacked_areas(temp, "year", "value", "resolution", "region_bld",
+                    y_label = "Space heating consumption",
+                    save_path = paste(save_dir, paste0(scenario, "_share_eff_consumption_countries.png"),
                     sep = "/"))
 ```

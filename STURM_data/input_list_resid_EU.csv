@@ -48,3 +48,15 @@ ct_heat,ct_heat_EU,decision
 ct_heat_new,ct_heat_new_EU,decision
 parameters_renovation,parameters_renovation,calibration
 parameters_heater,parameters_heater,calibration
+energy_prices_ini,input_prices_resid_EU,energy
+energy_prices_message,input_prices_R12,energy
+income,income_ssp2,macro
+u_windows,u_windows,thermal
+u_wall,u_wall,thermal
+u_roof,u_roof,thermal
+u_floor,u_floor,thermal
+area_windows,area_windows,thermal
+area_wall,area_wall,thermal
+area_roof,area_roof,thermal
+area_floor,area_floor,thermal
+hdd,hdd,thermal

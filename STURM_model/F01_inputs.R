@@ -206,12 +206,10 @@ fun_parse_stock <- function(stock, cat, population) {
 }
 
 #' @description Parse energy prices from MESSAGE
-read_message_prices <- function(path_prices_message, geo_data) {
-
-  prices <- read.csv(path_prices_message)
+read_message_prices <- function(prices, geo_data) {
 
   price_en <- prices %>%
-    mutate(price_en = lvl / all_of(u_EJ_GWa)) %>%
+    mutate(price_en = energy_prices_message / all_of(u_EJ_GWa)) %>%
     mutate(region = substr(node, 5, 7)) %>%
     mutate(fuel = commodity) %>%
     mutate(fuel = ifelse(commodity == "biomass", "biomass_solid", fuel)) %>%
@@ -237,28 +235,29 @@ read_message_prices <- function(path_prices_message, geo_data) {
 #' @param geo_data: list of dimensions
 #' @param geo_level: level of geographical aggregation
 #' @return list of energy prices
-read_energy_prices <- function(path_prices,
-                               path_prices_message,
+read_energy_prices <- function(price_base_year,
+                               price_en,
                                geo_data,
-                               path_out,
-                               constant = FALSE) {
+                               path_out) {
+  
+  if (!is.null(price_en)) {
+    price_en <- read_message_prices(price_en, geo_data)
 
-  price_en <- read_message_prices(path_prices_message, geo_data)
+    evolution_rate <- price_en %>%
+      group_by(region_bld, fuel) %>%
+      arrange(year) %>%
+      mutate(evolution_rate = price_en / first(price_en)) %>%
+      ungroup() %>%
+      filter(!is.na(evolution_rate)) %>%
+      select(-c(price_en))
 
-  evolution_rate <- price_en %>%
-    group_by(region_bld, fuel) %>%
-    arrange(year) %>%
-    mutate(evolution_rate = price_en / first(price_en)) %>%
-    ungroup() %>%
-    filter(!is.na(evolution_rate)) %>%
-    select(-c(price_en))
-
-  if (!constant) {
-    evolution_rate <- evolution_rate %>%
-      mutate(evolution_rate = 1)
+  } else {
+    evolution_rate <- price_base_year %>%
+      mutate(evolution_rate = 1) %>%
+      select(-c(energy_prices))
   }
 
-  price_base_year <- read.csv(path_prices)
+  price_base_year <- rename(price_base_year, value = energy_prices_ini)
 
   price_en <- price_base_year %>%
     left_join(evolution_rate, by = c("region_bld", "fuel")) %>%

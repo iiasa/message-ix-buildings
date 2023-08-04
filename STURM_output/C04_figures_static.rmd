@@ -46,6 +46,8 @@ print(summary(data))
 
 ## Energy prices
 ```{r}
+source("STURM_output/C00_plots.R")
+
 energy_prices <- read.csv("STURM_output/results/energy_prices.csv")
 energy_prices <- filter(energy_prices, region_bld %in% data$region_bld)
 

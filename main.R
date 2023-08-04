@@ -25,20 +25,20 @@ path_out <- paste(getwd(), "/STURM_output/results/", sep = "")
 
 # configuration file STURM
 base_year <- 2015
-end_year <- 2050
+end_year <- 2020
 step_year <- 5
-runs <- c("EU", "EU_nomfhq1rent", "EU_double", "EU_triple")
-runs <- c("EU", "EU_strong", "EU_medium")
+runs <- c(
+    "EU",
+    "EU_price_constant",
+    "EU_medium_heat",
+    "EU_medium_shell",
+    "EU_medium_mix",
+    "EU_strong_mix")
 runs <- c("EU")
     
 region <- c("WEU", "EEU")
 sector <- "resid"
 file_inputs <- "input_list_resid_EU.csv"
-path_prices_message <- paste0(path_in,
-    "input_csv/input_price/input_prices_R12.csv")
-path_prices <- paste0(path_in,
-    "input_csv/input_price/input_prices_EU.csv")
-
 file_scenarios <- "scenarios_EU.csv"
 
 # energy_efficiency <- "exogenous"
@@ -50,7 +50,10 @@ report <- list(var = c("energy"),
 yrs <- seq(base_year, end_year, step_year)
 
 for (run in runs) {
-    run <- paste(run, energy_efficiency, sep = "_")
+
+    if (energy_efficiency == "exogenous") {
+        run <- paste(run, energy_efficiency, sep = "_")
+    }  
 
     sturm_scenarios <- run_scenario(
         run = run,
@@ -59,8 +62,6 @@ for (run in runs) {
         path_in = path_in,
         path_rcode = path_rcode,
         path_out = path_out,
-        path_prices = path_prices,
-        path_prices_message = path_prices_message,
         file_inputs = file_inputs,
         file_scenarios = file_scenarios,
         geo_level_report = report$geo_level,

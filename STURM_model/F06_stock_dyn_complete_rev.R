@@ -194,6 +194,7 @@ fun_stock_renovation_dyn <- function(bld_det_i,
                                      rate_ren_i, ms_ren_i, stp) {
 
   temp <- sum(bld_det_i$n_units_fuel_exst)
+  # sum(filter(ren_det_i, region_bld == "C-WEU-FRA")$n_units_fuel)
   
   # Existing buildings - renovated
   ren_det_i <- bld_det_i  %>%

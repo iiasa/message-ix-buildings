@@ -1,4 +1,7 @@
-scenario_id,scenario_name,sub_ren_shell,sub_heat
-1,EU_endogenous,,
-2,EU_medium_endogenous,medium,medium
-3,EU_strong_endogenous,strong,strong
+scenario_id,scenario_name,sub_ren_shell,sub_heat,energy_prices_message
+1,EU,,,
+2,EU_price_constant,,,constant
+3,EU_medium_heat,,medium,
+4,EU_medium_shell,medium,,
+5,EU_medium_mix,medium,medium,
+6,EU_strong_mix,strong,strong,

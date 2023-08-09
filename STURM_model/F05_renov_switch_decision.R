@@ -51,7 +51,8 @@ fun_utility_ren_shell <- function(yrs,
                           sub_ren_shell = NULL,
                           full = FALSE) {
 
-    # Operational energy costs before/after renovation
+  en_hh_tot <- select(en_hh_tot, -c("budget_share", "heating_intensity"))
+  # Operational energy costs before/after renovation
   en_hh_tot_ren_fin <- en_hh_tot %>%
     rename(eneff_f = eneff)
 
@@ -304,6 +305,8 @@ fun_utility_heat <- function(yrs,
                         inertia = NULL,
                         full = FALSE) {
 
+  en_hh_tot <- select(en_hh_tot, -c("budget_share", "heating_intensity"))
+
   # Operational energy costs before/after renovation
   en_hh_tot_switch_fin <- en_hh_tot %>%
     rename(fuel_heat_f = fuel_heat)
@@ -361,6 +364,8 @@ fun_utility_heat <- function(yrs,
   if (!full) {
     utility_heat_hh <- select(utility_heat_hh, -c("cost_invest_heat"))
   }
+
+  print('ok')
 
   if (!is.null(inertia)) {
     utility_heat_hh <- utility_heat_hh %>%

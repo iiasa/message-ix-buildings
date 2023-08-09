@@ -208,19 +208,22 @@ fun_parse_stock <- function(stock, cat, population) {
 #' @description Parse energy prices from MESSAGE
 read_message_prices <- function(prices, geo_data) {
 
-  price_en <- prices %>%
-    mutate(price_en = energy_prices_message / all_of(u_EJ_GWa)) %>%
-    mutate(region = substr(node, 5, 7)) %>%
-    mutate(fuel = commodity) %>%
-    mutate(fuel = ifelse(commodity == "biomass", "biomass_solid", fuel)) %>%
-    mutate(fuel = ifelse(commodity == "electr", "electricity", fuel)) %>%
-    mutate(fuel = ifelse(commodity == "lightoil", "oil", fuel)) %>%
-    filter(commodity != "d_heat") %>%
-    filter(year %in% yrs) %>%
-    select(region, year, fuel, price_en) %>%
-    # Rename region column based on R11/R12
-    rename_at("region", ~ paste(substr(prices$node[1], 1, 3)))
-    
+  price_en <- rename(prices, price_en = energy_prices_message)
+
+  if ("node" %in% names(prices)) {
+    price_en <- price_en %>%
+      mutate(price_en = price_en / u_EJ_GWa) %>%
+      mutate(region = substr(node, 5, 7)) %>%
+      mutate(fuel = commodity) %>%
+      mutate(fuel = ifelse(commodity == "biomass", "biomass_solid", fuel)) %>%
+      mutate(fuel = ifelse(commodity == "electr", "electricity", fuel)) %>%
+      mutate(fuel = ifelse(commodity == "lightoil", "oil", fuel)) %>%
+      filter(commodity != "d_heat") %>%
+      filter(year %in% yrs) %>%
+      select(region, year, fuel, price_en) %>%
+      # Rename region column based on R11/R12
+      rename_at("region", ~ paste(substr(prices$node[1], 1, 3)))
+  }
   price_en <- geo_data %>%
     # Join R11/R12 data with prices
     left_join(price_en) %>%
@@ -272,7 +275,11 @@ read_energy_prices <- function(price_base_year,
     left_join(price_en, by = c("region_bld", "fuel", "year")) %>%
     group_by(region_bld, fuel) %>%
     fill(value, .direction = "down") %>%
-    rename(price_en = value)
+    ungroup() %>%
+    rename(price_en = value) %>%
+    distinct()
+
+  # duplicates <- price_expanded[duplicated(price_expanded[, c("region_bld", "fuel", "year")]), ]
 
   write.csv(price_expanded, paste0(path_out, "energy_prices.csv"),
     row.names = FALSE)

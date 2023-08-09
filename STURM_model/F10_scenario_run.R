@@ -3,6 +3,7 @@ library(tidyverse)
 library(readxl)
 library(readr)
 library(dplyr)
+library(tidyr)
 
 #' @param run: name of the scenario to run, e.g. "NAV_Dem-NPi-ref"
 #' @param scenario_name: name of the scenario to run, e.g. "NAV_Dem-NPi-ref"
@@ -34,7 +35,8 @@ run_scenario <- function(run,
                          report_type,
                          report_var,
                          region = NULL,
-                         energy_efficiency = "endogenous") {
+                         energy_efficiency = "endogenous",
+                         en_method = "TABULA") {
   print(paste("Start scenario run: ", run))
   # Track time
   start_time <- Sys.time()
@@ -182,6 +184,19 @@ run_scenario <- function(run,
   price_en <- read_energy_prices(d$energy_prices_ini, d$energy_prices_message,
     cat$geo_data, path_out)
 
+  # Adding year column to start subsidies after calibration
+  if (!"year" %in% names(d$sub_ren_shell)) {
+    d$sub_ren_shell <- crossing(d$sub_ren_shell, yrs) %>%
+      rename(year = "yrs") %>%
+      mutate(sub_ren_shell = ifelse(year <= yrs[[2]], 0, sub_ren_shell))
+  }
+  if (!"year" %in% names(d$sub_heat)) {
+    d$sub_heat <- crossing(d$sub_heat, yrs) %>%
+      rename(year = "yrs") %>%
+      mutate(sub_heat = ifelse(year <= yrs[[2]], 0, sub_heat))
+
+  }
+
   print("Data loaded!")
 
   # Create matrix of all dimensions
@@ -209,18 +224,22 @@ run_scenario <- function(run,
 
     # Calculate energy consumption at dwelling level
     print("Calculate energy consumption at dwelling level")
-    en_int_heat <- fun_space_heating_calculation(
-      bld_cases_fuel,
-      d$u_wall,
-      d$u_roof,
-      d$u_floor,
-      d$u_windows,
-      d$area_wall,
-      d$area_roof,
-      d$area_floor,
-      d$area_windows,
-      d$hdd
-    )
+
+    if (en_method == "TABULA") {
+      en_int_heat <- fun_space_heating_calculation(
+        bld_cases_fuel,
+        d$u_wall,
+        d$u_roof,
+        d$u_floor,
+        d$u_windows,
+        d$area_wall,
+        d$area_roof,
+        d$area_floor,
+        d$area_windows,
+        d$hdd
+      )
+      d$en_int_heat <- en_int_heat
+    }
 
     # Initialize housing stock (fun)
     print(paste("Initialize scenario run", sector))
@@ -279,13 +298,34 @@ run_scenario <- function(run,
       d$shr_acc_cool,
       d$hh_size,
       d$floor_cap,
-      price_en
+      price_en,
+      d$income,
+      en_method = en_method,
     )
     # Extract dataframes from list
     en_m2_scen_heat <- lst_en_i$en_m2_scen_heat
     en_m2_scen_cool <- lst_en_i$en_m2_scen_cool
     en_hh_tot <- lst_en_i$en_hh_tot
     rm(lst_en_i)
+
+    # Calibration of energy demand
+    shr_en <- bld_det_ini %>%
+      left_join(en_hh_tot) %>%
+      mutate(en_segment = en_hh * n_units_fuel) %>%
+      group_by_at(setdiff(names(d$en_consumption), "en_consumption")) %>%
+      summarize(en_calculation = sum(en_segment)) %>%
+      ungroup() %>%
+      # Conversion from kWh to ktoe
+      mutate(en_calculation = en_calculation / 11630 / 1e3) %>%
+      left_join(d$en_consumption) %>%
+      mutate(shr_en = en_consumption / en_calculation) %>%
+      select(-c("en_consumption", "en_calculation"))
+    
+    en_hh_tot <- en_hh_tot %>%
+      left_join(shr_en) %>%
+      mutate(en_hh = en_hh * shr_en,
+        cost_op = cost_op * shr_en) %>%
+      select(-shr_en)
 
     # Energy demand intensities - hot water
     print(paste("Calculate energy demand intensities for hot water"))
@@ -348,13 +388,20 @@ run_scenario <- function(run,
         d$shr_acc_cool,
         d$hh_size,
         d$floor_cap,
-        price_en
+        price_en,
+        d$income,
+        en_method = en_method,
       )
       # Extract dataframes from list
       en_m2_scen_heat <- lst_en_i$en_m2_scen_heat
       en_m2_scen_cool <- lst_en_i$en_m2_scen_cool
       en_hh_tot <- lst_en_i$en_hh_tot
       rm(lst_en_i)
+
+      en_hh_tot <- en_hh_tot %>%
+        left_join(shr_en) %>%
+        mutate(en_hh = en_hh * shr_en) %>%
+        select(-shr_en)
 
       # Energy demand intensities - hot water
       print(paste("Calculate energy demand intensities for hot water"))
@@ -417,7 +464,7 @@ run_scenario <- function(run,
         }
       }
       if (energy_efficiency == "endogenous") {
-        print("2.1 Calibration of renovation rate")
+        print("2.1 Calculation of renovation rate")
         temp <- fun_ms_ren_shell_endogenous(yrs,
                           i,
                           bld_cases_fuel,

@@ -9,15 +9,49 @@ u1 <- 3.6 / 1000 # kWh to GJ (to calculate operational costs)
 f_nu <- 0.9
 q_gains <- 0
 
-u_th_br <- 1 # W/m2.K, thermal bridge
+b_floor <- 0.5 # adjusment factor for floor
+u_th_br <- 0.1 # W/m2.K, thermal bridge
 
 # ventilation parameters
 n_air_infiltr <- 0.2 # 1/h, air infiltration
 n_air_use <- 0.4 # 1/h, air infiltration
 h_room <- 2.5 # m, height of room
-c_air <- 0.34 # Wh/(m3K)
+c_air <- 0.34 # Wh/(m3.K)
 
+# solar gains parameters
+f_sh <- 0.6 # shading factor
+f_f <-  0.3 # frame are fraction of the windows
+f_w <- 0.9 # reduction factor for non- perpendicular to the glas
+g_gl <- 0.6 # total solar energy transmittance
 
+# internal heat gains parameters
+phi_int <- 3 # W/m2, internal heat gains
+
+gain_utilitization_factor <- 0.95
+
+# inertia parameters
+a_h0 <- 0.8 # constant parameter
+tau_h0 <- 30
+c_m <- 45 # Wh/(m2.K), internal heat capacity
+
+# service factor
+alpha <- 0.3564
+p_elasticity <- -0.244
+
+#' @title Function to calculate energy demand for space heating
+#' @description Calculate energy demand for space heating
+#' @param bld_cases_fuel Building cases and fuel
+#' @param u_wall U-value of walls, in W/m2K
+#' @param u_roof U-value of roof, in W/m2K
+#' @param u_floor U-value of floor, in W/m2K
+#' @param u_windows U-value of windows, in W/m2K 
+#' @param area_wall Area of walls, in % of floor area
+#' @param area_roof Area of roof, in % of floor area
+#' @param area_floor Area of floor, in % of floor area
+#' @param area_windows Area of windows, in % of floor area
+#' @param hdd Heating degree days, in degree days per year
+#' @param d_hs Heating days, in days per year
+#' @param i_sol Solar irradiation during heating season, in kWh/m2.a
 fun_space_heating_calculation <- function(bld_cases_fuel,
                                       u_wall,
                                       u_roof,
@@ -27,7 +61,9 @@ fun_space_heating_calculation <- function(bld_cases_fuel,
                                       area_roof,
                                       area_floor,
                                       area_windows,
-                                      hdd) {
+                                      hdd,
+                                      d_hs = 200,
+                                      i_sol = 200) {
 
   attributes <- c("clim", "region_bld", "arch", "bld_age")
   
@@ -46,13 +82,20 @@ fun_space_heating_calculation <- function(bld_cases_fuel,
     left_join(area_windows) %>%
     mutate(h_tr =
       (u_wall * area_wall + u_roof * area_roof +
-        u_floor * area_floor + u_windows * area_windows)) %>%
+        b_floor * u_floor * area_floor + u_windows * area_windows)) %>%
     mutate(h_tr = h_tr +
       u_th_br * (area_wall + area_roof + area_floor + area_windows))
 
+  q_gains <- area_windows %>%
+    mutate(q_sol = f_sh * (1 - f_f) * f_w * g_gl * i_sol) %>%
+    mutate(q_int = 24 / 1000 * phi_int * d_hs) %>%
+    mutate(q_gains = q_int + q_sol)
+
   en_int_heat <- h_tr %>%
     left_join(hdd) %>%
-    mutate(en_int_heat = 24 / 1000 * f_nu * hdd * (h_tr + h_ve) - q_gains) %>%
+    left_join(q_gains) %>%
+    mutate(q_losses = 24 / 1000 * f_nu * hdd * (h_tr + h_ve)) %>%
+    mutate(en_int_heat = q_losses - gain_utilitization_factor * q_gains) %>%
     select(c(attributes, "en_int_heat"))
 
   return(en_int_heat)
@@ -105,11 +148,19 @@ fun_en_sim <- function(sector,
                        hh_size,
                        floor_cap,
                        price_en,
-                       shr_acc_heat = 1) {
+                       income,
+                       shr_acc_heat = 1,
+                       en_method = "TABULA") {
   print(paste0("Running energy demand year ", yrs[i]))
 
+  if (en_method == "TABULA") {
+    hours_heat <- mutate(hours_heat,
+      hours_heat = ifelse(hours_heat > 0, 24, 0))
+    shr_floor_heat <- mutate(shr_floor_heat,
+      shr_floor_heat = ifelse(shr_floor_heat > 0, 1, 0))
+  }
 
-  en_m2_scen_det <- bld_cases_fuel %>%
+  energy_det <- bld_cases_fuel %>%
     mutate(year = yrs[i]) %>%
     left_join(eff_cool) %>%
     left_join(eff_heat) %>%
@@ -148,32 +199,22 @@ fun_en_sim <- function(sector,
     select(-c(en_int_heat, en_int_cool, days_cool))
 
 
-  en_m2_scen_S <- en_m2_scen_det %>%
+  energy_det_subset <- energy_det %>%
     select(-c(
       eff_cool, eff_heat, f_h, f_c,
       shr_floor_heat, shr_floor_cool, hours_heat, hours_cool,
-      en_sav_ren
-    )) %>%
-    select(-c(hours_fans, power_fans, f_f)) # %>% NAs removed before
+      en_sav_ren, hours_fans, power_fans, f_f))
 
   ## Energy demand SPACE HEATING ONLY - by fuel: for investment decisions
   en_m2_scen_heat <- bld_cases_fuel %>%
     # mutate(fuel = fuel_heat) %>%
-    left_join(en_m2_scen_S) %>%
-    select(-c(
-      en_dem_cool,
-      en_dem_c_ac,
-      en_dem_c_fans,
-      shr_acc_cool,
-      fuel_cool
-    ))
+    left_join(energy_det_subset) %>%
+    select(-c("en_dem_cool", "en_dem_c_ac", "en_dem_c_fans",
+      "shr_acc_cool", "fuel_cool"))
 
   en_m2_scen_cool <- bld_cases_fuel %>%
-    left_join(en_m2_scen_S) %>%
-    select(-c(
-      fuel_heat,
-      en_dem_heat,
-    )) %>%
+    left_join(energy_det_subset) %>%
+    select(-c("fuel_heat", "en_dem_heat")) %>%
     distinct()
 
   en_hh_tot <- NULL
@@ -182,19 +223,27 @@ fun_en_sim <- function(sector,
 
     # Add hh size, only for heating
     en_hh <- en_m2_scen_heat %>%
-      rename(en_m2 = en_dem_heat) %>%
+      rename(en_m2_std = en_dem_heat) %>%
       left_join(hh_size) %>%
       filter(year == yrs[i]) %>%
      # Add floor surface area
       left_join(floor_cap) %>%
       # Calculate total energy demand per household
-      mutate(en_hh = en_m2 * floor_cap * hh_size) %>%
+      mutate(en_hh_std = en_m2_std * floor_cap * hh_size) %>%
       # Associate energy prices to en_perm
       left_join(price_en) %>%
       # Calculate the total costs for operational energy
+      mutate(cost_op_std = en_hh_std * price_en) %>%
+      left_join(income) %>%
+      left_join(income) %>%
+      mutate(budget_share = cost_op_std / income) %>%
+      mutate(heating_intensity = alpha * (budget_share)**p_elasticity) %>%
+      mutate(en_hh = en_hh_std * heating_intensity) %>%
       mutate(cost_op = en_hh * price_en) %>%
-      select(-c(en_m2, hh_size, floor_cap, price_en, fuel)) %>%
-        left_join(bld_cases_fuel)
+      select(-c(en_m2_std, hh_size, floor_cap, price_en, fuel, en_hh_std,
+        cost_op_std, income)) %>%
+      left_join(bld_cases_fuel)
+
   }
 
   output <- list(

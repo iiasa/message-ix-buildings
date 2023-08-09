@@ -18,8 +18,6 @@ source("STURM_output/C00_plots.R")
 run <- "scenarios_EU_policies"
 scenarios <- c(
   "EU" = "Current policies",
-  "EU_medium_mix" = "Medium additional policies",
-  "EU_strong_mix" = "Strong additional policies",
   "EU_medium_heat" = "Medium additional policies heat-pumps",
   "EU_medium_shell" = "Medium additional policies renovation"
   )
@@ -44,23 +42,21 @@ for (scenario in names(scenarios)) {
   # Read output files
   temp <- read.csv(file) %>%
     mutate(scenario = scenario)
+
+  
   data <- bind_rows(data, temp)
 }
-
-```
-
-```{r}
-
-test <- data %>%
-  filter(scenario == "EU", variable == "n_renovation",
-    resolution == "all", year == 2020) %>%
-  mutate(value = value / 1e3)
-
+# Reconstuction flows
+flows <- c("cost_renovation_EUR", "n_renovation")
+stp <- 5
+data <- data %>%
+  mutate(year = ifelse(variable %in% flows, year - stp, year),
+         value = ifelse(variable %in% flows, value / stp, value))
 ```
 
 ## Figures
 
-### Consumption
+### Absolute values
 ```{r}
 source("STURM_output/C00_plots.R")
 
@@ -78,7 +74,8 @@ plot_multiple_lines(temp,
     ncol = 4,
     y_label = "Consumtion\nTWh",
     free_y = TRUE,
-    save_path = paste(save_dir, paste0(run, "_heat_kWh_countries.png"), sep = "/"))
+    save_path = paste(save_dir,
+      paste0(run, "_heat_kWh_countries.png"), sep = "/"))
 
 temp <- data %>%
   filter(variable == "n_renovation") %>%
@@ -94,7 +91,8 @@ plot_multiple_lines(temp,
     ncol = 4,
     y_label = "Renovation\nThousands",
     free_y = TRUE,
-    save_path = paste(save_dir, paste0(run, "_renovation_countries.png"), sep = "/"))
+    save_path = paste(save_dir,
+      paste0(run, "_renovation_countries.png"), sep = "/"))
 
 
 temp <- data %>%
@@ -111,15 +109,30 @@ plot_multiple_lines(temp,
     ncol = 4,
     y_label = "Stock Heat-pumps\nMillion",
     free_y = TRUE,
-    save_path = paste(save_dir, paste0(run, "_heat_pumps_countries.png"), sep = "/"))
+    save_path = paste(save_dir,
+      paste0(run, "_heat_pumps_countries.png"), sep = "/"))
 ```
 
+### Indicators comparison
+
+#### Unit consumption
 ```{r}
+var <- "heat_kWh"
+ref <- "floor_m2"
+path <- "_kwh_m2_countries.png"
+y_label <- "Space heating consumption\nkWh per square meter"
+
 temp <- data %>%
-  filter(variable == "heat_kWh") %>%
-  filter(resolution %in% "all") %>%
-  select(-c("variable", "resolution")) %>%
-  mutate(value = value / 1e9)
+  filter(variable %in% c(var, ref)) %>%
+  filter(resolution == "all") %>%
+  pivot_wider(id_cols = c(region_bld, year, scenario, resolution),
+    names_from = variable,
+    values_from = value) %>%
+  filter(!is.na(.data[[var]])) %>%
+  filter(!is.na(.data[[ref]])) %>%
+  mutate(value = .data[[var]] / .data[[ref]]) %>%
+  select(-c(var, ref, "resolution"))
+
 
 plot_multiple_lines(temp,
     x_column = "year",
@@ -127,6 +140,40 @@ plot_multiple_lines(temp,
     line_column = "scenario",
     group_column = "region_bld",
     ncol = 4,
-    y_label = "Consumtion TWh",
-    save_path = paste(save_dir, paste0(run, "_heat_kWh.png"), sep = "/"))
+    y_label = y_label,
+    free_y = TRUE,
+    save_path = paste(save_dir,
+      paste0(run, path), sep = "/"))
+```
+
+#### Renovation rate
+
+```{r}
+var <- "n_renovation"
+ref <- "stock_building"
+path <- "_renovation_rate_countries.png"
+y_label <- "Renovation rate"
+
+temp <- data %>%
+  filter(variable %in% c(var, ref)) %>%
+  filter(resolution == "all") %>%
+  pivot_wider(id_cols = c(region_bld, year, scenario, resolution),
+    names_from = variable,
+    values_from = value) %>%
+  filter(!is.na(.data[[var]])) %>%
+  filter(!is.na(.data[[ref]])) %>%
+  mutate(value = .data[[var]] / .data[[ref]]) %>%
+  select(-c(var, ref, "resolution"))
+
+
+plot_multiple_lines(temp,
+    x_column = "year",
+    y_column = "value",
+    line_column = "scenario",
+    group_column = "region_bld",
+    ncol = 4,
+    y_label = y_label,
+    free_y = TRUE,
+    save_path = paste(save_dir,
+      paste0(run, path), sep = "/"))
 ```

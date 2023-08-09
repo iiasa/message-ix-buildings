@@ -25,21 +25,22 @@ path_out <- paste(getwd(), "/STURM_output/results/", sep = "")
 
 # configuration file STURM
 base_year <- 2015
-end_year <- 2020
+end_year <- 2050
 step_year <- 5
 runs <- c(
     "EU",
-    "EU_price_constant",
     "EU_medium_heat",
-    "EU_medium_shell",
-    "EU_medium_mix",
-    "EU_strong_mix")
+    "EU_medium_shell"
+    )
+
 runs <- c("EU")
-    
+# runs <- "EU_medium_shell"
+
 region <- c("WEU", "EEU")
 sector <- "resid"
 file_inputs <- "input_list_resid_EU.csv"
 file_scenarios <- "scenarios_EU.csv"
+en_method <- "TABULA" # "VDD", "TABULA"
 
 # energy_efficiency <- "exogenous"
 energy_efficiency <- "endogenous"
@@ -69,7 +70,8 @@ for (run in runs) {
         report_var = report$var,
         report_type = report$type,
         region = region,
-        energy_efficiency = energy_efficiency
+        energy_efficiency = energy_efficiency,
+        en_method = en_method
     )
 
 end_script_time <- Sys.time()

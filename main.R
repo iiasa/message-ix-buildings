@@ -54,7 +54,7 @@ for (run in runs) {
 
     if (energy_efficiency == "exogenous") {
         run <- paste(run, energy_efficiency, sep = "_")
-    }  
+    }
 
     sturm_scenarios <- run_scenario(
         run = run,

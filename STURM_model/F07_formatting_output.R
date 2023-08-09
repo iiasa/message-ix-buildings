@@ -322,6 +322,19 @@ fun_format_bld_stock_energy <- function(
                                         en_hh_tot,
                                         en_hh_hw_scen
                                         ) {
+
+    en_hh_tot <- select(en_hh_tot, -c("budget_share", "heating_intensity"))
+
+    test <- bld_det_i %>%
+        left_join(en_hh_tot) %>%
+        mutate(en_segment = ifelse(is.na(en_hh), 0, en_hh * n_units_fuel)) %>%
+        group_by_at("region_bld") %>%
+        summarize(en_calculation = sum(en_segment)) %>%
+        ungroup() %>%
+        mutate(en_calculation = en_calculation / 11630 / 1e6)
+
+
+
     # Aggregate at fuel level for keeping track of the stock
     bld_det_i <- bld_det_i %>%
         # Select all variables, except the ones indicated, for grouping
@@ -371,24 +384,28 @@ fun_format_bld_stock_energy <- function(
             left_join(hh_size) %>%
             left_join(floor_cap) %>%
             # left_join(shr_acc_cool) %>%
-            left_join(en_m2_scen_heat) %>%
+            # left_join(en_m2_scen_heat) %>%
             left_join(en_m2_scen_cool) %>%
             left_join(en_hh_tot %>% rename(cost_energy_hh = cost_op)) %>%
+            # mutate(en_segment = ifelse(is.na(en_hh), 0, en_hh * n_units_fuel)) %>%
+            # group_by_at("region_bld") %>%
+            # summarize(en_calculation = sum(en_segment)) %>%
+            # ungroup() %>%
+            # mutate(en_calculation = en_calculation / 11630 / 1e6) %>%
             mutate(cost_energy_hh = cost_energy_hh * n_units_fuel) %>%
             left_join(en_hh_hw_scen) %>%
             # convert n. units to millions
             mutate(floor_Mm2 = n_units_fuel / 1e6 * hh_size * floor_cap) %>%
             mutate(floor_heat_Mm2 = floor_Mm2) %>%
             # mutate(floor_heat_Mm2 = ifelse(acc_heat == 1, floor_Mm2, 0)) %>%
-            mutate(
-                floor_cool_Mm2 =
+            mutate(floor_cool_Mm2 =
                     ifelse(shr_acc_cool == 1, floor_Mm2 * shr_acc_cool, 0)
             ) %>%
             # Converted from kWh to MJ (3.6).
             #  Housing units are in million, so results are in TJ.
-            mutate(heat_TJ = ifelse(fuel_heat == "v_no_heat", 0,
-                en_dem_heat * n_units_fuel / 1e6 * hh_size * floor_cap * 3.6
-            )) %>%
+            mutate(heat_TJ =
+                ifelse(fuel_heat == "v_no_heat", 0,
+                    en_hh * n_units_fuel / 1e6 * 3.6)) %>%
             # Converted from kWh to MJ (3.6).
             #  Houssing units are in million, so results are in TJ.
             mutate(cool_TJ = en_dem_cool * shr_acc_cool *
@@ -399,7 +416,7 @@ fun_format_bld_stock_energy <- function(
             # Converted from kWh to MJ (3.6).
             #   Housing units are in million, so results are in TJ.
             mutate(cool_fans_TJ = en_dem_c_fans * shr_acc_cool *
-                n_units_fuel / 1e6 * hh_size * floor_cap * 3.6) %>%
+                n_units_fuel / 1e6 * 3.6) %>%
             # converted from GJ/hh/yr to TJ
             mutate(hotwater_TJ = ifelse(fuel_heat == "v_no_heat", 0,
                 en_dem_dhw * n_units_fuel / 1e3
@@ -417,7 +434,6 @@ fun_format_bld_stock_energy <- function(
                 "heat_TJ", "cool_TJ", "cool_ac_TJ", "cool_fans_TJ",
                 "hotwater_TJ", "other_uses_TJ", "cost_energy_hh"
             )))
-
     }
     if (sector == "comm") {
         en_stock_i <- en_stock_i %>%

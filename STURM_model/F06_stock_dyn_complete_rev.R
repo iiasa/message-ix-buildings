@@ -79,7 +79,7 @@ fun_stock_turnover_dyn <- function(i, yrs, bld_cases_fuel, ct_bld_age,
     "i.e. ", round(sum(bld_aggr_i$n_empty) /
       sum(bld_det_ini$n_units_fuel) * 100, 1), "% of the existing stock."))
 
-  # Distribute abandoned buildings across vintage cohorts and archetypes
+  # 3. Distribute abandoned and demolished buildings across vintage cohorts and archetypes
   bld_det_i <- bld_det_i %>%
     group_by_at(
         setdiff(intersect(names(bld_det_i), names(bld_aggr_i)),
@@ -105,10 +105,11 @@ fun_stock_turnover_dyn <- function(i, yrs, bld_cases_fuel, ct_bld_age,
   # Test: number of empty buildings
   if (round(sum(bld_det_i$n_empty), 0) !=
     round(sum(bld_aggr_i$n_empty), 0)) {
-    print(paste("Test failed. Number of empty buildings is not consistent.",
+    print(paste("Number of empty buildings is not consistent.",
       "Error is:",
       round((sum(bld_det_i$n_empty) - sum(bld_aggr_i$n_empty)) / 1e6, 0),
       "million units."))
+    stop('Test failed.')
   } else {
     print("Test passed. Empty buildings.")
   }
@@ -120,6 +121,8 @@ fun_stock_turnover_dyn <- function(i, yrs, bld_cases_fuel, ct_bld_age,
     select(-c(var_aggr, n_dem, n_empty)) %>%
     add_column(yr_con = yrs[i], .after = "year") %>%
     left_join(ct_bld_age_i)
+
+  print(round(sum(filter(bld_aggr_i, region_bld == "C-WEU-FRA")$n_units_aggr) / 1e6, 3))
 
   output <- list(
     bld_aggr_i = bld_aggr_i,
@@ -195,7 +198,7 @@ fun_stock_renovation_dyn <- function(bld_det_i,
 
   temp <- sum(bld_det_i$n_units_fuel_exst)
   # sum(filter(ren_det_i, region_bld == "C-WEU-FRA")$n_units_fuel)
-  
+
   # Existing buildings - renovated
   ren_det_i <- bld_det_i  %>%
     # Account for renovations

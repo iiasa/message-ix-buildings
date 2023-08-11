@@ -1,6 +1,6 @@
 name_parameter,name_file,category
 pop,pop_clim_ssp2,basic
-hh_size,hh_size,basic
+hh_size,hh_size_EU,basic
 floor_cap,floor_resid_ssp2,activity
 hh_tenure,hh_tenr_EU,stock
 shr_arch,bld_shr_arch_resid,stock
@@ -48,7 +48,7 @@ ct_heat,ct_heat_EU,decision
 ct_heat_new,ct_heat_new_EU,decision
 parameters_renovation,parameters_renovation,calibration
 parameters_heater,parameters_heater,calibration
-energy_prices_ini,input_prices_resid_EU,macro
+energy_prices_ini,input_prices_ini_resid_EU,macro
 energy_prices_message,input_prices_NPi_constant,macro
 income,income_ssp2,macro
 u_windows,u_windows,thermal
@@ -59,5 +59,8 @@ area_windows,area_windows,thermal
 area_wall,area_wall,thermal
 area_roof,area_roof,thermal
 area_floor,area_floor,thermal
-hdd,hdd_chilled,climate
+hdd,hdd_tabula,climate
 en_consumption,en_consumption_2015_EU,energy
+discount_rate,discount_rate,activity
+barriers_rent,barriers_rent,activity
+barriers_mfh,barriers_mfh,activity

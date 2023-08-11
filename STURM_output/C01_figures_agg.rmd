@@ -29,24 +29,20 @@ if (!file.exists(file)) {
 
 save_dir <- paste("STURM_output", "figures", sep = "/")
 print(dir.exists(save_dir))
-```
 
-```{r}
 # Read output files
 data <- read.csv(file)
 print(summary(data))
 print(unique(data$variable))
-```
 
-```{r}
 # Reconstuction flows
 flows <- c("cost_renovation_EUR", "n_renovation")
 stp <- 5
 data <- data %>%
   mutate(year = ifelse(variable %in% flows, year - stp, year),
          value = ifelse(variable %in% flows, value / stp, value))
-
 ```
+
 
 ## Figures 
 

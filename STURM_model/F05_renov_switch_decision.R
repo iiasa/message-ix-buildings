@@ -12,29 +12,31 @@ fun_lcc <- function(capex, opex, rate, duration) {
   return(lcc)
 }
 
-fun_discount_factor <- function(discount, duration) {
-  temp <- duration %>%
-    left_join(data.frame(discount = discount), by = character()) %>%
+fun_discount_factor <- function(bld_cases_fuel, discount, duration) {
+
+  # if discount rate is a float then convert to a data.frame
+  if (is.numeric(discount)) {
+    discount <- data.frame(discount_rate = discount)
+  }
+
+  if (is.numeric(duration)) {
+    duration <- data.frame(lifetime_ren = duration,
+      region_bld = unique(bld_cases_fuel$region_bld))
+  }
+
+  bld_cases_fuel <- distinct(select(bld_cases_fuel,
+    intersect(c(names(discount), names(duration)),
+    names(bld_cases_fuel))))
+
+  temp <- bld_cases_fuel %>%
+    left_join(duration) %>%
+    left_join(discount) %>%
     mutate(discount_factor =
-      (1 - (1 + discount)^-lifetime_ren) / discount)
-  temp <- select(temp, setdiff(names(temp), c("discount", "lifetime_ren")))
+      (1 - (1 + discount_rate)^-lifetime_ren) / discount_rate)
+  temp <- select(temp, setdiff(names(temp), c("discount_rate", "lifetime_ren")))
   return(temp)
 }
 
-left_join_variable <- function(df1, variable) {
-  if (is.numeric(variable)) {
-    result <- left_join(df1, data.frame(Float_Var = variable), by = character())
-  } else if (is.data.frame(variable) && any(names(df1) %in% names(variable))) {
-    result <- left_join(df1, variable,
-      by = intersect(names(df1), names(variable)))
-  } else if (is.data.frame(variable)) {
-    result <- left_join(df1, variable, by = character())
-  } else {
-    stop("Unsupported variable type!")
-  }
-  
-  return(result)
-}
 
 
 fun_utility_ren_shell <- function(yrs,
@@ -51,7 +53,8 @@ fun_utility_ren_shell <- function(yrs,
                           sub_ren_shell = NULL,
                           full = FALSE) {
 
-  en_hh_tot <- select(en_hh_tot, -c("budget_share", "heating_intensity"))
+  en_hh_tot <- select(en_hh_tot, -c("budget_share",
+    "heating_intensity", "en_hh_std"))
   # Operational energy costs before/after renovation
   en_hh_tot_ren_fin <- en_hh_tot %>%
     rename(eneff_f = eneff)
@@ -75,7 +78,8 @@ fun_utility_ren_shell <- function(yrs,
       select(-c("sub_ren_shell"))
   }
 
-  discount_factor <- fun_discount_factor(discount_ren, lifetime_ren)
+  discount_factor <- fun_discount_factor(bld_cases_fuel,
+    discount_ren, lifetime_ren)
 
   bld_age_exst <- ct_bld_age %>%
     filter(year_i < yrs[i]) %>%
@@ -161,7 +165,7 @@ fun_ms_ren_shell_endogenous <- function(yrs,
                           sub_ren_shell,
                           en_hh_tot,
                           lifetime_ren,
-                          discount_ren = 0.05,
+                          discount_ren,
                           parameters = NULL) {
   print(paste0("Running renovation decisions - year ", yrs[i]))
 
@@ -185,7 +189,15 @@ fun_ms_ren_shell_endogenous <- function(yrs,
     utility_ren_hh <- utility_ren_hh %>%
       left_join(parameters) %>%
       mutate(utility_ren = utility_ren * scaling_factor + constant) %>%
-      select(-c("scaling_factor", "constant"))
+      mutate(barrier_mfh = ifelse(arch == "mfh",
+        barrier_mfh, 0)) %>%
+      mutate(utility_ren = ifelse(arch == "mfh",
+        utility_ren - barrier_mfh, utility_ren)) %>%
+      mutate(barrier_rent = ifelse(tenr == "rent",
+        barrier_rent, 0)) %>%
+      mutate(utility_ren = ifelse(tenr == "rent",
+        utility_ren - barrier_rent, utility_ren)) %>%
+      select(-c("scaling_factor", "constant", "barrier_rent", "barrier_mfh"))
   }
 
   # All possible combinations covered (including no renovation)
@@ -305,7 +317,7 @@ fun_utility_heat <- function(yrs,
                         inertia = NULL,
                         full = FALSE) {
 
-  en_hh_tot <- select(en_hh_tot, -c("budget_share", "heating_intensity"))
+  en_hh_tot <- select(en_hh_tot, -c("budget_share", "heating_intensity", "en_hh_std"))
 
   # Operational energy costs before/after renovation
   en_hh_tot_switch_fin <- en_hh_tot %>%
@@ -332,7 +344,8 @@ fun_utility_heat <- function(yrs,
   }
 
   # Discount factor
-  discount_factor <- (1 - (1 + discount_heat)^-lifetime_heat) / discount_heat
+  discount_factor <- fun_discount_factor(bld_stock,
+    discount_heat, lifetime_heat)
   
   # Calculate utility
   utility_heat_hh <- bld_stock %>%
@@ -353,19 +366,18 @@ fun_utility_heat <- function(yrs,
     left_join(cost_invest_heat) %>%
     # Operation costs after renovation
     left_join(en_hh_tot_switch_fin %>% select(-c("fuel", "fuel_cool"))) %>%
+    left_join(discount_factor) %>%
     # Calculate utility
     mutate(utility_heat =
       (- cost_invest_heat + cost_op * discount_factor) / 1e3) %>%
     filter((ct_switch_heat == 1) | (bld_age == "p5")) %>%
     filter(ct_heat == 1) %>%
     select(-c("cost_op", "en_hh",
-      "ct_switch_heat", "ct_fuel_excl_reg", "ct_heat"))
+      "ct_switch_heat", "ct_fuel_excl_reg", "ct_heat", "discount_factor"))
 
   if (!full) {
     utility_heat_hh <- select(utility_heat_hh, -c("cost_invest_heat"))
   }
-
-  print('ok')
 
   if (!is.null(inertia)) {
     utility_heat_hh <- utility_heat_hh %>%
@@ -393,8 +405,8 @@ fun_ms_switch_heat_endogenous <- function(yrs,
                           en_hh_tot,
                           ct_heat,
                           ct_heat_new,
+                          discount_heat,
                           lifetime_heat = 20,
-                          discount_heat = 0.05,
                           inertia = NULL,
                           parameters = NULL) {
   print(paste0("Running renovation decisions - year ", yrs[i]))

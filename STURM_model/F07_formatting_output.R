@@ -323,7 +323,7 @@ fun_format_bld_stock_energy <- function(
                                         en_hh_hw_scen
                                         ) {
 
-    en_hh_tot <- select(en_hh_tot, -c("budget_share", "heating_intensity"))
+    en_hh_tot <- select(en_hh_tot, -c("budget_share", "heating_intensity", "en_hh_std"))
 
     test <- bld_det_i %>%
         left_join(en_hh_tot) %>%
@@ -333,6 +333,9 @@ fun_format_bld_stock_energy <- function(
         ungroup() %>%
         mutate(en_calculation = en_calculation / 11630 / 1e6)
 
+    # fr <- "C-WEU-FRA"
+    # round(sum(filter(bld_det_i, year == yrs[i], region_bld == fr)$n_units_fuel) / 1e6, 5)
+    # round(sum(filter(en_stock_i, year == yrs[i], region_bld == fr)$n_units_fuel) / 1e6, 5)
 
 
     # Aggregate at fuel level for keeping track of the stock
@@ -352,27 +355,25 @@ fun_format_bld_stock_energy <- function(
         mutate(year = yrs[i]) %>%
         # Issue matching periods of construction when definition is different!
         left_join(bld_det_i) %>%
-        # Add "v_no_heat" category
-        pivot_wider(
-            names_from = "fuel_heat",
-            values_from = "n_units_fuel"
-        ) %>%
-        mutate(v_no_heat = 0) %>%
-        pivot_longer(
-            cols = c(sort(unique(ct_fuel_comb$fuel_heat)), "v_no_heat"),
-            names_to = "fuel_heat",
-            values_to = "n_units_fuel"
-        ) %>%
         filter(!is.na(n_units_fuel)) %>%
-        group_by_at(paste(c(
-            "region_bld", "urt", "inc_cl", "arch",
-            "year", "clim", "bld_age", "eneff"
-        ))) %>%
+        group_by_at(setdiff(names(.),
+            c("fuel", "fuel_heat", "fuel_cool", "n_units_fuel"))) %>%
         # Calculate n_units_eneff to account later for buildings with no heating
         mutate(n_units_eneff = sum(n_units_fuel)) %>%
         ungroup()
 
+    no_heat <- en_stock_i %>%
+        mutate(fuel_heat = "v_no_heat",
+            fuel = "v_no_heat") %>%
+        mutate(n_units_fuel = 0) %>%
+        distinct()
+
+    en_stock_i <- bind_rows(en_stock_i, no_heat)
+
+
     if (sector == "resid") {
+        # print(summarize(group_by_at(en_stock_i, c("region_bld", "year")), n = sum(n_units_fuel)), n=100)
+
         en_stock_i <- en_stock_i %>%
             left_join(shr_need_heat) %>%
             # Rescale number of units based on fuel

@@ -2,14 +2,23 @@ library(dplyr)
 library(data.table)
 library(rootSolve)
 
-ms_agg_ren_shell <- function(utility_obs, constant, scale, stp) {
+ms_agg_ren_shell <- function(utility_obs, constant, scale, stp,
+    barrier_rent, barrier_mfh) {
 
     ren_det <- utility_obs %>%
         left_join(constant,
             by = c("region_bld", "mat", "eneff_f")) %>%
         left_join(scale,
             by = c("region_bld")) %>%
+        left_join(barrier_rent,
+            by = c("region_bld")) %>%
+        left_join(barrier_mfh,
+            by = c("region_bld")) %>%
         mutate(utility = utility_ren * scale + constant) %>%
+        mutate(utility = ifelse(arch == "mfh",
+            utility - barrier_mfh, utility)) %>%
+        mutate(utility = ifelse(tenr == "rent",
+            utility - barrier_rent, utility)) %>%
         group_by_at(setdiff(names(utility_obs),
             c("eneff_f", "utility_ren"))) %>%
         mutate(utility_exp_sum = sum(exp(utility)) + 1) %>%
@@ -33,10 +42,38 @@ ms_agg_ren_shell <- function(utility_obs, constant, scale, stp) {
                 n_units_fuel = sum(n_units_fuel)) %>%
         ungroup() %>%
         mutate(ms = n_renovation / n_units_fuel)
+    
+    ren_det <- ren_det %>%
+        group_by_at(setdiff(names(ren_det),
+            c("n_units_fuel", "floor_size", "eneff_f", "n_renovation",
+                "cost_invest_hh", "en_hh_init", "constant",
+                "en_saving", "cost_op_saving",
+                "ms", "utility", "scale", "scaling_factor"))) %>%
+        summarize(n_renovation = sum(n_renovation),
+            n_units_fuel = first(n_units_fuel)) %>%
+        ungroup()
+    
+    # Multi-family dwellings
+    temp <- ren_det %>%
+        group_by_at(c("region_bld", "arch")) %>%
+        summarize(rate = sum(n_renovation) / sum(n_units_fuel)) %>%
+        ungroup()
+    ratio_mfh <- filter(temp, arch == "mfh")$rate / filter(temp, arch == "sfh")$rate
+
+    # Rental dwellings
+    temp <- ren_det %>%
+        group_by_at(c("region_bld", "tenr")) %>%
+        summarize(rate = sum(n_renovation) / sum(n_units_fuel)) %>%
+        ungroup()
+    ratio_rent <- filter(temp, tenr == "rent")$rate / filter(temp, tenr == "own")$rate
+
 
     output <- list(
+        ms_agg = ms_agg,
         elasticity = elasticity$elasticity,
-        ms_agg = ms_agg
+        ratio_mfh = ratio_mfh,
+        ratio_rent = ratio_rent
+
     )
     return(output)
 }
@@ -55,7 +92,7 @@ fun_calibration_ren_shell <- function(yrs,
                           ms_shell_ren,
                           stp,
                           path_out,
-                          discount_ren = 0.05) {
+                          discount_ren) {
     
     start_calibration <- Sys.time()
 
@@ -89,8 +126,8 @@ fun_calibration_ren_shell <- function(yrs,
         summarize(min_value = min(utility_ren),
                   max_value = max(utility_ren)) %>%
         mutate(scaling_factor = ifelse(max_value > 0,
-            (5 - (-5)) / (max_value - min_value),
-            5 / abs(min_value))) %>%
+            (4 - (-4)) / (max_value - min_value),
+            4 / abs(min_value))) %>%
         select(-c("min_value", "max_value"))
 
     utility_ren_hh <- utility_ren_hh %>%
@@ -104,10 +141,11 @@ fun_calibration_ren_shell <- function(yrs,
         rename(eneff_f = eneff, target = value) %>%
         mutate(target = if_else(target == 0, 0.001, target))
 
-
     objective_function <- function(x, utility, tgt, stp) {
-        constant <- x[1:length(x) - 1]
-        scale <- x[length(x)]
+        constant <- x[1:nrow(tgt)]
+        scale <- x[nrow(tgt) + 1]
+        barrier_rent <- x[nrow(tgt) + 2]
+        barrier_mfh <- x[nrow(tgt) + 3]
 
         cst <- tgt %>%
             mutate(constant = constant) %>%
@@ -116,12 +154,23 @@ fun_calibration_ren_shell <- function(yrs,
         scale <- tibble(
             region_bld = unique(tgt$region_bld),
             scale = scale)
+        barrier_rent <- tibble(
+            region_bld = unique(tgt$region_bld),
+            barrier_rent = barrier_rent)
+        barrier_mfh <- tibble(
+            region_bld = unique(tgt$region_bld),
+            barrier_mfh = barrier_mfh)
         
-        output <- ms_agg_ren_shell(utility, cst, scale, stp)
+        output <- ms_agg_ren_shell(utility, cst, scale, stp,
+            barrier_rent, barrier_mfh)
 
         ms_agg <- output$ms_agg %>%
             left_join(tgt, by = c("region_bld", "mat", "eneff_f"))
-        objective <- c(ms_agg$target - ms_agg$ms, output$elasticity - (- 1))
+        objective <- c(ms_agg$target - ms_agg$ms,
+            output$elasticity - (- 1),
+            output$ratio_mfh - 0.8,
+            output$ratio_rent - 0.8
+            )
         return(objective)
     }
 
@@ -132,61 +181,74 @@ fun_calibration_ren_shell <- function(yrs,
                             eneff_f = character(),
                             target = double(),
                             constant = double(),
-                            scale = double())
+                            scale = double(),
+                            barrier_rent = double(),
+                            barrier_mfh = double())
     for (region in unique(utility_ren_hh$region_bld)) {
 
         print(paste("Region:", region))
         u <- filter(utility_ren_hh, region_bld == region)
         t <- filter(target, region_bld == region)
         x <- rep(0, times = nrow(t))
-        x <- c(x, 1)
+        x <- c(x, 1, 0, 0)
 
         root <- multiroot(objective_function, start = x,
             maxiter = 1e3, utility = u, tgt = t, stp = stp)
-        constant <- root$root[1:length(root$root) - 1]
-        scale <- root$root[length(root$root)]
+
+        constant <- root$root[1:nrow(t)]
+        scale <- root$root[nrow(t) + 1]
+        barrier_rent <- root$root[nrow(t) + 2]
+        barrier_mfh <- root$root[nrow(t) + 3]
+
         result <- bind_rows(result,
-            mutate(t, constant = constant, scale = scale))
+            mutate(t, constant = constant, scale = scale,
+                barrier_rent = barrier_rent, barrier_mfh = barrier_mfh))
     }
 
-    constant <- select(result, -c("target", "scale"))
+    constant <- select(result,
+        -c("target", "scale", "barrier_rent", "barrier_mfh"))
     scale <- result %>%
         group_by(region_bld) %>%
         summarise(scale = first(scale)) %>%
         mutate(scale = ifelse(is.na(scale), 1, scale))
+    barrier_rent <- result %>%
+        group_by(region_bld) %>%
+        summarise(barrier_rent = first(barrier_rent)) %>%
+        mutate(barrier_rent = ifelse(is.na(barrier_rent), 0, barrier_rent))
+    barrier_mfh <- result %>%
+        group_by(region_bld) %>%
+        summarise(barrier_mfh = first(barrier_mfh)) %>%
+        mutate(barrier_mfh = ifelse(is.na(barrier_mfh), 0, barrier_mfh))
 
     ms_ini <- ms_agg_ren_shell(utility_ren_hh,
-        mutate(constant, constant = 0), mutate(scale, scale = 1), stp)$ms_agg %>%
+        mutate(constant, constant = 0), mutate(scale, scale = 1), stp,
+        mutate(barrier_rent, barrier_rent = 0),
+        mutate(barrier_mfh, barrier_mfh = 0))$ms_agg %>%
         rename(ms_ini = ms) %>%
         select(-c("n_renovation", "n_units_fuel"))
 
-    ms <- ms_agg_ren_shell(utility_ren_hh, constant, scale, stp)$ms_agg %>%
+    ms <- ms_agg_ren_shell(utility_ren_hh, constant, scale, stp,
+        barrier_rent, barrier_mfh)$ms_agg %>%
         left_join(target) %>%
         left_join(constant) %>%
+        left_join(barrier_rent) %>%
+        left_join(barrier_mfh) %>%
         left_join(ms_ini) %>%
         left_join(scale) %>%
         left_join(scaling_factor %>%
             rename(scale_ini = scaling_factor)) %>%
         mutate(scaling_factor = scale_ini * scale) %>%
         select(c("region_bld", "mat", "eneff_f", "ms_ini",
-            "target", "ms", "constant", "scale", "scale_ini", "scaling_factor"))
-
-
-    utility_test <- utility_ren_hh %>%
-        left_join(scale) %>%
-        left_join(constant) %>%
-        mutate(utility_ren_final = utility_ren * scale + constant)
-    # write.csv(utility_test, "utility_test.csv")
-    ms_test <- ms_agg_ren_shell(select(utility_test, -c("constant", "scale")),
-        mutate(constant, constant = 0), mutate(scale, scale = 1), stp)$ms_agg
-
+            "target", "ms", "constant", "barrier_rent", "barrier_mfh",
+            "scale", "scale_ini", "scaling_factor"))
 
     write.csv(ms, paste0(path_out, "report_calibration_ren_shell.csv"))
     print("Dumped calibration results in
         STURM_output/report_calibration_ren_shell.csv")
 
     output <- ms %>%
-        select(c("region_bld", "mat", "eneff_f", "constant")) %>%
+        select(c("region_bld", "mat", "eneff_f", "constant",
+            "barrier_rent", "barrier_mfh")) %>%
         left_join(scale) %>%
         left_join(scaling_factor %>%
             rename(scale_ini = scaling_factor)) %>%
@@ -214,8 +276,8 @@ fun_calibration_switch_heat <- function(yrs,
                           ct_heat,
                           ct_heat_new,
                           path_out,
+                          discount_heat,
                           lifetime_heat = 20,
-                          discount_heat = 0.05,
                           inertia = NULL) {
     
     start_calibration <- Sys.time()
@@ -238,7 +300,7 @@ fun_calibration_switch_heat <- function(yrs,
         group_by(region_bld) %>%
         summarize(min_value = min(utility_heat),
                   max_value = max(utility_heat)) %>%
-        mutate(scaling_factor = (5 - (-5)) / (max_value - min_value)) %>%
+        mutate(scaling_factor = (4 - (-4)) / (max_value - min_value)) %>%
         select(-c("min_value", "max_value"))
 
     utility_heat_hh <- utility_heat_hh %>%

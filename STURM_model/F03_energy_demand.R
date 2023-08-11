@@ -63,11 +63,20 @@ fun_space_heating_calculation <- function(bld_cases_fuel,
                                       area_windows,
                                       hdd,
                                       d_hs = 200,
-                                      i_sol = 200) {
+                                      i_sol = 200,
+                                      simplified = TRUE) {
 
   attributes <- c("clim", "region_bld", "arch", "bld_age")
   
-  h_ve <- c_air * (n_air_infiltr + n_air_use) * h_room              
+  
+  if (!simplified) {
+    h_ve <- c_air * (n_air_infiltr + n_air_use) * h_room
+  } else {
+    h_ve <- 0
+    u_th_br <- 0
+    i_sol <- 0
+    d_hs <- 0
+  }
 
   h_tr <- bld_cases_fuel %>%
     select(attributes) %>%
@@ -217,7 +226,7 @@ fun_en_sim <- function(sector,
     select(-c("fuel_heat", "en_dem_heat")) %>%
     distinct()
 
-  en_hh_tot <- NULL
+  en_hh <- NULL
   # Calculate household energy demand - for cost calculations - residential only
   if (sector == "resid") {
 
@@ -225,7 +234,7 @@ fun_en_sim <- function(sector,
     en_hh <- en_m2_scen_heat %>%
       rename(en_m2_std = en_dem_heat) %>%
       left_join(hh_size) %>%
-      filter(year == yrs[i]) %>%
+      # filter(year == yrs[i]) %>%
      # Add floor surface area
       left_join(floor_cap) %>%
       # Calculate total energy demand per household
@@ -240,7 +249,7 @@ fun_en_sim <- function(sector,
       mutate(heating_intensity = alpha * (budget_share)**p_elasticity) %>%
       mutate(en_hh = en_hh_std * heating_intensity) %>%
       mutate(cost_op = en_hh * price_en) %>%
-      select(-c(en_m2_std, hh_size, floor_cap, price_en, fuel, en_hh_std,
+      select(-c(en_m2_std, hh_size, floor_cap, price_en, fuel,
         cost_op_std, income)) %>%
       left_join(bld_cases_fuel)
 

@@ -27,8 +27,8 @@ fun_stock_aggr <- function(sector,
                             ct_eneff,
                             ct_fuel_comb,
                             shr_mat,
-                            shr_arch
-                            ) {
+                            shr_arch,
+                            path_out = NULL) {
 
   # Total number of residential building units:
   #  population / average household size
@@ -75,7 +75,17 @@ fun_stock_aggr <- function(sector,
     mutate(n_units_aggr = bld_units * shr_mat * shr_arch) %>%
     select(-c(bld_units, shr_mat, shr_arch))
 
-  try(if (nrow(stock_aggr) !=
+  temp <- stock_aggr %>%
+    group_by_at(c("region_bld", "year")) %>%
+    summarize(n = sum(n_units_aggr)) %>%
+    ungroup()
+  
+  p <- pop %>%
+    group_by_at(c("region_bld", "year")) %>%
+    summarize(pop = sum(pop)) %>%
+    ungroup()
+
+  try(if(nrow(stock_aggr) !=
     nrow(distinct(stock_aggr %>% select(-c(n_units_aggr)))))
     stop("Error in aggregated stock dataset! 
       Multiple records for same combinations in stock_aggr"))

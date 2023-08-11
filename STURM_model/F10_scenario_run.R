@@ -165,7 +165,7 @@ run_scenario <- function(run,
     mutate(ct_fuel_excl_reg = 1) %>%
     select(-ms_switch_fuel_exo)
 
-  # For each region_bld if fuel_heat is not add to ct_fuel_excl_reg  
+  # For each region_bld if fuel_heat is not add to ct_fuel_excl_reg
   temp <- cross_join(cat$ct_fuel, select_at(cat$geo_data, "region_bld")) %>%
     left_join(d$shr_fuel_heat_base) %>%
     mutate(ct_fuel_excl_reg = ifelse(is.na(shr_fuel_heat_base),
@@ -308,18 +308,59 @@ run_scenario <- function(run,
     en_hh_tot <- lst_en_i$en_hh_tot
     rm(lst_en_i)
 
+    # Define a function to calculate the weighted median
+    weighted_median <- function(x, w) {
+      x <- x[order(x)]
+      cum_w <- cumsum(w[order(x)])
+      median_idx <- which(cum_w >= sum(w) / 2)[1]
+      return(x[median_idx])
+    }
+
     # Calibration of energy demand
     shr_en <- bld_det_ini %>%
       left_join(en_hh_tot) %>%
-      mutate(en_segment = en_hh * n_units_fuel) %>%
+      left_join(d$hh_size) %>%
+      left_join(d$floor_cap) %>%
+      mutate(floor_size = floor_cap * hh_size * n_units_fuel) %>%
+      mutate(en_segment = en_hh * n_units_fuel,
+        en_std_segment = en_hh_std * n_units_fuel)
+
+    # Calculate the weighted median budget_share for each country
+    median_budget_share <- shr_en %>%
+      group_by(region_bld) %>%
+      summarize(median_budget_share =
+        weighted_median(budget_share, n_units_fuel))
+
+    shr_en <- shr_en %>%
+      left_join(median_budget_share) %>%
+      mutate(energy_poverty =
+        ifelse(budget_share >= 2 * median_budget_share, n_units_fuel, 0)) %>%
       group_by_at(setdiff(names(d$en_consumption), "en_consumption")) %>%
-      summarize(en_calculation = sum(en_segment)) %>%
+      summarize(en_calculation = sum(en_segment),
+        en_calculation_std = sum(en_std_segment),
+        n_units_fuel = sum(n_units_fuel),
+        floor_size = sum(floor_size),
+        en_poverty = sum(energy_poverty)) %>%
       ungroup() %>%
       # Conversion from kWh to ktoe
-      mutate(en_calculation = en_calculation / 11630 / 1e3) %>%
+      mutate(
+        en_calculation_dw = en_calculation / n_units_fuel,
+        en_calculation_unit = en_calculation / floor_size,
+        en_calculation_std_unit = en_calculation_std / floor_size,
+        en_calculation = en_calculation / 11630 / 1e3,
+        en_calculation_std = en_calculation_std / 11630 / 1e3,
+        n_units_fuel = n_units_fuel / 1e6,
+        en_poverty = en_poverty / 1e6,
+        sh_en_poverty = en_poverty / n_units_fuel,
+        floor_size = floor_size / 1e6) %>%
       left_join(d$en_consumption) %>%
-      mutate(shr_en = en_consumption / en_calculation) %>%
-      select(-c("en_consumption", "en_calculation"))
+      mutate(shr_en = en_consumption / en_calculation)
+    write.csv(shr_en, paste0(path_out, "calibration_consumption.csv"))
+
+    shr_en <- select(shr_en, -c("en_consumption", "en_calculation",
+      "n_units_fuel", "floor_size", "en_calculation_std",
+      "en_calculation_unit",  "en_calculation_std_unit",
+      "en_calculation_dw", "en_poverty", "sh_en_poverty"))
     
     en_hh_tot <- en_hh_tot %>%
       left_join(shr_en) %>%
@@ -366,8 +407,7 @@ run_scenario <- function(run,
       print(paste("Start scenario run", sector, "for year", yrs[i]))
       stp <- yrs[i] - yrs[i - 1]
 
-      print(paste("Calculate energy demand intensities 
-        for space heating and cooling"))
+      print(paste("Calculate energy demand intensities for space heating and cooling"))
       lst_en_i <- fun_en_sim(
         sector,
         yrs,
@@ -459,7 +499,8 @@ run_scenario <- function(run,
                           d$rate_shell_ren_exo,
                           d$ms_shell_ren_exo,
                           stp,
-                          path_out
+                          path_out,
+                          d$discount_rate
                         )
         }
       }
@@ -476,6 +517,7 @@ run_scenario <- function(run,
                           d$sub_ren_shell,
                           en_hh_tot,
                           d$lifetime_ren,
+                          discount_ren = d$discount_rate,
                           parameters = parameters_renovation)
       } else {
         temp <- fun_ms_ren_shell_exogenous(
@@ -502,8 +544,8 @@ run_scenario <- function(run,
       bld_det_i <- bind_rows(bld_det_i, new_det_i)
 
       # Test consistency of stock turnover
-      if (round(sum(bld_det_i$n_units_fuel) / 1e6, 0) !=
-        round(sum(filter(stock_aggr, year == yrs[i])$n_units_aggr) / 1e6, 0)) {
+      if (round(sum(bld_det_i$n_units_fuel) / 1e6, 1) !=
+        round(sum(filter(stock_aggr, year == yrs[i])$n_units_aggr) / 1e6, 1)) {
         stop("Error in stock turnover calculation! 
           Sum of new and existing buildings is not equal to the total stock.")
       } else {
@@ -529,8 +571,8 @@ run_scenario <- function(run,
                     d$ct_heat,
                     d$ct_heat_new,
                     path_out,
+                    d$discount_rate,
                     lifetime_heat = 20,
-                    discount_heat = 0.05,
                     inertia = d$inertia)
         }
 
@@ -549,8 +591,8 @@ run_scenario <- function(run,
                           en_hh_tot,
                           d$ct_heat,
                           d$ct_heat_new,
+                          d$discount_rate,
                           lifetime_heat = 20,
-                          discount_heat = 0.05,
                           inertia = d$inertia,
                           parameters = parameters_heater)
 
@@ -569,6 +611,15 @@ run_scenario <- function(run,
                                             stp,
                                             yrs[i]
                                )
+      # Test consistency of stock turnover
+      if (round(sum(bld_det_i$n_units_fuel) / 1e6, 1) !=
+        round(sum(filter(stock_aggr, year == yrs[i])$n_units_aggr) / 1e6, 1)) {
+        stop("Error in stock turnover calculation! 
+          Sum of new and existing buildings is not equal to the total stock.")
+      } else {
+        print("Test stock turnover passed")
+      }
+
 
       # Extract dataframes from list
       report <- fun_format_output(i,

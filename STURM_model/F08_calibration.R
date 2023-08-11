@@ -471,3 +471,68 @@ fun_calibration_switch_heat <- function(yrs,
     return(output)
 
 }
+
+
+fun_calibration_consumption <- function(bld_det_ini,
+                                        en_hh_tot,
+                                        hh_size,
+                                        floor_cap,
+                                        en_consumption,
+                                        path_out
+                                        ){
+    
+    # Define a function to calculate the weighted median
+    weighted_median <- function(x, w) {
+      x <- x[order(x)]
+      cum_w <- cumsum(w[order(x)])
+      median_idx <- which(cum_w >= sum(w) / 2)[1]
+      return(x[median_idx])
+    }
+
+    # Calibration of energy demand
+    bld_energy <- bld_det_ini %>%
+      left_join(en_hh_tot) %>%
+      left_join(hh_size) %>%
+      left_join(floor_cap) %>%
+      mutate(floor_size = floor_cap * hh_size * n_units_fuel) %>%
+      mutate(en_segment = en_hh * n_units_fuel,
+        en_std_segment = en_hh_std * n_units_fuel)
+
+    # Calculate the weighted median budget_share for each country
+    median_budget_share <- bld_energy %>%
+      group_by(region_bld) %>%
+      summarize(median_budget_share =
+        weighted_median(budget_share, n_units_fuel))
+
+    bld_energy <- bld_energy %>%
+      left_join(median_budget_share) %>%
+      mutate(energy_poverty =
+        ifelse(budget_share >= 2 * median_budget_share, n_units_fuel, 0)) %>%
+      group_by_at(setdiff(names(en_consumption), "en_consumption")) %>%
+      summarize(en_calculation = sum(en_segment),
+        en_calculation_std = sum(en_std_segment),
+        n_units_fuel = sum(n_units_fuel),
+        floor_size = sum(floor_size),
+        en_poverty = sum(energy_poverty)) %>%
+      ungroup() %>%
+      # Conversion from kWh to ktoe
+      mutate(
+        en_calculation_dw = en_calculation / n_units_fuel,
+        en_calculation_unit = en_calculation / floor_size,
+        en_calculation_std_unit = en_calculation_std / floor_size,
+        en_calculation = en_calculation / 11630 / 1e3,
+        en_calculation_std = en_calculation_std / 11630 / 1e3,
+        n_units_fuel = n_units_fuel / 1e6,
+        en_poverty = en_poverty / 1e6,
+        sh_en_poverty = en_poverty / n_units_fuel,
+        floor_size = floor_size / 1e6) %>%
+      left_join(en_consumption) %>%
+      mutate(shr_en = en_consumption / en_calculation)
+    write.csv(bld_energy, paste0(path_out, "calibration_consumption.csv"))
+
+    shr_en <- select(bld_energy, -c("en_consumption", "en_calculation",
+      "n_units_fuel", "floor_size", "en_calculation_std",
+      "en_calculation_unit",  "en_calculation_std_unit",
+      "en_calculation_dw", "en_poverty", "sh_en_poverty"))
+    return(shr_en)
+}

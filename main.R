@@ -34,7 +34,6 @@ runs <- c(
     )
 
 runs <- c("EU")
-# runs <- "EU_medium_shell"
 
 region <- c("WEU", "EEU")
 sector <- "resid"

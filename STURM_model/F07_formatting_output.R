@@ -26,7 +26,8 @@ fun_format_output <- function(i,
                               dem_det_age_i = NULL,
                               dem_det_slum_age_i = NULL,
                               new_det_age_i = NULL,
-                              new_det_slum_age_i = NULL) {
+                              new_det_slum_age_i = NULL,
+                              shr_en = NULL) {
     if ("energy" %in% report_var) {
         en_stock_i <- fun_format_bld_stock_energy(
             i,
@@ -45,6 +46,7 @@ fun_format_output <- function(i,
             en_hh_hw_scen
         )
         report$en_stock <- bind_rows(report$en_stock, en_stock_i)
+        
 
         # Aggregate results at fuel level
         det_rows <- en_stock_i %>%
@@ -87,6 +89,17 @@ fun_format_output <- function(i,
 
         temp <- bind_rows(temp, det_rows)
 
+        # Add aggregated calibration
+        if (!is.null(shr_en)) {
+
+            vars <- c("heat_kWh", "cost_heat_EUR")
+            temp <- temp %>%
+                left_join(shr_en) %>%
+                mutate(value =
+                    ifelse(variable %in% vars, value * shr_en, value)) %>%
+                select(-c("shr_en"))
+        }
+
         # Adding EU total values
         agg <- temp %>%
             group_by_at(c("year", "variable", "resolution")) %>%
@@ -100,7 +113,7 @@ fun_format_output <- function(i,
             arrange(region_bld, year, variable, resolution)
 
         report$agg_result <- bind_rows(report$agg_result, temp)
-        
+
         if (!is.null(cost_renovation) && !is.null(ren_det_i)) {
             cost_renovation <- cost_renovation %>%
                 left_join(hh_size) %>%
@@ -333,11 +346,6 @@ fun_format_bld_stock_energy <- function(
         ungroup() %>%
         mutate(en_calculation = en_calculation / 11630 / 1e6)
 
-    # fr <- "C-WEU-FRA"
-    # round(sum(filter(bld_det_i, year == yrs[i], region_bld == fr)$n_units_fuel) / 1e6, 5)
-    # round(sum(filter(en_stock_i, year == yrs[i], region_bld == fr)$n_units_fuel) / 1e6, 5)
-
-
     # Aggregate at fuel level for keeping track of the stock
     bld_det_i <- bld_det_i %>%
         # Select all variables, except the ones indicated, for grouping
@@ -372,7 +380,6 @@ fun_format_bld_stock_energy <- function(
 
 
     if (sector == "resid") {
-        # print(summarize(group_by_at(en_stock_i, c("region_bld", "year")), n = sum(n_units_fuel)), n=100)
 
         en_stock_i <- en_stock_i %>%
             left_join(shr_need_heat) %>%
@@ -388,17 +395,11 @@ fun_format_bld_stock_energy <- function(
             # left_join(en_m2_scen_heat) %>%
             left_join(en_m2_scen_cool) %>%
             left_join(en_hh_tot %>% rename(cost_energy_hh = cost_op)) %>%
-            # mutate(en_segment = ifelse(is.na(en_hh), 0, en_hh * n_units_fuel)) %>%
-            # group_by_at("region_bld") %>%
-            # summarize(en_calculation = sum(en_segment)) %>%
-            # ungroup() %>%
-            # mutate(en_calculation = en_calculation / 11630 / 1e6) %>%
             mutate(cost_energy_hh = cost_energy_hh * n_units_fuel) %>%
             left_join(en_hh_hw_scen) %>%
             # convert n. units to millions
             mutate(floor_Mm2 = n_units_fuel / 1e6 * hh_size * floor_cap) %>%
             mutate(floor_heat_Mm2 = floor_Mm2) %>%
-            # mutate(floor_heat_Mm2 = ifelse(acc_heat == 1, floor_Mm2, 0)) %>%
             mutate(floor_cool_Mm2 =
                     ifelse(shr_acc_cool == 1, floor_Mm2 * shr_acc_cool, 0)
             ) %>%

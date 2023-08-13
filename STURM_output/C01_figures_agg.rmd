@@ -84,6 +84,13 @@ var <- "heat_kWh"
 ref <- "floor_m2"
 path <- "_kwh_m2_countries.png"
 make_plot_lines(data, var, ref, path)
+
+
+var <- "heat_tCO2"
+ref <- "floor_m2"
+path <- "_tCO2_m2_countries.png"
+make_plot_lines(data, var, ref, path)
+
 ```
 
 
@@ -156,6 +163,26 @@ plot_lines(temp,
           subplot = TRUE,
           free_y = TRUE,
           save_path = paste(save_dir, paste0(scenario, "_mtoe_countries.png"), sep = "/"))
+```
+
+#### Emission 
+```{r}
+temp <- data %>%
+  filter(variable == "heat_tCO2") %>%
+  filter(resolution %in% "all") %>%
+  select(-c("variable", "resolution")) %>%
+  mutate(value = value / 1e6)
+
+plot_lines(temp,
+          x_column = "year",
+          y_column = "value",
+          group_column = "region_bld",
+          ncol = 4,
+          y_label = "Space heating emission\nMtCO2",
+          subplot = TRUE,
+          free_y = TRUE,
+          save_path = paste(save_dir, paste0(scenario, "_mtco2_countries.png"), sep = "/"))
+
 ```
 
 #### Number of renovations

@@ -15,11 +15,14 @@ print(paste("Working directory is:", getwd()))
 # Loding figures setttings and functions
 source("STURM_output/C00_plots.R")
 
-run <- "scenarios_EU_policies"
+# run <- "scenarios_EU_policies"
+run <- "scenarios_test_policies"
 scenarios <- c(
   "EU" = "Current policies",
-  "EU_medium_heat" = "Medium additional policies heat-pumps",
-  "EU_medium_shell" = "Medium additional policies renovation"
+  "EU_no_exogenous" = "No renovation",
+  "EU_exogenous" = "Current renovation rate"
+  # "EU_medium_heat" = "Medium additional policies heat-pumps",
+  # "EU_medium_shell" = "Medium additional policies renovation"
   )
 ```
 

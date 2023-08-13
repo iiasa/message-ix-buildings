@@ -309,8 +309,11 @@ read_emission_factors <- function(emission_factors,
       select(-c(emission_factors))
     
     emission_factors <- emission_ini %>%
-      left_join(evolution_rate) %>%
+      left_join(evolution_rate, by = c("region_gea", "fuel"),
+        relationship = "many-to-many") %>%
       mutate(emission_factors = emission_factors * evolution_rate) %>%
+      select(region_gea, region_bld, fuel, year = year.y, emission_factors) %>%
+      filter(!is.na(emission_factors)) %>%
       select(c(region_gea, region_bld, fuel, year, emission_factors))
 
   } else {

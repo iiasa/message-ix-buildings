@@ -18,7 +18,7 @@ u_EJ_GWa <- 31.71
 
 source("./STURM_model/F10_scenario_run.R")
 
-# Paths
+# paths
 path_rcode <- paste(getwd(), "/STURM_model/", sep = "")
 path_in <- paste(getwd(), "/STURM_data/", sep = "")
 path_out <- paste(getwd(), "/STURM_output/results/", sep = "")
@@ -31,8 +31,7 @@ runs <- c(
     "EU_medium_heat",
     "EU_medium_shell"
     )
-
-runs <- c("EU")
+runs <- c("EU_no")
 
 region <- c("WEU", "EEU")
 sector <- "resid"
@@ -40,8 +39,8 @@ file_inputs <- "input_list_resid_EU.csv"
 file_scenarios <- "scenarios_EU.csv"
 en_method <- "TABULA" # "VDD", "TABULA"
 
-# energy_efficiency <- "exogenous"
-energy_efficiency <- "endogenous"
+energy_efficiency <- "exogenous"
+# energy_efficiency <- "endogenous"
 report <- list(var = c("energy"),
                type = c("STURM"),
                geo_level = "region_bld")

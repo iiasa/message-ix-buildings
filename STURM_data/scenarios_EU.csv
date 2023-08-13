@@ -4,4 +4,7 @@ scenario_id,scenario_name,sub_ren_shell,sub_heat,energy_prices_message
 3,EU_medium_heat,,medium,
 4,EU_medium_shell,medium,,
 5,EU_medium_mix,medium,medium,
-6,EU_strong_mix,strong,strong,
+6,EU_ambitious_mix,ambitious,ambitious,
+7,EU_ambitious_heat,,ambitious,
+8,EU_ambitious_shell,ambitious,,
+9,,,,

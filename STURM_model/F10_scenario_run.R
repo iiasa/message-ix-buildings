@@ -179,10 +179,28 @@ run_scenario <- function(run,
 
   d$ms_switch_fuel_exo <- filter(d$ms_switch_fuel_exo, ms_switch_fuel_exo > 0)
 
+
+  # Discount rate
+  if (!"tenr" %in% names(d$discount_rate)) {
+    d$discount_rate <- crossing(d$discount_rate, cat$ct_hh_tenr) %>%
+      rename(tenr = "cat$ct_hh_tenr") %>%
+      mutate(discount_rate =
+        ifelse(tenr == "own",
+        filter(d$discount_rate, inc_cl == "q3",
+        region_bld == region_bld)$discount_rate,  discount_rate))
+
+  }
+  
   # Read energy prices
   print("Load energy prices")
   price_en <- read_energy_prices(d$energy_prices_ini, d$energy_prices_message,
     cat$geo_data, path_out)
+
+  # Read energy prices
+  print("Load emission factors")
+  emission_factors <-
+    read_emission_factors(d$emission_factors, d$emission_ini,
+      cat$geo_data, yrs[[1]])
 
   # Adding year column to start subsidies after calibration
   if (!"year" %in% names(d$sub_ren_shell)) {
@@ -209,7 +227,8 @@ run_scenario <- function(run,
     left_join(cat$geo_data %>%
       select_at(c("region_bld", "region_gea"))) %>%
     left_join(cat$clim_zones,
-      by = c("region_bld", "urt")) %>%
+      by = c("region_bld", "urt"),
+      relationship = "many-to-many") %>%
     left_join(cat$ct_bld,
       relationship = "many-to-many") %>%
     left_join(cat$ct_eneff, by = "mat",
@@ -345,6 +364,7 @@ run_scenario <- function(run,
                     en_hh_hw_scen,
                     en_m2_hw_scen,
                     en_m2_others,
+                    emission_factors,
                     shr_en = shr_en)
 
     # Loop over timesteps
@@ -442,6 +462,8 @@ run_scenario <- function(run,
                           en_hh_tot,
                           d$rate_shell_ren_exo,
                           d$ms_shell_ren_exo,
+                          d$barriers_mfh,
+                          d$barriers_rent,
                           stp,
                           path_out,
                           d$discount_rate
@@ -584,6 +606,7 @@ run_scenario <- function(run,
                               en_hh_hw_scen,
                               en_m2_hw_scen,
                               en_m2_others,
+                              emission_factors,
                               ren_det_i = ren_det_i,
                               cost_renovation = d$cost_invest_ren_shell,
                               shr_en = shr_en)

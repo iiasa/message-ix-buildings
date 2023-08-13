@@ -21,6 +21,7 @@ fun_format_output <- function(i,
                               en_hh_hw_scen,
                               en_m2_hw_scen,
                               en_m2_others,
+                              emission_factors,
                               ren_det_i = NULL,
                               cost_renovation = NULL,
                               dem_det_age_i = NULL,
@@ -43,7 +44,8 @@ fun_format_output <- function(i,
             en_m2_scen_heat,
             en_m2_scen_cool,
             en_hh_tot,
-            en_hh_hw_scen
+            en_hh_hw_scen,
+            emission_factors
         )
         report$en_stock <- bind_rows(report$en_stock, en_stock_i)
         
@@ -54,13 +56,14 @@ fun_format_output <- function(i,
             summarise(
                 stock_building = sum(stock_M) * 1e6,
                 heat_kWh = sum(heat_TJ) / 3.6 * 1e6,
+                heat_tCO2 = sum(heat_tCO2),
                 cost_heat_EUR = sum(cost_energy_hh),
                 floor_m2 = sum(floor_Mm2) * 1e6
             ) %>%
             ungroup() %>%
             rename(resolution = fuel_heat) %>%
             gather(variable, value, stock_building,
-                heat_kWh, cost_heat_EUR, floor_m2)
+                heat_kWh, heat_tCO2, cost_heat_EUR, floor_m2)
 
         # Adding total values for all resolutions
         agg_rows <- det_rows %>%
@@ -79,20 +82,21 @@ fun_format_output <- function(i,
             summarise(
                 stock_building = sum(stock_M) * 1e6,
                 heat_kWh = sum(heat_TJ) / 3.6 * 1e6,
+                heat_tCO2 = sum(heat_tCO2),
                 cost_heat_EUR = sum(cost_energy_hh),
                 floor_m2 = sum(floor_Mm2) * 1e6
             ) %>%
             ungroup() %>%
             rename(resolution = efficiency) %>%
             gather(variable, value, stock_building,
-                heat_kWh, cost_heat_EUR, floor_m2)
+                heat_kWh, heat_tCO2, cost_heat_EUR, floor_m2)
 
         temp <- bind_rows(temp, det_rows)
 
         # Add aggregated calibration
         if (!is.null(shr_en)) {
 
-            vars <- c("heat_kWh", "cost_heat_EUR")
+            vars <- c("heat_kWh", "cost_heat_EUR", "heat_tCO2")
             temp <- temp %>%
                 left_join(shr_en) %>%
                 mutate(value =
@@ -117,7 +121,8 @@ fun_format_output <- function(i,
         if (!is.null(cost_renovation) && !is.null(ren_det_i)) {
             cost_renovation <- cost_renovation %>%
                 left_join(hh_size) %>%
-                left_join(floor_cap) %>%
+                left_join(floor_cap,
+                    relationship = "many-to-many") %>%
                 mutate(cost = hh_size * floor_cap * cost_invest_ren_shell) %>%
                 rename(eneff = eneff_f) %>%
                 select(-c("cost_invest_ren_shell", "hh_size", "floor_cap"))
@@ -333,10 +338,12 @@ fun_format_bld_stock_energy <- function(
                                         en_m2_scen_heat,
                                         en_m2_scen_cool,
                                         en_hh_tot,
-                                        en_hh_hw_scen
+                                        en_hh_hw_scen,
+                                        emission_factors
                                         ) {
 
-    en_hh_tot <- select(en_hh_tot, -c("budget_share", "heating_intensity", "en_hh_std"))
+    en_hh_tot <- select(en_hh_tot,
+        -c("budget_share", "heating_intensity", "en_hh_std"))
 
     test <- bld_det_i %>%
         left_join(en_hh_tot) %>%
@@ -426,6 +433,10 @@ fun_format_bld_stock_energy <- function(
             # Other uses not covered for residential
             mutate(other_uses_TJ = 0) %>%
             mutate(stock_M = n_units_fuel / 1e6) %>%
+            left_join(emission_factors) %>%
+            mutate(heat_tCO2 =
+                ifelse(fuel_heat == "v_no_heat", 0,
+                heat_TJ * emission_factors)) %>%
             mutate(cost_energy_hh = ifelse(is.na(cost_energy_hh),
                 0, cost_energy_hh)) %>%
             filter(stock_M > 0 & !is.na(stock_M)) %>%
@@ -434,7 +445,8 @@ fun_format_bld_stock_energy <- function(
                 "eneff", "bld_age", "fuel_heat", "fuel_cool",
                 "scenario", "year", "stock_M", "floor_Mm2",
                 "heat_TJ", "cool_TJ", "cool_ac_TJ", "cool_fans_TJ",
-                "hotwater_TJ", "other_uses_TJ", "cost_energy_hh"
+                "hotwater_TJ", "other_uses_TJ", "cost_energy_hh",
+                "heat_tCO2"
             )))
     }
     if (sector == "comm") {

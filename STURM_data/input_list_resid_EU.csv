@@ -50,7 +50,7 @@ parameters_renovation,parameters_renovation,calibration
 parameters_heater,parameters_heater,calibration
 energy_prices_ini,input_prices_ini_resid_EU,macro
 energy_prices_message,input_prices_NPi_constant,macro
-income,income_ssp2,macro
+income,income_constant,macro
 u_windows,u_windows,thermal
 u_wall,u_wall,thermal
 u_roof,u_roof,thermal
@@ -64,3 +64,5 @@ en_consumption,en_consumption_2015_EU,energy
 discount_rate,discount_rate,activity
 barriers_rent,barriers_rent,activity
 barriers_mfh,barriers_mfh,activity
+emission_ini,emission_ini,emission
+emission_factors,emission_factors_NPi,emission

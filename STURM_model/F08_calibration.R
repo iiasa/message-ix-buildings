@@ -90,6 +90,8 @@ fun_calibration_ren_shell <- function(yrs,
                           en_hh_tot,
                           rate_shell_ren,
                           ms_shell_ren,
+                          coeff_barriers_mfh,
+                          coeff_barriers_rent,
                           stp,
                           path_out,
                           discount_ren) {
@@ -141,11 +143,25 @@ fun_calibration_ren_shell <- function(yrs,
         rename(eneff_f = eneff, target = value) %>%
         mutate(target = if_else(target == 0, 0.001, target))
 
-    objective_function <- function(x, utility, tgt, stp) {
+    objective_function <- function(x, utility, tgt, stp, elasticity, b_mfh, b_rent) {
         constant <- x[1:nrow(tgt)]
         scale <- x[nrow(tgt) + 1]
-        barrier_rent <- x[nrow(tgt) + 2]
-        barrier_mfh <- x[nrow(tgt) + 3]
+
+        if (b_rent != 1) {
+            barrier_rent <- x[nrow(tgt) + 2]
+            if (b_mfh != 1) {
+                barrier_mfh <- x[nrow(tgt) + 3]
+            } else {
+                barrier_mfh <- 0
+            }
+        } else {
+            barrier_rent <- 0
+            if (b_mfh != 1) {
+                barrier_mfh <- x[nrow(tgt) + 2]
+            } else {
+                barrier_mfh <- 0
+            }
+        }
 
         cst <- tgt %>%
             mutate(constant = constant) %>%
@@ -160,17 +176,31 @@ fun_calibration_ren_shell <- function(yrs,
         barrier_mfh <- tibble(
             region_bld = unique(tgt$region_bld),
             barrier_mfh = barrier_mfh)
-        
+
+         
         output <- ms_agg_ren_shell(utility, cst, scale, stp,
             barrier_rent, barrier_mfh)
 
         ms_agg <- output$ms_agg %>%
             left_join(tgt, by = c("region_bld", "mat", "eneff_f"))
-        objective <- c(ms_agg$target - ms_agg$ms,
-            output$elasticity - (- 1),
-            output$ratio_mfh - 0.8,
-            output$ratio_rent - 0.8
+        
+
+        objective <- c(
+            ms_agg$target - ms_agg$ms,
+            output$elasticity - elasticity
             )
+
+        if (b_rent != 1) {
+            objective <- c(objective, output$ratio_rent - b_rent)
+            if (b_mfh != 1) {
+                objective <- c(objective, output$ratio_mfh - b_mfh)
+            }
+        } else {
+            if (b_mfh != 1) {
+                objective <- c(objective, output$ratio_mfh - b_mfh)
+            }
+        }
+
         return(objective)
     }
 
@@ -187,18 +217,46 @@ fun_calibration_ren_shell <- function(yrs,
     for (region in unique(utility_ren_hh$region_bld)) {
 
         print(paste("Region:", region))
+
         u <- filter(utility_ren_hh, region_bld == region)
         t <- filter(target, region_bld == region)
         x <- rep(0, times = nrow(t))
-        x <- c(x, 1, 0, 0)
+        x <- c(x, 1)
+
+        # We add constraint if barriers if ratio are less than 1
+        b_rent <- filter(coeff_barriers_rent,
+            region_bld == region)$barriers_rent
+        if (b_rent != 1) {
+            x <- c(x, 0)
+        }
+        b_mfh <- filter(coeff_barriers_mfh,
+            region_bld == region)$barriers_mfh
+        if (b_mfh != 1) {
+            x <- c(x, 0)
+        }
 
         root <- multiroot(objective_function, start = x,
-            maxiter = 1e3, utility = u, tgt = t, stp = stp)
+            maxiter = 1e3, utility = u, tgt = t, stp = stp,
+            b_mfh = b_mfh, b_rent = b_rent,
+            elasticity = -1)
 
         constant <- root$root[1:nrow(t)]
         scale <- root$root[nrow(t) + 1]
-        barrier_rent <- root$root[nrow(t) + 2]
-        barrier_mfh <- root$root[nrow(t) + 3]
+        if (b_rent != 1) {
+            barrier_rent <- root$root[nrow(t) + 2]
+            if (b_mfh != 1) {
+                barrier_mfh <- root$root[nrow(t) + 3]
+            } else {
+                barrier_mfh <- 0
+            }
+        } else {
+            barrier_rent <- 0
+            if (b_mfh != 1) {
+                barrier_mfh <- root$root[nrow(t) + 2]
+            } else {
+                barrier_mfh <- 0
+            }
+        }
 
         result <- bind_rows(result,
             mutate(t, constant = constant, scale = scale,
@@ -479,7 +537,7 @@ fun_calibration_consumption <- function(bld_det_ini,
                                         floor_cap,
                                         en_consumption,
                                         path_out
-                                        ){
+                                        ) {
     
     # Define a function to calculate the weighted median
     weighted_median <- function(x, w) {

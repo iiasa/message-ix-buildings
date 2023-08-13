@@ -68,7 +68,7 @@ fun_stock_aggr <- function(sector,
     select_at(intersect(resolution_aggr, names(bld_cases_fuel))) %>%
     distinct() %>%
     # Years filtered here
-    left_join(bld_units) %>%
+    left_join(bld_units, relationship = "many-to-many") %>%
     left_join(shr_mat) %>%
     # Long format
     left_join(shr_arch) %>%

@@ -79,7 +79,7 @@ fun_space_heating_calculation <- function(bld_cases_fuel,
   }
 
   h_tr <- bld_cases_fuel %>%
-    select(attributes) %>%
+    select(all_of(attributes)) %>%
     distinct() %>%
     left_join(u_wall) %>%
     left_join(u_roof) %>%
@@ -105,7 +105,7 @@ fun_space_heating_calculation <- function(bld_cases_fuel,
     left_join(q_gains) %>%
     mutate(q_losses = 24 / 1000 * f_nu * hdd * (h_tr + h_ve)) %>%
     mutate(en_int_heat = q_losses - gain_utilitization_factor * q_gains) %>%
-    select(c(attributes, "en_int_heat"))
+    select(c(all_of(attributes), "en_int_heat"))
 
   return(en_int_heat)
   }

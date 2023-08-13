@@ -226,7 +226,7 @@ read_message_prices <- function(prices, geo_data) {
   }
   price_en <- geo_data %>%
     # Join R11/R12 data with prices
-    left_join(price_en) %>%
+    left_join(price_en, relationship = "many-to-many") %>%
     select_at(c("region_bld", "year", "fuel", "price_en"))
   
   return(price_en)
@@ -279,10 +279,43 @@ read_energy_prices <- function(price_base_year,
     rename(price_en = value) %>%
     distinct()
 
-  # duplicates <- price_expanded[duplicated(price_expanded[, c("region_bld", "fuel", "year")]), ]
-
   write.csv(price_expanded, paste0(path_out, "energy_prices.csv"),
     row.names = FALSE)
 
   return(price_expanded)
+}
+
+read_emission_factors <- function(emission_factors,
+                                  emission_ini,
+                                  geo_data,
+                                  base_year) {
+
+  if (!is.null(emission_ini)) {
+    emission_ini <- geo_data %>%
+      left_join(filter(emission_factors, year == base_year),
+        relationship = "many-to-many") %>%
+      left_join(emission_ini) %>%
+      mutate(emission_factors =
+        ifelse(!is.na(emission_ini), emission_ini, emission_factors)) %>%
+      select(-c(emission_ini))
+
+    evolution_rate <- emission_factors %>%
+      filter(year >= base_year) %>%
+      group_by(region_gea, fuel) %>%
+      arrange(year) %>%
+      mutate(evolution_rate = emission_factors / first(emission_factors)) %>%
+      ungroup() %>%
+      filter(!is.na(evolution_rate)) %>%
+      select(-c(emission_factors))
+    
+    emission_factors <- emission_ini %>%
+      left_join(evolution_rate) %>%
+      mutate(emission_factors = emission_factors * evolution_rate) %>%
+      select(c(region_gea, region_bld, fuel, year, emission_factors))
+
+  } else {
+    emission_factors <- geo_data %>%
+      left_join(filter(emission_factors))
+  }
+  return(emission_factors)
 }

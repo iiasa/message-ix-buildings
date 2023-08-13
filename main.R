@@ -28,7 +28,6 @@ base_year <- 2015
 end_year <- 2050
 step_year <- 5
 runs <- c(
-    "EU",
     "EU_medium_heat",
     "EU_medium_shell"
     )

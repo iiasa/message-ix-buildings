@@ -31,7 +31,12 @@ runs <- c(
     "EU_medium_heat",
     "EU_medium_shell"
     )
-runs <- c("EU_no")
+runs <- c(
+    "EU_no",
+    "EU_double",
+    "EU_triple")
+
+runs <- c("EU")
 
 region <- c("WEU", "EEU")
 sector <- "resid"

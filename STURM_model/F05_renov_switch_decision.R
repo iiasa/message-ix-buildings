@@ -283,7 +283,8 @@ fun_ms_ren_shell_exogenous <- function(yrs,
     rename(eneff_i = eneff) %>%
     rename(fuel_heat_i = fuel_heat) %>%
     # Join market share column
-    left_join(ms_shell_ren_exo) %>%
+    left_join(ms_shell_ren_exo,
+      relationship = "many-to-many") %>%
     rename(ms_ren = ms_shell_ren_exo) %>%
     # Only shell renovation and no switch fuel
     mutate(fuel_heat_f = fuel_heat_i) %>%
@@ -462,15 +463,9 @@ fun_ms_fuel_sw_exogenous <- function(yrs,
                                       ms_switch_fuel_exo) {
   print(paste0("Running fuel switch target - year ", yrs[i]))
 
-  # Filter building age cohorts - past periods of construction
-  p_past <- ct_bld_age %>%
-    filter(year_f < yrs[i]) %>%
-    pull(bld_age_id)
-
   ms_sw_i <- bld_stock %>%
    # Add years columns
     mutate(year = yrs[i]) %>%
-    filter(bld_age %in% p_past) %>%
     left_join(ms_switch_fuel_exo %>%
       rename(ms = ms_switch_fuel_exo)
       ) %>%

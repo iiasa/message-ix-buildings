@@ -122,8 +122,6 @@ fun_stock_turnover_dyn <- function(i, yrs, bld_cases_fuel, ct_bld_age,
     add_column(yr_con = yrs[i], .after = "year") %>%
     left_join(ct_bld_age_i)
 
-  print(round(sum(filter(bld_aggr_i, region_bld == "C-WEU-FRA")$n_units_aggr) / 1e6, 3))
-
   output <- list(
     bld_aggr_i = bld_aggr_i,
     bld_det_i = bld_det_i
@@ -197,7 +195,6 @@ fun_stock_renovation_dyn <- function(bld_det_i,
                                      rate_ren_i, ms_ren_i, stp) {
 
   temp <- sum(bld_det_i$n_units_fuel_exst)
-  # sum(filter(ren_det_i, region_bld == "C-WEU-FRA")$n_units_fuel)
 
   # Existing buildings - renovated
   ren_det_i <- bld_det_i  %>%

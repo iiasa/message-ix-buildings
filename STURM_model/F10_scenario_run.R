@@ -48,7 +48,6 @@ run_scenario <- function(run,
   source(file.path(path_rcode, "F01_inputs.R"))
   source(file.path(path_rcode, "F03_energy_demand.R"))
   source(file.path(path_rcode, "F04_constr_decision.R"))
-  # source(file.path(path_rcode, "F05_renov_decision.R"))
   source(file.path(path_rcode, "F05_renov_switch_decision.R"))
   source(file.path(path_rcode, "F02_init_stock_dyn_fut.R"))
   source(file.path(path_rcode, "F06_stock_dyn_complete_rev.R"))
@@ -178,7 +177,6 @@ run_scenario <- function(run,
     distinct()
 
   d$ms_switch_fuel_exo <- filter(d$ms_switch_fuel_exo, ms_switch_fuel_exo > 0)
-
 
   # Discount rate
   if (!"tenr" %in% names(d$discount_rate)) {

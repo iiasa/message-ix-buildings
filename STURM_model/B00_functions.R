@@ -3,6 +3,14 @@
 ## FUNCTIONS  ##
 ################
 
+# Define a function to calculate the weighted median
+weighted_median <- function(x, w) {
+  x <- x[order(x)]
+  cum_w <- cumsum(w[order(x)])
+  median_idx <- which(cum_w >= sum(w) / 2)[1]
+  return(x[median_idx])
+}
+
 ## Function to manipulate subsets of data with dplyr
 mutate_cond <- function(.data, condition, ..., envir = parent.frame()) {
   condition <- eval(substitute(condition), .data, envir)

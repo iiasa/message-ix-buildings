@@ -55,6 +55,8 @@ fun_format_output <- function(i,
             group_by_at(c("region_bld", "year", "fuel_heat")) %>%
             summarise(
                 stock_building = sum(stock_M) * 1e6,
+                energy_poverty_median = sum(energy_poverty_median),
+                energy_poverty_thres = sum(energy_poverty_thres),
                 heat_kWh = sum(heat_TJ) / 3.6 * 1e6,
                 heat_tCO2 = sum(heat_tCO2),
                 cost_heat_EUR = sum(cost_energy_hh),
@@ -63,7 +65,9 @@ fun_format_output <- function(i,
             ungroup() %>%
             rename(resolution = fuel_heat) %>%
             gather(variable, value, stock_building,
-                heat_kWh, heat_tCO2, cost_heat_EUR, floor_m2)
+                energy_poverty_median, energy_poverty_thres,
+                heat_kWh, heat_tCO2,
+                cost_heat_EUR, floor_m2)
 
         # Adding total values for all resolutions
         agg_rows <- det_rows %>%
@@ -81,6 +85,8 @@ fun_format_output <- function(i,
             group_by_at(c("region_bld", "year", "efficiency")) %>%
             summarise(
                 stock_building = sum(stock_M) * 1e6,
+                energy_poverty_median = sum(energy_poverty_median),
+                energy_poverty_thres = sum(energy_poverty_thres),
                 heat_kWh = sum(heat_TJ) / 3.6 * 1e6,
                 heat_tCO2 = sum(heat_tCO2),
                 cost_heat_EUR = sum(cost_energy_hh),
@@ -89,7 +95,9 @@ fun_format_output <- function(i,
             ungroup() %>%
             rename(resolution = efficiency) %>%
             gather(variable, value, stock_building,
-                heat_kWh, heat_tCO2, cost_heat_EUR, floor_m2)
+                energy_poverty_median, energy_poverty_thres,
+                heat_kWh, heat_tCO2,
+                cost_heat_EUR, floor_m2)
 
         temp <- bind_rows(temp, det_rows)
 
@@ -343,7 +351,7 @@ fun_format_bld_stock_energy <- function(
                                         ) {
 
     en_hh_tot <- select(en_hh_tot,
-        -c("budget_share", "heating_intensity", "en_hh_std"))
+        -c("heating_intensity", "en_hh_std"))
 
     test <- bld_det_i %>%
         left_join(en_hh_tot) %>%
@@ -401,7 +409,22 @@ fun_format_bld_stock_energy <- function(
             # left_join(shr_acc_cool) %>%
             # left_join(en_m2_scen_heat) %>%
             left_join(en_m2_scen_cool) %>%
-            left_join(en_hh_tot %>% rename(cost_energy_hh = cost_op)) %>%
+            left_join(en_hh_tot %>% rename(cost_energy_hh = cost_op))
+
+        # Calculate the weighted median budget_share for each country
+        median_budget_share <- en_stock_i %>%
+            group_by(region_bld) %>%
+            summarize(median_budget_share =
+                weighted_median(budget_share, n_units_fuel))
+
+        en_stock_i <- en_stock_i %>%
+            left_join(median_budget_share) %>%
+            mutate(budget_share =
+                ifelse(fuel_heat == "v_no_heat", 0, budget_share)) %>%
+            mutate(energy_poverty_median =
+                ifelse(budget_share >= 2 * median_budget_share, n_units_fuel, 0)) %>%
+            mutate(energy_poverty_thres =
+                ifelse(budget_share >= 0.8, n_units_fuel, 0)) %>%
             mutate(cost_energy_hh = cost_energy_hh * n_units_fuel) %>%
             left_join(en_hh_hw_scen) %>%
             # convert n. units to millions
@@ -446,7 +469,7 @@ fun_format_bld_stock_energy <- function(
                 "scenario", "year", "stock_M", "floor_Mm2",
                 "heat_TJ", "cool_TJ", "cool_ac_TJ", "cool_fans_TJ",
                 "hotwater_TJ", "other_uses_TJ", "cost_energy_hh",
-                "heat_tCO2"
+                "heat_tCO2", "energy_poverty_median", "energy_poverty_thres"
             )))
     }
     if (sector == "comm") {

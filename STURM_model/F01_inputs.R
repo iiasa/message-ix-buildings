@@ -57,8 +57,6 @@ fun_inputs_csv <- function(path_in, file_inputs, file_scenarios, sector, run
 
   print(filter(input, name_parameter == "sub_ren_shell")$path_file)
 
-  #print(filter(input, name_parameter == "rate_shell_ren_exo")$path_file)
-
 
   ### TEMPORARY ### EXCLUDE SPECIAL DATA FILES
   input <- input %>%

@@ -538,14 +538,6 @@ fun_calibration_consumption <- function(bld_det_ini,
                                         en_consumption,
                                         path_out
                                         ) {
-    
-    # Define a function to calculate the weighted median
-    weighted_median <- function(x, w) {
-      x <- x[order(x)]
-      cum_w <- cumsum(w[order(x)])
-      median_idx <- which(cum_w >= sum(w) / 2)[1]
-      return(x[median_idx])
-    }
 
     # Calibration of energy demand
     bld_energy <- bld_det_ini %>%

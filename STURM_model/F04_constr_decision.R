@@ -46,7 +46,8 @@ fun_ms_new_exogenous <- function(yrs,
     filter(year == yrs[i]) %>%
     left_join(p_i) %>%
     # Join market share column
-    left_join(ms_shell_new_exo) %>%
+    left_join(ms_shell_new_exo,
+      relationship = "many-to-many") %>%
     rename(ms = ms_shell_new_exo)
 
   # Add income level
@@ -59,13 +60,15 @@ fun_ms_new_exogenous <- function(yrs,
     share = 1 / 3)
 
   ms_new_i <- ms_new_i %>%
-    left_join(shr_inc) %>%
+    left_join(shr_inc,
+      relationship = "many-to-many") %>%
     mutate(ms = ms * share) %>%
     select(-share)
 
   # Add hh_tenure
   ms_new_i <- ms_new_i %>%
-    left_join(share_hh_tenr) %>%
+    left_join(share_hh_tenr,
+      relationship = "many-to-many") %>%
     mutate(ms = ms * hh_tenure) %>%
     select(-hh_tenure)
 

@@ -239,18 +239,64 @@ read_message_prices <- function(prices, geo_data) {
 read_energy_prices <- function(price_base_year,
                                price_en,
                                geo_data,
-                               path_out) {
+                               base_year,
+                               final_year,
+                               linear = TRUE,
+                               path_out = NULL) {
   
   if (!is.null(price_en)) {
     price_en <- read_message_prices(price_en, geo_data)
 
-    evolution_rate <- price_en %>%
-      group_by(region_bld, fuel) %>%
-      arrange(year) %>%
-      mutate(evolution_rate = price_en / first(price_en)) %>%
-      ungroup() %>%
-      filter(!is.na(evolution_rate)) %>%
-      select(-c(price_en))
+    if (linear == TRUE) {
+      # Three years average
+      correction_base_year <- FALSE
+      if (correction_base_year == TRUE) {
+        price_start <- price_en %>%
+          filter(year %in% c(2015, 2020, 2025)) %>%
+          group_by_at(c("region_bld", "fuel")) %>%
+          summarise(price_en = mean(price_en)) %>%
+          ungroup() %>%
+          mutate(year = base_year)
+      } else {
+        price_oil <- price_en %>%
+          filter(fuel == "oil") %>%
+          filter(year %in% c(2015, 2020)) %>%
+          group_by_at(c("region_bld", "fuel")) %>%
+          summarise(price_en = mean(price_en)) %>%
+          ungroup() %>%
+          mutate(year = base_year)
+
+        price_start <- filter(price_en, year == base_year, fuel != "oil") %>%
+          bind_rows(price_oil)
+      }
+
+      temp <- bind_rows(price_start, price_en %>%
+          filter(year %in% c(base_year, final_year))) %>%
+        group_by_at(c("region_bld", "fuel")) %>%
+        arrange(year) %>%
+        mutate(evolution_rate =
+          (price_en / first(price_en))^(1 / (final_year - base_year)) - 1) %>%
+        ungroup() %>%
+        filter(year == final_year) %>%
+        select(-c(price_en, year)) %>%
+        mutate(evolution_rate = round(evolution_rate, 3))
+
+      evolution_rate <- price_en %>%
+        filter(year > base_year) %>%
+        left_join(temp) %>%
+        mutate(evolution_rate = (1 + evolution_rate)^(year - base_year)) %>%
+        select(-c(price_en))
+
+    } else {
+
+      evolution_rate <- price_en %>%
+        group_by(region_bld, fuel) %>%
+        arrange(year) %>%
+        mutate(evolution_rate = price_en / first(price_en)) %>%
+        ungroup() %>%
+        filter(!is.na(evolution_rate)) %>%
+        select(-c(price_en))
+    }
 
   } else {
     evolution_rate <- price_base_year %>%
@@ -277,9 +323,10 @@ read_energy_prices <- function(price_base_year,
     rename(price_en = value) %>%
     distinct()
 
-  write.csv(price_expanded, paste0(path_out, "energy_prices.csv"),
-    row.names = FALSE)
-
+  if (!is.null(path_out)) {
+    write.csv(price_expanded, paste0(path_out, "energy_prices.csv"),
+      row.names = FALSE)
+  }
   return(price_expanded)
 }
 
@@ -289,31 +336,44 @@ read_emission_factors <- function(emission_factors,
                                   base_year) {
 
   if (!is.null(emission_ini)) {
-    emission_ini <- geo_data %>%
-      left_join(filter(emission_factors, year == base_year),
-        relationship = "many-to-many") %>%
-      left_join(emission_ini) %>%
-      mutate(emission_factors =
-        ifelse(!is.na(emission_ini), emission_ini, emission_factors)) %>%
-      select(-c(emission_ini))
 
-    evolution_rate <- emission_factors %>%
-      filter(year >= base_year) %>%
-      group_by(region_gea, fuel) %>%
-      arrange(year) %>%
-      mutate(evolution_rate = emission_factors / first(emission_factors)) %>%
-      ungroup() %>%
-      filter(!is.na(evolution_rate)) %>%
-      select(-c(emission_factors))
-    
-    emission_factors <- emission_ini %>%
-      left_join(evolution_rate, by = c("region_gea", "fuel"),
-        relationship = "many-to-many") %>%
-      mutate(emission_factors = emission_factors * evolution_rate) %>%
-      select(region_gea, region_bld, fuel, year = year.y, emission_factors) %>%
-      filter(!is.na(emission_factors)) %>%
-      select(c(region_gea, region_bld, fuel, year, emission_factors))
+    if ("year" %in% names(emission_factors)) {
 
+      emission_ini <- geo_data %>%
+        left_join(filter(emission_factors, year == base_year),
+          relationship = "many-to-many") %>%
+        left_join(emission_ini) %>%
+        mutate(emission_factors =
+          ifelse(!is.na(emission_ini), emission_ini, emission_factors)) %>%
+        select(-c(emission_ini))
+
+      evolution_rate <- emission_factors %>%
+        filter(year >= base_year) %>%
+        group_by(region_gea, fuel) %>%
+        arrange(year) %>%
+        mutate(evolution_rate = emission_factors / first(emission_factors)) %>%
+        ungroup() %>%
+        filter(!is.na(evolution_rate)) %>%
+        select(-c(emission_factors))
+      
+      emission_factors <- emission_ini %>%
+        left_join(evolution_rate, by = c("region_gea", "fuel"),
+          relationship = "many-to-many") %>%
+        mutate(emission_factors = emission_factors * evolution_rate) %>%
+        select(region_gea, region_bld, fuel, year = year.y, emission_factors) %>%
+        filter(!is.na(emission_factors)) %>%
+        select(c(region_gea, region_bld, fuel, year, emission_factors))
+    } else {
+      emission_factors <- geo_data %>%
+        left_join(filter(emission_factors),
+          relationship = "many-to-many") %>%
+        left_join(emission_ini) %>%
+        mutate(emission_factors =
+          ifelse(!is.na(emission_ini), emission_ini, emission_factors)) %>%
+        select(-c(emission_ini)) %>%
+        select(c(region_gea, region_bld, fuel, emission_factors))
+
+    }
   } else {
     emission_factors <- geo_data %>%
       left_join(filter(emission_factors))

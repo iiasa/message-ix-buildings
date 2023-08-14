@@ -12,6 +12,42 @@ print(paste("Working directory is:", getwd()))
 
 ```
 
+### Floor space per capita
+```{r}
+folder <- "STURM_data/input_csv/input_resid/activity"
+name_file <- "floor_navigate_rev2_v1.0_scen_rev2023_01_24.csv"
+data <- read.csv(file.path(folder, name_file))
+
+temp <- data %>%
+  filter(mat == "perm") %>%
+  mutate(bld_age = case_when(
+    eneff %in% c("s1", "sr11_std", "sr12_low") ~ "p1",
+    eneff %in% c("s2", "sr21_std", "sr22_low") ~ "p2",
+    eneff %in% c("s3", "sr31_std", "sr32_low") ~ "p3",
+    eneff %in% c("s51_std", "s52_low") ~ "p5",
+    TRUE ~ NA_character_  # Default value if none of the conditions are met
+  )) %>%
+  select(-c("ssp"))
+
+temp <- temp %>%
+    pivot_longer(cols = starts_with("y"),
+      names_to = "year", values_to = "value") %>%
+    mutate(year = as.integer(stringr::str_extract(year, "\\d{4}"))) %>%
+    select(c("scenario", "region_bld", "urt",
+      "arch", "mat", "bld_age", "year", "value")) %>%
+    distinct()
+    
+
+for (scenario in unique(temp$scenario)) {
+  t <- temp %>%
+    filter(scenario == scenario) %>%
+    select(-scenario)
+  write.csv(t, paste(folder, "/floor_capita_", scenario, ".csv", sep = ""),
+    row.names = FALSE)
+}
+
+```
+
 ### Heating Degree Days
 ```{r}
 folder <- "STURM_data/input_csv/input_resid/climate"

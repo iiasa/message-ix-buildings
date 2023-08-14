@@ -11,7 +11,7 @@ barriers_rent,barriers_rent,activity
 barriers_mfh,barriers_mfh,activity
 pop,pop_clim_ssp2,basic
 hh_size,hh_size_EU,basic
-parameters_renovation,,calibration
+parameters_renovation,parameters_renovation,calibration
 parameters_heater,parameters_heater,calibration
 hdd,hdd_tabula,climate
 cost_invest_heat,cost_inv_heat_EU,decision
@@ -27,7 +27,7 @@ ct_switch_heat,ct_switch_heat_EU,decision
 ct_heat,ct_heat_EU,decision
 ct_heat_new,ct_heat_new_EU,decision
 emission_ini,emission_ini,emission
-emission_factors,emission_factors_NPi,emission
+emission_factors,emission_factors_Npi,emission
 eff_heat ,eff_heat_EU,energy
 eff_cool,eff_cool_ssp2,energy
 eff_hotwater,eff_hotwater_resid_EU,energy
@@ -44,7 +44,7 @@ days_cool,cool_days_EU,energy
 en_int_hotwater,en_int_resid_hotwater_SSP2_rev_2022-12-15,energy
 en_consumption,en_consumption_2015_EU,energy
 energy_prices_ini,input_prices_ini_resid_EU,macro
-energy_prices_message,input_prices_NPi_constant,macro
+energy_prices_message,input_prices_Npi,macro
 income,income_constant,macro
 mat_int,material_int_resid,material
 sub_heat,sub_heat_EU,policies

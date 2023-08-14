@@ -192,7 +192,7 @@ run_scenario <- function(run,
   # Read energy prices
   print("Load energy prices")
   price_en <- read_energy_prices(d$energy_prices_ini, d$energy_prices_message,
-    cat$geo_data, path_out)
+    cat$geo_data, yrs[[1]], yrs[[length(yrs)]], path_out = NULL)
 
   # Read energy prices
   print("Load emission factors")

@@ -90,11 +90,6 @@ fun_stock_aggr <- function(sector,
     stop("Error in aggregated stock dataset! 
       Multiple records for same combinations in stock_aggr"))
 
-  # Make a test with the followings line to keep consistency
-  # sum(filter(bld_units, year == 2020, region_bld %in% unique(bld_cases_fuel$region_bld))$bld_units) /1e6
-  # sum(filter(stock_aggr, year == 2020)$n_units_aggr) / 1e6
-  # any(duplicated(select(stock_aggr, -n_units_aggr)))
-
   # Add stock variation aggregated
   stock_aggr <- stock_aggr %>%
     mutate(var_aggr = n_units_aggr - lag(n_units_aggr)) %>%

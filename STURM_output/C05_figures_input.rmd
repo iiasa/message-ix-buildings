@@ -1,0 +1,174 @@
+---
+output: reprex::reprex_document
+knit: reprex::reprex_render
+---
+
+Notebook to run STURM Ouput.
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(stringr)
+library(tidyr)
+
+print(paste("Working directory is:", getwd()))
+
+# Loding figures setttings and functions
+source("STURM_output/C00_plots.R")
+
+save_figs <- paste("STURM_output", "figures", sep = "/")
+save_tables <- paste("STURM_output", "tables", sep = "/")
+
+print(dir.exists(save_figs))
+print(dir.exists(save_tables))
+
+folder_input <- "STURM_data/input_csv/input_resid"
+
+geo_data <- read_csv("STURM_data/input_csv/input_basic_geo/regions.csv", show_col_types = FALSE)
+
+
+```
+
+### Energy prices
+```{r}
+source("STURM_output/C01_inputs.R")
+
+file <- c(paste0(folder_input, "/macro/input_prices_ini_resid_EU.csv"))
+price_base_year <- read_csv(file, show_col_types = FALSE) %>%
+  rename(energy_prices_ini = value)
+
+files <- c(
+  "input_prices_NPi.csv" = "NPi",
+  "input_prices_NPi_2020_600.csv" = "NPi_2020_600",
+  "input_prices_NPi_constant.csv" = "Constant")
+
+result <- data.frame()
+for (file in names(files)) {
+  name <- files[file]
+  file <- c(paste0(folder_input, "/macro/", file))
+  price_en <- read_csv(file, show_col_types = FALSE) %>%
+    rename(energy_prices_message = value)
+  temp <- read_energy_prices(price_base_year,
+                                price_en,
+                                geo_data,
+                                2015,
+                                2050,
+                               linear = TRUE)
+  temp <- temp %>%
+    mutate(scenario = name) %>%
+    filter(year <= 2050)
+  
+  result <- bind_rows(result, temp)
+}
+
+
+```
+#### Figures of the energy prices
+```{r}
+source("STURM_output/C00_plots.R")
+
+temp <- filter(result, scenario == "NPi") %>%
+  filter(!is.na(region_bld))
+
+plot_multiple_lines(temp,
+    x_column = "year",
+    y_column = "price_en",
+    line_column = "fuel",
+    group_column = "region_bld",
+    ncol = 4,
+    y_label = "Household price NPi\nEUR per kWh",
+    free_y = FALSE,
+    save_path = paste(save_dir,
+      paste0("prices_NPi_eur_kWh_countries.png"), sep = "/"))
+
+temp <- filter(result, scenario == "NPi_2020_600") %>%
+  filter(!is.na(region_bld))
+
+plot_multiple_lines(temp,
+    x_column = "year",
+    y_column = "price_en",
+    line_column = "fuel",
+    group_column = "region_bld",
+    ncol = 4,
+    y_label = "Household price NPi_2020_600\nEUR per kWh",
+    free_y = FALSE,
+    save_path = paste(save_dir,
+      paste0("prices_NPi_2020_600_eur_kWh_countries.png"), sep = "/"))
+
+```
+
+### Emission factors
+```{r}
+source("STURM_output/C01_inputs.R")
+
+read_emission_factors(emission_factors,
+                      emission_ini,
+                      geo_data,
+                      2015)
+
+file <- c(paste0(folder_input, "/emission/emission_ini.csv"))
+emission_ini <- read_csv(file, show_col_types = FALSE) %>%
+  rename(emission_ini = value)
+
+files <- c(
+  "emission_factors_NPi.csv" = "NPi",
+  "emission_factors_NPi_2020_400.csv" = "NPi_2020_400")
+
+result <- data.frame()
+for (file in names(files)) {
+  name <- files[file]
+  file <- c(paste0(folder_input, "/emission/", file))
+  emission_factors <- read_csv(file, show_col_types = FALSE) %>%
+    rename(emission_factors = value)
+
+  temp <- read_emission_factors(emission_factors,
+                                  emission_ini,
+                                  geo_data,
+                                  base_year)
+  temp <- temp %>%
+    mutate(scenario = name) %>%
+    filter(year <= 2050)
+  
+  result <- bind_rows(result, temp)
+}
+
+
+```
+
+#### Figures of the emission factors
+```{r}
+source("STURM_output/C00_plots.R")
+
+# tCO2 per TJ to gCO2 per kWh
+result <- mutate(emission_factors = emission_factors * 3.6) %>%
+  filter(region_gea %in% c("EEU", "WEU"))
+
+temp <- filter(result, scenario == "NPi") %>%
+  filter(!is.na(region_bld))
+
+plot_multiple_lines(temp,
+    x_column = "year",
+    y_column = "emission_factors",
+    line_column = "fuel",
+    group_column = "region_bld",
+    ncol = 4,
+    y_label = "Emission factors NPi\ngCO2 per kWh",
+    free_y = FALSE,
+    save_path = paste(save_dir,
+      paste0("emission_factors_NPi_gCO2_kWh_countries.png"), sep = "/"))
+
+temp <- filter(result, scenario == "NPi_2020_400") %>%
+  filter(!is.na(region_bld))
+
+plot_multiple_lines(temp,
+    x_column = "year",
+    y_column = "emission_factors",
+    line_column = "fuel",
+    group_column = "region_bld",
+    ncol = 4,
+    y_label = "Emission factors NPi_2020_400\ngCO2 per kWh",
+    free_y = FALSE,
+    save_path = paste(save_dir,
+      paste0("emission_factors_NPi_2020_400_gCO2_kWh_countries.png"), sep = "/"))
+
+```

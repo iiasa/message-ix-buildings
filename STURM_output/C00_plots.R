@@ -250,9 +250,10 @@ plot_multiple_lines <- function(df,
     free_y = FALSE) {
     
   df <- df %>%
-    mutate(!!group_column := plot_settings[["rename"]][.data[[group_column]]])
-
-  if (all(unique(df[[line_column]]) %in% plot_settings[["rename"]])) {
+    mutate(!!group_column := plot_settings[["rename"]][.data[[group_column]]]) %>%
+    filter(!is.na(.data[[group_column]]))
+  
+  if (all(unique(df[[line_column]]) %in% names(plot_settings[["rename"]]))) {
     df <- df %>%
       mutate(!!line_column := plot_settings[["rename"]][.data[[line_column]]])
   }

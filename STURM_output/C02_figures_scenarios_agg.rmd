@@ -25,6 +25,27 @@ scenarios <- c(
   # "EU_medium_heat" = "Medium additional policies heat-pumps",
   # "EU_medium_shell" = "Medium additional policies renovation"
   )
+
+run <- "scenarios_test_prices"
+scenarios <- c(
+  "EU" = "Current policies",
+  "EU_price_high" = "High price",
+  "EU_price_constant" = "Price constant"
+)
+
+run <- "scenarios_test_emission"
+scenarios <- c(
+  "EU" = "NPi",
+  "EU_emission_2020_400" = "NPi 2020_400",
+  "EU_emission_constant" = "Emisison constant"
+)
+
+
+run <- "test"
+scenarios <- c(
+  "EU" = "NPi",
+  "EU_newfloor" = "New floor"
+)
 ```
 
 ## Read data
@@ -81,6 +102,24 @@ plot_multiple_lines(temp,
     save_path = paste(save_dir,
       paste0(run, "_heat_kWh_countries.png"), sep = "/"))
 
+
+temp <- data %>%
+  filter(variable == "heat_tCO2") %>%
+  filter(resolution %in% "all") %>%
+  select(-c("variable", "resolution")) %>%
+  mutate(value = value / 1e6)
+
+plot_multiple_lines(temp,
+    x_column = "year",
+    y_column = "value",
+    line_column = "scenario",
+    group_column = "region_bld",
+    ncol = 4,
+    y_label = "Emission\nMtCO2",
+    free_y = TRUE,
+    save_path = paste(save_dir,
+      paste0(run, "_heat_tCO2_countries.png"), sep = "/"))
+
 temp <- data %>%
   filter(variable == "n_renovation") %>%
   filter(resolution %in% "all") %>%
@@ -97,8 +136,8 @@ plot_multiple_lines(temp,
     free_y = TRUE,
     save_path = paste(save_dir,
       paste0(run, "_renovation_countries.png"), sep = "/"))
-
-
+```
+```{r}
 temp <- data %>%
   filter(variable == "stock_building") %>%
   filter(resolution %in% "heat_pump") %>%
@@ -180,4 +219,68 @@ plot_multiple_lines(temp,
     free_y = TRUE,
     save_path = paste(save_dir,
       paste0(run, path), sep = "/"))
+```
+
+#### Energy poverty
+
+```{r}
+var <- "energy_poverty_median"
+ref <- "stock_building"
+path <- "_energy_poverty_median_countries.png"
+y_label <- "Energy poverty rate with median definition"
+
+temp <- data %>%
+  filter(variable %in% c(var, ref)) %>%
+  filter(resolution == "all") %>%
+  pivot_wider(id_cols = c(region_bld, year, scenario, resolution),
+    names_from = variable,
+    values_from = value) %>%
+  filter(!is.na(.data[[var]])) %>%
+  filter(!is.na(.data[[ref]])) %>%
+  mutate(value = .data[[var]] / .data[[ref]]) %>%
+  select(-c(var, ref, "resolution"))
+
+
+plot_multiple_lines(temp,
+    x_column = "year",
+    y_column = "value",
+    line_column = "scenario",
+    group_column = "region_bld",
+    ncol = 4,
+    y_label = y_label,
+    free_y = TRUE,
+    save_path = paste(save_dir,
+      paste0(run, path), sep = "/"))
+
+```
+
+```{r}
+var <- "energy_poverty_thres"
+ref <- "stock_building"
+path <- "_energy_poverty_threshold_countries.png"
+y_label <- "Energy poverty rate with threshold definition"
+
+temp <- data %>%
+  filter(variable %in% c(var, ref)) %>%
+  filter(resolution == "all") %>%
+  pivot_wider(id_cols = c(region_bld, year, scenario, resolution),
+    names_from = variable,
+    values_from = value) %>%
+  filter(!is.na(.data[[var]])) %>%
+  filter(!is.na(.data[[ref]])) %>%
+  mutate(value = .data[[var]] / .data[[ref]]) %>%
+  select(-c(var, ref, "resolution"))
+
+
+plot_multiple_lines(temp,
+    x_column = "year",
+    y_column = "value",
+    line_column = "scenario",
+    group_column = "region_bld",
+    ncol = 4,
+    y_label = y_label,
+    free_y = TRUE,
+    save_path = paste(save_dir,
+      paste0(run, path), sep = "/"))
+
 ```

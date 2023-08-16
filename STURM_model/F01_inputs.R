@@ -206,7 +206,7 @@ fun_parse_stock <- function(stock, cat, population) {
 #' @description Parse energy prices from MESSAGE
 read_message_prices <- function(prices, geo_data) {
 
-  price_en <- rename(prices, price_en = energy_prices_message)
+  price_en <- rename(prices, price_en = energy_prices_projections)
 
   if ("node" %in% names(prices)) {
     price_en <- price_en %>%

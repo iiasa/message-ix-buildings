@@ -1,0 +1,108 @@
+---
+output: reprex::reprex_document
+knit: reprex::reprex_render
+---
+
+Notebook to run STURM Ouput.
+Description of the building stock and energy consumption.
+Without calibrating energy consumption.
+Check description_stock_agg for calibrating results.
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(stringr)
+library(tidyr)
+
+
+print(paste("Working directory is:", getwd()))
+
+# Loding figures setttings and functions
+source("STURM_output/C00_plots.R")
+```
+
+## Read output files
+```{r}
+scenario <- "EU"
+file <- paste0("report_STURM_", scenario, "_resid_region_bld_energy.csv")
+file <- paste("STURM_output/results", file, sep = "/")
+
+if (!file.exists(file)) {
+  print("Check file name or directory!")
+}
+
+# Read output files
+data_full <- read.csv(file)
+print(summary(data_full))
+
+
+# Export figures and tables
+save_figs <- paste("STURM_output", "figures", sep = "/")
+save_tables <- paste("STURM_output", "tables", sep = "/")
+
+print(dir.exists(save_figs))
+print(dir.exists(save_tables))
+
+```
+
+## Table about the distribution
+```{r}
+data <- filter(data_full, year == 2015)
+
+# Distribution of the building age
+temp <- data %>%
+  group_by_at(c("region_bld", "bld_age")) %>%
+  summarise(n = sum(stock_M)) %>%
+  group_by_at("region_bld") %>%
+  mutate(n = n / sum(n)) %>%
+  pivot_wider(names_from = "bld_age", values_from = "n")
+
+report <- temp
+
+# Distribution of the building type
+temp <- data %>%
+  group_by_at(c("region_bld", "arch")) %>%
+  summarise(n = sum(stock_M)) %>%
+  group_by_at("region_bld") %>%
+  mutate(n = n / sum(n)) %>%
+  pivot_wider(names_from = "arch", values_from = "n")
+
+report <- left_join(report, temp, by = "region_bld")
+
+# Total energy consumption
+temp <- data %>%
+  group_by_at(c("region_bld")) %>%
+  summarise(
+    n_units = sum(stock_M) * 1e6,
+    floor_tot = sum(floor_Mm2) * 1e6,
+    heat_tot = sum(heat_TJ) / (3.6 * 1e-6)
+    ) %>%
+  ungroup() %>%
+  mutate(
+    floor_hh = floor_tot / n_units,
+    heat_hh_kWh = heat_tot / n_units,
+    heat_hh_toe = heat_hh_kWh / (11.63 * 1e3),
+    heat_floor_kWh = heat_tot / floor_tot,
+    heat_floor_koe = heat_floor_kWh / 11.63,
+    n_units = n_units / 1e6,
+    floor_tot = floor_tot / 1e6,
+    heat_tot = heat_tot / 1e9,
+    heat_tot_mtoe = heat_tot / 11.63
+  ) %>%
+  rename(
+    "n_units (M)" = n_units,
+    "floor_tot (M m2)" = floor_tot,
+    "heat_tot (TWh)" = heat_tot,
+    "floor_hh (m2)" = floor_hh,
+    "heat_hh (kWh/hh)" = heat_hh_kWh,
+    "heat_hh (toe/hh)" = heat_hh_toe,
+    "heat_floor (koe/m2)" = heat_floor_koe,
+    "heat_floor (kWh/m2)" = heat_floor_kWh
+  )
+report <- left_join(temp, report, by = "region_bld")
+
+write.csv(report, paste(save_tables,
+  paste0("description_ini_det.csv"), sep = "/"))
+
+```
+

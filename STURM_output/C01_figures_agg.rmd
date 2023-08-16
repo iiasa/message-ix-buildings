@@ -19,7 +19,7 @@ source("STURM_output/C00_plots.R")
 ```
 
 ```{r}
-scenario <- "EU"
+scenario <- "EU_exogenous"
 file <- paste0("report_agg_STURM_", scenario, "_resid_region_bld_energy.csv")
 file <- paste("STURM_output/results", file, sep = "/")
 
@@ -244,6 +244,8 @@ plot_lines(temp,
 
 ### Share in total stock and energy consumption
 ```{r}
+source("STURM_output/C00_plots.R")
+
 temp <- data %>%
   filter(variable == "stock_building") %>%
   filter(resolution %in% names(rename_fuels)) %>%
@@ -266,6 +268,7 @@ plot_stacked_areas(temp, "year", "value", "resolution", "region_bld",
 ```
 
 ```{r}
+
 temp <- data %>%
   filter(variable == "heat_kWh") %>%
   filter(resolution %in% names(rename_fuels)) %>%

@@ -113,6 +113,12 @@ fun_stock_turnover_dyn <- function(i, yrs, bld_cases_fuel, ct_bld_age,
   } else {
     print("Test passed. Empty buildings.")
   }
+
+  report <- bld_det_i %>%
+    group_by_at("region_bld") %>%
+    summarise(n_dem = sum(n_dem),
+      n_empty = sum(n_empty)) %>%
+    ungroup()
   
   bld_det_i <- bld_det_i %>%
     select(-c(n_units_fuel_p, n_dem, n_empty))
@@ -124,7 +130,8 @@ fun_stock_turnover_dyn <- function(i, yrs, bld_cases_fuel, ct_bld_age,
 
   output <- list(
     bld_aggr_i = bld_aggr_i,
-    bld_det_i = bld_det_i
+    bld_det_i = bld_det_i,
+    report = report
   )
   return(output)
 }

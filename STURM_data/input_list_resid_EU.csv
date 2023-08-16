@@ -44,7 +44,7 @@ days_cool,cool_days_EU,energy
 en_int_hotwater,en_int_resid_hotwater_SSP2_rev_2022-12-15,energy
 en_consumption,en_consumption_2015_EU,energy
 energy_prices_ini,input_prices_ini_resid_EU,macro
-energy_prices_message,input_prices_Npi,macro
+energy_prices_projections,input_prices_NPi_constant,macro
 income,income_constant,macro
 mat_int,material_int_resid,material
 sub_heat,sub_heat_EU,policies

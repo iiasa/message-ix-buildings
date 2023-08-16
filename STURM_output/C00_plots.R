@@ -121,6 +121,11 @@ plot_stacked_areas <- function(data, x_column, y_column, fill_column, subplot_co
     floor(max(data[[x_column]])), by = 5)
   labels <- breaks[seq(1, length(breaks), by = 5)]
 
+  if (all(unique(data[[subplot_column]]) %in% names(plot_settings[["rename"]]))) {
+    data <- data %>%
+      mutate(!!subplot_column := plot_settings[["rename"]][.data[[subplot_column]]])
+  }
+
   group <- c(x_column, fill_column, subplot_column)
   p <- data %>%
     mutate(!!fill_column := plot_settings[["rename"]][.data[[fill_column]]]) %>%

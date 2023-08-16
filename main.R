@@ -52,8 +52,14 @@ file_inputs <- "input_list_resid_EU.csv"
 file_scenarios <- "scenarios_EU.csv"
 en_method <- "TABULA" # "VDD", "TABULA"
 
-# energy_efficiency <- "exogenous"
-energy_efficiency <- "endogenous"
+runs <- c(
+    "EU",
+    "EU_no",
+    "EU_double",
+    "EU_triple")
+
+energy_efficiency <- "exogenous"
+# energy_efficiency <- "endogenous"
 report <- list(var = c("energy"),
                type = c("STURM"),
                geo_level = "region_bld")

@@ -157,7 +157,8 @@ fun_en_sim <- function(sector,
                        price_en,
                        income,
                        shr_acc_heat = 1,
-                       en_method = "TABULA") {
+                       en_method = "TABULA",
+                       path_out = NULL) {
   print(paste0("Running energy demand year ", yrs[i]))
 
   if (en_method == "TABULA") {
@@ -250,6 +251,15 @@ fun_en_sim <- function(sector,
         cost_op_std, income)) %>%
       left_join(bld_cases_fuel)
 
+  }
+
+  if (!is.null(path_out)) {
+    temp <- en_hh %>%
+      select("region_bld", "clim", "urt",
+        "arch", "bld_age", "eneff", "fuel_heat",
+        "tenr", "inc_cl", "en_hh_std", "en_hh",
+        "budget_share", "heating_intensity", "cost_op")
+    write.csv(temp, paste0(path_out, "/detail_energy.csv"))
   }
 
   output <- list(

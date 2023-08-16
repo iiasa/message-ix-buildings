@@ -28,7 +28,8 @@ fun_format_output <- function(i,
                               dem_det_slum_age_i = NULL,
                               new_det_age_i = NULL,
                               new_det_slum_age_i = NULL,
-                              shr_en = NULL) {
+                              shr_en = NULL,
+                              report_turnover = NULL) {
     if ("energy" %in% report_var) {
         en_stock_i <- fun_format_bld_stock_energy(
             i,
@@ -100,6 +101,14 @@ fun_format_output <- function(i,
                 cost_heat_EUR, floor_m2)
 
         temp <- bind_rows(temp, det_rows)
+        
+        if (!is.null(report_turnover)) {
+            report_turnover <- report_turnover %>%
+                gather(variable, value, n_dem, n_empty) %>%
+                mutate(resolution = "all",
+                    year = yrs[i])
+            temp <- bind_rows(temp, report_turnover)
+        }
 
         # Add aggregated calibration
         if (!is.null(shr_en)) {

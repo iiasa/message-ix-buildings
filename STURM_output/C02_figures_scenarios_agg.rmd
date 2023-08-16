@@ -43,8 +43,10 @@ scenarios <- c(
 
 run <- "test"
 scenarios <- c(
-  "EU" = "NPi",
-  "EU_newfloor" = "New floor"
+  "EU_exogenous" = "Current renovation rate",
+  "EU_no_exogenous" = "No renovation",
+  "EU_double_exogenous" = "Double renovation rate",
+  "EU_triple_exogenous" = "Triple renovation rate"
 )
 ```
 

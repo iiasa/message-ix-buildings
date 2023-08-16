@@ -191,7 +191,8 @@ run_scenario <- function(run,
   
   # Read energy prices
   print("Load energy prices")
-  price_en <- read_energy_prices(d$energy_prices_ini, d$energy_prices_message,
+  price_en <- read_energy_prices(d$energy_prices_ini,
+    d$energy_prices_projections,
     cat$geo_data, yrs[[1]], yrs[[length(yrs)]], path_out = NULL)
 
   # Read energy prices
@@ -318,6 +319,7 @@ run_scenario <- function(run,
       price_en,
       d$income,
       en_method = en_method,
+      path_out = path_out
     )
     # Extract dataframes from list
     en_m2_scen_heat <- lst_en_i$en_m2_scen_heat
@@ -436,6 +438,7 @@ run_scenario <- function(run,
                                      stock_aggr, bld_det_i, d$prob_dem)
       bld_aggr_i <- temp$bld_aggr_i
       bld_det_i <- temp$bld_det_i
+      report_turnover <- temp$report
 
       print("2. Shell renovation decisions")
       new_det_i <- fun_stock_construction_dyn(bld_aggr_i,
@@ -607,7 +610,8 @@ run_scenario <- function(run,
                               emission_factors,
                               ren_det_i = ren_det_i,
                               cost_renovation = d$cost_invest_ren_shell,
-                              shr_en = shr_en)
+                              shr_en = shr_en,
+                              report_turnover = report_turnover)
     }
   }
 

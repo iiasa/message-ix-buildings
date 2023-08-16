@@ -368,9 +368,7 @@ fun_format_bld_stock_energy <- function(
             names(bld_det_i),
             c("yr_con", "n_units_fuel", "fuel")
         )) %>%
-        summarise(
-            n_units_fuel = sum(n_units_fuel)
-        ) %>%
+        summarise(n_units_fuel = sum(n_units_fuel)) %>%
         ungroup()
 
     en_stock_i <- bld_cases_fuel %>%
@@ -422,7 +420,8 @@ fun_format_bld_stock_energy <- function(
             mutate(budget_share =
                 ifelse(fuel_heat == "v_no_heat", 0, budget_share)) %>%
             mutate(energy_poverty_median =
-                ifelse(budget_share >= 2 * median_budget_share, n_units_fuel, 0)) %>%
+                ifelse(budget_share >= 2 * median_budget_share,
+                n_units_fuel, 0)) %>%
             mutate(energy_poverty_thres =
                 ifelse(budget_share >= 0.8, n_units_fuel, 0)) %>%
             mutate(cost_energy_hh = cost_energy_hh * n_units_fuel) %>%

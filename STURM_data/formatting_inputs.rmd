@@ -38,11 +38,11 @@ temp <- temp %>%
     distinct()
     
 
-for (scenario in unique(temp$scenario)) {
+for (s in unique(temp$scenario)) {
   t <- temp %>%
-    filter(scenario == scenario) %>%
+    filter(scenario == s) %>%
     select(-scenario)
-  write.csv(t, paste(folder, "/floor_capita_", scenario, ".csv", sep = ""),
+  write.csv(t, paste(folder, "/floor_capita_", s, ".csv", sep = ""),
     row.names = FALSE)
 }
 

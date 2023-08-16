@@ -44,7 +44,7 @@ p_elasticity <- -0.244
 #' @param u_wall U-value of walls, in W/m2K
 #' @param u_roof U-value of roof, in W/m2K
 #' @param u_floor U-value of floor, in W/m2K
-#' @param u_windows U-value of windows, in W/m2K 
+#' @param u_windows U-value of windows, in W/m2K
 #' @param area_wall Area of walls, in % of floor area
 #' @param area_roof Area of roof, in % of floor area
 #' @param area_floor Area of floor, in % of floor area
@@ -67,8 +67,6 @@ fun_space_heating_calculation <- function(bld_cases_fuel,
                                       simplified = TRUE) {
 
   attributes <- c("clim", "region_bld", "arch", "bld_age")
-  
-  
   if (!simplified) {
     h_ve <- c_air * (n_air_infiltr + n_air_use) * h_room
   } else {
@@ -204,7 +202,6 @@ fun_en_sim <- function(sector,
     mutate_cond(is.na(en_dem_c_fans), en_dem_c_fans = 0) %>%
     # Total energy demand for cooling
     mutate(en_dem_cool = en_dem_c_ac + en_dem_c_fans) %>%
-    select(-year) %>%
     select(-c(en_int_heat, en_int_cool, days_cool))
 
 
@@ -261,7 +258,7 @@ fun_en_sim <- function(sector,
     en_hh_tot = en_hh
   )
   return(output)
-} 
+}
 
 #' @title Function to calculate energy demand for domestic hot water
 #' @param yrs vector of years to be calculated

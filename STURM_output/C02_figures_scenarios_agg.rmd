@@ -216,7 +216,7 @@ plot_multiple_lines(temp,
     group_column = "region_bld",
     ncol = 4,
     y_label = y_label,
-    free_y = TRUE,
+    free_y = FALSE,
     save_path = paste(save_dir,
       paste0(run, path), sep = "/"))
 ```
@@ -248,7 +248,7 @@ plot_multiple_lines(temp,
     group_column = "region_bld",
     ncol = 4,
     y_label = y_label,
-    free_y = TRUE,
+    free_y = FALSE,
     save_path = paste(save_dir,
       paste0(run, path), sep = "/"))
 
@@ -279,7 +279,7 @@ plot_multiple_lines(temp,
     group_column = "region_bld",
     ncol = 4,
     y_label = y_label,
-    free_y = TRUE,
+    free_y = FALSE,
     save_path = paste(save_dir,
       paste0(run, path), sep = "/"))
 

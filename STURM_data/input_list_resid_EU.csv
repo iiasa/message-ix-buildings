@@ -1,5 +1,5 @@
 name_parameter,name_file,category
-floor_cap,floor_resid_ssp2,activity
+floor_cap,floor_capita,activity
 prob_dem,bld_demolition_distr_long,activity
 rate_switch_fuel_heat,rate_switch_fuel_heat_EU,activity
 rate_shell_ren_exo,rate_shell_ren_EU,activity
@@ -11,7 +11,7 @@ barriers_rent,barriers_rent,activity
 barriers_mfh,barriers_mfh,activity
 pop,pop_clim_ssp2,basic
 hh_size,hh_size_EU,basic
-parameters_renovation,parameters_renovation,calibration
+parameters_renovation,,calibration
 parameters_heater,parameters_heater,calibration
 hdd,hdd_tabula,climate
 cost_invest_heat,cost_inv_heat_EU,decision
@@ -27,7 +27,7 @@ ct_switch_heat,ct_switch_heat_EU,decision
 ct_heat,ct_heat_EU,decision
 ct_heat_new,ct_heat_new_EU,decision
 emission_ini,emission_ini,emission
-emission_factors,emission_factors_Npi,emission
+emission_factors,emission_factors_NPi,emission
 eff_heat ,eff_heat_EU,energy
 eff_cool,eff_cool_ssp2,energy
 eff_hotwater,eff_hotwater_resid_EU,energy

@@ -25,7 +25,7 @@ path_out <- paste(getwd(), "/STURM_output/results/", sep = "")
 
 # configuration file STURM
 base_year <- 2015
-end_year <- 2030
+end_year <- 2050
 step_year <- 5
 runs <- c(
     "EU_medium_heat",
@@ -44,7 +44,7 @@ runs <- c("EU",
 "EU_emission_constant",
 "EU_emission_2020_400")
 
-runs <- "EU_newfloor"
+runs <- "EU"
 
 region <- c("WEU", "EEU")
 sector <- "resid"

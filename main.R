@@ -58,6 +58,8 @@ runs <- c(
     "EU_double",
     "EU_triple")
 
+runs <- c("EU")
+
 energy_efficiency <- "exogenous"
 # energy_efficiency <- "endogenous"
 report <- list(var = c("energy"),

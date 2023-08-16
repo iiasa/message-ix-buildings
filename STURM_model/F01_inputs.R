@@ -353,7 +353,8 @@ read_emission_factors <- function(emission_factors,
         arrange(year) %>%
         mutate(evolution_rate = emission_factors / first(emission_factors)) %>%
         ungroup() %>%
-        filter(!is.na(evolution_rate)) %>%
+        mutate(evolution_rate =
+          ifelse(is.na(evolution_rate), 1, evolution_rate)) %>%
         select(-c(emission_factors))
       
       emission_factors <- emission_ini %>%

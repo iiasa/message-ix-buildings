@@ -101,10 +101,11 @@ fun_format_output <- function(i,
                 cost_heat_EUR, floor_m2)
 
         temp <- bind_rows(temp, det_rows)
-        
+
         if (!is.null(report_turnover)) {
             report_turnover <- report_turnover %>%
-                gather(variable, value, n_dem, n_empty) %>%
+                mutate(n_out = n_dem + n_empty) %>%
+                gather(variable, value, n_dem, n_empty, n_out) %>%
                 mutate(resolution = "all",
                     year = yrs[i])
             temp <- bind_rows(temp, report_turnover)

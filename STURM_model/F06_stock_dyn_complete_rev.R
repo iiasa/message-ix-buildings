@@ -36,6 +36,7 @@ fun_stock_turnover_dyn <- function(i, yrs, bld_cases_fuel, ct_bld_age,
     # CDF: difference between two consecutive time steps
     mutate(pdem = pweibull(yrs[i] - yr_con, shape = shape, scale = scale) -
       pweibull(yrs[i - 1] - yr_con, shape = shape, scale = scale)) %>%
+    mutate(pdem = pdem / 2) %>%
     mutate(n_dem = ifelse(n_units_fuel > 0,
       round(pdem * n_units_fuel, rnd), 0)) %>%
     rename(n_units_fuel_p = n_units_fuel) %>%

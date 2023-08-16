@@ -36,16 +36,14 @@ print(summary(data))
 print(unique(data$variable))
 
 # Reconstuction flows
-flows <- c("cost_renovation_EUR", "n_renovation")
+flows <- c("cost_renovation_EUR", "n_renovation", "n_out",
+  "n_dem", "n_empty")
 stp <- 5
 data <- data %>%
   mutate(year = ifelse(variable %in% flows, year - stp, year),
          value = ifelse(variable %in% flows, value / stp, value))
 ```
-
-
 ## Figures 
-
 ### Indicators charts
 ```{r}
 make_plot_lines <- function(data, var, ref, path, y_label = "") {
@@ -70,6 +68,11 @@ make_plot_lines <- function(data, var, ref, path, y_label = "") {
             save_path = paste(save_dir, paste0(scenario, path), sep = "/"))
   }
 
+var <- "n_out"
+ref <- "stock_building"
+path <- "_demolition_rate_countries.png"
+make_plot_lines(data, var, ref, path)
+
 var <- "n_renovation"
 ref <- "stock_building"
 path <- "_renovation_rate_countries.png"
@@ -85,19 +88,19 @@ ref <- "floor_m2"
 path <- "_kwh_m2_countries.png"
 make_plot_lines(data, var, ref, path)
 
-
 var <- "heat_tCO2"
 ref <- "floor_m2"
 path <- "_tCO2_m2_countries.png"
 make_plot_lines(data, var, ref, path)
 
+temp <- data %>%
+  mutate(value = ifelse(variable == "heat_tCO2", value * 1e6, value))
+
 var <- "heat_tCO2"
 ref <- "heat_kWh"
-path <- "_tCO2_kWh_countries.png"
-make_plot_lines(data, var, ref, path)
-
+path <- "_gCO2_kWh_countries.png"
+make_plot_lines(temp, var, ref, path)
 ```
-
 
 ### Absolute values charts
 #### Stock

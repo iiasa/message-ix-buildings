@@ -356,6 +356,11 @@ fun_stock_switch_fuel_dyn <- function(bld_det_i,
     summarise(n_units_fuel = sum(n_units_fuel)) %>%
     ungroup()
 
-  return(bld_det_i)
+  output <- list(
+    bld_det_i = bld_det_i,
+    bld_det_i_sw = bld_det_i_sw
+  )
+
+  return(output)
 
 }

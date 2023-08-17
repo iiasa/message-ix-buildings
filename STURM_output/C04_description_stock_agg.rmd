@@ -23,7 +23,7 @@ source("STURM_output/C00_plots.R")
 
 ## Read output files
 ```{r}
-scenario <- "EU"
+scenario <- "EU_exogenous"
 file <- paste0("report_agg_STURM_", scenario, "_resid_region_bld_energy.csv")
 file <- paste("STURM_output/results", file, sep = "/")
 

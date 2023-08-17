@@ -19,7 +19,7 @@ source("STURM_output/C00_plots.R")
 ```
 
 ```{r}
-scenario <- "EU_exogenous"
+scenario <- "EU"
 file <- paste0("report_agg_STURM_", scenario, "_resid_region_bld_energy.csv")
 file <- paste("STURM_output/results", file, sep = "/")
 
@@ -88,6 +88,11 @@ ref <- "floor_m2"
 path <- "_kwh_m2_countries.png"
 make_plot_lines(data, var, ref, path)
 
+var <- "heat_std_kWh"
+ref <- "floor_m2"
+path <- "_kwh_std_m2_countries.png"
+make_plot_lines(data, var, ref, path)
+
 var <- "heat_tCO2"
 ref <- "floor_m2"
 path <- "_tCO2_m2_countries.png"
@@ -139,6 +144,24 @@ plot_lines(temp,
           subplot = TRUE,
           free_y = TRUE,
           save_path = paste(save_dir, paste0(scenario, "_twh_countries.png"), sep = "/"))
+
+temp <- data %>%
+  filter(variable == "heat_std_kWh") %>%
+  filter(resolution %in% "all") %>%
+  select(-c("variable", "resolution")) %>%
+  mutate(value = value / 1e9)
+
+plot_lines(temp,
+          x_column = "year",
+          y_column = "value",
+          group_column = "region_bld",
+          ncol = 4,
+          y_label = "Standard space heating consumption\nTWh",
+          subplot = TRUE,
+          free_y = TRUE,
+          save_path = paste(save_dir, paste0(scenario, "_twh_std_countries.png"), sep = "/"))
+
+
 
 temp <- data %>%
   filter(variable == "heat_kWh") %>%

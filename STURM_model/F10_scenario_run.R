@@ -571,13 +571,16 @@ run_scenario <- function(run,
                           d$ms_switch_fuel_exo)
       }
       print("3.2 Integration of switch fuel in the stock")
-      bld_det_i <- fun_stock_switch_fuel_dyn(bld_det_i,
+      temp <- fun_stock_switch_fuel_dyn(bld_det_i,
                                             d$rate_switch_fuel_heat,
                                             ms_sw_i,
                                             cat$ct_fuel,
                                             stp,
                                             yrs[i]
                                )
+      bld_det_i <- temp$bld_det_i
+      bld_det_i_sw <- temp$bld_det_i_sw
+
       # Test consistency of stock turnover
       if (round(sum(bld_det_i$n_units_fuel) / 1e6, 1) !=
         round(sum(filter(stock_aggr, year == yrs[i])$n_units_aggr) / 1e6, 1)) {
@@ -610,6 +613,8 @@ run_scenario <- function(run,
                               emission_factors,
                               ren_det_i = ren_det_i,
                               cost_renovation = d$cost_invest_ren_shell,
+                              bld_det_i_sw = bld_det_i_sw,
+                              cost_invest_heat = d$cost_invest_heat,
                               shr_en = shr_en,
                               report_turnover = report_turnover)
     }

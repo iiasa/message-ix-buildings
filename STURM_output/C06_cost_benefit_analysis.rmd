@@ -1,0 +1,185 @@
+---
+output: reprex::reprex_document
+knit: reprex::reprex_render
+---
+
+Notebook to run STURM Ouput.
+
+```{r}
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(stringr)
+
+print(paste("Working directory is:", getwd()))
+
+# Loding figures setttings and functions
+source("STURM_output/C00_plots.R")
+
+run <- "scenarios_policies"
+scenarios <- c(
+    "EU_price_constant" = "Baseline",
+    "EU_ambitious_heat_constant" = "Heat-pumps",
+    "EU_ambitious_shell_constant" = "Renovation")
+
+ref <- "EU_price_constant"
+```
+
+## Read data
+```{r}
+save_dir <- paste("STURM_output", "figures", run, sep = "/")
+if (!dir.exists(save_dir)) {
+  dir.create(save_dir)
+}
+data <- data.frame(NULL)
+
+for (scenario in names(scenarios)) {
+  print(paste("Scenario:", scenario))
+  file <- paste0("report_agg_STURM_", scenario, "_resid_region_bld_energy.csv")
+  file <- paste("STURM_output/results", file, sep = "/")
+
+  if (!file.exists(file)) {
+    print("Check file name or directory!")
+  }
+
+  # Read output files
+  temp <- read.csv(file) %>%
+    mutate(scenario = scenario)
+
+  data <- bind_rows(data, temp)
+}
+```
+
+Calculate the differences between scenarios and baseline:
+- Cost renovation,
+- Cost heating system,
+- Cost fuel of heating,
+- Emission.
+
+```{r}
+data_ref <- data %>%
+  filter(scenario == ref) %>%
+  rename(value_ref = value) %>%
+  select(-scenario)
+
+diff <- data %>%
+  left_join(data_ref,
+    by = c('region_bld', 'year', 'variable', 'resolution')) %>%
+  mutate(diff = (value - value_ref)) %>%
+  select(-c(value, value_ref)) %>%
+  rename(value = diff)
+
+diff <- filter(diff,
+    resolution == "all",
+    variable %in% c("cost_renovation_EUR", "cost_heater_EUR",
+      "cost_heat_EUR", "heat_tCO2"))
+
+``` 
+
+```{r}
+lifetime_renovation <- 30 # years
+lifetime_heater <- 20 # years
+social_discount <- 0.03 # % per year
+social_cost_carbon <- 100 # EUR per tCO2
+
+wide_data <- pivot_wider(diff,
+                         id_cols = c("region_bld", "year", "resolution", "scenario"),
+                         names_from = variable,
+                         values_from = value) %>%
+              mutate(cost_renovation_EUR =
+                ifelse(is.na(cost_renovation_EUR), 0, cost_renovation_EUR)) %>%
+              mutate(cost_heater_EUR =
+                ifelse(is.na(cost_heater_EUR), 0, cost_heater_EUR) * 5) %>%
+              mutate(cost_renovation_EUR_year =
+                cost_renovation_EUR * social_discount / ((1 + social_discount)^lifetime_renovation - 1)) %>%
+              mutate(cost_heater_EUR_year =
+                cost_heater_EUR * social_discount / ((1 + social_discount)^lifetime_heater - 1)) %>%
+              mutate(cost_emission_EUR =
+                heat_tCO2 * social_cost_carbon * 5) %>%
+              mutate(discount_factor = 1 / ((1 + social_discount)^(year - 2015)))
+              
+
+
+```
+```{r}
+# Add past cost_renovation_EUR_year to account for past renovation
+wide_data <- wide_data %>%
+  group_by_at(c("scenario", "region_bld")) %>%
+  arrange("year") %>%
+  mutate(cost_renovation_EUR_cumsum = cumsum(cost_renovation_EUR_year)) %>%
+  ungroup()
+
+# Add past cost_renovation_EUR_year to account for past renovation
+wide_data <- wide_data %>%
+  group_by_at(c("scenario", "region_bld")) %>%
+  arrange("year") %>%
+  mutate(cost_heater_EUR_cumsum = cumsum(cost_heater_EUR_year)) %>%
+  ungroup()
+
+
+wide_data <- wide_data %>%
+  mutate(running_cost = cost_renovation_EUR_cumsum + cost_heater_EUR_cumsum + cost_heat_EUR + cost_emission_EUR)
+
+write.csv(wide_data, paste0(save_dir, "/cba_det.csv"))
+```
+```{r}
+# summary
+summary <- wide_data %>%
+  group_by(scenario, region_bld) %>%
+  summarize(
+    cost_renovation_sum = sum(cost_renovation_EUR_cumsum * discount_factor) / 1e9,
+    cost_heater_sum = sum(cost_heater_EUR_cumsum * discount_factor) / 1e9,
+    cost_heat_sum = sum(cost_heat_EUR * discount_factor) / 1e9,
+    cost_emission_sum = sum(cost_emission_EUR * discount_factor) / 1e9,
+    running_cost = sum(running_cost * discount_factor) / 1e9
+  ) %>%
+  ungroup()
+
+write.csv(summary, paste0(save_dir, "/cba_summary.csv"))
+```
+
+```{r}
+source("STURM_output/C00_plots.R")
+
+rename_list <- c(
+  cost_renovation_sum = "Cost renovation",
+  cost_heater_sum = "Cost heating system",
+  cost_heat_sum = "Cost fuel",
+  cost_emission_sum = "Cost emission",
+  running_cost = "Total cost"
+)
+
+color_list <- c(
+  "Cost renovation" = "#ee6a6b",
+  "Cost heating system" = "#62c5c0",
+  "Cost fuel" = "#00589d",
+  "Cost emission" = "#fdbb40"
+)
+
+df <- summary %>%
+  gather(variable, value, cost_renovation_sum, cost_heater_sum, cost_heat_sum, cost_emission_sum, running_cost) %>%
+  mutate(variable = rename_list[.data[["variable"]]]) %>%
+  filter(scenario != ref) %>%
+  mutate(scenario = scenarios[.data[["scenario"]]]) %>%
+  mutate(value = - value)
+
+total <- df %>%
+  filter(variable == "Total cost") %>%
+  rename(total_value = value) %>%
+  select(-variable)
+
+df <- df %>%
+  filter(variable != "Total cost")
+
+df <- df %>%
+  left_join(total, by = c("scenario", "region_bld"))
+
+stacked_plots(filter(df, region_bld == "EU"),
+  save_path = paste0(save_dir, "/cba_eu.png"),
+  color_list = color_list)
+stacked_plots(df, subplot_column = "region_bld",
+  save_path = paste0(save_dir, "/cba_scenarios.png"),
+  color_list = color_list)
+
+
+```

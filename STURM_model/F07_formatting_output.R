@@ -24,6 +24,8 @@ fun_format_output <- function(i,
                               emission_factors,
                               ren_det_i = NULL,
                               cost_renovation = NULL,
+                              bld_det_i_sw = NULL,
+                              cost_invest_heat = NULL,
                               dem_det_age_i = NULL,
                               dem_det_slum_age_i = NULL,
                               new_det_age_i = NULL,
@@ -59,6 +61,7 @@ fun_format_output <- function(i,
                 energy_poverty_median = sum(energy_poverty_median),
                 energy_poverty_thres = sum(energy_poverty_thres),
                 heat_kWh = sum(heat_TJ) / 3.6 * 1e6,
+                heat_std_kWh = sum(heat_std_TJ) / 3.6 * 1e6,
                 heat_tCO2 = sum(heat_tCO2),
                 cost_heat_EUR = sum(cost_energy_hh),
                 floor_m2 = sum(floor_Mm2) * 1e6
@@ -67,7 +70,7 @@ fun_format_output <- function(i,
             rename(resolution = fuel_heat) %>%
             gather(variable, value, stock_building,
                 energy_poverty_median, energy_poverty_thres,
-                heat_kWh, heat_tCO2,
+                heat_kWh, heat_std_kWh, heat_tCO2,
                 cost_heat_EUR, floor_m2)
 
         # Adding total values for all resolutions
@@ -89,6 +92,7 @@ fun_format_output <- function(i,
                 energy_poverty_median = sum(energy_poverty_median),
                 energy_poverty_thres = sum(energy_poverty_thres),
                 heat_kWh = sum(heat_TJ) / 3.6 * 1e6,
+                heat_std_kWh = sum(heat_std_TJ) / 3.6 * 1e6,
                 heat_tCO2 = sum(heat_tCO2),
                 cost_heat_EUR = sum(cost_energy_hh),
                 floor_m2 = sum(floor_Mm2) * 1e6
@@ -97,7 +101,7 @@ fun_format_output <- function(i,
             rename(resolution = efficiency) %>%
             gather(variable, value, stock_building,
                 energy_poverty_median, energy_poverty_thres,
-                heat_kWh, heat_tCO2,
+                heat_kWh, heat_std_kWh, heat_tCO2,
                 cost_heat_EUR, floor_m2)
 
         temp <- bind_rows(temp, det_rows)
@@ -180,6 +184,45 @@ fun_format_output <- function(i,
 
             report$agg_result <- bind_rows(report$agg_result, temp)
         }
+
+        if (!is.null(cost_invest_heat) && !is.null(bld_det_i_sw)) {
+            
+            det_rows <- bld_det_i_sw %>%
+                left_join(cost_invest_heat %>%
+                    rename(fuel_heat = fuel_heat_f)) %>%
+                mutate(total_cost = cost_invest_heat * n_units_fuel) %>%
+                group_by_at(c("region_bld", "year", "fuel_heat")) %>%
+                summarize(cost_heater_EUR = sum(total_cost),
+                    n_replacement = sum(n_units_fuel)) %>%
+                ungroup() %>%
+                rename(resolution = fuel_heat
+                    ) %>%
+                gather(variable, value, cost_heater_EUR, n_replacement)
+            
+            # Adding total values for all resolutions
+            agg_rows <- det_rows %>%
+                group_by_at(setdiff(names(det_rows),
+                    c("resolution", "value"))) %>%
+                summarize(value = sum(value)) %>%
+                ungroup() %>%
+                mutate(resolution = "all")
+
+            temp <- bind_rows(det_rows, agg_rows)
+            
+            agg <- temp %>%
+                group_by_at(c("year", "variable", "resolution")) %>%
+                summarize(value = sum(value)) %>%
+                ungroup() %>%
+                mutate(region_bld = "EU")
+
+            temp <- bind_rows(temp, agg) %>%
+                select(c("region_bld", "year", "variable",
+                    "resolution", "value")) %>%
+                arrange(region_bld, year, variable, resolution)
+
+            report$agg_result <- bind_rows(report$agg_result, temp)
+        }
+
     }
 
     if ("material" %in% report_var) {
@@ -360,8 +403,6 @@ fun_format_bld_stock_energy <- function(
                                         emission_factors
                                         ) {
 
-    en_hh_tot <- select(en_hh_tot,
-        -c("heating_intensity", "en_hh_std"))
 
     test <- bld_det_i %>%
         left_join(en_hh_tot) %>%
@@ -447,6 +488,9 @@ fun_format_bld_stock_energy <- function(
             mutate(heat_TJ =
                 ifelse(fuel_heat == "v_no_heat", 0,
                     en_hh * n_units_fuel / 1e6 * 3.6)) %>%
+            mutate(heat_std_TJ =
+                ifelse(fuel_heat == "v_no_heat", 0,
+                    en_hh_std * n_units_fuel / 1e6 * 3.6)) %>%
             # Converted from kWh to MJ (3.6).
             #  Houssing units are in million, so results are in TJ.
             mutate(cool_TJ = en_dem_cool * shr_acc_cool *
@@ -476,9 +520,10 @@ fun_format_bld_stock_energy <- function(
                 "urt", "clim", "inc_cl", "arch", "mat",
                 "eneff", "bld_age", "fuel_heat", "fuel_cool",
                 "scenario", "year", "stock_M", "floor_Mm2",
-                "heat_TJ", "cool_TJ", "cool_ac_TJ", "cool_fans_TJ",
+                "heat_TJ", "heat_std_TJ", "cool_TJ", "cool_ac_TJ", "cool_fans_TJ",
                 "hotwater_TJ", "other_uses_TJ", "cost_energy_hh",
-                "heat_tCO2", "energy_poverty_median", "energy_poverty_thres"
+                "heat_tCO2", "energy_poverty_median", "energy_poverty_thres",
+                "heating_intensity"
             )))
     }
     if (sector == "comm") {

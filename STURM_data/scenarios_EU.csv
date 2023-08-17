@@ -1,4 +1,4 @@
-scenario_id,scenario_name,sub_ren_shell,sub_heat,energy_prices_message,rate_shell_ren_exo,emission_factors
+scenario_id,scenario_name,sub_ren_shell,sub_heat,energy_prices_projections,rate_shell_ren_exo,emission_factors
 1,EU,,,,,
 2,EU_price_constant,,,constant,,
 3,EU_price_2020_600,,,2020_600,,
@@ -7,9 +7,11 @@ scenario_id,scenario_name,sub_ren_shell,sub_heat,energy_prices_message,rate_shel
 6,EU_medium_mix,medium,medium,,,
 7,EU_ambitious_mix,ambitious,ambitious,,,
 8,EU_ambitious_heat,,ambitious,,,
-9,EU_ambitious_shell,ambitious,,,,
-10,EU_double_exogenous,,,,double,
-11,EU_triple_exogenous,,,,triple,
-12,EU_no_exogenous,,,,no,
-13,EU_emission_constant,,,,,constant
-14,EU_emission_2020_400,,,,,2020_400
+9,EU_ambitious_heat_constant,,ambitious,constant,,
+10,EU_ambitious_shell,ambitious,,,,
+11,EU_ambitious_shell_constant,ambitious,,constant,,
+12,EU_double_exogenous,,,,double,
+13,EU_triple_exogenous,,,,triple,
+14,EU_no_exogenous,,,,no,
+15,EU_emission_constant,,,,,constant
+16,EU_emission_2020_400,,,,,2020_400

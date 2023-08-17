@@ -31,8 +31,9 @@ message_building_theme <- theme_minimal() +
           axis.title.y = element_blank(),
           axis.title = element_text(hjust = 0,
                                     size = plot_settings[["size_title"]]),
-          panel.grid.major = element_blank(),
-          panel.grid.minor = element_blank(),
+          panel.grid.major.x = element_blank(),
+          panel.grid.minor.x = element_blank(),
+          panel.grid.minor.y = element_blank(),
           strip.background = element_blank(),
           legend.title = element_blank(),
           legend.text = element_text(size = plot_settings[["size_text"]]),
@@ -60,8 +61,8 @@ message_building_subplot_theme <- theme_minimal() +
           panel.grid.minor.y = element_blank(),
           strip.background = element_blank(),
           legend.title = element_blank(),
-          legend.text = element_text(size = plot_settings[["size_text"]]),
-          legend.position = "right",
+          legend.text = element_text(size = plot_settings[["small_size_text"]]),
+          legend.position = "bottom",
           # Top, Right, Bottom and Left margin
           plot.margin = margin(t = 0,
                       r = 0,
@@ -252,7 +253,8 @@ plot_multiple_lines <- function(df,
     ncol = 4,
     y_label = "",
     save_path = NULL,
-    free_y = FALSE) {
+    free_y = FALSE,
+    colors_lines = NULL) {
     
   df <- df %>%
     mutate(!!group_column := plot_settings[["rename"]][.data[[group_column]]]) %>%
@@ -267,9 +269,11 @@ plot_multiple_lines <- function(df,
   p <- ggplot(df, aes(x = .data[[x_column]], y = .data[[y_column]],
               color = .data[[line_column]])) +
         geom_line(linewidth = 1.5) +
-        # scale_color_manual(values = plot_settings[["colors"]]) +
         expand_limits(y = 0)
-
+  
+  if (!is.null(colors_lines)) {
+    p <- p + scale_color_manual(values = colors_lines)
+  }
   if (free_y) {
       p <- p + facet_wrap(group_column, ncol = ncol, scales = "free_y")
     } else {
@@ -294,6 +298,51 @@ if (!is.null(save_path)) {
 }
   # Print the plot
   print(p)
+}
+
+stacked_plots <- function(data, subplot_column = NULL,
+                        save_path = NULL, color_list = NULL) {
+
+  if (!is.null(subplot_column)) {
+    data <- data %>%
+      mutate(!!subplot_column := plot_settings[["rename"]][.data[[subplot_column]]]) %>%
+      filter(!is.na(.data[[subplot_column]]))
+
+    size_text <- 3
+    size_point <- 1
+    nudge_y <- 0.05
+  } else {
+    size_text <- 8
+    size_point <- 3
+    nudge_y <- 0.15
+    }
+  p <- data %>%
+    ggplot(aes(x = scenario, y = value, fill = variable)) +
+    geom_bar(stat = "identity") +
+    geom_point(aes(x = scenario, y = total_value),
+      color = "black", size = size_point, , show.legend = FALSE) +
+    geom_text(aes(x = scenario,
+      label = paste(round(total_value, 1), "B. EUR"), y = total_value),
+      vjust = -0.5, nudge_y = nudge_y, size = size_text)
+
+  if (!is.null(color_list)) {
+    p <- p + scale_fill_manual(values = color_list)
+  }
+
+  if (!is.null(subplot_column)) {
+    p <- p +
+      facet_wrap(subplot_column, ncol = 4, scales = "free_y") +
+      message_building_subplot_theme
+  } else {
+    p <- p +
+      message_building_theme
+  }
+  print(p)
+  if (!is.null(save_path)) {
+    ggsave(save_path, plot = p, width = plot_settings[["width"]],
+           height = plot_settings[["height"]],
+           dpi = plot_settings[["dpi"]])
+  }
 }
 
 cost_curve <- function(data, x_column, y_column, save_path, ncol = 4) {

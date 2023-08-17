@@ -58,10 +58,32 @@ runs <- c(
     "EU_double",
     "EU_triple")
 
-runs <- c("EU")
 
-energy_efficiency <- "exogenous"
-# energy_efficiency <- "endogenous"
+runs <- c(
+"EU_price_constant",
+"EU_price_2020_600")
+runs <- c("EU_ambitious_shell",
+"EU_medium_shell")
+
+
+runs <- c(
+    "EU",
+    "EU_no",
+    "EU_double",
+    "EU_triple")
+
+runs <- c(
+    "EU_price_constant",
+    "EU",
+    "EU_price_2020_600",
+    "EU_ambitious_heat",
+    "EU_ambitious_heat_constant",
+    "EU_ambitious_shell",
+    "EU_ambitious_shell_constant"
+    )
+
+# energy_efficiency <- "exogenous"
+energy_efficiency <- "endogenous"
 report <- list(var = c("energy"),
                type = c("STURM"),
                geo_level = "region_bld")

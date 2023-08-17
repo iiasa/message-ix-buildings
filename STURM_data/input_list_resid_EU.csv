@@ -11,7 +11,7 @@ barriers_rent,barriers_rent,activity
 barriers_mfh,barriers_mfh,activity
 pop,pop_clim_ssp2,basic
 hh_size,hh_size_EU,basic
-parameters_renovation,,calibration
+parameters_renovation,parameters_renovation,calibration
 parameters_heater,parameters_heater,calibration
 hdd,hdd_tabula,climate
 cost_invest_heat,cost_inv_heat_EU,decision
@@ -44,7 +44,7 @@ days_cool,cool_days_EU,energy
 en_int_hotwater,en_int_resid_hotwater_SSP2_rev_2022-12-15,energy
 en_consumption,en_consumption_2015_EU,energy
 energy_prices_ini,input_prices_ini_resid_EU,macro
-energy_prices_projections,input_prices_NPi_constant,macro
+energy_prices_projections,input_prices_NPi,macro
 income,income_constant,macro
 mat_int,material_int_resid,material
 sub_heat,sub_heat_EU,policies

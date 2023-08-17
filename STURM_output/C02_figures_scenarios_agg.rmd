@@ -9,6 +9,7 @@ Notebook to run STURM Ouput.
 library(dplyr)
 library(ggplot2)
 library(stringr)
+library(tidyr)
 
 print(paste("Working directory is:", getwd()))
 
@@ -40,6 +41,18 @@ scenarios <- c(
   "EU_emission_constant" = "Emisison constant"
 )
 
+run <- "scenarios_policies"
+scenarios <- c(
+    "EU" = "Baseline",
+    "EU_ambitious_shell" = "Ambitious renovation",
+    "EU_medium_shell" = "Medium renovation")
+
+run <- "scenarios_prices"
+scenarios <- c(
+  "EU" = "NPi",
+  "EU_price_2020_600" = "2020_600",
+  "EU_price_constant" = "Price constant"
+)
 
 run <- "test"
 scenarios <- c(
@@ -48,10 +61,44 @@ scenarios <- c(
   "EU_double_exogenous" = "Double renovation rate",
   "EU_triple_exogenous" = "Triple renovation rate"
 )
+
+run <- "scenarios_policies"
+scenarios <- c(
+    "EU" = "Baseline",
+    "EU_ambitious_heat" = "Ambitious heat-pumps",
+    "EU_ambitious_shell" = "Ambitious renovation",
+    "EU_price_2020_600" = "Carbon tax")
+
+run <- "scenarios_policies"
+scenarios <- c(
+    "EU_price_constant" = "Price constant",
+    "EU_no_exogenous" = "No renovation",
+    "EU" = "Baseline",
+    "EU_price_2020_600" = "Carbon tax",
+    "EU_ambitious_heat" = "Ambitious heat-pumps",
+    "EU_ambitious_heat_constant" = "Ambitious heat-pumps, price constant",
+    "EU_ambitious_shell" = "Ambitious renovation",
+    "EU_ambitious_shell_constant" = "Ambitious renovation, prices constant")
+
+colors_scenarios <- c(
+  "Baseline" = "#00589d",
+  "Price constant" = "#247f6e",
+  "No renovation" = "#6a4c93",
+  "Carbon tax" = "#fdbb40",
+  "Ambitious heat-pumps" = "#62c5c0",
+  "Ambitious heat-pumps, price constant" = "#677473",
+  "Ambitious renovation" = "#ee6a6b",
+  "Ambitious renovation, prices constant" = "#531717")
+
 ```
 
 ## Read data
 ```{r}
+save_dir <- paste("STURM_output", "figures", run, sep = "/")
+if (!dir.exists(save_dir)) {
+  dir.create(save_dir)
+}
+
 data <- data.frame(NULL)
 
 for (scenario in names(scenarios)) {
@@ -63,22 +110,24 @@ for (scenario in names(scenarios)) {
     print("Check file name or directory!")
   }
 
-  save_dir <- paste("STURM_output", "figures", sep = "/")
-  print(dir.exists(save_dir))
-
   # Read output files
   temp <- read.csv(file) %>%
     mutate(scenario = scenario)
-
   
   data <- bind_rows(data, temp)
 }
 # Reconstuction flows
-flows <- c("cost_renovation_EUR", "n_renovation")
-stp <- 5
+flows <- c("n_renovation", "cost_renovation_EUR",
+  "n_replacement", "cost_heater_EUR")
+
 data <- data %>%
-  mutate(year = ifelse(variable %in% flows, year - stp, year),
-         value = ifelse(variable %in% flows, value / stp, value))
+  mutate(scenario = scenarios[.data[["scenario"]]])
+
+stp <- 5
+
+data <- data %>%
+ mutate(year = ifelse(variable %in% flows, year - stp, year),
+        value = ifelse(variable %in% flows, value / stp, value))
 ```
 
 ## Figures
@@ -87,6 +136,31 @@ data <- data %>%
 ```{r}
 source("STURM_output/C00_plots.R")
 
+
+temp <- data %>%
+  filter(variable == "n_renovation") %>%
+  filter(resolution %in% "all") %>%
+  select(-c("variable", "resolution")) %>%
+  group_by(scenario, region_bld) %>%
+  arrange(year) %>%
+  mutate(value = cumsum(value)) %>%
+  ungroup() %>%
+  mutate(value = value * 5 / 1e3)
+
+plot_multiple_lines(temp,
+    x_column = "year",
+    y_column = "value",
+    line_column = "scenario",
+    group_column = "region_bld",
+    ncol = 4,
+    y_label = "Cumulated number of renovations\nThousand",
+    free_y = TRUE,
+    colors_lines = colors_scenarios,
+    save_path = paste(save_dir,
+      paste0(run, "_renovation_cumulated_countries.png"), sep = "/"))
+```
+
+```{r}
 temp <- data %>%
   filter(variable == "heat_kWh") %>%
   filter(resolution %in% "all") %>%
@@ -101,8 +175,27 @@ plot_multiple_lines(temp,
     ncol = 4,
     y_label = "Consumtion\nTWh",
     free_y = TRUE,
+    colors_lines = colors_scenarios,
     save_path = paste(save_dir,
       paste0(run, "_heat_kWh_countries.png"), sep = "/"))
+
+temp <- data %>%
+  filter(variable == "heat_std_kWh") %>%
+  filter(resolution %in% "all") %>%
+  select(-c("variable", "resolution")) %>%
+  mutate(value = value / 1e9)
+
+plot_multiple_lines(temp,
+    x_column = "year",
+    y_column = "value",
+    line_column = "scenario",
+    group_column = "region_bld",
+    ncol = 4,
+    y_label = "Consumtion standard\nTWh",
+    free_y = TRUE,
+    colors_lines = colors_scenarios,
+    save_path = paste(save_dir,
+      paste0(run, "_heat_std_kWh_countries.png"), sep = "/"))
 
 
 temp <- data %>%
@@ -119,9 +212,12 @@ plot_multiple_lines(temp,
     ncol = 4,
     y_label = "Emission\nMtCO2",
     free_y = TRUE,
+    colors_lines = colors_scenarios,
     save_path = paste(save_dir,
       paste0(run, "_heat_tCO2_countries.png"), sep = "/"))
 
+```
+```{r}
 temp <- data %>%
   filter(variable == "n_renovation") %>%
   filter(resolution %in% "all") %>%
@@ -136,10 +232,10 @@ plot_multiple_lines(temp,
     ncol = 4,
     y_label = "Renovation\nThousands",
     free_y = TRUE,
+    colors_lines = colors_scenarios,
     save_path = paste(save_dir,
       paste0(run, "_renovation_countries.png"), sep = "/"))
-```
-```{r}
+
 temp <- data %>%
   filter(variable == "stock_building") %>%
   filter(resolution %in% "heat_pump") %>%
@@ -154,8 +250,86 @@ plot_multiple_lines(temp,
     ncol = 4,
     y_label = "Stock Heat-pumps\nMillion",
     free_y = TRUE,
+    colors_lines = colors_scenarios,
     save_path = paste(save_dir,
       paste0(run, "_heat_pumps_countries.png"), sep = "/"))
+```
+
+```{r}
+temp <- data %>%
+  filter(variable == "n_renovation") %>%
+  filter(resolution %in% "all") %>%
+  select(-c("variable", "resolution")) %>%
+  mutate(value = value / 1e3)
+
+plot_multiple_lines(temp,
+    x_column = "year",
+    y_column = "value",
+    line_column = "scenario",
+    group_column = "region_bld",
+    ncol = 4,
+    y_label = "Renovation\nThousands",
+    free_y = TRUE,
+    colors_lines = colors_scenarios,
+    save_path = paste(save_dir,
+      paste0(run, "_renovation_countries.png"), sep = "/"))
+```
+
+```{r}
+temp <- data %>%
+  filter(variable == "cost_renovation_EUR") %>%
+  filter(resolution %in% "all") %>%
+  select(-c("variable", "resolution")) %>%
+  mutate(value = value / 1e9)
+
+plot_multiple_lines(temp,
+    x_column = "year",
+    y_column = "value",
+    line_column = "scenario",
+    group_column = "region_bld",
+    ncol = 4,
+    y_label = "Cost Renovation\nBillion EUR",
+    free_y = TRUE,
+    colors_lines = colors_scenarios,
+    save_path = paste(save_dir,
+      paste0(run, "_cost_renovation_countries.png"), sep = "/"))
+
+temp <- data %>%
+  filter(variable == "cost_heater_EUR") %>%
+  filter(resolution %in% "all") %>%
+  select(-c("variable", "resolution")) %>%
+  mutate(value = value / 1e9)
+
+plot_multiple_lines(temp,
+    x_column = "year",
+    y_column = "value",
+    line_column = "scenario",
+    group_column = "region_bld",
+    ncol = 4,
+    y_label = "Cost Heating system\nBillion EUR",
+    free_y = TRUE,
+    colors_lines = colors_scenarios,
+    save_path = paste(save_dir,
+      paste0(run, "_cost_heater_countries.png"), sep = "/"))
+
+temp <- data %>%
+  filter(variable == "cost_heat_EUR") %>%
+  filter(resolution %in% "all") %>%
+  select(-c("variable", "resolution")) %>%
+  mutate(value = value / 1e9)
+
+plot_multiple_lines(temp,
+    x_column = "year",
+    y_column = "value",
+    line_column = "scenario",
+    group_column = "region_bld",
+    ncol = 4,
+    y_label = "Cost Heating\nBillion EUR",
+    free_y = TRUE,
+    colors_lines = colors_scenarios,
+    save_path = paste(save_dir,
+      paste0(run, "_cost_heat_countries.png"), sep = "/"))
+
 ```
 
 ### Indicators comparison
@@ -187,6 +361,7 @@ plot_multiple_lines(temp,
     ncol = 4,
     y_label = y_label,
     free_y = TRUE,
+    colors_lines = colors_scenarios,
     save_path = paste(save_dir,
       paste0(run, path), sep = "/"))
 ```
@@ -219,6 +394,7 @@ plot_multiple_lines(temp,
     ncol = 4,
     y_label = y_label,
     free_y = FALSE,
+    colors_lines = colors_scenarios,
     save_path = paste(save_dir,
       paste0(run, path), sep = "/"))
 ```
@@ -251,6 +427,7 @@ plot_multiple_lines(temp,
     ncol = 4,
     y_label = y_label,
     free_y = FALSE,
+    colors_lines = colors_scenarios,
     save_path = paste(save_dir,
       paste0(run, path), sep = "/"))
 
@@ -282,6 +459,7 @@ plot_multiple_lines(temp,
     ncol = 4,
     y_label = y_label,
     free_y = FALSE,
+    colors_lines = colors_scenarios,
     save_path = paste(save_dir,
       paste0(run, path), sep = "/"))
 

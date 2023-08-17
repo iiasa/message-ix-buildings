@@ -43,10 +43,11 @@ fun_report_basic <- function(report, report_var, geo_data, geo_level, geo_level_
         ungroup()
     }
 
-    write_csv(en_stock_rep,
-      paste0(path_out, "report_STURM_", scenario_name, "_",
-        sector, "_", geo_level_report, "_energy.csv"))
-
+    if (FALSE) {
+      write_csv(en_stock_rep,
+        paste0(path_out, "report_STURM_", scenario_name, "_",
+          sector, "_", geo_level_report, "_energy.csv"))
+    }
     write_csv(report$agg_result,
       paste0(path_out, "report_agg_STURM_", scenario_name, "_",
         sector, "_", geo_level_report, "_energy.csv"))

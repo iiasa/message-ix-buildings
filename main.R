@@ -44,7 +44,6 @@ runs <- c("EU",
 "EU_emission_constant",
 "EU_emission_2020_400")
 
-runs <- "EU"
 
 region <- c("WEU", "EEU")
 sector <- "resid"
@@ -81,6 +80,13 @@ runs <- c(
     "EU_ambitious_shell",
     "EU_ambitious_shell_constant"
     )
+
+runs <- c("EU_price_constant", "EU_ambitious_shell_constant")
+runs <- c(
+    "EU",
+    "EU_no",
+    "EU_double",
+    "EU_triple")
 
 # energy_efficiency <- "exogenous"
 energy_efficiency <- "endogenous"

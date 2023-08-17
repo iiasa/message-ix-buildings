@@ -333,8 +333,8 @@ run_scenario <- function(run,
                                           d$floor_cap,
                                           d$en_consumption,
                                           path_out)
+    shr_en <- mutate(shr_en, shr_en = 1)
     
-
     # Energy demand intensities - hot water
     print(paste("Calculate energy demand intensities for hot water"))
     en_hh_hw_scen <- fun_hw_resid(
@@ -369,6 +369,7 @@ run_scenario <- function(run,
 
     # Loop over timesteps
     print(paste("Start scenario run", sector))
+    correction_factor <- NULL
     parameters_renovation <- NULL
     parameters_heater <- NULL
     bld_det_i <- bld_det_ini
@@ -435,9 +436,13 @@ run_scenario <- function(run,
 
       print(paste("1. Running stock turnover year:", yrs[i]))
       temp <- fun_stock_turnover_dyn(i, yrs, bld_cases_fuel, cat$ct_bld_age,
-                                     stock_aggr, bld_det_i, d$prob_dem)
+                                    stock_aggr, bld_det_i, d$prob_dem,
+                                    path_out = NULL,
+                                    correction_factor = correction_factor)
+
       bld_aggr_i <- temp$bld_aggr_i
       bld_det_i <- temp$bld_det_i
+      correction_factor <- temp$correction_factor
       report_turnover <- temp$report
 
       print("2. Shell renovation decisions")

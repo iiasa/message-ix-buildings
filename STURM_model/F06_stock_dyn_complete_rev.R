@@ -8,7 +8,10 @@ library(tidyr)
 
 
 fun_stock_turnover_dyn <- function(i, yrs, bld_cases_fuel, ct_bld_age,
-                                   stock_aggr, bld_det_ini, prob_dem) {
+                                   stock_aggr, bld_det_ini, prob_dem,
+                                   rate_dem_target = 0.001,
+                                   path_out = NULL,
+                                   correction_factor = NULL) {
 
   stp <- yrs[i] - yrs[i - 1]
 
@@ -36,11 +39,36 @@ fun_stock_turnover_dyn <- function(i, yrs, bld_cases_fuel, ct_bld_age,
     # CDF: difference between two consecutive time steps
     mutate(pdem = pweibull(yrs[i] - yr_con, shape = shape, scale = scale) -
       pweibull(yrs[i - 1] - yr_con, shape = shape, scale = scale)) %>%
-    mutate(pdem = pdem / 2) %>%
+    # Removing renovated buildings from demolitions
+    mutate(pdem = ifelse(eneff %in% c("adv", "std"), 0, pdem)) %>%
     mutate(n_dem = ifelse(n_units_fuel > 0,
       round(pdem * n_units_fuel, rnd), 0)) %>%
     rename(n_units_fuel_p = n_units_fuel) %>%
     select(-c(shape, scale, pdem))
+  
+  # Calibration demolition function
+  if (is.null(correction_factor)) {
+    correction_factor <- bld_det_i %>%
+      group_by_at(("region_bld")) %>%
+      summarize(n_dem = sum(n_dem),
+                n_units = sum(n_units_fuel_p)) %>%
+      ungroup() %>%
+      mutate(rate_dem = n_dem / n_units / 5) %>%
+      mutate(rate_dem_target = rate_dem_target) %>%
+      mutate(correction_factor = rate_dem_target / rate_dem) %>%
+      select(c("region_bld", "correction_factor"))
+
+    if (!is.null(path_out)) {
+      write.csv(correction_factor,
+        paste(path_out, "calibration_demolition.csv", sep = ""))
+    }
+    
+  }
+
+  bld_det_i <- bld_det_i %>%
+    left_join(correction_factor) %>%
+    mutate(n_dem = n_dem * correction_factor) %>%
+    select(-c(correction_factor))
 
   print(paste("Number of demolitions is",
     round(sum(bld_det_i$n_dem) / 1e6, 0), "million units.",
@@ -132,7 +160,8 @@ fun_stock_turnover_dyn <- function(i, yrs, bld_cases_fuel, ct_bld_age,
   output <- list(
     bld_aggr_i = bld_aggr_i,
     bld_det_i = bld_det_i,
-    report = report
+    report = report,
+    correction_factor = correction_factor
   )
   return(output)
 }

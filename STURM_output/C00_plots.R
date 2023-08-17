@@ -37,7 +37,7 @@ message_building_theme <- theme_minimal() +
           strip.background = element_blank(),
           legend.title = element_blank(),
           legend.text = element_text(size = plot_settings[["size_text"]]),
-          legend.position = "right",
+          legend.position = "bottom",
           # Top, Right, Bottom and Left margin
           plot.margin = margin(t = 0,
                       r = 0,
@@ -249,17 +249,19 @@ plot_multiple_lines <- function(df,
     x_column,
     y_column,
     line_column,
-    group_column,
+    group_column = NULL,
     ncol = 4,
     y_label = "",
     save_path = NULL,
     free_y = FALSE,
     colors_lines = NULL) {
-    
-  df <- df %>%
-    mutate(!!group_column := plot_settings[["rename"]][.data[[group_column]]]) %>%
-    filter(!is.na(.data[[group_column]]))
   
+  if (!is.null(group_column)) {
+    df <- df %>%
+      mutate(!!group_column := plot_settings[["rename"]][.data[[group_column]]]) %>%
+      filter(!is.na(.data[[group_column]]))
+  }
+
   if (all(unique(df[[line_column]]) %in% names(plot_settings[["rename"]]))) {
     df <- df %>%
       mutate(!!line_column := plot_settings[["rename"]][.data[[line_column]]])
@@ -274,14 +276,20 @@ plot_multiple_lines <- function(df,
   if (!is.null(colors_lines)) {
     p <- p + scale_color_manual(values = colors_lines)
   }
-  if (free_y) {
-      p <- p + facet_wrap(group_column, ncol = ncol, scales = "free_y")
-    } else {
-      p <- p + facet_wrap(group_column, ncol = ncol)
+  if (!is.null(group_column)) {
+    if (free_y) {
+        p <- p + facet_wrap(group_column, ncol = ncol, scales = "free_y")
+      } else {
+        p <- p + facet_wrap(group_column, ncol = ncol)
+    }
+    p <- p +
+        message_building_subplot_theme
+  } else {
+    p <- p +
+        message_building_theme
   }
   p <- p +
-        message_building_subplot_theme +
-        theme(legend.position = "right") +
+        theme(legend.position = "bottom") +
         labs(title = y_label) +
         scale_x_continuous(
           breaks = c(min(df[[x_column]]), max(df[[x_column]])),

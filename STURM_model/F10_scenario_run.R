@@ -437,7 +437,7 @@ run_scenario <- function(run,
       print(paste("1. Running stock turnover year:", yrs[i]))
       temp <- fun_stock_turnover_dyn(i, yrs, bld_cases_fuel, cat$ct_bld_age,
                                     stock_aggr, bld_det_i, d$prob_dem,
-                                    path_out = NULL,
+                                    path_out = path_out,
                                     correction_factor = correction_factor)
 
       bld_aggr_i <- temp$bld_aggr_i

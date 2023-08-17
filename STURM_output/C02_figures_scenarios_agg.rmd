@@ -74,17 +74,20 @@ scenarios <- c(
     "EU_ambitious_shell" = "Ambitious renovation",
     "EU_ambitious_shell_constant" = "Ambitious renovation, prices constant")
 
-scenarios <- c(
-    "EU_price_constant" = "Baseline",
-    # "EU_ambitious_heat_constant" = "Ambitious heat-pumps",
-    "EU_ambitious_shell_constant" = "Ambitious renovation"
-)
+
 run <- "test"
 scenarios <- c(
   "EU_exogenous" = "Baseline",
   "EU_no_exogenous" = "No renovation",
   "EU_double_exogenous" = "Double renovation",
   "EU_triple_exogenous" = "Triple renovation"
+)
+run <- "test_endogenous"
+scenarios <- c(
+    "EU" = "Baseline",
+    "EU_price_constant" = "Price constant",
+    # "EU_ambitious_heat_constant" = "Ambitious heat-pumps",
+    "EU_ambitious_shell_constant" = "Ambitious renovation"
 )
 colors_scenarios <- c(
   "Baseline" = "#00589d",
@@ -587,6 +590,19 @@ plot_multiple_lines(temp,
     ncol = 4,
     y_label = y_label,
     free_y = FALSE,
+    colors_lines = colors_scenarios,
+    save_path = paste(save_dir,
+      paste0(run, path), sep = "/"))
+
+path <- "_energy_poverty_threshold_eu.png"
+plot_multiple_lines(filter(temp, region_bld == "EU"),
+    x_column = "year",
+    y_column = "value",
+    line_column = "scenario",
+    group_column = NULL,
+    ncol = 4,
+    y_label = y_label,
+    free_y = TRUE,
     colors_lines = colors_scenarios,
     save_path = paste(save_dir,
       paste0(run, path), sep = "/"))

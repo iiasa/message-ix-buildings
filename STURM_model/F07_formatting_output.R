@@ -474,7 +474,7 @@ fun_format_bld_stock_energy <- function(
                 ifelse(budget_share >= 2 * median_budget_share,
                 n_units_fuel, 0)) %>%
             mutate(energy_poverty_thres =
-                ifelse(budget_share >= 0.8, n_units_fuel, 0)) %>%
+                ifelse(budget_share >= 0.1, n_units_fuel, 0)) %>%
             mutate(cost_energy_hh = cost_energy_hh * n_units_fuel) %>%
             left_join(en_hh_hw_scen) %>%
             # convert n. units to millions
@@ -525,6 +525,7 @@ fun_format_bld_stock_energy <- function(
                 "heat_tCO2", "energy_poverty_median", "energy_poverty_thres",
                 "heating_intensity"
             )))
+            
     }
     if (sector == "comm") {
         en_stock_i <- en_stock_i %>%

@@ -16,52 +16,6 @@ print(paste("Working directory is:", getwd()))
 # Loding figures setttings and functions
 source("STURM_output/C00_plots.R")
 
-# run <- "scenarios_EU_policies"
-run <- "scenarios_test_policies"
-scenarios <- c(
-  "EU_exogenous" = "Current renovation rate",
-  "EU_no_exogenous" = "No renovation",
-  # "EU_double_exogenous" = "Double renovation rate",
-  "EU_triple_exogenous" = "Triple renovation rate"
-  # "EU_medium_heat" = "Medium additional policies heat-pumps",
-  # "EU_medium_shell" = "Medium additional policies renovation"
-  )
-
-run <- "scenarios_test_prices"
-scenarios <- c(
-  "EU" = "Current policies",
-  "EU_price_high" = "High price",
-  "EU_price_constant" = "Price constant"
-)
-
-run <- "scenarios_test_emission"
-scenarios <- c(
-  "EU" = "NPi",
-  "EU_emission_2020_400" = "NPi 2020_400",
-  "EU_emission_constant" = "Emisison constant"
-)
-
-run <- "scenarios_policies"
-scenarios <- c(
-    "EU" = "Baseline",
-    "EU_ambitious_shell" = "Ambitious renovation",
-    "EU_medium_shell" = "Medium renovation")
-
-run <- "scenarios_prices"
-scenarios <- c(
-  "EU" = "NPi",
-  "EU_price_2020_600" = "2020_600",
-  "EU_price_constant" = "Price constant"
-)
-
-
-
-run <- "scenarios_policies"
-scenarios <- c(
-    "EU" = "Baseline",
-    "EU_ambitious_heat" = "Ambitious heat-pumps",
-    "EU_ambitious_shell" = "Ambitious renovation",
-    "EU_price_2020_600" = "Carbon tax")
 
 run <- "scenarios_policies"
 scenarios <- c(
@@ -74,21 +28,24 @@ scenarios <- c(
     "EU_ambitious_shell" = "Ambitious renovation",
     "EU_ambitious_shell_constant" = "Ambitious renovation, prices constant")
 
+run_test <- TRUE
+if (run_test) {
+      run <- "scenarios_test"
+      scenarios <- c(
+        "EU_exogenous" = "Baseline",
+        "EU_price_constant_exogenous" = "Price constant",
+        "EU_price_2020_600_exogenous" = "Carbon tax",
+        "EU_double_exogenous" = "Doubling renovation",
+        "EU_double_price_constant_exogenous" =
+          "Doubling renovation, prices constant",
+        "EU_triple_exogenous" = "Tripling renovation",
+        "EU_no_exogenous" = "No renovation",
+        "EU_emission_1p5c_exogenous" = "Low emission factor",
+        "EU_double_emission_1p5c_exogenous" =
+          "Doubling renovation, Low emission factor"
+    ) 
+}
 
-run <- "test"
-scenarios <- c(
-  "EU_exogenous" = "Baseline",
-  "EU_no_exogenous" = "No renovation",
-  "EU_double_exogenous" = "Double renovation",
-  "EU_triple_exogenous" = "Triple renovation"
-)
-run <- "test_endogenous"
-scenarios <- c(
-    "EU" = "Baseline",
-    "EU_price_constant" = "Price constant",
-    # "EU_ambitious_heat_constant" = "Ambitious heat-pumps",
-    "EU_ambitious_shell_constant" = "Ambitious renovation"
-)
 colors_scenarios <- c(
   "Baseline" = "#00589d",
   "Price constant" = "#247f6e",
@@ -97,9 +54,12 @@ colors_scenarios <- c(
   "Ambitious heat-pumps, price constant" = "#677473",
   "Ambitious renovation" = "#ee6a6b",
   "Ambitious renovation, prices constant" = "#531717",
+  "Doubling renovation" = "#ee6a6b",
+  "Doubling renovation, prices constant" = "#531717",
+  "Tripling renovation" = "#380707",
   "No renovation" = "#6a4c93",
-  "Double renovation" = "#62c5c0",
-  "Triple renovation" = "#ee6a6b"
+  "Low emission factor" = "#2a9d00",
+  "Doubling renovation, Low emission factor" = "#1f540b"
   )
 
 ```
@@ -143,6 +103,114 @@ data <- data %>%
 ```
 
 ## Figures
+### Table summary
+```{r}
+ref <- "Baseline"
+
+variables <- c("heat_kWh", "heat_std_kWh", "heat_tCO2",
+     "energy_poverty_thres", "stock_building", "heating_intensity")
+
+ini <- data %>%
+  filter(year == 2015) %>%
+  filter(scenario == ref) %>%
+  mutate(scenario = " Initial") %>%
+  filter(resolution == "all") %>%
+  filter(variable %in% variables) %>%
+  select(-c("resolution", "year")) %>%
+  pivot_wider(id_cols = c(region_bld, scenario),
+    names_from = variable,
+    values_from = value)
+
+table <- data %>%
+  filter(year == 2050) %>%
+  filter(resolution == "all") %>%
+  filter(variable %in% variables) %>%
+  select(-c("resolution", "year")) %>%
+  pivot_wider(id_cols = c(region_bld, scenario),
+    names_from = variable,
+    values_from = value)
+
+
+table <- bind_rows(ini, table)
+
+temp <- data %>%
+  filter(variable == "stock_building") %>%
+  filter(year == 2050) %>%
+  filter(resolution %in% c("std", "adv")) %>%
+  select(-c("resolution", "year")) %>%
+  group_by_at(c("region_bld", "scenario")) %>%
+  summarize(renovated_building = sum(value)) %>%
+  ungroup()
+
+table <- left_join(table, temp, by = c("region_bld", "scenario")) %>%
+  mutate(renovated_building =
+    ifelse(is.na(renovated_building), 0, renovated_building))
+
+temp <- data %>%
+  filter(variable == "stock_building") %>%
+  filter(year == 2050) %>%
+  filter(resolution %in% c("biomass_solid", "heat_pump",
+    "electricity", "district_heating")) %>%
+  group_by_at(c("region_bld", "scenario")) %>%
+  summarize(low_carbon_building = sum(value)) %>%
+  ungroup()
+ini <- data %>%
+  filter(variable == "stock_building") %>%
+  filter(year == 2015) %>%
+  filter(scenario == ref) %>%
+  filter(resolution %in% c("biomass_solid", "heat_pump",
+    "electricity", "district_heating")) %>%
+  group_by_at(c("region_bld", "scenario")) %>%
+  summarize(low_carbon_building = sum(value)) %>%
+  ungroup() %>%
+  mutate(scenario = " Initial")
+temp <- bind_rows(ini, temp)
+
+table <- left_join(table, temp, by = c("region_bld", "scenario")) %>%
+  mutate(renovated_building =
+    ifelse(is.na(renovated_building), 0, renovated_building))
+    
+format_temp <- table %>%
+  arrange(region_bld, scenario) %>%
+  mutate(,
+    heat_kWh = round(heat_kWh / 1e9, 2),
+    heat_std_kWh = round(heat_std_kWh / 1e9, 2),
+    heat_tCO2 = round(heat_tCO2 / 1e6, 2),
+    stock_building = round(stock_building / 1e3, 2),
+    heating_intensity = round(heating_intensity, 2),
+    renovated_building = round(renovated_building / 1e3, 2),
+    low_carbon_building = round(low_carbon_building / 1e3, 2),
+    energy_poverty_thres =
+      round(energy_poverty_thres / 1e3, 2)) %>%
+  mutate(region_bld = plot_settings[["rename"]][region_bld]) %>%
+  select(c("region_bld", "scenario",
+    "heat_kWh", "heat_std_kWh", "heat_tCO2",
+    "heating_intensity",
+    "stock_building", "low_carbon_building",
+    "renovated_building", "energy_poverty_thres")) %>%
+  mutate(low_carbon_building_rate = low_carbon_building / stock_building,
+    renovated_building_rate = renovated_building / stock_building,
+    energy_poverty_rate = energy_poverty_thres / stock_building) %>%
+  rename(
+    "Energy poverty (Thousand)" = energy_poverty_thres,
+    "Energy poverty (Percent)" = energy_poverty_rate,
+    "Renovated buildings (Thousand)" = renovated_building,
+    "Renovated buildings (Percent)" = renovated_building_rate,
+    "Low carbon buildings (Thousand)" = low_carbon_building,
+    "Low carbon buildings (Percent)" = low_carbon_building_rate,
+    "Stock building (Thousand)" = stock_building,
+    "Heating intensity (Percent)" = heating_intensity,
+    "Space heating consumption (TWh)" = heat_kWh,
+    "Space heating consumption standard (TWh)" = heat_std_kWh,
+    "Emission (MtCO2)" = heat_tCO2,
+    "Member states" = region_bld,
+    "Scenario" = scenario)
+
+
+write.csv(format_temp, paste(save_dir, paste0(run, "_summary.csv"), sep = "/"),
+  row.names = FALSE)
+```
+
 
 ### Absolute values
 #### Number of renovations

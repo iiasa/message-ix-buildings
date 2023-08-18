@@ -333,7 +333,7 @@ run_scenario <- function(run,
                                           d$floor_cap,
                                           d$en_consumption,
                                           path_out)
-    shr_en <- mutate(shr_en, shr_en = 1)
+    # shr_en <- mutate(shr_en, shr_en = 1)
     
     # Energy demand intensities - hot water
     print(paste("Calculate energy demand intensities for hot water"))

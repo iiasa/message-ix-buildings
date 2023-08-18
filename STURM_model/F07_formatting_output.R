@@ -106,6 +106,7 @@ fun_format_output <- function(i,
 
         temp <- bind_rows(temp, det_rows)
 
+
         if (!is.null(report_turnover)) {
             report_turnover <- report_turnover %>%
                 mutate(n_out = n_dem + n_empty) %>%
@@ -139,6 +140,46 @@ fun_format_output <- function(i,
             arrange(region_bld, year, variable, resolution)
 
         report$agg_result <- bind_rows(report$agg_result, temp)
+
+        # Heating intensity by country
+        temp_concat <- en_stock_i %>%
+            group_by_at(c("region_bld", "year", "inc_cl")) %>%
+            summarize(heating_intensity =
+                sum(stock_M * heating_intensity, na.rm = TRUE) / sum(stock_M)) %>%
+            ungroup() %>%
+            rename(resolution = inc_cl) %>%
+            gather(variable, value, heating_intensity)
+        temp <- en_stock_i %>%
+            group_by_at(c("region_bld", "year")) %>%
+            summarize(heating_intensity =
+                sum(stock_M * heating_intensity, na.rm = TRUE) / sum(stock_M)) %>%
+            ungroup() %>%
+            mutate(resolution = "all") %>%
+            gather(variable, value, heating_intensity)
+        temp_concat <- bind_rows(temp_concat, temp)
+        
+        temp <- en_stock_i %>%
+            group_by_at(c("year", "inc_cl")) %>%
+            summarize(heating_intensity =
+                sum(stock_M * heating_intensity, na.rm = TRUE) / sum(stock_M)) %>%
+            ungroup() %>%
+            rename(resolution = inc_cl) %>%
+            mutate(region_bld = "EU") %>%
+            gather(variable, value, heating_intensity)
+        temp_concat <- bind_rows(temp_concat, temp)
+
+        temp <- en_stock_i %>%
+            group_by_at(c("year")) %>%
+            summarize(heating_intensity =
+                sum(stock_M * heating_intensity, na.rm = TRUE) / sum(stock_M)) %>%
+            ungroup() %>%
+            mutate(resolution = "all") %>%
+            mutate(region_bld = "EU") %>%
+            gather(variable, value, heating_intensity)
+        temp_concat <- bind_rows(temp_concat, temp)
+
+        report$agg_result <- bind_rows(report$agg_result, temp_concat)
+
 
         if (!is.null(cost_renovation) && !is.null(ren_det_i)) {
             cost_renovation <- cost_renovation %>%

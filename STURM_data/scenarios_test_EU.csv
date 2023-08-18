@@ -1,0 +1,10 @@
+scenario_id,scenario_name,energy_prices_projections,rate_shell_ren_exo,emission_factors
+1,EU_exogenous,,,
+2,EU_price_constant_exogenous,constant,,
+3,EU_price_2020_600_exogenous,2020_600,,
+4,EU_double_exogenous,,double,
+5,EU_double_price_constant_exogenous,constant,,
+5,EU_triple_exogenous,,triple,
+6,EU_no_exogenous,,no,
+7,EU_emission_1p5c_exogenous,,,1p5c
+8,EU_double_emission_1p5c_exogenous,,double,1p5c

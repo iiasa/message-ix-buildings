@@ -27,22 +27,6 @@ path_out <- paste(getwd(), "/STURM_output/results/", sep = "")
 base_year <- 2015
 end_year <- 2050
 step_year <- 5
-runs <- c(
-    "EU_medium_heat",
-    "EU_medium_shell"
-    )
-runs <- c(
-    "EU_no",
-    "EU_double",
-    "EU_triple")
-
-runs <- c("EU",
-"EU_price_constant",
-"EU_price_2020_600")
-
-runs <- c("EU",
-"EU_emission_constant",
-"EU_emission_2020_400")
 
 
 region <- c("WEU", "EEU")
@@ -51,29 +35,11 @@ file_inputs <- "input_list_resid_EU.csv"
 file_scenarios <- "scenarios_EU.csv"
 en_method <- "TABULA" # "VDD", "TABULA"
 
+
+energy_efficiency <- "endogenous"
 runs <- c(
     "EU",
-    "EU_no",
-    "EU_double",
-    "EU_triple")
-
-
-runs <- c(
-"EU_price_constant",
-"EU_price_2020_600")
-runs <- c("EU_ambitious_shell",
-"EU_medium_shell")
-
-
-runs <- c(
-    "EU",
-    "EU_no",
-    "EU_double",
-    "EU_triple")
-
-runs <- c(
     "EU_price_constant",
-    "EU",
     "EU_price_2020_600",
     "EU_ambitious_heat",
     "EU_ambitious_heat_constant",
@@ -81,13 +47,24 @@ runs <- c(
     "EU_ambitious_shell_constant"
     )
 
-runs <- c(
-    "EU",
-    "EU_price_constant",
-    "EU_ambitious_shell_constant")
 
-# energy_efficiency <- "exogenous"
-energy_efficiency <- "endogenous"
+run_test <- TRUE
+if (run_test) {
+    file_scenarios <- "scenarios_test_EU.csv"
+    energy_efficiency <- "exogenous"
+    runs <- c(
+        "EU",
+        "EU_price_constant",
+        "EU_price_2020_600",
+        "EU_double",
+        "EU_double_price_constant",
+        "EU_triple",
+        "EU_no",
+        "EU_emission_1p5c",
+        "EU_double_emission_1p5c"
+    )
+}
+
 report <- list(var = c("energy"),
                type = c("STURM"),
                geo_level = "region_bld")

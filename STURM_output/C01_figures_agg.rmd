@@ -27,7 +27,7 @@ if (!file.exists(file)) {
   print("Check file name or directory!")
 }
 
-save_dir <- paste("STURM_output", "figures", sep = "/")
+save_dir <- paste("STURM_output", "figures", scenario, sep = "/")
 print(dir.exists(save_dir))
 
 # Read output files
@@ -160,7 +160,6 @@ plot_lines(temp,
           subplot = TRUE,
           free_y = TRUE,
           save_path = paste(save_dir, paste0(scenario, "_twh_std_countries.png"), sep = "/"))
-
 
 
 temp <- data %>%

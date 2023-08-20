@@ -56,13 +56,16 @@ if (run_test) {
         "EU",
         "EU_price_constant",
         "EU_price_2020_600",
+        "EU_no",
+        "EU_no_price_constant",
         "EU_double",
         "EU_double_price_constant",
         "EU_triple",
-        "EU_no",
+        "EU_triple_price_constant",
         "EU_emission_1p5c",
         "EU_double_emission_1p5c"
     )
+    c <- "EU_no_price_constant"
 }
 
 report <- list(var = c("energy"),

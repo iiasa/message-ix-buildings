@@ -369,7 +369,6 @@ run_scenario <- function(run,
 
     # Loop over timesteps
     print(paste("Start scenario run", sector))
-    correction_factor <- NULL
     parameters_renovation <- NULL
     parameters_heater <- NULL
     bld_det_i <- bld_det_ini
@@ -437,12 +436,10 @@ run_scenario <- function(run,
       print(paste("1. Running stock turnover year:", yrs[i]))
       temp <- fun_stock_turnover_dyn(i, yrs, bld_cases_fuel, cat$ct_bld_age,
                                     stock_aggr, bld_det_i, d$prob_dem,
-                                    path_out = path_out,
-                                    correction_factor = correction_factor)
+                                    path_out = path_out)
 
       bld_aggr_i <- temp$bld_aggr_i
       bld_det_i <- temp$bld_det_i
-      correction_factor <- temp$correction_factor
       report_turnover <- temp$report
 
       print("2. Shell renovation decisions")

@@ -42,13 +42,14 @@ en_int_heat,heat_intensity_EU,energy
 en_int_cool,cool_intensity_EU,energy
 days_cool,cool_days_EU,energy
 en_int_hotwater,en_int_resid_hotwater_SSP2_rev_2022-12-15,energy
-en_consumption,en_consumption_2015_EU,energy
+en_consumption,en_consumption_2015_EU_eurostat,energy
 energy_prices_ini,input_prices_ini_resid_EU,macro
 energy_prices_projections,input_prices_NPi,macro
-income,income_constant,macro
+income,income,macro
 mat_int,material_int_resid,material
 sub_heat,sub_heat_EU,policies
 sub_ren_shell,sub_ren_shell_EU,policies
+carbon_tax,carbon_tax_EU,policies
 hh_tenure,hh_tenr_EU,stock
 shr_arch,bld_shr_arch_resid,stock
 shr_mat,bld_share_mat_resid_EU,stock

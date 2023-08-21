@@ -17,45 +17,43 @@ print(paste("Working directory is:", getwd()))
 source("STURM_output/C00_plots.R")
 
 
-run <- "scenarios_policies"
-scenarios <- c(
-    "EU_constant" = "Price constant",
-    "EU_no_exogenous" = "No renovation",
-    "EU" = "Baseline",
-    "EU_price_2020_600" = "Carbon tax",
-    "EU_ambitious_heat" = "Ambitious heat-pumps",
-    "EU_ambitious_heat_constant" = "Ambitious heat-pumps, price constant",
-    "EU_ambitious_shell" = "Ambitious renovation",
-    "EU_ambitious_shell_constant" = "Ambitious renovation, prices constant")
-
 run_test <- TRUE
 if (run_test) {
       run <- "scenarios_test"
       scenarios <- c(
         "EU_exogenous" = "Baseline",
-        "EU_price_constant_exogenous" = "Price constant",
+        "EU_constant_exogenous" = "Price constant",
         "EU_price_2020_600_exogenous" = "Carbon tax",
         "EU_no_exogenous" = "No renovation",
-        "EU_no_price_constant_exogenous" = "No renovation, Price constant",
+        "EU_no_constant_exogenous" = "No renovation, Price constant",
         "EU_double_exogenous" = "Doubling renovation",
-        "EU_double_price_constant_exogenous" =
+        "EU_double_constant_exogenous" =
           "Doubling renovation, Price constant",
         "EU_triple_exogenous" = "Tripling renovation",
-        "EU_triple_price_constant_exogenous" =
+        "EU_triple_constant_exogenous" =
           "Tripling renovation, Price constant",
         "EU_emission_1p5c_exogenous" = "Low emission factor",
         "EU_double_emission_1p5c_exogenous" =
-          "Doubling renovation, Low emission factor"
-    ) 
-}
+          "Doubling renovation, Low emission factor",
+        "EU_1p5c_exogenous" = "1p5C"
+    ) } else {
+    run <- "scenarios_policies"
+    scenarios <- c(
+        "EU" = "Baseline",
+        "EU_constant" = "Price constant",
+        "EU_1p5C" = "1p5C",
+        "EU_ambitious_shell" = "Subsidies renovation",
+        "EU_ambitious_heat" = "Subsidies heat-pumps")
+    }
 
 colors_scenarios <- c(
   "Baseline" = "#00589d",
   "Price constant" = "#247f6e",
   "Carbon tax" = "#fdbb40",
-  "Ambitious heat-pumps" = "#62c5c0",
+  "1p5C" = "#fdbb40",
+  "Subsidies heat-pumps" = "#62c5c0",
   "Ambitious heat-pumps, price constant" = "#677473",
-  "Ambitious renovation" = "#ee6a6b",
+  "Subsidies renovation" = "#ee6a6b",
   "Ambitious renovation, prices constant" = "#531717",
   "Doubling renovation" = "#ee6a6b",
   "Doubling renovation, Price constant" = "#531717",
@@ -112,10 +110,13 @@ data <- data %>%
 ```{r}
 ref <- "Baseline"
 base_year <- 2015
-end_year <- 2020
+end_year <- 2050
 
 variables <- c("heat_kWh", "heat_std_kWh", "heat_tCO2",
-     "energy_poverty_thres", "stock_building", "heating_intensity")
+     "energy_poverty_thres", "stock_building", "n_replacement",
+    "heating_intensity")
+
+low_carbon <- c("biomass_solid", "heat_pump", "electricity", "district_heating")
 
 ini <- data %>%
   filter(year == base_year) %>%
@@ -137,9 +138,21 @@ table <- data %>%
     names_from = variable,
     values_from = value)
 
-
 table <- bind_rows(ini, table)
 
+# replacement heating system
+temp <- data %>%
+  filter(year <= end_year) %>%
+  filter(resolution == "all") %>%
+  filter(variable == "n_replacement") %>%
+  group_by_at(c("region_bld", "scenario")) %>%
+  summarize(replacement_heater = sum(value) * stp) %>%
+  ungroup()
+table <- left_join(table, temp, by = c("region_bld", "scenario")) %>%
+  mutate(replacement_heater =
+    ifelse(is.na(replacement_heater), 0, replacement_heater))
+
+# renovated buildings
 temp <- data %>%
   filter(variable == "stock_building") %>%
   filter(year == end_year) %>%
@@ -162,7 +175,6 @@ temp <- data %>%
   summarize(advanced_renovated_building = sum(value)) %>%
   ungroup()
 
-
 table <- left_join(table, temp, by = c("region_bld", "scenario")) %>%
   mutate(advanced_renovated_building =
     ifelse(is.na(advanced_renovated_building), 0, advanced_renovated_building))
@@ -171,8 +183,7 @@ table <- left_join(table, temp, by = c("region_bld", "scenario")) %>%
 temp <- data %>%
   filter(variable == "stock_building") %>%
   filter(year == end_year) %>%
-  filter(resolution %in% c("biomass_solid", "heat_pump",
-    "electricity", "district_heating")) %>%
+  filter(resolution %in% low_carbon) %>%
   group_by_at(c("region_bld", "scenario")) %>%
   summarize(low_carbon_building = sum(value)) %>%
   ungroup()
@@ -180,8 +191,7 @@ ini <- data %>%
   filter(variable == "stock_building") %>%
   filter(year == base_year) %>%
   filter(scenario == ref) %>%
-  filter(resolution %in% c("biomass_solid", "heat_pump",
-    "electricity", "district_heating")) %>%
+  filter(resolution %in% low_carbon) %>%
   group_by_at(c("region_bld", "scenario")) %>%
   summarize(low_carbon_building = sum(value)) %>%
   ungroup() %>%
@@ -203,16 +213,16 @@ format_temp <- table %>%
     renovated_building = round(renovated_building / 1e3, 2),
     advanced_renovated_building =
       round(advanced_renovated_building / 1e3, 2),
+    replacement_heater = round(replacement_heater / 1e3, 2),
     low_carbon_building = round(low_carbon_building / 1e3, 2),
     energy_poverty_thres =
       round(energy_poverty_thres / 1e3, 2)) %>%
   mutate(region_bld = plot_settings[["rename"]][region_bld]) %>%
   select(c("region_bld", "scenario",
     "heat_kWh", "heat_std_kWh", "heat_tCO2",
-    "heating_intensity",
-    "stock_building", "low_carbon_building",
+    "heating_intensity", "stock_building", "low_carbon_building",
     "renovated_building", "advanced_renovated_building",
-    "energy_poverty_thres")) %>%
+    "replacement_heater", "energy_poverty_thres")) %>%
   mutate(low_carbon_building_rate = low_carbon_building / stock_building,
     renovated_building_rate = renovated_building / stock_building,
     energy_poverty_rate = energy_poverty_thres / stock_building) %>%
@@ -225,6 +235,7 @@ format_temp <- table %>%
     "Low carbon buildings (Thousand)" = low_carbon_building,
     "Low carbon buildings (Percent)" = low_carbon_building_rate,
     "Stock building (Thousand)" = stock_building,
+    "Replacement heating system (Thousand)" = replacement_heater,
     "Heating intensity (Percent)" = heating_intensity,
     "Space heating consumption (TWh)" = heat_kWh,
     "Space heating consumption standard (TWh)" = heat_std_kWh,

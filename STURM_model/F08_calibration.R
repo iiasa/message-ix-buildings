@@ -358,7 +358,9 @@ fun_calibration_switch_heat <- function(yrs,
         group_by(region_bld) %>%
         summarize(min_value = min(utility_heat),
                   max_value = max(utility_heat)) %>%
-        mutate(scaling_factor = (4 - (-4)) / (max_value - min_value)) %>%
+        mutate(scaling_factor = ifelse(max_value > 0,
+            (4 - (-4)) / (max_value - min_value),
+            4 / abs(min_value))) %>%
         select(-c("min_value", "max_value"))
 
     utility_heat_hh <- utility_heat_hh %>%

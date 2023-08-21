@@ -6,6 +6,8 @@ library(dplyr)
 library(readr)
 library(tidyr)
 
+u_EJ_GWa <- 31.71
+
 
 #' @title Import input data
 #' @description Import input data from csv files
@@ -204,7 +206,7 @@ fun_parse_stock <- function(stock, cat, population) {
 }
 
 #' @description Parse energy prices from MESSAGE
-read_message_prices <- function(prices, geo_data) {
+read_message_prices <- function(prices, geo_data, yrs = 2015:2050) {
 
   price_en <- rename(prices, price_en = energy_prices_projections)
 

@@ -371,7 +371,8 @@ fun_stock_switch_fuel_dyn <- function(bld_det_i,
    } else {
     print(paste("Test passed.", "Switch",
       round(sum(bld_det_i_sw$n_units_fuel) / 1e6, 0),
-      "million units."))
+      "million units. i.e.", round(sum(bld_det_i_sw$n_units_fuel) /
+        (temp * 1e6) * 100, 1), "% of the existing stock."))
    }
 
     # Bind all datasets - fuel level + vintage

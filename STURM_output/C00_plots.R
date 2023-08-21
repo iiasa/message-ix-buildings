@@ -37,7 +37,7 @@ message_building_theme <- theme_minimal() +
           strip.background = element_blank(),
           legend.title = element_blank(),
           legend.text = element_text(size = plot_settings[["size_text"]]),
-          legend.position = "bottom",
+          legend.position = "right",
           # Top, Right, Bottom and Left margin
           plot.margin = margin(t = 0,
                       r = 0,
@@ -139,7 +139,9 @@ plot_stacked_areas <- function(data, x_column, y_column, fill_column, subplot_co
       group_by_at(c(x_column, subplot_column)) %>%
       mutate(total = total / sum(total)) %>%
       ungroup()
-
+    scales <- NULL
+  } else {
+    scales <- "free_y"
   }
   p <- p %>%
     mutate(!!sym(fill_column) := factor(!!sym(fill_column),
@@ -154,7 +156,7 @@ plot_stacked_areas <- function(data, x_column, y_column, fill_column, subplot_co
       geom_vline(xintercept = vertical, size = 1.5, color = "red")
   }
   p <- p +
-    facet_wrap(subplot_column, ncol = ncol) +
+    facet_wrap(subplot_column, ncol = ncol, scales = scales) +
     scale_fill_manual(values = plot_settings[["colors"]]) +
     labs(title = y_label,
          fill = str_replace_all(str_to_title(fill_column), "_", " ")) +
@@ -289,7 +291,6 @@ plot_multiple_lines <- function(df,
         message_building_theme
   }
   p <- p +
-        theme(legend.position = "bottom") +
         labs(title = y_label) +
         scale_x_continuous(
           breaks = c(min(df[[x_column]]), max(df[[x_column]])),

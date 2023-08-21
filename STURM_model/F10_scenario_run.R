@@ -124,6 +124,10 @@ run_scenario <- function(run,
 
   # Formatting market-shares switch fuels to keep consistency
   d$ms_switch_fuel_exo <- d$ms_switch_fuel_exo %>%
+    # Manual exclusion
+    mutate(ms_switch_fuel_exo = ifelse(
+      (region_bld == "C-EEU-ROU" & fuel_heat_f == "coal"),
+      0, ms_switch_fuel_exo)) %>%
     # Remove fuel if market-share is too low (except heat_pump)
     mutate(ms_switch_fuel_exo = ifelse(
       !fuel_heat_f %in% c("heat_pump") & (ms_switch_fuel_exo < 0.05),
@@ -163,7 +167,7 @@ run_scenario <- function(run,
     filter(ms_switch_fuel_exo == 0) %>%
     mutate(ct_fuel_excl_reg = 1) %>%
     select(-ms_switch_fuel_exo)
-
+  
   # For each region_bld if fuel_heat is not add to ct_fuel_excl_reg
   temp <- cross_join(cat$ct_fuel, select_at(cat$geo_data, "region_bld")) %>%
     left_join(d$shr_fuel_heat_base) %>%

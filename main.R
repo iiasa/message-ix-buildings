@@ -22,6 +22,9 @@ source("./STURM_model/F10_scenario_run.R")
 path_rcode <- paste(getwd(), "/STURM_model/", sep = "")
 path_in <- paste(getwd(), "/STURM_data/", sep = "")
 path_out <- paste(getwd(), "/STURM_output/results/", sep = "")
+if (!dir.exists(path_out)) {
+    dir.create(path_out)
+}
 
 # configuration file STURM
 base_year <- 2015
@@ -36,36 +39,34 @@ file_scenarios <- "scenarios_EU.csv"
 en_method <- "TABULA" # "VDD", "TABULA"
 
 
-energy_efficiency <- "endogenous"
-runs <- c(
-    "EU",
-    "EU_price_constant",
-    "EU_price_2020_600",
-    "EU_ambitious_heat",
-    "EU_ambitious_heat_constant",
-    "EU_ambitious_shell",
-    "EU_ambitious_shell_constant"
-    )
-
-
-run_test <- TRUE
+run_test <- FALSE
 if (run_test) {
     file_scenarios <- "scenarios_test_EU.csv"
     energy_efficiency <- "exogenous"
     runs <- c(
         "EU",
-        "EU_price_constant",
+        "EU_constant",
         "EU_price_2020_600",
         "EU_no",
-        "EU_no_price_constant",
+        "EU_no_constant",
         "EU_double",
-        "EU_double_price_constant",
+        "EU_double_constant",
         "EU_triple",
-        "EU_triple_price_constant",
+        "EU_triple_constant",
         "EU_emission_1p5c",
-        "EU_double_emission_1p5c"
+        "EU_double_emission_1p5c",
+        "EU_1p5c"
     )
-    c <- "EU_no_price_constant"
+} else {
+    file_scenarios <- "scenarios_EU.csv"
+    energy_efficiency <- "endogenous"
+    runs <- c(
+        "EU",
+        "EU_constant",
+        "EU_1p5c",
+        "EU_ambitious_shell",
+        "EU_ambitious_heat"
+        )
 }
 
 report <- list(var = c("energy"),

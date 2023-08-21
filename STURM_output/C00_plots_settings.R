@@ -73,7 +73,7 @@ rename_countries <- c(
   "C-WEU-NLD" = "Netherlands",
   "C-WEU-PRT" = "Portugal",
   "C-WEU-SWE" = "Sweden",
-  "EU" = "EU28"
+  "EU" = "EU"
 )
 
 colors_countries <- c(
@@ -105,7 +105,7 @@ colors_countries <- c(
   "Sweden" = "#005CBF"    # Blue
 )
 order_countries <- c(
-  "EU28",
+  "EU",
   "Austria",
   "Belgium",
   "Bulgaria",

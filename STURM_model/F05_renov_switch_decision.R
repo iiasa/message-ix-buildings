@@ -353,7 +353,8 @@ fun_utility_heat <- function(yrs,
     left_join(ct_switch_heat %>%
         rename(fuel_heat = fuel_heat_i),
         relationship = "many-to-many") %>%
-    left_join(ct_heat_new) %>%
+    left_join(ct_heat_new, relationship =
+      "many-to-many") %>%
     mutate(fuel_heat_f = ifelse(
         !is.na(fuel_heat_new), fuel_heat_new, fuel_heat_f)) %>%
     select(-c("fuel_heat_new", "ct_heat_new")) %>%
@@ -370,7 +371,7 @@ fun_utility_heat <- function(yrs,
     left_join(discount_factor) %>%
     # Calculate utility
     mutate(utility_heat =
-      (- cost_invest_heat + cost_op * discount_factor) / 1e3) %>%
+      (- cost_invest_heat - cost_op * discount_factor) / 1e3) %>%
     filter((ct_switch_heat == 1) | (bld_age == "p5")) %>%
     filter(ct_heat == 1) %>%
     select(-c("cost_op", "en_hh",
@@ -390,7 +391,6 @@ fun_utility_heat <- function(yrs,
       mutate(utility_heat = utility_heat + inertia) %>%
       select(-c("inertia"))
   }
-
   return(utility_heat_hh)
 }
 

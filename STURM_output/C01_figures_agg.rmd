@@ -19,7 +19,7 @@ source("STURM_output/C00_plots.R")
 ```
 
 ```{r}
-scenario <- "EU_no_exogenous"
+scenario <- "EU_price_constant_exogenous"
 file <- paste0("report_agg_STURM_", scenario, "_resid_region_bld_energy.csv")
 file <- paste("STURM_output/results", file, sep = "/")
 
@@ -267,20 +267,38 @@ plot_lines(temp,
 
 ```
 
-### Share in total stock and energy consumption
+### Share fuel heat and efficiency in total stock
 ```{r}
 source("STURM_output/C00_plots.R")
+
+data_stock_historic <- read.csv(
+  "STURM_output/ressources/stock_historic_data_jrcidees.csv")
+
+t <- data_stock_historic %>%
+  rename(resolution = fuel_heat) %>%
+  filter(year < 2015)
+t_eu <- t %>%
+  group_by_at(c("year", "resolution")) %>%
+  summarise(value = sum(value)) %>%
+  ungroup() %>%
+  mutate(region_bld = "EU")
+t <- bind_rows(t, t_eu)
 
 temp <- data %>%
   filter(variable == "stock_building") %>%
   filter(resolution %in% names(rename_fuels)) %>%
   select(-c("variable"))
 
+temp <- bind_rows(t, temp)
+
 plot_stacked_areas(temp, "year", "value", "resolution", "region_bld",
                     y_label = "Stock housing units",
                     save_path = paste(save_dir, paste0(scenario, "_share_fuels_stock_countries.png"),
-                    sep = "/"))
+                    sep = "/"), vertical = 2015, percent = FALSE)
 
+````
+
+```{r}
 temp <- data %>%
   filter(variable == "stock_building") %>%
   filter(resolution %in% names(rename_eneff)) %>%
@@ -292,18 +310,39 @@ plot_stacked_areas(temp, "year", "value", "resolution", "region_bld",
                     sep = "/"))
 ```
 
+### Share fuel heat and efficiency in total energy demand
 ```{r}
+source("STURM_output/C00_plots.R")
+
+data_consumption_historic <- read.csv(
+  "STURM_output/ressources/final_energy_consumption_historic_data_ktoe_jrcidees.csv")
+
+t <- data_consumption_historic %>%
+  rename(resolution = fuel_heat) %>%
+  # ktoe to TWh
+  mutate(value = value * 0.01163) %>%
+  filter(year < 2015)
+t_eu <- t %>%
+  group_by_at(c("year", "resolution")) %>%
+  summarise(value = sum(value)) %>%
+  ungroup() %>%
+  mutate(region_bld = "EU")
+t <- bind_rows(t, t_eu)
 
 temp <- data %>%
   filter(variable == "heat_kWh") %>%
   filter(resolution %in% names(rename_fuels)) %>%
-  select(-c("variable"))
+  select(-c("variable")) %>%
+  # kwh to TWh
+  mutate(value = value / 1e9)
+temp <- bind_rows(t, temp)
 
 plot_stacked_areas(temp, "year", "value", "resolution", "region_bld",
-                    y_label = "Space heating consumption",
+                    y_label = "Space heating consumption (TWh)",
                     save_path = paste(save_dir, paste0(scenario, "_share_fuels_consumption_countries.png"),
-                    sep = "/"))
-
+                    sep = "/"), vertical = 2015, percent = FALSE)
+```                   
+```{r}
 temp <- data %>%
   filter(variable == "heat_kWh") %>%
   filter(resolution %in% names(rename_eneff)) %>%

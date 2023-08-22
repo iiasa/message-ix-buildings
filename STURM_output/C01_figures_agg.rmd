@@ -19,7 +19,7 @@ source("STURM_output/C00_plots.R")
 ```
 
 ```{r}
-scenario <- "EU_price_constant_exogenous"
+scenario <- "EU_ambitious_fossil_heat"
 file <- paste0("report_agg_STURM_", scenario, "_resid_region_bld_energy.csv")
 file <- paste("STURM_output/results", file, sep = "/")
 

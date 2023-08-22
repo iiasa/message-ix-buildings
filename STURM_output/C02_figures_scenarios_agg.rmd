@@ -17,7 +17,7 @@ print(paste("Working directory is:", getwd()))
 source("STURM_output/C00_plots.R")
 
 
-run_test <- TRUE
+run_test <- FALSE
 if (run_test) {
       run <- "scenarios_test"
       scenarios <- c(
@@ -43,15 +43,23 @@ if (run_test) {
         "EU_constant" = "Price constant",
         "EU_1p5C" = "1p5C",
         "EU_ambitious_shell" = "Subsidies renovation",
-        "EU_ambitious_heat" = "Subsidies heat-pumps")
+        "EU_ambitious_heat" = "Subsidies 80 hp",
+        "EU_carbon_tax_medium"  = "Carbon tax medium",
+        "EU_carbon_tax_ambitious" = "Carbon tax ambitious",
+        "EU_carbon_tax" = "Carbon tax",
+        "EU_carbon_tax_policies" = "Carbon tax and policies"
+      )
     }
 
 colors_scenarios <- c(
   "Baseline" = "#00589d",
   "Price constant" = "#247f6e",
   "Carbon tax" = "#fdbb40",
+  "Carbon tax medium" = "#fdbb40",
+  "Carbon tax ambitious" = "#4f3608",
   "1p5C" = "#fdbb40",
-  "Subsidies heat-pumps" = "#62c5c0",
+  "Subsidies 80 hp" = "#62c5c0",
+  "Subsidies 50 hp" = "#677473",
   "Ambitious heat-pumps, price constant" = "#677473",
   "Subsidies renovation" = "#ee6a6b",
   "Ambitious renovation, prices constant" = "#531717",
@@ -116,7 +124,7 @@ variables <- c("heat_kWh", "heat_std_kWh", "heat_tCO2",
      "energy_poverty_thres", "stock_building", "n_replacement",
     "heating_intensity")
 
-low_carbon <- c("biomass_solid", "heat_pump", "electricity", "district_heating")
+low_carbon <- c("biomass_solid", "heat_pump", "electricity", "district_heat")
 
 ini <- data %>%
   filter(year == base_year) %>%

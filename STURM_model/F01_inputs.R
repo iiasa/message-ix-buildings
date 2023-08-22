@@ -134,7 +134,6 @@ read_categories <- function(path_in_csv,
                         ct_hh_inc = c("q1", "q2", "q3"),
                         ct_hh_tenr = c("own", "rent")))
 
-
   return(categories)
 }
 
@@ -248,6 +247,11 @@ read_energy_prices <- function(price_base_year,
   
   if (!is.null(price_en)) {
     price_en <- read_message_prices(price_en, geo_data)
+
+    price_district_heat <- price_en %>%
+      filter(fuel == "biomass_solid") %>%
+      mutate(fuel = "district_heat")
+    price_en <- bind_rows(price_en, price_district_heat)
 
     if (linear == TRUE) {
       # Three years average

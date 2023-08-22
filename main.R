@@ -11,7 +11,7 @@ suppressPackageStartupMessages(library(tidyverse))
 options(dplyr.width = Inf)
 options(dplyr.summarise.inform = FALSE)
 
-# rounding (number of decimals)#
+# rounding (number of decimals)
 start_script_time <- Sys.time()
 rnd <- 5
 u_EJ_GWa <- 31.71
@@ -31,13 +31,11 @@ base_year <- 2015
 end_year <- 2050
 step_year <- 5
 
-
 region <- c("WEU", "EEU")
 sector <- "resid"
 file_inputs <- "input_list_resid_EU.csv"
 file_scenarios <- "scenarios_EU.csv"
 en_method <- "TABULA" # "VDD", "TABULA"
-
 
 run_test <- FALSE
 if (run_test) {
@@ -65,8 +63,13 @@ if (run_test) {
         "EU_constant",
         "EU_1p5c",
         "EU_ambitious_shell",
-        "EU_ambitious_heat"
+        "EU_ambitious_heat",
+        "EU_carbon_tax_medium",
+        "EU_carbon_tax_ambitious",
+        "EU_carbon_tax",
+        "EU_carbon_tax_policies"
         )
+    # runs <- c("EU_ambitious_fossil_heat")
 }
 
 report <- list(var = c("energy"),

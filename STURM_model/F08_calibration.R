@@ -434,7 +434,7 @@ fun_calibration_switch_heat <- function(yrs,
             left_join(tgt, by = c("region_bld", "fuel_heat_f")) %>%
             filter(target != max(target))
 
-        objective <- c(ms_agg$target - ms_agg$ms, output$elasticity - (-1))
+        objective <- c(ms_agg$target - ms_agg$ms, output$elasticity - (-1.5))
 
         return(objective)
     }

@@ -205,6 +205,20 @@ run_scenario <- function(run,
     read_emission_factors(d$emission_factors, d$emission_ini,
       cat$geo_data, yrs[[1]])
 
+  # Read carbon tax
+  if (!is.null(d$carbon_tax)){
+    carbon_tax <- d$carbon_tax %>%
+      left_join(emission_factors) %>%
+      mutate(carbon_tax = 3.6 * carbon_tax * emission_factors / 1e6) %>%
+      select(-c(emission_factors, region_gea))
+    price_en <- price_en %>%
+      left_join(carbon_tax) %>%
+      mutate(carbon_tax = ifelse(is.na(carbon_tax), 0, carbon_tax)) %>%
+      mutate(price_en = price_en + carbon_tax) %>%
+      select(-carbon_tax)
+
+  }
+
   # Adding year column to start subsidies after calibration
   if (!"year" %in% names(d$sub_ren_shell)) {
     d$sub_ren_shell <- crossing(d$sub_ren_shell, yrs) %>%
@@ -567,7 +581,8 @@ run_scenario <- function(run,
                           d$discount_rate,
                           lifetime_heat = 20,
                           inertia = d$inertia,
-                          parameters = parameters_heater)
+                          parameters = parameters_heater,
+                          ban_fuel = d$ban_fuel)
 
       } else {
         ms_sw_i <- fun_ms_fuel_sw_exogenous(yrs,

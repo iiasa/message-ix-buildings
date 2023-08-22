@@ -71,11 +71,14 @@ fun_utility_ren_shell <- function(yrs,
     
   # Apply subsidy
   if (!is.null(sub_ren_shell)) {
-    cost_invest_ren_shell <- cost_invest_ren_shell %>%
-      left_join(sub_ren_shell) %>%
-      mutate(cost_invest_ren_shell =
-        cost_invest_ren_shell * (1 - sub_ren_shell)) %>%
-      select(-c("sub_ren_shell"))
+    if ("year" %in% names(sub_ren_shell)) {
+      sub_ren_shell <- sub_ren_shell %>%
+        filter(year == yrs[i])
+    }
+  } else {
+    sub_ren_shell <- cost_invest_ren_shell %>%
+      mutate(sub_ren_shell = 0) %>%
+      select(-c("cost_invest_ren_shell"))
   }
 
   discount_factor <- fun_discount_factor(bld_cases_fuel,
@@ -100,6 +103,10 @@ fun_utility_ren_shell <- function(yrs,
       mutate(floor_size = floor_cap * hh_size) %>%
       left_join(discount_factor) %>%
       left_join(cost_invest_ren_shell) %>%
+      left_join(sub_ren_shell) %>%
+      mutate(sub_ren_shell = ifelse(is.na(sub_ren_shell), 0, sub_ren_shell)) %>%
+      mutate(cost_invest_ren_shell =
+        cost_invest_ren_shell * (1 - sub_ren_shell)) %>%
       # Calculate total investment costs
       mutate(cost_invest_hh =
         cost_invest_ren_shell * floor_size / 1e3) %>%
@@ -120,7 +127,7 @@ fun_utility_ren_shell <- function(yrs,
       select(-c(
           "hh_size", "floor_cap", "en_hh",
           "cost_invest_ren_shell", "cost_op", "cost_op_init",
-          "discount_factor"))
+          "discount_factor", "sub_ren_shell"))
 
   if (!full) {
     utility_ren_hh <- select(utility_ren_hh, -c("floor_size",
@@ -302,7 +309,6 @@ fun_ms_ren_shell_exogenous <- function(yrs,
 }
 
 
-
 fun_utility_heat <- function(yrs,
                         i,
                         bld_stock,
@@ -332,16 +338,16 @@ fun_utility_heat <- function(yrs,
   cost_invest_heat <- cost_invest_heat %>%
     mutate(cost_invest_heat = as.numeric(cost_invest_heat))
 
-  if ("year" %in% names(sub_heat)) {
-    sub_heat <- sub_heat %>%
-      filter(year == yrs[i])
-  }
   # Apply subsidy
   if (!is.null(sub_heat)) {
-    cost_invest_heat <- cost_invest_heat %>%
-      left_join(sub_heat) %>%
-      mutate(cost_invest_heat = cost_invest_heat * (1 - sub_heat)) %>%
-      select(-c("sub_heat"))
+    if ("year" %in% names(sub_heat)) {
+      sub_heat <- sub_heat %>%
+        filter(year == yrs[i])
+    }
+  } else {
+    sub_heat <- cost_invest_heat %>%
+      mutate(sub_heat = 0) %>%
+      select(-c("cost_invest_heat"))
   }
 
   # Discount factor
@@ -364,17 +370,19 @@ fun_utility_heat <- function(yrs,
     left_join(ct_heat %>% rename(fuel_heat_f = fuel_heat)) %>%
     mutate(ct_heat = ifelse(
         is.na(ct_heat) | ct_heat == 1, 1, 0)) %>%
-    mutate(year = yrs[i]) %>%
     left_join(cost_invest_heat) %>%
     # Operation costs after renovation
     left_join(en_hh_tot_switch_fin %>% select(-c("fuel", "fuel_cool"))) %>%
     left_join(discount_factor) %>%
+    left_join(sub_heat) %>%
+    mutate(sub_heat = ifelse(is.na(sub_heat), 0, sub_heat)) %>%
+    mutate(cost_invest_heat = cost_invest_heat * (1 - sub_heat)) %>%
     # Calculate utility
     mutate(utility_heat =
       (- cost_invest_heat - cost_op * discount_factor) / 1e3) %>%
     filter((ct_switch_heat == 1) | (bld_age == "p5")) %>%
     filter(ct_heat == 1) %>%
-    select(-c("cost_op", "en_hh",
+    select(-c("cost_op", "en_hh", "sub_heat",
       "ct_switch_heat", "ct_fuel_excl_reg", "ct_heat", "discount_factor"))
 
   if (!full) {
@@ -409,7 +417,8 @@ fun_ms_switch_heat_endogenous <- function(yrs,
                           discount_heat,
                           lifetime_heat = 20,
                           inertia = NULL,
-                          parameters = NULL) {
+                          parameters = NULL,
+                          ban_fuel = NULL) {
   print(paste0("Running renovation decisions - year ", yrs[i]))
 
   
@@ -427,6 +436,14 @@ fun_ms_switch_heat_endogenous <- function(yrs,
                         discount_heat,
                         inertia = inertia,
                         sub_heat = sub_heat)
+
+  if ((!is.null(ban_fuel))) {
+    utility_heat_hh <- utility_heat_hh %>%
+      left_join(ban_fuel) %>%
+      mutate(ban_fuel = ifelse(is.na(ban_fuel), 0, ban_fuel)) %>%
+      filter(ban_fuel != 1) %>%
+      select(-c("ban_fuel"))
+  }
 
   if ((!is.null(parameters))) {
     utility_heat_hh <- utility_heat_hh %>%

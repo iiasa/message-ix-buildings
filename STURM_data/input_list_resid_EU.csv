@@ -50,6 +50,7 @@ mat_int,material_int_resid,material
 sub_heat,sub_heat_EU,policies
 sub_ren_shell,sub_ren_shell_EU,policies
 carbon_tax,carbon_tax_EU,policies
+ban_fuel,ban_fuel_EU,policies
 hh_tenure,hh_tenr_EU,stock
 shr_arch,bld_shr_arch_resid,stock
 shr_mat,bld_share_mat_resid_EU,stock

@@ -3,6 +3,7 @@
 library(dplyr)
 library(ggplot2)
 library(stringr)
+library(scales)
 
 source("STURM_output/C00_plots_settings.R")
 
@@ -10,6 +11,8 @@ plot_settings <- list(
   "size_axis" = 5, # axes
   "size_title" = 24, # axes and legend
   "size_text" = 24,
+  "big_size_title" = 40, # axes and legend
+  "big_size_text" = 40,
   "small_size_text" = 12,
   "small_size_title" = 18,
   "width" = 16, #width cm
@@ -21,6 +24,33 @@ plot_settings <- list(
   "order" = c(order_fuels, order_eneff, order_countries)
 )
 
+
+message_building_theme_presentation <- theme_minimal() +
+    theme(text = element_text(size = plot_settings[["big_size_text"]],
+                              family = plot_settings[["font_family"]]),
+          axis.title.x = element_blank(),
+          axis.text.x = element_text(size = plot_settings[["big_size_text"]]),
+          axis.text.y = element_text(size = plot_settings[["big_size_text"]]),
+          axis.title.y = element_blank(),
+          axis.title = element_text(hjust = 0,
+                                    size = plot_settings[["big_size_title"]]),
+          panel.grid.major.x = element_blank(),
+          panel.grid.minor.x = element_blank(),
+          panel.grid.minor.y = element_blank(),
+          strip.background = element_blank(),
+          legend.title = element_blank(),
+          legend.text = element_text(size = plot_settings[["big_size_text"]]),
+          legend.position = "right",
+          # Top, Right, Bottom and Left margin
+          plot.margin = margin(t = 0,
+                      r = 0,
+                      b = 0,
+                      l = 0),
+        axis.line.x =
+          element_line(colour = "black", size = 1.5, linetype = "solid"),
+        axis.line.y =
+          element_line(colour = "black", size = 1.5, linetype = "solid")
+        )
 
 message_building_theme <- theme_minimal() +
     theme(text = element_text(size = plot_settings[["size_text"]],
@@ -42,8 +72,12 @@ message_building_theme <- theme_minimal() +
           plot.margin = margin(t = 0,
                       r = 0,
                       b = 0,
-                      l = 0)
-          )
+                      l = 0),
+        axis.line.x =
+          element_line(colour = "black", size = 1.5, linetype = "solid"),
+        axis.line.y =
+          element_line(colour = "black", size = 1.5, linetype = "solid")
+        )
 
 message_building_subplot_theme <- theme_minimal() +
     theme(text = element_text(size = plot_settings[["small_size_text"]],
@@ -73,49 +107,19 @@ message_building_subplot_theme <- theme_minimal() +
 
 # Function to create Message-ix-Buidling Figures
 
-plot_stacked_area <- function(data, x_column, y_column, fill_column,
-                              y_label = "", save_path = NULL) {
-  # Create the stacked area plot
-  # Calculate the breaks and labels for the x-axis
-  breaks <- seq(ceiling(min(data[[x_column]])),
-    floor(max(data[[x_column]])), by = 5)
-  labels <- breaks[seq(1, length(breaks), by = 5)]
+plot_stacked_areas <- function(data,
+                              x_column,
+                              y_column,
+                              fill_column,
+                              subplot_column,
+                              y_label = "",
+                              save_path = NULL,
+                              ncol = 4,
+                              percent = TRUE,
+                              vertical = NULL,
+                              y_label_suffix = "",
+                              presentation = FALSE) {
 
-  group <- c(x_column, fill_column)
-  p <- data %>%
-    mutate(!!fill_column := plot_settings[["rename"]][.data[[fill_column]]]) %>%
-    group_by(across(all_of(group))) %>%
-    summarise(total = sum(.data[[y_column]])) %>%
-    ungroup() %>%
-    mutate(!!sym(fill_column) := factor(!!sym(fill_column),
-      levels = rev(plot_settings[["order"]]))) %>%
-    ggplot(aes(x = .data[[x_column]],
-               y = total,
-               fill = .data[[fill_column]])) +
-    geom_area(position = "stack") +
-    scale_fill_manual(values = plot_settings[["colors"]]) +
-    labs(title = y_label,
-         fill = str_replace_all(str_to_title(fill_column), "_", " ")) +
-    message_building_theme  +
-    scale_x_continuous(breaks = seq(min(data[[x_column]]),
-      max(data[[x_column]]), 5),
-      labels = seq(min(data[[x_column]]), max(data[[x_column]]), 5)) +
-    scale_y_continuous(labels =
-      function(x) format(x, big.mark = ",", scientific = FALSE))
-
-  # Save the plot as PNG if save_path is specified
-  if (!is.null(save_path)) {
-    ggsave(save_path, plot = p, width = plot_settings[["width"]],
-           height = plot_settings[["height"]],
-           dpi = plot_settings[["dpi"]])
-  }
-  # Print the plot
-  print(p)
-}
-
-plot_stacked_areas <- function(data, x_column, y_column, fill_column, subplot_column,
-                              y_label = "", save_path = NULL, ncol = 4, percent = TRUE,
-                              vertical = NULL) {
   # Create the stacked area plot
   # Calculate the breaks and labels for the x-axis
   breaks <- seq(ceiling(min(data[[x_column]])),
@@ -159,84 +163,40 @@ plot_stacked_areas <- function(data, x_column, y_column, fill_column, subplot_co
     facet_wrap(subplot_column, ncol = ncol, scales = scales) +
     scale_fill_manual(values = plot_settings[["colors"]]) +
     labs(title = y_label,
-         fill = str_replace_all(str_to_title(fill_column), "_", " ")) +
-    message_building_subplot_theme  +
+         fill = str_replace_all(str_to_title(fill_column), "_", " "))
+  
+  if (length(unique(data[["region_bld"]])) > 1) {
+    p <- p +
+      message_building_subplot_theme 
+
+    } else {
+      if (presentation) {
+        p <- p +
+          message_building_theme_presentation
+      } else {
+        p <- p +
+          message_building_theme
+      }
+    }
+  
+  p <- p + 
     scale_x_continuous(breaks = c(min(data[[x_column]]), max(data[[x_column]])),
       labels = c(min(data[[x_column]]), max(data[[x_column]])))
-  
+  # Custom label function that combines comma and suffix
+  custom_label <- function(x) {
+    label_comma()(x) %>% paste0(" ", y_label_suffix)
+  }
+
   if (percent) {
     p <- p +
       scale_y_continuous(breaks =  c(0, 0.5, 1),
         labels = function(x) paste0(format(100 * x, digits = 1), "%"))
   } else {
     p <- p +
-      scale_y_continuous(labels = function(x) format(x, big.mark = ",", scientific = FALSE))
+      scale_y_continuous(labels = custom_label, expand = c(0, 0))
   }
 
-  # Save the plot as PNG if save_path is specified
-  if (!is.null(save_path)) {
-    ggsave(save_path, plot = p, width = plot_settings[["width"]],
-           height = plot_settings[["height"]],
-           dpi = plot_settings[["dpi"]])
-  }
-  # Print the plot
-  print(p)
-}
 
-plot_lines <- function(df,
-    x_column,
-    y_column,
-    group_column,
-    ncol = 4,
-    subplot = FALSE,
-    y_label = "",
-    save_path = NULL,
-    free_y = FALSE) {
-  # Group and summarize data
-  group <- c(x_column, group_column)
-
-  summarized_data <- df %>%
-    mutate(!!group_column := plot_settings[["rename"]][.data[[group_column]]]) %>%
-    # Group by year and group_column
-    group_by_at(group) %>%
-    summarise(value = sum(.data[[y_column]])) %>%
-    ungroup()
-
-
-  if (subplot) {
-    # Create subplot for each instance of group_column
-    p <- ggplot(summarized_data, aes(x = .data[[x_column]], y = value,
-                )) +
-                geom_line(size = 1.5) +
-                expand_limits(y = 0)
-    if (free_y) {
-      p <- p + facet_wrap(group_column, ncol = ncol, scales = "free_y")
-    } else {
-      p <- p + facet_wrap(group_column, ncol = ncol)
-    }
-    p <- p +
-        message_building_subplot_theme +
-        labs(title = y_label) +
-        scale_x_continuous(
-          breaks = c(min(summarized_data[[x_column]]), max(summarized_data[[x_column]])),
-          labels = c(min(summarized_data[[x_column]]), max(summarized_data[[x_column]]))
-          ) +
-        scale_y_continuous(labels =
-          function(x) format(x, big.mark = ",", scientific = FALSE))
-
-  } else {
-    # Create line plot on the same axis
-    p <- ggplot(summarized_data, aes(x = .data[[x_column]],
-                                y = value, color = .data[[group_column]])) +
-      geom_line(size = 1.5) +
-      scale_color_manual(values = plot_settings[["colors"]]) +
-      message_building_theme +
-      theme(legend.position = "right") +
-      labs(title = y_label) +
-      scale_y_continuous(labels =
-        function(x) format(x, big.mark = ",", scientific = FALSE)) +
-      expand_limits(y = 0)
-  }
   # Save the plot as PNG if save_path is specified
   if (!is.null(save_path)) {
     ggsave(save_path, plot = p, width = plot_settings[["width"]],
@@ -250,34 +210,50 @@ plot_lines <- function(df,
 plot_multiple_lines <- function(df,
     x_column,
     y_column,
-    line_column,
+    line_column = NULL,
     group_column = NULL,
     ncol = 4,
     y_label = "",
     save_path = NULL,
     free_y = FALSE,
-    colors_lines = NULL) {
+    colors_lines = NULL,
+    legend = TRUE,
+    y_label_suffix = "",
+    line_types = NULL) {
   
+  linewidth <- 2
   if (!is.null(group_column)) {
     df <- df %>%
       mutate(!!group_column := plot_settings[["rename"]][.data[[group_column]]]) %>%
       filter(!is.na(.data[[group_column]]))
+    linewidth <- 1.5
   }
 
-  if (all(unique(df[[line_column]]) %in% names(plot_settings[["rename"]]))) {
-    df <- df %>%
-      mutate(!!line_column := plot_settings[["rename"]][.data[[line_column]]])
+  if (!is.null(line_column)) {
+    if (all(unique(df[[line_column]]) %in% names(plot_settings[["rename"]]))) {
+      df <- df %>%
+        mutate(!!line_column := plot_settings[["rename"]][.data[[line_column]]])
+    }
   }
 
-  # Create subplot for each instance of group_column
-  p <- ggplot(df, aes(x = .data[[x_column]], y = .data[[y_column]],
-              color = .data[[line_column]])) +
-        geom_line(linewidth = 1.5) +
+  if (!is.null(line_column)) {
+    p <- ggplot(df, aes(x = .data[[x_column]], y = .data[[y_column]],
+                color = .data[[line_column]], linetype = .data[[line_column]]))
+    } else {
+    p <- ggplot(df, aes(x = .data[[x_column]], y = .data[[y_column]]))
+  }
+    p <- p +
+        geom_line(linewidth = linewidth) +
         expand_limits(y = 0)
   
   if (!is.null(colors_lines)) {
     p <- p + scale_color_manual(values = colors_lines)
   }
+  if (!is.null(line_types)) {
+    p <- p + scale_linetype_manual(values = line_types)
+  }
+
+  # Create subplot for each instance of group_column
   if (!is.null(group_column)) {
     if (free_y) {
         p <- p + facet_wrap(group_column, ncol = ncol, scales = "free_y")
@@ -289,15 +265,24 @@ plot_multiple_lines <- function(df,
   } else {
     p <- p +
         message_building_theme
+
   }
+  if (!legend) {
+    p <- p + theme(legend.position = "none")
+  }
+
+  # Custom label function that combines comma and suffix
+  custom_label <- function(x) {
+    label_comma()(x) %>% paste0(" ", y_label_suffix)
+  }
+
   p <- p +
-        labs(title = y_label) +
-        scale_x_continuous(
-          breaks = c(min(df[[x_column]]), max(df[[x_column]])),
-          labels = c(min(df[[x_column]]), max(df[[x_column]]))
-          ) +
-        scale_y_continuous(labels =
-          function(x) format(x, big.mark = ",", scientific = FALSE))
+      labs(title = y_label) +
+      scale_x_continuous(
+        breaks = c(min(df[[x_column]]), max(df[[x_column]])),
+        labels = c(min(df[[x_column]]), max(df[[x_column]]))
+        ) +
+      scale_y_continuous(labels = custom_label, expand = c(0, 0))
 
 # Save the plot as PNG if save_path is specified
 if (!is.null(save_path)) {
@@ -310,7 +295,8 @@ if (!is.null(save_path)) {
 }
 
 stacked_plots <- function(data, subplot_column = NULL,
-                        save_path = NULL, color_list = NULL) {
+                        save_path = NULL, color_list = NULL,
+                        y_label_suffix = "") {
 
   if (!is.null(subplot_column)) {
     data <- data %>%
@@ -319,11 +305,13 @@ stacked_plots <- function(data, subplot_column = NULL,
 
     size_text <- 3
     size_point <- 1
-    nudge_y <- 0.05
+    nudge_y <- 0
+    round <- 1
   } else {
     size_text <- 8
     size_point <- 3
     nudge_y <- 0.15
+    round <- 0
     }
   p <- data %>%
     ggplot(aes(x = scenario, y = value, fill = variable)) +
@@ -331,7 +319,7 @@ stacked_plots <- function(data, subplot_column = NULL,
     geom_point(aes(x = scenario, y = total_value),
       color = "black", size = size_point, , show.legend = FALSE) +
     geom_text(aes(x = scenario,
-      label = paste(round(total_value, 1), "B. EUR"), y = total_value),
+      label = paste(round(total_value, round)), y = total_value),
       vjust = -0.5, nudge_y = nudge_y, size = size_text)
 
   if (!is.null(color_list)) {
@@ -344,8 +332,18 @@ stacked_plots <- function(data, subplot_column = NULL,
       message_building_subplot_theme
   } else {
     p <- p +
-      message_building_theme
+      message_building_theme +
+      theme(axis.line.y = element_blank())
   }
+
+  # Custom label function that combines comma and suffix
+  custom_label <- function(x) {
+    label_comma()(x) %>% paste0(" ", y_label_suffix)
+  }
+  p <- p + 
+    theme(axis.text.x = element_text(angle = 20, hjust = 1)) + 
+    scale_y_continuous(labels = custom_label, expand = c(0, 0))
+
   print(p)
   if (!is.null(save_path)) {
     ggsave(save_path, plot = p, width = plot_settings[["width"]],

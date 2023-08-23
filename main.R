@@ -37,26 +37,31 @@ file_inputs <- "input_list_resid_EU.csv"
 file_scenarios <- "scenarios_EU.csv"
 en_method <- "TABULA" # "VDD", "TABULA"
 
-run_test <- FALSE
-if (run_test) {
+run <- "policies"
+if (run == "test") {
     file_scenarios <- "scenarios_test_EU.csv"
     energy_efficiency <- "exogenous"
     runs <- c(
+        "EU_no",
         "EU",
+        "EU_double",
+        "EU_double_emission_1p5c",
         "EU_constant",
         "EU_price_2020_600",
-        "EU_no",
         "EU_no_constant",
-        "EU_double",
         "EU_double_constant",
         "EU_triple",
         "EU_triple_constant",
         "EU_emission_1p5c",
-        "EU_double_emission_1p5c",
         "EU_1p5c"
     )
-} else {
-    file_scenarios <- "scenarios_EU.csv"
+    runs <- c(
+        "EU_no",
+        "EU",
+        "EU_double",
+        "EU_double_emission_1p5c")
+} else if (run == "full") {
+    file_scenarios <- "scenarios_full_EU.csv"
     energy_efficiency <- "endogenous"
     runs <- c(
         "EU",
@@ -69,7 +74,17 @@ if (run_test) {
         "EU_carbon_tax",
         "EU_carbon_tax_policies"
         )
-    # runs <- c("EU_ambitious_fossil_heat")
+} else {
+    file_scenarios <- "scenarios_EU.csv"
+    energy_efficiency <- "endogenous"
+    runs <- c(
+        "EU",
+        "EU_carbon_tax",
+        "EU_incentives_policies",
+        "EU_mix_policies",
+        "EU_mix_policies_1p5c",
+        "EU_mix_policies_1p5c_2020_600"
+        )
 }
 
 report <- list(var = c("energy"),

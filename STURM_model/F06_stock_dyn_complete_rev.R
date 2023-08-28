@@ -61,8 +61,7 @@ fun_stock_turnover_dyn <- function(i, yrs, bld_cases_fuel, ct_bld_age,
     if (!is.null(path_out)) {
       write.csv(correction_factor,
         paste(path_out, "calibration_demolition.csv", sep = ""))
-    }
-    
+    } 
   }
 
   bld_det_i <- bld_det_i %>%
@@ -238,7 +237,8 @@ fun_stock_renovation_dyn <- function(bld_det_i,
     left_join(rate_ren_i) %>%
     mutate(rate_ren = ifelse(is.na(rate_ren), 0, rate_ren)) %>%
     left_join(ms_ren_i %>%
-      rename(eneff = eneff_i, fuel_heat = fuel_heat_i)) %>%
+      rename(eneff = eneff_i, fuel_heat = fuel_heat_i),
+      relationship = "many-to-many") %>%
     mutate(
       eneff_f = ifelse(is.na(ms_ren), eneff, eneff_f),
       fuel_heat_f = ifelse(is.na(ms_ren), fuel_heat, fuel_heat_f)
@@ -279,11 +279,12 @@ fun_stock_renovation_dyn <- function(bld_det_i,
       # Select all variables, except the ones indicated, for grouping
       group_by_at(setdiff(
         names(ren_det_i),
-        c("eneff_f", "fuel_heat_f", "n_units_fuel"))) %>%
+        c("eneff_f", "fuel_heat_f", "n_units_fuel",
+          "sub_ren_hh", "cost_invest_hh"))) %>%
       summarise(n_ren = sum(n_units_fuel)) %>%
       ungroup()) %>%
     mutate(n_units_fuel = n_units_fuel_exst - n_ren) %>%
-    select(-c(n_ren))
+    select(-c(n_ren, n_units_fuel_exst))
 
   # Format renovated buildings by renaming columns
   ren_det_i <- ren_det_i %>%
@@ -302,7 +303,7 @@ fun_stock_renovation_dyn <- function(bld_det_i,
 
   # Bind all datasets - fuel level + vintage
   bld_det_i <- bind_rows(woren_det_i,
-                              ren_det_i) %>%
+      ren_det_i %>% select(-c("sub_ren_hh", "cost_invest_hh"))) %>%
     # Remove negative values (due to approximation)
     mutate(n_units_fuel = ifelse(n_units_fuel < 0, 0, n_units_fuel)) %>%
     # Aggregate to remove doubled categories
@@ -316,7 +317,7 @@ fun_stock_renovation_dyn <- function(bld_det_i,
   )
 
   return(output)
-  
+
 }
 
 
@@ -351,7 +352,7 @@ fun_stock_switch_fuel_dyn <- function(bld_det_i,
   bld_det_i <- bld_det_i %>%
     left_join(bld_det_i_sw %>%
       group_by_at(setdiff(names(bld_det_i_sw),
-        c("fuel_heat_f", "n_units_fuel"))) %>%
+        c("fuel_heat_f", "n_units_fuel", "cost_invest_heat", "sub_heat_hh"))) %>%
     summarise(n_sw = sum(n_units_fuel)) %>%
     ungroup()) %>%
     mutate(n_sw = ifelse(is.na(n_sw), 0, n_sw)) %>%
@@ -377,7 +378,7 @@ fun_stock_switch_fuel_dyn <- function(bld_det_i,
 
     # Bind all datasets - fuel level + vintage
   bld_det_i <- bind_rows(bld_det_i,
-                         bld_det_i_sw) %>%
+    bld_det_i_sw %>% select(-c("cost_invest_heat", "sub_heat_hh"))) %>%
     # Remove negative values (due to approximation)
     mutate(n_units_fuel = ifelse(n_units_fuel < 0, 0, n_units_fuel)) %>%
     # Aggregate to remove doubled categories

@@ -1,4 +1,3 @@
-# Script to be run in Rstudio
 
 library(rstudioapi)
 library(tidyverse, quietly = TRUE)
@@ -31,6 +30,7 @@ base_year <- 2015
 end_year <- 2050
 step_year <- 5
 
+# configuration file STURM
 region <- c("WEU", "EEU")
 sector <- "resid"
 file_inputs <- "input_list_resid_EU.csv"
@@ -83,8 +83,13 @@ if (run == "test") {
         "EU_incentives_policies",
         "EU_mix_policies",
         "EU_mix_policies_1p5c",
-        "EU_mix_policies_1p5c_2020_600"
+        "EU_mix_policies_1p5c_2020_600",
+        "EU_carbon_tax_ambitious",
+        "EU_incentives_policies_advanced",
+        "EU_incentives_policies_income",
+        "EU_incentives_policies_advanced_income"
         )
+    runs <- c("EU_incentives_policies", "EU")
 }
 
 report <- list(var = c("energy"),

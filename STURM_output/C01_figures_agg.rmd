@@ -70,20 +70,23 @@ temp <- data %>%
 
 temp <- bind_rows(t, temp)
 
+legend <- FALSE
 plot_stacked_areas(temp, "year", "value", "resolution", "region_bld",
                     y_label = "Stock housing units",
                     save_path = paste(save_dir, paste0(scenario, "_share_fuels_stock_countries.png"),
-                    sep = "/"), vertical = 2015, percent = FALSE)
+                    sep = "/"), vertical = 2015, percent = FALSE, , legend = legend)
 
 temp <- temp %>%
   filter(region_bld == "EU") %>%
   mutate(value = value / 1e6)
 
+presentation <- TRUE
+legend <- FALSE
 plot_stacked_areas(temp, "year", "value", "resolution", "region_bld",
                     y_label = "Stock housing units",
                     save_path = paste(save_dir, paste0(scenario, "_share_fuels_stock_eu.png"),
                     sep = "/"), vertical = 2015, percent = FALSE, y_label_suffix = "M",
-                    presentation = FALSE)
+                    presentation = presentation, legend = legend)
 
 ```
 #### By energy efficiency
@@ -102,10 +105,13 @@ temp <- temp %>%
   filter(region_bld == "EU") %>%
   mutate(value = value / 1e6)
 
+presentation <- TRUE
+legend <- FALSE
 plot_stacked_areas(temp, "year", "value", "resolution", "region_bld",
                     y_label = "Stock housing units",
                     save_path = paste(save_dir, paste0(scenario, "_share_eff_stock_eu.png"),
-                    sep = "/"), percent = FALSE, y_label_suffix = "M")
+                    sep = "/"), percent = FALSE, y_label_suffix = "M",
+                    presentation = presentation, legend = legend)
 ```
 ### Breakdown energy demand
 #### By fuel types
@@ -140,10 +146,13 @@ plot_stacked_areas(temp, "year", "value", "resolution", "region_bld",
                     save_path = paste(save_dir, paste0(scenario, "_share_fuels_consumption_countries.png"),
                     sep = "/"), vertical = 2015, percent = FALSE)
 
-plot_stacked_areas(filter(region_bld == "EU"), "year", "value", "resolution", "region_bld",
+presentation <- TRUE
+legend <- FALSE
+plot_stacked_areas(filter(temp, region_bld == "EU"), "year", "value", "resolution", "region_bld",
                     y_label = "Space heating consumption (TWh)",
                     save_path = paste(save_dir, paste0(scenario, "_share_fuels_consumption_eu.png"),
-                    sep = "/"), vertical = 2015, percent = FALSE, y_label_suffix = "TWh")
+                    sep = "/"), vertical = 2015, percent = FALSE, y_label_suffix = "TWh",
+                    presentation = presentation, legend = legend)
 
 ```
 #### By energy performance
@@ -160,11 +169,13 @@ plot_stacked_areas(temp, "year", "value", "resolution", "region_bld",
                     save_path = paste(save_dir, paste0(scenario, "_share_eff_consumption_countries.png"),
                     sep = "/"), percent = FALSE)
   
-
-plot_stacked_areas(filter(region_bld == "EU"), "year", "value", "resolution", "region_bld",
+presentation <- TRUE
+legend <- TRUE
+plot_stacked_areas(filter(temp, region_bld == "EU"), "year", "value", "resolution", "region_bld",
                     y_label = "Space heating consumption",
                     save_path = paste(save_dir, paste0(scenario, "_share_eff_consumption_eu.png"),
-                    sep = "/"), percent = FALSE, y_label_suffix = "TWh")
+                    sep = "/"), percent = FALSE, y_label_suffix = "TWh",
+                    presentation = presentation, legend = legend)
 ```
 
 ### Indicators charts

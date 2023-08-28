@@ -58,7 +58,6 @@ fun_format_output <- function(i,
             group_by_at(c("region_bld", "year", "fuel_heat")) %>%
             summarise(
                 stock_building = sum(stock_M) * 1e6,
-                energy_poverty_median = sum(energy_poverty_median),
                 energy_poverty_thres = sum(energy_poverty_thres),
                 heat_kWh = sum(heat_TJ) / 3.6 * 1e6,
                 heat_std_kWh = sum(heat_std_TJ) / 3.6 * 1e6,
@@ -69,7 +68,7 @@ fun_format_output <- function(i,
             ungroup() %>%
             rename(resolution = fuel_heat) %>%
             gather(variable, value, stock_building,
-                energy_poverty_median, energy_poverty_thres,
+                energy_poverty_thres,
                 heat_kWh, heat_std_kWh, heat_tCO2,
                 cost_heat_EUR, floor_m2)
 
@@ -89,7 +88,6 @@ fun_format_output <- function(i,
             group_by_at(c("region_bld", "year", "efficiency")) %>%
             summarise(
                 stock_building = sum(stock_M) * 1e6,
-                energy_poverty_median = sum(energy_poverty_median),
                 energy_poverty_thres = sum(energy_poverty_thres),
                 heat_kWh = sum(heat_TJ) / 3.6 * 1e6,
                 heat_std_kWh = sum(heat_std_TJ) / 3.6 * 1e6,
@@ -100,12 +98,20 @@ fun_format_output <- function(i,
             ungroup() %>%
             rename(resolution = efficiency) %>%
             gather(variable, value, stock_building,
-                energy_poverty_median, energy_poverty_thres,
+                energy_poverty_thres,
                 heat_kWh, heat_std_kWh, heat_tCO2,
                 cost_heat_EUR, floor_m2)
 
         temp <- bind_rows(temp, det_rows)
 
+        det_rows <- en_stock_i %>%
+            group_by_at(c("region_bld", "year", "inc_cl")) %>%
+            summarise(energy_poverty_thres = sum(energy_poverty_thres)) %>%
+            ungroup() %>%
+            rename(resolution = inc_cl) %>%
+            gather(variable, value, energy_poverty_thres)
+
+        temp <- bind_rows(temp, det_rows)
 
         if (!is.null(report_turnover)) {
             report_turnover <- report_turnover %>%
@@ -181,26 +187,24 @@ fun_format_output <- function(i,
         report$agg_result <- bind_rows(report$agg_result, temp_concat)
 
 
-        if (!is.null(cost_renovation) && !is.null(ren_det_i)) {
-            cost_renovation <- cost_renovation %>%
-                left_join(hh_size) %>%
-                left_join(floor_cap,
-                    relationship = "many-to-many") %>%
-                mutate(cost = hh_size * floor_cap * cost_invest_ren_shell) %>%
-                rename(eneff = eneff_f) %>%
-                select(-c("cost_invest_ren_shell", "hh_size", "floor_cap"))
-            
+        if (!is.null(ren_det_i)) {
             det_rows <- ren_det_i %>%
-                left_join(cost_renovation) %>%
-                mutate(total_cost = cost * n_units_fuel) %>%
+                mutate(
+                    total_cost =
+                        (cost_invest_hh + sub_ren_hh) * n_units_fuel * 1e3,
+                    total_sub = sub_ren_hh * n_units_fuel * 1e3) %>%
                 group_by_at(c("region_bld", "year", "eneff")) %>%
-                summarize(cost_renovation = sum(total_cost),
+                summarize(
+                    cost_renovation = sum(total_cost),
+                    sub_renovation = sum(total_sub),
                     n_renovation = sum(n_units_fuel)) %>%
                 ungroup() %>%
                 rename(resolution = eneff,
-                    cost_renovation_EUR = cost_renovation
+                    cost_renovation_EUR = cost_renovation,
+                    sub_renovation_EUR = sub_renovation
                     ) %>%
-                gather(variable, value, cost_renovation_EUR, n_renovation)
+                gather(variable, value, cost_renovation_EUR,
+                    sub_renovation_EUR, n_renovation)
             
             # Adding total values for all resolutions
             agg_rows <- det_rows %>%
@@ -211,7 +215,19 @@ fun_format_output <- function(i,
                 mutate(resolution = "all")
 
             temp <- bind_rows(det_rows, agg_rows)
+
+            # Renovation by income class
+            det_rows <- ren_det_i %>%
+                group_by_at(c("region_bld", "year", "inc_cl")) %>%
+                summarize(
+                    n_renovation = sum(n_units_fuel)) %>%
+                ungroup() %>%
+                rename(resolution = inc_cl,
+                    ) %>%
+                gather(variable, value, n_renovation)
             
+            temp <- bind_rows(temp, det_rows)
+ 
             agg <- temp %>%
                 group_by_at(c("year", "variable", "resolution")) %>%
                 summarize(value = sum(value)) %>%
@@ -226,19 +242,23 @@ fun_format_output <- function(i,
             report$agg_result <- bind_rows(report$agg_result, temp)
         }
 
-        if (!is.null(cost_invest_heat) && !is.null(bld_det_i_sw)) {
+        if (!is.null(bld_det_i_sw)) {
             
             det_rows <- bld_det_i_sw %>%
-                left_join(cost_invest_heat %>%
-                    rename(fuel_heat = fuel_heat_f)) %>%
-                mutate(total_cost = cost_invest_heat * n_units_fuel) %>%
+                mutate(
+                    total_cost =
+                    (cost_invest_heat + sub_heat_hh) * n_units_fuel,
+                    total_sub = sub_heat_hh * n_units_fuel) %>%
                 group_by_at(c("region_bld", "year", "fuel_heat")) %>%
-                summarize(cost_heater_EUR = sum(total_cost),
+                summarize(
+                    cost_heater_EUR = sum(total_cost),
+                    sub_heater_EUR = sum(total_sub),
                     n_replacement = sum(n_units_fuel)) %>%
                 ungroup() %>%
                 rename(resolution = fuel_heat
                     ) %>%
-                gather(variable, value, cost_heater_EUR, n_replacement)
+                gather(variable, value, cost_heater_EUR,
+                    sub_heater_EUR, n_replacement)
             
             # Adding total values for all resolutions
             agg_rows <- det_rows %>%

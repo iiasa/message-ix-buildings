@@ -105,6 +105,9 @@ fun_utility_ren_shell <- function(yrs,
       left_join(cost_invest_ren_shell) %>%
       left_join(sub_ren_shell) %>%
       mutate(sub_ren_shell = ifelse(is.na(sub_ren_shell), 0, sub_ren_shell)) %>%
+      # Use for reporting
+      mutate(sub_ren_hh =
+        sub_ren_shell * cost_invest_ren_shell * floor_size / 1e3) %>%
       mutate(cost_invest_ren_shell =
         cost_invest_ren_shell * (1 - sub_ren_shell)) %>%
       # Calculate total investment costs
@@ -131,7 +134,7 @@ fun_utility_ren_shell <- function(yrs,
 
   if (!full) {
     utility_ren_hh <- select(utility_ren_hh, -c("floor_size",
-      "cost_invest_hh", "en_hh_init", "en_saving", "cost_op_saving"))
+      "en_hh_init", "en_saving", "cost_op_saving"))
   }
 
 
@@ -210,7 +213,7 @@ fun_ms_ren_shell_endogenous <- function(yrs,
   # All possible combinations covered (including no renovation)
   ms_i <- utility_ren_hh %>%
     group_by_at(setdiff(names(utility_ren_hh),
-                c("eneff_f", "utility_ren"))) %>%
+                c("eneff_f", "utility_ren", "cost_invest_hh", "sub_ren_hh"))) %>%
     mutate(utility_exp_sum = sum(exp(utility_ren)) + 1) %>%
     mutate(ms = (1 / stp) * exp(utility_ren) / utility_exp_sum) %>%
     select(-c("utility_ren", "utility_exp_sum"))
@@ -227,7 +230,8 @@ fun_ms_ren_shell_endogenous <- function(yrs,
   # Update market shares - keep renovations only
   ms_ren_i <- ms_i %>%
     filter(eneff_i != eneff_f) %>%
-    group_by_at(setdiff(names(ms_i), c("eneff_f", "ms"))) %>%
+    group_by_at(setdiff(names(ms_i),
+      c("eneff_f", "ms", "cost_invest_hh", "sub_ren_hh"))) %>%
     mutate(ms_tot = sum(ms)) %>%
     ungroup() %>%
     mutate(ms_ren = ifelse(ms_tot > 0, round(ms / ms_tot, rnd), 0)) %>%
@@ -324,7 +328,8 @@ fun_utility_heat <- function(yrs,
                         inertia = NULL,
                         full = FALSE) {
 
-  en_hh_tot <- select(en_hh_tot, -c("budget_share", "heating_intensity", "en_hh_std"))
+  en_hh_tot <- select(en_hh_tot,
+    -c("budget_share", "heating_intensity", "en_hh_std"))
 
   # Operational energy costs before/after renovation
   en_hh_tot_switch_fin <- en_hh_tot %>%
@@ -376,6 +381,7 @@ fun_utility_heat <- function(yrs,
     left_join(discount_factor) %>%
     left_join(sub_heat) %>%
     mutate(sub_heat = ifelse(is.na(sub_heat), 0, sub_heat)) %>%
+    mutate(sub_heat_hh = cost_invest_heat * sub_heat) %>%
     mutate(cost_invest_heat = cost_invest_heat * (1 - sub_heat)) %>%
     # Calculate utility
     mutate(utility_heat =
@@ -384,10 +390,6 @@ fun_utility_heat <- function(yrs,
     filter(ct_heat == 1) %>%
     select(-c("cost_op", "en_hh", "sub_heat",
       "ct_switch_heat", "ct_fuel_excl_reg", "ct_heat", "discount_factor"))
-
-  if (!full) {
-    utility_heat_hh <- select(utility_heat_hh, -c("cost_invest_heat"))
-  }
 
   if (!is.null(inertia)) {
     utility_heat_hh <- utility_heat_hh %>%
@@ -455,7 +457,7 @@ fun_ms_switch_heat_endogenous <- function(yrs,
   # All possible combinations covered (including no renovation)
   ms_i <- utility_heat_hh %>%
     group_by_at(setdiff(names(utility_heat_hh),
-                c("fuel_heat_f", "utility_heat"))) %>%
+      c("fuel_heat_f", "utility_heat", "cost_invest_heat", "sub_heat_hh"))) %>%
     mutate(utility_exp_sum = sum(exp(utility_heat))) %>%
     mutate(ms = exp(utility_heat) / utility_exp_sum) %>%
     ungroup() %>%

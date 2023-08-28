@@ -44,6 +44,14 @@ colors_fuels <- c("No Heating" = "grey92",
   "Coal" = "grey5",
   "Biomass" = "palegreen4")
 
+
+rename_hh <- c("q1" = "Income 1st tertile",
+            "q2" = "Income 2nd tertile",
+            "q3" = "Income 3rd tertile")
+
+order_hh <- c("q1", "q2", "q3")
+
+
 # Countries
 
 rename_countries <- c(

@@ -191,12 +191,15 @@ df <- df %>%
 df <- df %>%
   left_join(total, by = c("scenario", "region_bld"))
 
+presentation <- TRUE
+legend <- FALSE
 stacked_plots(filter(df, region_bld == "EU"),
   save_path = paste0(save_dir, "/cba_eu.png"),
-  color_list = color_list, y_label_suffix = "Billion EUR")
+  color_list = color_list, y_label_suffix = "B EUR",
+  presentation = presentation, legend = legend)
+
 stacked_plots(df, subplot_column = "region_bld",
   save_path = paste0(save_dir, "/cba_scenarios.png"),
   color_list = color_list)
-
 
 ```

@@ -133,6 +133,7 @@ fun_calibration_ren_shell <- function(yrs,
         select(-c("min_value", "max_value"))
 
     utility_ren_hh <- utility_ren_hh %>%
+        select(-c("sub_ren_hh")) %>%
         left_join(scaling_factor) %>%
         mutate(utility_ren = utility_ren * scaling_factor)
 
@@ -364,7 +365,7 @@ fun_calibration_switch_heat <- function(yrs,
         select(-c("min_value", "max_value"))
 
     utility_heat_hh <- utility_heat_hh %>%
-        select(-c("yr_con")) %>%
+        select(-c("yr_con", "sub_heat_hh")) %>%
         left_join(scaling_factor) %>%
         mutate(utility_heat = utility_heat * scaling_factor)
 

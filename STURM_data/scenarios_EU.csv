@@ -1,7 +1,11 @@
 scenario_id,scenario_name,income,energy_prices_projections,emission_factors,sub_ren_shell,sub_heat,carbon_tax,ban_fuel
 1,EU,,,,,,,
 2,EU_carbon_tax,,,,,,medium,
-3,EU_incentives_policies,,,,ambitious,medium,medium,
-4,EU_mix_policies,,,,ambitious,medium,medium,fossil
-5,EU_mix_policies_1p5c,,,1p5c,ambitious,medium,medium,fossil
-6,EU_mix_policies_1p5c_2020_600,,2020_600,1p5c,ambitious,medium,,fossil
+3,EU_carbon_tax_ambitious,,,,,,ambitious,
+4,EU_incentives_policies,,,,ambitious,medium,medium,
+5,EU_incentives_policies_income,,,,ambitious_income,medium,medium,
+6,EU_incentives_policies_advanced,,,,ambitious_advanced,medium,medium,
+7,EU_incentives_policies_advanced_income,,,,ambitious_advanced_income,medium,medium,
+8,EU_mix_policies,,,,ambitious,medium,medium,fossil
+9,EU_mix_policies_1p5c,,,1p5c,ambitious,medium,medium,fossil
+10,EU_mix_policies_1p5c_2020_600,,2020_600,1p5c,ambitious,medium,,fossil

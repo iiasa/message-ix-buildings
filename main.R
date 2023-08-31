@@ -17,7 +17,7 @@ u_EJ_GWa <- 31.71
 inertia_wtp <- 4.3
 min_shr_fuel <- 0.01
 
-rate_dem_target <- 0.001
+rate_dem_target <- NULL
 
 source("./STURM_model/F10_scenario_run.R")
 

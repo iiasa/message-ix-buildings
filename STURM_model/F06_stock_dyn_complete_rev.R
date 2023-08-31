@@ -56,20 +56,17 @@ fun_stock_turnover_dyn <- function(i, yrs, bld_cases_fuel, ct_bld_age,
       mutate(rate_dem_target = rate_dem_target) %>%
       mutate(correction_factor = rate_dem_target / rate_dem) %>%
       select(c("region_bld", "correction_factor"))
-  }
-  # Calibration demolition function
-  if (is.null(correction_factor)) {
 
-    if (!is.null(path_out)) {
+    bld_det_i <- bld_det_i %>%
+      left_join(correction_factor) %>%
+      mutate(n_dem = n_dem * correction_factor) %>%
+      select(-c(correction_factor))
+
+      if (!is.null(path_out) && FALSE) {
       write.csv(correction_factor,
         paste(path_out, "calibration_demolition.csv", sep = ""))
-    } 
+    }
   }
-
-  bld_det_i <- bld_det_i %>%
-    left_join(correction_factor) %>%
-    mutate(n_dem = n_dem * correction_factor) %>%
-    select(-c(correction_factor))
 
   print(paste("Number of demolitions is",
     round(sum(bld_det_i$n_dem) / 1e6, 0), "million units.",

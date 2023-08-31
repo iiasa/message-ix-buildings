@@ -2,7 +2,37 @@ library(dplyr)
 library(tidyr)
 
 
-
+#' @title Format output
+#' @description Format output
+#' @param i: year to be analysed
+#' @param yrs: years to be analysed
+#' @param sector: sector to be analysed
+#' @param run: run to be analysed
+#' @param bld_det_i Data frame with building stock information
+#' @param bld_cases_fuel Data frame with building cases information
+#' @param ct_fuel_comb Data frame with fuel combinations information
+#' @param shr_need_heat Data frame with share of buildings needing heating
+#' @param floor_cap Data frame with floor capacity information
+#' @param hh_size Data frame with household size information
+#' @param report_var: variables to be reported
+#' @param report: report object
+#' @param en_m2_scen_heat Data frame with energy per m2 for heating
+#' @param en_m2_scen_cool Data frame with energy per m2 for cooling
+#' @param en_hh_tot Data frame with energy per household
+#' @param en_hh_hw_scen Data frame with energy per household for hot water
+#' @param en_m2_others Data frame with energy per m2 for other uses
+#' @param emission_factors Data frame with emission factors
+#' @param ren_det_i Data frame with renovation information
+#' @param bld_det_i_sw Data frame with building stock information for space
+#' heating
+#' @param dem_det_age_i Data frame with demolition information
+#' @param dem_det_slum_age_i Data frame with demolition information for slums
+#' @param new_det_age_i Data frame with new construction information
+#' @param new_det_slum_age_i Data frame with new construction information for
+#' slums
+#' @param shr_en Data frame with share of energy for heating
+#' @param report_turnover Data frame with turnover information
+#' @return report object
 fun_format_output <- function(i,
                               yrs,
                               sector,
@@ -22,10 +52,9 @@ fun_format_output <- function(i,
                               en_m2_hw_scen,
                               en_m2_others,
                               emission_factors,
+                              new_det_i = NULL,
                               ren_det_i = NULL,
-                              cost_renovation = NULL,
                               bld_det_i_sw = NULL,
-                              cost_invest_heat = NULL,
                               dem_det_age_i = NULL,
                               dem_det_slum_age_i = NULL,
                               new_det_age_i = NULL,
@@ -112,6 +141,24 @@ fun_format_output <- function(i,
             gather(variable, value, energy_poverty_thres)
 
         temp <- bind_rows(temp, det_rows)
+
+        if (!is.null(new_det_i)) {
+            report_new <- new_det_i %>%
+                group_by_at(c("region_bld", "year", "arch")) %>%
+                summarize(value = sum(n_units_fuel)) %>%
+                mutate(variable = "n_new") %>%
+                rename(resolution = arch)
+            
+            total_new <- new_det_i %>%
+                group_by_at(c("region_bld", "year")) %>%
+                summarize(value = sum(n_units_fuel)) %>%
+                mutate(variable = "n_new") %>%
+                mutate(resolution = "all")
+
+            report_new <- bind_rows(report_new, total_new)
+            temp <- bind_rows(temp, report_new)
+
+        }
 
         if (!is.null(report_turnover)) {
             report_turnover <- report_turnover %>%

@@ -387,3 +387,101 @@ read_emission_factors <- function(emission_factors,
   }
   return(emission_factors)
 }
+
+#' @title Parse fuels data
+#' @description Parse fuels data. Reduce complexity.
+#' @param d: list of input dataframes
+#' @param cat: list of dimensions
+#' @param min_shr_fuel: minimum share of fuel in the building stock
+#' @param min_switch_fuel: minimum share of fuel in the market-shares
+parse_share_fuels <- function(d,
+                              cat,
+                              min_shr_fuel = 0.01,
+                              min_switch_fuel = 0.05) {
+    # Preparation shr_fuel_heat_base
+  d$shr_fuel_heat_base <- d$shr_fuel_heat_base %>%
+    mutate(shr_fuel_heat_base = ifelse((fuel_heat != "heat_pump")
+      & (shr_fuel_heat_base < min_shr_fuel), 0, shr_fuel_heat_base)) %>%
+    filter(shr_fuel_heat_base > 0)
+  
+  countries_wo_heat_pump <- d$shr_fuel_heat_base %>%
+    group_by(region_bld) %>%
+    filter(!"heat_pump" %in% fuel_heat) %>%
+    ungroup()
+  hp_missing_rows <- data.frame(
+      region_bld = rep(unique(countries_wo_heat_pump$region_bld), each = 1),
+      fuel_heat = "heat_pump",
+      shr_fuel_heat_base = min_shr_fuel
+    )
+  d$shr_fuel_heat_base <- bind_rows(d$shr_fuel_heat_base, hp_missing_rows) %>%
+    group_by_at("region_bld") %>%
+    mutate(shr_fuel_heat_base =
+      shr_fuel_heat_base / sum(shr_fuel_heat_base)) %>%
+    ungroup()
+  
+  # Selecting only useful fuel for the run
+  cat$ct_fuel <- cat$ct_fuel %>%
+    filter(fuel_heat %in% unique(d$shr_fuel_heat_base$fuel_heat))
+
+  # Formatting market-shares switch fuels to keep consistency
+  d$ms_switch_fuel_exo <- d$ms_switch_fuel_exo %>%
+    # Manual exclusion
+    mutate(ms_switch_fuel_exo = ifelse(
+      (region_bld == "C-EEU-ROU" & fuel_heat_f == "coal"),
+      0, ms_switch_fuel_exo)) %>%
+    # Remove fuel if market-share is too low (except heat_pump)
+    mutate(ms_switch_fuel_exo = ifelse(
+      !fuel_heat_f %in% c("heat_pump") & (ms_switch_fuel_exo < min_switch_fuel),
+      0, ms_switch_fuel_exo)) %>%
+    # Join with existing market-shares
+    rename(fuel_heat = fuel_heat_f) %>%
+    bind_rows(hp_missing_rows %>%
+      rename(ms_switch_fuel_exo = shr_fuel_heat_base)) %>%
+    left_join(d$shr_fuel_heat_base) %>%
+    # Remove fuel if it doesn't exist (except heat_pump)
+    mutate(ms_switch_fuel_exo =
+      ifelse((shr_fuel_heat_base == 0 | is.na(shr_fuel_heat_base))
+      & !(fuel_heat %in% c("heat_pump")),
+      0, ms_switch_fuel_exo)) %>%
+    # Oil and coal shares cannot increase
+    mutate(ms_switch_fuel_exo =
+      ifelse(fuel_heat %in% c("oil", "coal") &
+        ms_switch_fuel_exo > shr_fuel_heat_base,
+        shr_fuel_heat_base, ms_switch_fuel_exo)) %>%
+    # Heat pumps
+    #  should at least be equal to the existing market-share
+    mutate(ms_switch_fuel_exo =
+      ifelse(fuel_heat %in% c("heat_pump") &
+        ms_switch_fuel_exo < shr_fuel_heat_base,
+        shr_fuel_heat_base, ms_switch_fuel_exo)) %>%
+    mutate(ms_switch_fuel_exo = ifelse(is.na(ms_switch_fuel_exo),
+      0, ms_switch_fuel_exo)) %>%
+    group_by_at("region_bld") %>%
+    mutate(ms_switch_fuel_exo =
+      ms_switch_fuel_exo / sum(ms_switch_fuel_exo)) %>%
+    ungroup() %>%
+    rename(fuel_heat_f = fuel_heat) %>%
+    select(-shr_fuel_heat_base)
+  
+  # Exlcude fuel if it is not used in any region
+  d$ct_fuel_excl_reg <- d$ms_switch_fuel_exo %>%
+    filter(ms_switch_fuel_exo == 0) %>%
+    mutate(ct_fuel_excl_reg = 1) %>%
+    select(-ms_switch_fuel_exo)
+  
+  # For each region_bld if fuel_heat is not add to ct_fuel_excl_reg
+  temp <- cross_join(cat$ct_fuel, select_at(cat$geo_data, "region_bld")) %>%
+    left_join(d$shr_fuel_heat_base) %>%
+    mutate(ct_fuel_excl_reg = ifelse(is.na(shr_fuel_heat_base),
+      1, 0)) %>%
+    select(c("region_bld", "fuel_heat", "ct_fuel_excl_reg")) %>%
+    filter(ct_fuel_excl_reg == 1) %>%
+    rename(fuel_heat_f = fuel_heat)
+
+  d$ct_fuel_excl_reg <- bind_rows(d$ct_fuel_excl_reg, temp) %>%
+    distinct()
+
+  d$ms_switch_fuel_exo <- filter(d$ms_switch_fuel_exo, ms_switch_fuel_exo > 0)
+
+  return(list(d = d, cat = cat))
+}

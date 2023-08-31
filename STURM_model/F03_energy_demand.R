@@ -205,7 +205,6 @@ fun_en_sim <- function(sector,
     mutate(en_dem_cool = en_dem_c_ac + en_dem_c_fans) %>%
     select(-c(en_int_heat, en_int_cool, days_cool))
 
-
   energy_det_subset <- energy_det %>%
     select(-c(
       eff_cool, eff_heat, f_h, f_c,
@@ -241,7 +240,6 @@ fun_en_sim <- function(sector,
       left_join(price_en) %>%
       # Calculate the total costs for operational energy
       mutate(cost_op_std = en_hh_std * price_en) %>%
-      left_join(income) %>%
       left_join(income) %>%
       mutate(budget_share = cost_op_std / income) %>%
       mutate(heating_intensity = alpha * (budget_share)**p_elasticity) %>%

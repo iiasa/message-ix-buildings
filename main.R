@@ -14,6 +14,10 @@ options(dplyr.summarise.inform = FALSE)
 start_script_time <- Sys.time()
 rnd <- 5
 u_EJ_GWa <- 31.71
+inertia_wtp <- 4.3
+min_shr_fuel <- 0.01
+
+rate_dem_target <- 0.001
 
 source("./STURM_model/F10_scenario_run.R")
 
@@ -89,7 +93,7 @@ if (run == "test") {
         "EU_incentives_policies_income",
         "EU_incentives_policies_advanced_income"
         )
-    runs <- c("EU_incentives_policies", "EU")
+    runs <- c("EU")
 }
 
 report <- list(var = c("energy"),

@@ -48,14 +48,19 @@ data <- data %>%
 ### Breakdown stock units
 #### By fuel types
 ```{r}
+# Plot the share of fuels for the historic stock and the stock under the scenario
 source("STURM_output/C00_plots.R")
 
+# Read the historic stock data
 data_stock_historic <- read.csv(
   "STURM_output/ressources/stock_historic_data_jrcidees.csv")
 
+# Rename the variable resolution to fuel_heat
 t <- data_stock_historic %>%
   rename(resolution = fuel_heat) %>%
   filter(year < 2015)
+
+# Add a row for the EU
 t_eu <- t %>%
   group_by_at(c("year", "resolution")) %>%
   summarise(value = sum(value)) %>%
@@ -63,19 +68,23 @@ t_eu <- t %>%
   mutate(region_bld = "EU")
 t <- bind_rows(t, t_eu)
 
+# Select the stock of housing units
 temp <- data %>%
   filter(variable == "stock_building") %>%
   filter(resolution %in% names(rename_fuels)) %>%
   select(-c("variable"))
 
+# Add the historic stock data to the data
 temp <- bind_rows(t, temp)
 
+# Plot the share of fuels for the countries
 legend <- FALSE
 plot_stacked_areas(temp, "year", "value", "resolution", "region_bld",
                     y_label = "Stock housing units",
                     save_path = paste(save_dir, paste0(scenario, "_share_fuels_stock_countries.png"),
                     sep = "/"), vertical = 2015, percent = FALSE, , legend = legend)
 
+# Plot the share of fuels for the EU
 temp <- temp %>%
   filter(region_bld == "EU") %>%
   mutate(value = value / 1e6)

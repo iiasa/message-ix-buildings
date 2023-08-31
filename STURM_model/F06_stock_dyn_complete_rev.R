@@ -9,7 +9,7 @@ library(tidyr)
 
 fun_stock_turnover_dyn <- function(i, yrs, bld_cases_fuel, ct_bld_age,
                                    stock_aggr, bld_det_ini, prob_dem,
-                                   rate_dem_target = 0.001,
+                                   rate_dem_target = NULL,
                                    path_out = NULL) {
 
   stp <- yrs[i] - yrs[i - 1]
@@ -45,16 +45,18 @@ fun_stock_turnover_dyn <- function(i, yrs, bld_cases_fuel, ct_bld_age,
     rename(n_units_fuel_p = n_units_fuel) %>%
     select(-c(shape, scale, pdem))
   
-  correction_factor <- bld_det_i %>%
-    group_by_at(("region_bld")) %>%
-    summarize(n_dem = sum(n_dem),
-              n_units = sum(n_units_fuel_p)) %>%
-    ungroup() %>%
-    mutate(rate_dem = n_dem / n_units / 5) %>%
-    mutate(rate_dem_target = rate_dem_target) %>%
-    mutate(correction_factor = rate_dem_target / rate_dem) %>%
-    select(c("region_bld", "correction_factor"))
-
+  # If target demolition rate is provided, calculate correction factor
+  if (!is.null(rate_dem_target)) {
+    correction_factor <- bld_det_i %>%
+      group_by_at(("region_bld")) %>%
+      summarize(n_dem = sum(n_dem),
+                n_units = sum(n_units_fuel_p)) %>%
+      ungroup() %>%
+      mutate(rate_dem = n_dem / n_units / 5) %>%
+      mutate(rate_dem_target = rate_dem_target) %>%
+      mutate(correction_factor = rate_dem_target / rate_dem) %>%
+      select(c("region_bld", "correction_factor"))
+  }
   # Calibration demolition function
   if (is.null(correction_factor)) {
 
@@ -225,7 +227,12 @@ fun_stock_construction_dyn <- function(bld_aggr_i, ms_new_i, ct_fuel) {
 
 }
 
-
+#' @title Renovation dynamics
+#' @description Renovation dynamics
+#' @param bld_det_i Data frame with building stock
+#' @param rate_ren_i Data frame with renovation rates
+#' @param ms_ren_i Data frame with market shares of renovation
+#' @param stp Number of years per time step
 fun_stock_renovation_dyn <- function(bld_det_i,
                                      rate_ren_i, ms_ren_i, stp) {
 
@@ -234,7 +241,7 @@ fun_stock_renovation_dyn <- function(bld_det_i,
   # Existing buildings - renovated
   ren_det_i <- bld_det_i  %>%
     # Account for renovations
-    left_join(rate_ren_i) %>%
+    left_join(rate_ren_i, relationship = "many-to-many") %>%
     mutate(rate_ren = ifelse(is.na(rate_ren), 0, rate_ren)) %>%
     left_join(ms_ren_i %>%
       rename(eneff = eneff_i, fuel_heat = fuel_heat_i),
@@ -261,8 +268,6 @@ fun_stock_renovation_dyn <- function(bld_det_i,
       group_by_at(c("region_bld")) %>%
       summarise(n_units_fuel_exst = sum(n_units_fuel_exst))) %>%
     mutate(rate = n_units_fuel / n_units_fuel_exst)
-
-  # print(ms_agg)
 
   print(
     paste("Renovated buildings:",

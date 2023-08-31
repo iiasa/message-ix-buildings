@@ -54,7 +54,6 @@ run_scenario <- function(run,
   source(file.path(path_rcode, "F07_formatting_output.R"))
   source(file.path(path_rcode, "F08_calibration.R"))
 
-  
   if ("STURM" %in% report_type) {
     source(file.path(path_rcode, "R00_report_basic.R"))
   }
@@ -75,122 +74,45 @@ run_scenario <- function(run,
   path_in_csv <- paste0(path_in, "./input_csv/")
   cat <- read_categories(path_in_csv, sector, region)
 
-  # Source - input data
+  # Source input data
   print("Load data")
   d <- fun_inputs_csv(path_in, file_inputs, file_scenarios, sector, run)
   
-  # Check if region is in cost_invest_heat data names
+  # Multiple cost by cost_factor if cost_invest_heat do not have cost_factor
   if (!"region_bld" %in% names(d$cost_invest_heat)) {
     d$cost_invest_heat <- d$cost_invest_heat %>%
       cross_join(d$cost_factor) %>%
       mutate(cost_invest_heat = cost_invest_heat * cost_factor) %>%
       select(-cost_factor)
   }
+
+  # Creating inertia data
   d$inertia <- d$cost_factor %>%
     mutate(cost_factor =
       cost_factor / cost_factor[region_bld == "C-WEU-FRA"]) %>%
-    mutate(cost_factor = 4.3 * cost_factor) %>%
+    mutate(cost_factor = inertia_wtp * cost_factor) %>%
     rename(inertia = cost_factor)
 
-  # TODO properly
+  # Only selecting regions in geo_data that are in shr_fuel_heat_base
   cat$geo_data <- cat$geo_data %>%
     filter(region_bld %in% unique(d$shr_fuel_heat_base$region_bld))
   cat$regions <- unique(pull(cat$geo_data["region_bld"]))
 
-  # Preparation shr_fuel_heat_base
-  d$shr_fuel_heat_base <- d$shr_fuel_heat_base %>%
-    mutate(shr_fuel_heat_base = ifelse((fuel_heat != "heat_pump")
-      & (shr_fuel_heat_base < 0.01), 0, shr_fuel_heat_base)) %>%
-    filter(shr_fuel_heat_base > 0)
-  
-  countries_wo_heat_pump <- d$shr_fuel_heat_base %>%
-    group_by(region_bld) %>%
-    filter(!"heat_pump" %in% fuel_heat) %>%
-    ungroup()
-  hp_missing_rows <- data.frame(
-      region_bld = rep(unique(countries_wo_heat_pump$region_bld), each = 1),
-      fuel_heat = "heat_pump",
-      shr_fuel_heat_base = 0.01
-    )
-  d$shr_fuel_heat_base <- bind_rows(d$shr_fuel_heat_base, hp_missing_rows) %>%
-    group_by_at("region_bld") %>%
-    mutate(shr_fuel_heat_base =
-      shr_fuel_heat_base / sum(shr_fuel_heat_base)) %>%
-    ungroup()
-  
-  # Selecting only useful fuel for the run
-  cat$ct_fuel <- cat$ct_fuel %>%
-    filter(fuel_heat %in% unique(d$shr_fuel_heat_base$fuel_heat))
+  # Parsing share fuels data
+  temp <- parse_share_fuels(d, cat)
+  d <- temp$d
+  cat <- temp$cat
 
-  # Formatting market-shares switch fuels to keep consistency
-  d$ms_switch_fuel_exo <- d$ms_switch_fuel_exo %>%
-    # Manual exclusion
-    mutate(ms_switch_fuel_exo = ifelse(
-      (region_bld == "C-EEU-ROU" & fuel_heat_f == "coal"),
-      0, ms_switch_fuel_exo)) %>%
-    # Remove fuel if market-share is too low (except heat_pump)
-    mutate(ms_switch_fuel_exo = ifelse(
-      !fuel_heat_f %in% c("heat_pump") & (ms_switch_fuel_exo < 0.05),
-      0, ms_switch_fuel_exo)) %>%
-    # Join with existing market-shares
-    rename(fuel_heat = fuel_heat_f) %>%
-    bind_rows(hp_missing_rows %>%
-      rename(ms_switch_fuel_exo = shr_fuel_heat_base)) %>%
-    left_join(d$shr_fuel_heat_base) %>%
-    # Remove fuel if it doesn't exist (except heat_pump)
-    mutate(ms_switch_fuel_exo =
-      ifelse((shr_fuel_heat_base == 0 | is.na(shr_fuel_heat_base))
-      & !(fuel_heat %in% c("heat_pump")),
-      0, ms_switch_fuel_exo)) %>%
-    # Oil and coal shares cannot increase
-    mutate(ms_switch_fuel_exo =
-      ifelse(fuel_heat %in% c("oil", "coal") &
-        ms_switch_fuel_exo > shr_fuel_heat_base,
-        shr_fuel_heat_base, ms_switch_fuel_exo)) %>%
-    # Heat pumps
-    #  should at least be equal to the existing market-share
-    mutate(ms_switch_fuel_exo =
-      ifelse(fuel_heat %in% c("heat_pump") &
-        ms_switch_fuel_exo < shr_fuel_heat_base,
-        shr_fuel_heat_base, ms_switch_fuel_exo)) %>%
-    mutate(ms_switch_fuel_exo = ifelse(is.na(ms_switch_fuel_exo),
-      0, ms_switch_fuel_exo)) %>%
-    group_by_at("region_bld") %>%
-    mutate(ms_switch_fuel_exo =
-      ms_switch_fuel_exo / sum(ms_switch_fuel_exo)) %>%
-    ungroup() %>%
-    rename(fuel_heat_f = fuel_heat) %>%
-    select(-shr_fuel_heat_base)
-  
-  # Exlcude fuel if it is not used in any region
-  d$ct_fuel_excl_reg <- d$ms_switch_fuel_exo %>%
-    filter(ms_switch_fuel_exo == 0) %>%
-    mutate(ct_fuel_excl_reg = 1) %>%
-    select(-ms_switch_fuel_exo)
-  
-  # For each region_bld if fuel_heat is not add to ct_fuel_excl_reg
-  temp <- cross_join(cat$ct_fuel, select_at(cat$geo_data, "region_bld")) %>%
-    left_join(d$shr_fuel_heat_base) %>%
-    mutate(ct_fuel_excl_reg = ifelse(is.na(shr_fuel_heat_base),
-      1, 0)) %>%
-    select(c("region_bld", "fuel_heat", "ct_fuel_excl_reg")) %>%
-    filter(ct_fuel_excl_reg == 1) %>%
-    rename(fuel_heat_f = fuel_heat)
-
-  d$ct_fuel_excl_reg <- bind_rows(d$ct_fuel_excl_reg, temp) %>%
-    distinct()
-
-  d$ms_switch_fuel_exo <- filter(d$ms_switch_fuel_exo, ms_switch_fuel_exo > 0)
-
-  # Discount rate
-  if (!"tenr" %in% names(d$discount_rate)) {
-    d$discount_rate <- crossing(d$discount_rate, cat$ct_hh_tenr) %>%
-      rename(tenr = "cat$ct_hh_tenr") %>%
-      mutate(discount_rate =
-        ifelse(tenr == "own",
-        filter(d$discount_rate, inc_cl == "q3",
-        region_bld == region_bld)$discount_rate,  discount_rate))
-
+  # Reading discount rate
+  if (energy_efficiency == "endogenous") {
+    if (!"tenr" %in% names(d$discount_rate)) {
+      d$discount_rate <- crossing(d$discount_rate, cat$ct_hh_tenr) %>%
+        rename(tenr = "cat$ct_hh_tenr") %>%
+        mutate(discount_rate =
+          ifelse(tenr == "own",
+          filter(d$discount_rate, inc_cl == "q3",
+          region_bld == region_bld)$discount_rate,  discount_rate))
+    }
   }
   
   # Read energy prices
@@ -229,7 +151,6 @@ run_scenario <- function(run,
     d$sub_heat <- crossing(d$sub_heat, yrs) %>%
       rename(year = "yrs") %>%
       mutate(sub_heat = ifelse(year <= yrs[[2]], 0, sub_heat))
-
   }
 
   print("Data loaded!")
@@ -295,6 +216,7 @@ run_scenario <- function(run,
     )
     print(paste("Initialize scenario run", sector, "- completed!"))
 
+    # Initialize stock detailed ini
     temp <- fun_stock_det_ini(sector,
                            stock_aggr,
                            d$stock_arch_base,
@@ -454,7 +376,8 @@ run_scenario <- function(run,
       print(paste("1. Running stock turnover year:", yrs[i]))
       temp <- fun_stock_turnover_dyn(i, yrs, bld_cases_fuel, cat$ct_bld_age,
                                     stock_aggr, bld_det_i, d$prob_dem,
-                                    path_out = path_out)
+                                    path_out = path_out,
+                                    rate_dem_target = rate_dem_target)
 
       bld_aggr_i <- temp$bld_aggr_i
       bld_det_i <- temp$bld_det_i
@@ -632,10 +555,9 @@ run_scenario <- function(run,
                               en_m2_hw_scen,
                               en_m2_others,
                               emission_factors,
+                              new_det_i = new_det_i,
                               ren_det_i = ren_det_i,
-                              cost_renovation = d$cost_invest_ren_shell,
                               bld_det_i_sw = bld_det_i_sw,
-                              cost_invest_heat = d$cost_invest_heat,
                               shr_en = shr_en,
                               report_turnover = report_turnover)
     }

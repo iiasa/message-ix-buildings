@@ -356,7 +356,6 @@ format_temp <- table %>%
     "Subsidies heater (Billion EUR)" = sub_heater_EUR
     )
 
-
 write.csv(format_temp,
   paste(save_dir, paste0(run, "_", end_year, "_summary_countries.csv"), sep = "/"),
   row.names = FALSE)
@@ -394,7 +393,9 @@ scatter_plots(format_temp_eu,
               x_label_suffix = "MtCO2",
               legend = legend,
               presentation = presentation
-                )
+              )
+
+
 ```
 
 

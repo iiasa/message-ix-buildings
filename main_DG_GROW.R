@@ -10,10 +10,18 @@ suppressPackageStartupMessages(library(tidyverse))
 options(dplyr.width = Inf)
 options(dplyr.summarise.inform = FALSE)
 
+# Set working directory based on the position of the current R file
+path_rcode <- paste0(dirname(rstudioapi::getSourceEditorContext()$path),"/") # R file directory
+setwd(path_rcode)
+
 # rounding (number of decimals)
 start_script_time <- Sys.time()
 rnd <- 5
 u_EJ_GWa <- 31.71
+inertia_wtp <- 4.3
+min_shr_fuel <- 0.01
+
+rate_dem_target <- NULL 
 
 source("./STURM_model/F10_scenario_run.R")
 

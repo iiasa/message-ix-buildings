@@ -132,6 +132,27 @@ fun_format_output <- function(i,
                 cost_heat_EUR, floor_m2)
 
         temp <- bind_rows(temp, det_rows)
+        
+        # Adding results at building type level
+        det_rows <- en_stock_i %>%
+          group_by_at(c("region_bld", "year", "arch")) %>%
+          summarise(
+            stock_building = sum(stock_M) * 1e6,
+            energy_poverty_thres = sum(energy_poverty_thres),
+            heat_kWh = sum(heat_TJ) / 3.6 * 1e6,
+            heat_std_kWh = sum(heat_std_TJ) / 3.6 * 1e6,
+            heat_tCO2 = sum(heat_tCO2),
+            cost_heat_EUR = sum(cost_energy_hh),
+            floor_m2 = sum(floor_Mm2) * 1e6
+          ) %>%
+          ungroup() %>%
+          rename(resolution = arch) %>%
+          gather(variable, value, stock_building,
+                 energy_poverty_thres,
+                 heat_kWh, heat_std_kWh, heat_tCO2,
+                 cost_heat_EUR, floor_m2)
+        
+        temp <- bind_rows(temp, det_rows)
 
         det_rows <- en_stock_i %>%
             group_by_at(c("region_bld", "year", "inc_cl")) %>%

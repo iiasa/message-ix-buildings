@@ -96,6 +96,25 @@ fun_stock_turnover_dyn <- function(i, yrs, bld_cases_fuel, ct_bld_age,
         & abs(n_units_aggr) < 1e-9, 0, n_empty)
     )
   
+  # Check empty buildings in rural VS new buildings in urban -
+  bld_aggr_i_check <- bld_aggr_i %>%
+    group_by(region_bld, clim, arch, year) %>%
+    summarise(n_new = sum(n_new),
+              n_empty = sum(n_empty)) %>%
+    mutate(diff = ifelse(n_empty>0 & n_new>0, min(n_new, n_empty),0)) %>%
+    ungroup %>%
+    select(-n_new,-n_empty)
+    
+  # Recalculate new construction and empty buildings based on assumed transition between rural and urban
+  bld_aggr_i <- bld_aggr_i %>%
+    left_join(bld_aggr_i_check) %>%
+    mutate(n_empty = ifelse(n_empty > 0 & n_empty >= diff, n_empty - diff, n_empty)) %>%
+    mutate(n_new = ifelse(n_new > 0 & diff > 0 & n_new >= diff, n_new - diff, n_new)) %>%
+    mutate(n_units_aggr = ifelse(n_new > 0 & diff > 0 & n_new >= diff, n_units_aggr + diff, n_units_aggr)) %>%
+    select(-diff)
+  
+  #rm(bld_aggr_i_check)
+  
   print(paste("Number of constructions is",
     round(sum(bld_aggr_i$n_new) / 1e6, 0), "million units.",
     "i.e. ", round(sum(bld_aggr_i$n_new) /

@@ -49,7 +49,7 @@ runs <- "EU"
 energy_efficiency <- "endogenous"
 
 
-report <- list(var = c("energy"),
+report <- list(var = c("energy","material"),
                type = c("STURM"),
                geo_level = "region_bld")
 

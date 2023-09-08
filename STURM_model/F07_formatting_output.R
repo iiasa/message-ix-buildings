@@ -90,7 +90,10 @@ fun_format_output <- function(i,
                 energy_poverty_thres = sum(energy_poverty_thres),
                 heat_kWh = sum(heat_TJ) / 3.6 * 1e6,
                 heat_std_kWh = sum(heat_std_TJ) / 3.6 * 1e6,
+                heat_EJ = sum(heat_TJ) / 1e6,
+                hotwater_EJ = sum(hotwater_TJ) / 1e6,
                 heat_tCO2 = sum(heat_tCO2),
+                hotwater_tCO2 = sum(hotwater_tCO2),
                 cost_heat_EUR = sum(cost_energy_hh),
                 floor_m2 = sum(floor_Mm2) * 1e6
             ) %>%
@@ -98,7 +101,9 @@ fun_format_output <- function(i,
             rename(resolution = fuel_heat) %>%
             gather(variable, value, stock_building,
                 energy_poverty_thres,
-                heat_kWh, heat_std_kWh, heat_tCO2,
+                heat_kWh, heat_std_kWh, heat_EJ, 
+                hotwater_EJ,
+                heat_tCO2, hotwater_tCO2,
                 cost_heat_EUR, floor_m2)
 
         # Adding total values for all resolutions
@@ -120,17 +125,23 @@ fun_format_output <- function(i,
                 energy_poverty_thres = sum(energy_poverty_thres),
                 heat_kWh = sum(heat_TJ) / 3.6 * 1e6,
                 heat_std_kWh = sum(heat_std_TJ) / 3.6 * 1e6,
+                heat_EJ = sum(heat_TJ) / 1e6,
+                hotwater_EJ = sum(hotwater_TJ) / 1e6,
+                cool_EJ = sum(cool_TJ) / 1e6,
                 heat_tCO2 = sum(heat_tCO2),
+                hotwater_tCO2 = sum(hotwater_tCO2),
+                cool_tCO2 = sum(cool_tCO2),
                 cost_heat_EUR = sum(cost_energy_hh),
                 floor_m2 = sum(floor_Mm2) * 1e6
             ) %>%
             ungroup() %>%
             rename(resolution = efficiency) %>%
-            gather(variable, value, stock_building,
-                energy_poverty_thres,
-                heat_kWh, heat_std_kWh, heat_tCO2,
-                cost_heat_EUR, floor_m2)
-
+          gather(variable, value, stock_building,
+                 energy_poverty_thres,
+                 heat_kWh, heat_std_kWh, heat_EJ, 
+                 hotwater_EJ, cool_EJ,
+                 heat_tCO2, hotwater_tCO2, cool_tCO2,
+                 cost_heat_EUR, floor_m2)
         temp <- bind_rows(temp, det_rows)
         
         # Adding results at building type level
@@ -141,7 +152,12 @@ fun_format_output <- function(i,
             energy_poverty_thres = sum(energy_poverty_thres),
             heat_kWh = sum(heat_TJ) / 3.6 * 1e6,
             heat_std_kWh = sum(heat_std_TJ) / 3.6 * 1e6,
+            heat_EJ = sum(heat_TJ) / 1e6,
+            hotwater_EJ = sum(hotwater_TJ) / 1e6,
+            cool_EJ = sum(cool_TJ) / 1e6,
             heat_tCO2 = sum(heat_tCO2),
+            hotwater_tCO2 = sum(hotwater_tCO2),
+            cool_tCO2 = sum(cool_tCO2),
             cost_heat_EUR = sum(cost_energy_hh),
             floor_m2 = sum(floor_Mm2) * 1e6
           ) %>%
@@ -149,7 +165,9 @@ fun_format_output <- function(i,
           rename(resolution = arch) %>%
           gather(variable, value, stock_building,
                  energy_poverty_thres,
-                 heat_kWh, heat_std_kWh, heat_tCO2,
+                 heat_kWh, heat_std_kWh, heat_EJ, 
+                 hotwater_EJ, cool_EJ,
+                 heat_tCO2, hotwater_tCO2, cool_tCO2,
                  cost_heat_EUR, floor_m2)
         
         temp <- bind_rows(temp, det_rows)
@@ -638,10 +656,17 @@ fun_format_bld_stock_energy <- function(
             # Other uses not covered for residential
             mutate(other_uses_TJ = 0) %>%
             mutate(stock_M = n_units_fuel / 1e6) %>%
-            left_join(emission_factors) %>%
+            left_join(emission_factors %>% 
+                        rename(emission_factors_heat = emission_factors)) %>%
+            left_join(emission_factors %>% filter(fuel == "electricity") %>% select(-fuel) %>% 
+                        rename(emission_factors_cool = emission_factors)) %>%
             mutate(heat_tCO2 =
                 ifelse(fuel_heat == "v_no_heat", 0,
-                heat_TJ * emission_factors)) %>%
+                heat_TJ * emission_factors_heat)) %>%
+          mutate(hotwater_tCO2 =
+                   ifelse(fuel_heat == "v_no_heat", 0,
+                          hotwater_TJ * emission_factors_heat)) %>%
+          mutate(cool_tCO2 = cool_TJ * emission_factors_cool) %>%
             mutate(cost_energy_hh = ifelse(is.na(cost_energy_hh),
                 0, cost_energy_hh)) %>%
             filter(stock_M > 0 & !is.na(stock_M)) %>%
@@ -651,7 +676,7 @@ fun_format_bld_stock_energy <- function(
                 "scenario", "year", "stock_M", "floor_Mm2",
                 "heat_TJ", "heat_std_TJ", "cool_TJ", "cool_ac_TJ", "cool_fans_TJ",
                 "hotwater_TJ", "other_uses_TJ", "cost_energy_hh",
-                "heat_tCO2", "energy_poverty_median", "energy_poverty_thres",
+                "heat_tCO2","hotwater_tCO2", "cool_tCO2", "energy_poverty_median", "energy_poverty_thres",
                 "heating_intensity"
             )))
             

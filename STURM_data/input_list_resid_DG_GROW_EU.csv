@@ -1,6 +1,6 @@
 name_parameter,name_file,category
 floor_cap,floor_capita_R61,activity
-prob_dem,bld_demolition_distr_long,activity
+prob_dem,bld_demolition_distr_long_EU,activity
 rate_switch_fuel_heat,rate_switch_fuel_heat_EU,activity
 rate_shell_ren_exo,rate_shell_ren_EU,activity
 ms_shell_ren_exo,ms_shell_ren_EU,activity

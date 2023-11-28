@@ -1,0 +1,243 @@
+Model,Scenario,Region,Variable,Unit,2025,2030,2035,2040,2045,2050
+MESSAGEix-Buildings,SSP1_LED,R12_AFR,Energy Service|Residential|Floor Space,bn m2,21.40285,27.5775,33.42829,38.54435,44.8188,51.19855
+MESSAGEix-Buildings,SSP1_LED,R12_CHN,Energy Service|Residential|Floor Space,bn m2,57.05681,56.80947,56.07954,54.92373,53.38388,51.44834
+MESSAGEix-Buildings,SSP1_LED,R12_EEU,Energy Service|Residential|Floor Space,bn m2,3.53864,3.62251,3.67359,3.69386,3.69053,3.66603
+MESSAGEix-Buildings,SSP1_LED,R12_FSU,Energy Service|Residential|Floor Space,bn m2,7.46922,8.16282,8.75513,9.24597,9.64865,9.95032
+MESSAGEix-Buildings,SSP1_LED,R12_LAM,Energy Service|Residential|Floor Space,bn m2,15.15456,17.36615,19.38001,21.0876,22.52686,23.59929
+MESSAGEix-Buildings,SSP1_LED,R12_MEA,Energy Service|Residential|Floor Space,bn m2,12.43872,14.68381,16.79323,19.00487,21.00089,22.76732
+MESSAGEix-Buildings,SSP1_LED,R12_NAM,Energy Service|Residential|Floor Space,bn m2,24.21126,24.28833,24.29719,24.20817,24.05648,23.84517
+MESSAGEix-Buildings,SSP1_LED,R12_PAO,Energy Service|Residential|Floor Space,bn m2,6.41059,6.3361,6.23445,6.11012,5.97745,5.8426
+MESSAGEix-Buildings,SSP1_LED,R12_PAS,Energy Service|Residential|Floor Space,bn m2,14.56043,16.51004,18.32689,19.89644,21.23814,22.26188
+MESSAGEix-Buildings,SSP1_LED,R12_RCPA,Energy Service|Residential|Floor Space,bn m2,5.08691,5.4559,5.71066,5.88583,6.00078,6.0548400000000004
+MESSAGEix-Buildings,SSP1_LED,R12_SAS,Energy Service|Residential|Floor Space,bn m2,38.33832,45.53189,52.30243,58.39141,63.89722,68.44049
+MESSAGEix-Buildings,SSP1_LED,R12_WEU,Energy Service|Residential|Floor Space,bn m2,20.81387,20.82797,20.79644,20.72065,20.62539,20.49173
+MESSAGEix-Buildings,SSP1_LED,R12_AFR,Energy Service|Residential|Slum|Floor Space,bn m2,3.44319,3.44267,3.53481,3.39116,3.05582,2.68247
+MESSAGEix-Buildings,SSP1_LED,R12_AFR,Energy Service|Residential|Multi-family|Floor Space,bn m2,1.05294,1.57538,2.09601,2.60945,3.3052,4.05186
+MESSAGEix-Buildings,SSP1_LED,R12_AFR,Energy Service|Residential|Single-family|Floor Space,bn m2,16.90672,22.55944,27.79747,32.54374,38.45777,44.46422
+MESSAGEix-Buildings,SSP1_LED,R12_CHN,Energy Service|Residential|Slum|Floor Space,bn m2,2.2592,1.38552,0.7221,0.29336,0.0722,0.02901
+MESSAGEix-Buildings,SSP1_LED,R12_CHN,Energy Service|Residential|Multi-family|Floor Space,bn m2,41.36627,43.07924,44.02003,44.22316,43.76643,42.68808
+MESSAGEix-Buildings,SSP1_LED,R12_CHN,Energy Service|Residential|Single-family|Floor Space,bn m2,13.43134,12.34471,11.33741,10.40721,9.54525,8.73125
+MESSAGEix-Buildings,SSP1_LED,R12_EEU,Energy Service|Residential|Multi-family|Floor Space,bn m2,1.55062,1.66994,1.76408,1.83341,1.88163,1.91061
+MESSAGEix-Buildings,SSP1_LED,R12_EEU,Energy Service|Residential|Single-family|Floor Space,bn m2,1.98802,1.95257,1.90951,1.86046,1.8089,1.75541
+MESSAGEix-Buildings,SSP1_LED,R12_FSU,Energy Service|Residential|Multi-family|Floor Space,bn m2,3.83288,4.35827,4.82897,5.23888,5.59142,5.87664
+MESSAGEix-Buildings,SSP1_LED,R12_FSU,Energy Service|Residential|Single-family|Floor Space,bn m2,3.63633,3.80455,3.92616,4.00709,4.05723,4.07368
+MESSAGEix-Buildings,SSP1_LED,R12_LAM,Energy Service|Residential|Slum|Floor Space,bn m2,1.67998,1.70322,1.6296,1.43691,1.18502,0.90161
+MESSAGEix-Buildings,SSP1_LED,R12_LAM,Energy Service|Residential|Multi-family|Floor Space,bn m2,0.79684,0.95625,1.11246,1.25834,1.39109,1.50085
+MESSAGEix-Buildings,SSP1_LED,R12_LAM,Energy Service|Residential|Single-family|Floor Space,bn m2,12.67774,14.70669,16.63795,18.39235,19.95075,21.19683
+MESSAGEix-Buildings,SSP1_LED,R12_MEA,Energy Service|Residential|Slum|Floor Space,bn m2,1.38645,1.38917,1.35745,1.29835,1.22641,1.09585
+MESSAGEix-Buildings,SSP1_LED,R12_MEA,Energy Service|Residential|Multi-family|Floor Space,bn m2,1.08267,1.34017,1.59386,1.86978,2.12665,2.36701
+MESSAGEix-Buildings,SSP1_LED,R12_MEA,Energy Service|Residential|Single-family|Floor Space,bn m2,9.9696,11.95447,13.84192,15.83674,17.64783,19.30446
+MESSAGEix-Buildings,SSP1_LED,R12_NAM,Energy Service|Residential|Multi-family|Floor Space,bn m2,3.15544,3.23828,3.29181,3.31905,3.32865,3.32353
+MESSAGEix-Buildings,SSP1_LED,R12_NAM,Energy Service|Residential|Single-family|Floor Space,bn m2,21.05582,21.05005,21.00538,20.88912,20.72782,20.52163
+MESSAGEix-Buildings,SSP1_LED,R12_PAO,Energy Service|Residential|Multi-family|Floor Space,bn m2,1.45526,1.44886,1.43556,1.41625,1.39418,1.37075
+MESSAGEix-Buildings,SSP1_LED,R12_PAO,Energy Service|Residential|Single-family|Floor Space,bn m2,4.95533,4.88724,4.7989,4.69387,4.58327,4.47185
+MESSAGEix-Buildings,SSP1_LED,R12_PAS,Energy Service|Residential|Slum|Floor Space,bn m2,1.13254,1.13791,1.09938,1.00564,0.82049,0.67345
+MESSAGEix-Buildings,SSP1_LED,R12_PAS,Energy Service|Residential|Multi-family|Floor Space,bn m2,2.04456,2.38496,2.71837,3.02485,3.31108,3.53743
+MESSAGEix-Buildings,SSP1_LED,R12_PAS,Energy Service|Residential|Single-family|Floor Space,bn m2,11.38334,12.98718,14.50914,15.86594,17.10657,18.051
+MESSAGEix-Buildings,SSP1_LED,R12_RCPA,Energy Service|Residential|Slum|Floor Space,bn m2,0.3918,0.37653,0.34669,0.31789,0.29001,0.25423
+MESSAGEix-Buildings,SSP1_LED,R12_RCPA,Energy Service|Residential|Multi-family|Floor Space,bn m2,3.17084,3.54306,3.85851,4.12048,4.3345,4.50091
+MESSAGEix-Buildings,SSP1_LED,R12_RCPA,Energy Service|Residential|Single-family|Floor Space,bn m2,1.52427,1.53632,1.50546,1.44745,1.37628,1.2997
+MESSAGEix-Buildings,SSP1_LED,R12_SAS,Energy Service|Residential|Slum|Floor Space,bn m2,2.76488,3.07984,3.25821,3.26972,3.01581,2.7251
+MESSAGEix-Buildings,SSP1_LED,R12_SAS,Energy Service|Residential|Multi-family|Floor Space,bn m2,4.3752,5.82011,7.44265,9.15404,10.946,12.61093
+MESSAGEix-Buildings,SSP1_LED,R12_SAS,Energy Service|Residential|Single-family|Floor Space,bn m2,31.19824,36.63195,41.60157,45.96765,49.93541,53.10446
+MESSAGEix-Buildings,SSP1_LED,R12_WEU,Energy Service|Residential|Multi-family|Floor Space,bn m2,6.6582,6.90419,7.0902,7.22432,7.32152,7.38046
+MESSAGEix-Buildings,SSP1_LED,R12_WEU,Energy Service|Residential|Single-family|Floor Space,bn m2,14.15567,13.92378,13.70624,13.49633,13.30387,13.11128
+MESSAGEix-Buildings,SSP1_LED,R12_AFR,Energy Service|Residential|Renovation rate,%/yr,0.17099999999999999,0.11100000000000002,0.13899999999999998,0.10200000000000001,0.068,0.043
+MESSAGEix-Buildings,SSP1_LED,R12_CHN,Energy Service|Residential|Renovation rate,%/yr,0.765,0.475,0.267,0.129,0.042,0
+MESSAGEix-Buildings,SSP1_LED,R12_EEU,Energy Service|Residential|Renovation rate,%/yr,3.127,1.601,0.738,0.33899999999999997,0.005,0
+MESSAGEix-Buildings,SSP1_LED,R12_FSU,Energy Service|Residential|Renovation rate,%/yr,1.609,0.756,0.27299999999999996,0.012,0,0
+MESSAGEix-Buildings,SSP1_LED,R12_LAM,Energy Service|Residential|Renovation rate,%/yr,0.407,0.35000000000000003,0.281,0.22899999999999998,0.172,0.14400000000000002
+MESSAGEix-Buildings,SSP1_LED,R12_MEA,Energy Service|Residential|Renovation rate,%/yr,0.701,0.659,0.528,0.382,0.253,0.153
+MESSAGEix-Buildings,SSP1_LED,R12_NAM,Energy Service|Residential|Renovation rate,%/yr,4.08,2.681,1.675,0.9820000000000001,0.498,0.169
+MESSAGEix-Buildings,SSP1_LED,R12_PAO,Energy Service|Residential|Renovation rate,%/yr,1.9619999999999997,1.695,1.099,1.123,0.726,0.485
+MESSAGEix-Buildings,SSP1_LED,R12_PAS,Energy Service|Residential|Renovation rate,%/yr,0.202,0.146,0.10300000000000001,0.06999999999999999,0.047,0.032
+MESSAGEix-Buildings,SSP1_LED,R12_RCPA,Energy Service|Residential|Renovation rate,%/yr,0.03,0.024,0.016,0.013,0.004,0.004
+MESSAGEix-Buildings,SSP1_LED,R12_SAS,Energy Service|Residential|Renovation rate,%/yr,0.09,0.077,0.06,0.07200000000000001,0.049,0.025
+MESSAGEix-Buildings,SSP1_LED,R12_WEU,Energy Service|Residential|Renovation rate,%/yr,4.029,2.4379999999999997,1.423,0.748,0.315,0.015
+MESSAGEix-Buildings,SSP1_LED,R12_AFR,Final Energy|Residential|Cooling,EJ/yr,0.01703,0.04639,0.08174,0.12479,0.19626,0.28409
+MESSAGEix-Buildings,SSP1_LED,R12_AFR,Final Energy|Residential|Electricity,EJ/yr,0.25798,0.33908,0.42735999999999996,0.52224,0.6511,0.8077000000000001
+MESSAGEix-Buildings,SSP1_LED,R12_AFR,Final Energy|Residential|Gases,EJ/yr,6e-5,6e-5,6e-5,5e-5,5e-5,5e-5
+MESSAGEix-Buildings,SSP1_LED,R12_AFR,Final Energy|Residential|Heating|Space,EJ/yr,0.17146,0.1729,0.16629,0.15444,0.13925,0.12284
+MESSAGEix-Buildings,SSP1_LED,R12_AFR,Final Energy|Residential|Heating|Water,EJ/yr,1.4074,1.41233,1.40565,1.39884,1.40143,1.41559
+MESSAGEix-Buildings,SSP1_LED,R12_AFR,Final Energy|Residential|Liquids,EJ/yr,0.15468,0.14705,0.13921,0.13061,0.12187,0.11324
+MESSAGEix-Buildings,SSP1_LED,R12_AFR,Final Energy|Residential|Other,EJ/yr,0,0,0,0,0,0
+MESSAGEix-Buildings,SSP1_LED,R12_AFR,Final Energy|Residential|Solids|Biomass,EJ/yr,0.9577,0.92512,0.87711,0.82657,0.77674,0.72573
+MESSAGEix-Buildings,SSP1_LED,R12_AFR,Final Energy|Residential|Solids|Fossil,EJ/yr,0.22545,0.22031,0.20993,0.1986,0.18717,0.17581
+MESSAGEix-Buildings,SSP1_LED,R12_CHN,Final Energy|Residential|Cooling,EJ/yr,0.36464,0.36551,0.35746,0.35143,0.34655,0.33077
+MESSAGEix-Buildings,SSP1_LED,R12_CHN,Final Energy|Residential|Electricity,EJ/yr,3.44166,3.62073,3.69029,3.71015,3.6901100000000002,3.62294
+MESSAGEix-Buildings,SSP1_LED,R12_CHN,Final Energy|Residential|Heat,EJ/yr,1.28332,1.54152,1.72858,1.85429,1.92307,1.93858
+MESSAGEix-Buildings,SSP1_LED,R12_CHN,Final Energy|Residential|Heating|Space,EJ/yr,3.94918,3.23353,2.61309,2.13434,1.77229,1.50224
+MESSAGEix-Buildings,SSP1_LED,R12_CHN,Final Energy|Residential|Heating|Water,EJ/yr,6.13365,6.22771,6.13919,5.97226,5.76014,5.50748
+MESSAGEix-Buildings,SSP1_LED,R12_CHN,Final Energy|Residential|Other,EJ/yr,0,0,0,0,0,0
+MESSAGEix-Buildings,SSP1_LED,R12_CHN,Final Energy|Residential|Solids|Biomass,EJ/yr,2.28548,1.80802,1.38169,1.03855,0.77171,0.56574
+MESSAGEix-Buildings,SSP1_LED,R12_CHN,Final Energy|Residential|Solids|Fossil,EJ/yr,3.43701,2.85649,2.30917,1.85505,1.49411,1.21322
+MESSAGEix-Buildings,SSP1_LED,R12_EEU,Final Energy|Residential|Cooling,EJ/yr,0.00176,0.002,0.00222,0.00237,0.00251,0.00257
+MESSAGEix-Buildings,SSP1_LED,R12_EEU,Final Energy|Residential|Electricity,EJ/yr,0.20216,0.24805,0.27253,0.28476999999999997,0.28672000000000003,0.28364
+MESSAGEix-Buildings,SSP1_LED,R12_EEU,Final Energy|Residential|Gases,EJ/yr,0.31284,0.20823,0.13816,0.09147,0.06053,0.04016
+MESSAGEix-Buildings,SSP1_LED,R12_EEU,Final Energy|Residential|Heat,EJ/yr,0.39595,0.42784,0.45309,0.47131,0.48319,0.48981
+MESSAGEix-Buildings,SSP1_LED,R12_EEU,Final Energy|Residential|Heating|Space,EJ/yr,1.11772,0.89494,0.74587,0.64176,0.57111,0.51986
+MESSAGEix-Buildings,SSP1_LED,R12_EEU,Final Energy|Residential|Heating|Water,EJ/yr,0.3703,0.37521,0.37953,0.37951,0.37658,0.37118
+MESSAGEix-Buildings,SSP1_LED,R12_EEU,Final Energy|Residential|Liquids,EJ/yr,0.04146,0.02766,0.0184,0.0122,0.00809,0.00535
+MESSAGEix-Buildings,SSP1_LED,R12_EEU,Final Energy|Residential|Other,EJ/yr,0,0,0,0,0,0
+MESSAGEix-Buildings,SSP1_LED,R12_EEU,Final Energy|Residential|Solids|Biomass,EJ/yr,0.22529,0.14175,0.08955,0.05447,0.03474,0.02165
+MESSAGEix-Buildings,SSP1_LED,R12_EEU,Final Energy|Residential|Solids|Fossil,EJ/yr,0.31208,0.21862,0.1559,0.10941,0.07692,0.053
+MESSAGEix-Buildings,SSP1_LED,R12_FSU,Final Energy|Residential|Cooling,EJ/yr,0.0073,0.01037,0.01394,0.0171,0.01979,0.02215
+MESSAGEix-Buildings,SSP1_LED,R12_FSU,Final Energy|Residential|Electricity,EJ/yr,0.34486,0.41692999999999997,0.43838,0.43163,0.41091999999999995,0.38366
+MESSAGEix-Buildings,SSP1_LED,R12_FSU,Final Energy|Residential|Gases,EJ/yr,1.07982,0.69794,0.4467,0.2837,0.17918,0.11252
+MESSAGEix-Buildings,SSP1_LED,R12_FSU,Final Energy|Residential|Heat,EJ/yr,3.4116,3.69309,3.91934,4.09425,4.22607,4.31395
+MESSAGEix-Buildings,SSP1_LED,R12_FSU,Final Energy|Residential|Heating|Space,EJ/yr,4.05981,3.82345,3.69084,3.62069,3.58672,3.56493
+MESSAGEix-Buildings,SSP1_LED,R12_FSU,Final Energy|Residential|Heating|Water,EJ/yr,1.44071,1.4056,1.37519,1.34691,1.32082,1.29342
+MESSAGEix-Buildings,SSP1_LED,R12_FSU,Final Energy|Residential|Liquids,EJ/yr,0.27421,0.17684,0.113,0.07166,0.04521,0.02835
+MESSAGEix-Buildings,SSP1_LED,R12_FSU,Final Energy|Residential|Other,EJ/yr,0,0,0,0,0,0
+MESSAGEix-Buildings,SSP1_LED,R12_FSU,Final Energy|Residential|Solids|Biomass,EJ/yr,0.23818,0.1515,0.09621,0.06133,0.03922,0.02518
+MESSAGEix-Buildings,SSP1_LED,R12_FSU,Final Energy|Residential|Solids|Fossil,EJ/yr,0.15913,0.10312,0.06633,0.04214,0.02672,0.01685
+MESSAGEix-Buildings,SSP1_LED,R12_LAM,Final Energy|Residential|Cooling,EJ/yr,0.19086,0.28789,0.39184,0.48397,0.52266,0.55166
+MESSAGEix-Buildings,SSP1_LED,R12_LAM,Final Energy|Residential|Electricity,EJ/yr,0.5018,0.67714,0.8581300000000001,1.0232700000000001,1.13079,1.22628
+MESSAGEix-Buildings,SSP1_LED,R12_LAM,Final Energy|Residential|Gases,EJ/yr,0.13555,0.13531,0.13262,0.12814,0.12276,0.1166
+MESSAGEix-Buildings,SSP1_LED,R12_LAM,Final Energy|Residential|Heating|Space,EJ/yr,0.37362,0.379,0.36913,0.34637,0.31579,0.28241
+MESSAGEix-Buildings,SSP1_LED,R12_LAM,Final Energy|Residential|Heating|Water,EJ/yr,0.68757,0.75827,0.8297,0.90126,0.97175,1.03802
+MESSAGEix-Buildings,SSP1_LED,R12_LAM,Final Energy|Residential|Liquids,EJ/yr,0.58255,0.58265,0.57216,0.55478,0.5335,0.50822
+MESSAGEix-Buildings,SSP1_LED,R12_LAM,Final Energy|Residential|Other,EJ/yr,0,0,0,0,0,0
+MESSAGEix-Buildings,SSP1_LED,R12_LAM,Final Energy|Residential|Solids|Biomass,EJ/yr,0.02672,0.02462,0.02239,0.02017,0.01807,0.0161
+MESSAGEix-Buildings,SSP1_LED,R12_LAM,Final Energy|Residential|Solids|Fossil,EJ/yr,0.00544,0.00545,0.00537,0.00525,0.00509,0.0049
+MESSAGEix-Buildings,SSP1_LED,R12_MEA,Final Energy|Residential|Cooling,EJ/yr,0.45245,0.5719,0.67975,0.81018,0.92281,1.01648
+MESSAGEix-Buildings,SSP1_LED,R12_MEA,Final Energy|Residential|Electricity,EJ/yr,0.86799,1.11335,1.3481,1.6139700000000001,1.85183,2.0578700000000003
+MESSAGEix-Buildings,SSP1_LED,R12_MEA,Final Energy|Residential|Gases,EJ/yr,0.35038,0.33814,0.31231,0.28368,0.25309,0.22247
+MESSAGEix-Buildings,SSP1_LED,R12_MEA,Final Energy|Residential|Heating|Space,EJ/yr,0.55834,0.57101,0.56065,0.53565,0.49925,0.45436
+MESSAGEix-Buildings,SSP1_LED,R12_MEA,Final Energy|Residential|Heating|Water,EJ/yr,0.78206,0.85478,0.92321,1.0081,1.08953,1.16658
+MESSAGEix-Buildings,SSP1_LED,R12_MEA,Final Energy|Residential|Liquids,EJ/yr,0.55946,0.53205,0.49061,0.44534,0.39736,0.3493
+MESSAGEix-Buildings,SSP1_LED,R12_MEA,Final Energy|Residential|Other,EJ/yr,0,0,0,0,0,0
+MESSAGEix-Buildings,SSP1_LED,R12_MEA,Final Energy|Residential|Solids|Biomass,EJ/yr,0.01386,0.01304,0.01156,0.01,0.00848,0.00705
+MESSAGEix-Buildings,SSP1_LED,R12_MEA,Final Energy|Residential|Solids|Fossil,EJ/yr,0.00116,0.00111,0.00103,0.00093000000000000005,8.4e-4,7.4e-4
+MESSAGEix-Buildings,SSP1_LED,R12_NAM,Final Energy|Residential|Cooling,EJ/yr,0.67816,0.61193,0.55562,0.5118,0.47677,0.44737
+MESSAGEix-Buildings,SSP1_LED,R12_NAM,Final Energy|Residential|Electricity,EJ/yr,2.26728,2.46377,2.5471,2.56433,2.5434300000000003,2.50041
+MESSAGEix-Buildings,SSP1_LED,R12_NAM,Final Energy|Residential|Gases,EJ/yr,4.22239,2.84982,1.9428,1.34122,0.93948,0.6701
+MESSAGEix-Buildings,SSP1_LED,R12_NAM,Final Energy|Residential|Heating|Space,EJ/yr,5.21885,3.75599,2.76014,2.06976,1.58506,1.23986
+MESSAGEix-Buildings,SSP1_LED,R12_NAM,Final Energy|Residential|Heating|Water,EJ/yr,1.84149,1.77997,1.74046,1.71205,1.69187,1.67571
+MESSAGEix-Buildings,SSP1_LED,R12_NAM,Final Energy|Residential|Liquids,EJ/yr,1.06465,0.72506,0.50039,0.34766,0.24553,0.1763
+MESSAGEix-Buildings,SSP1_LED,R12_NAM,Final Energy|Residential|Other,EJ/yr,0,0,0,0,0,0
+MESSAGEix-Buildings,SSP1_LED,R12_NAM,Final Energy|Residential|Solids|Biomass,EJ/yr,0.18418,0.10924,0.06594,0.04039,0.02526,0.01613
+MESSAGEix-Buildings,SSP1_LED,R12_PAO,Final Energy|Residential|Cooling,EJ/yr,0.06103,0.05489,0.05002,0.04539,0.04168,0.03865
+MESSAGEix-Buildings,SSP1_LED,R12_PAO,Final Energy|Residential|Electricity,EJ/yr,0.23462,0.27967000000000003,0.30797,0.33636,0.35491,0.36755000000000004
+MESSAGEix-Buildings,SSP1_LED,R12_PAO,Final Energy|Residential|Gases,EJ/yr,0.34596,0.27381,0.22179,0.18433,0.15485,0.13278
+MESSAGEix-Buildings,SSP1_LED,R12_PAO,Final Energy|Residential|Heat,EJ/yr,0.08199,0.0826,0.08246,0.08178,0.08087,0.07975
+MESSAGEix-Buildings,SSP1_LED,R12_PAO,Final Energy|Residential|Heating|Space,EJ/yr,0.36812,0.29036,0.23432,0.18859,0.15476,0.12902
+MESSAGEix-Buildings,SSP1_LED,R12_PAO,Final Energy|Residential|Heating|Water,EJ/yr,0.70906,0.70099,0.6897,0.66899,0.65087,0.63274
+MESSAGEix-Buildings,SSP1_LED,R12_PAO,Final Energy|Residential|Liquids,EJ/yr,0.42536,0.36452,0.32022,0.2632,0.22272,0.18864
+MESSAGEix-Buildings,SSP1_LED,R12_PAO,Final Energy|Residential|Other,EJ/yr,0,0,0,0,0,0
+MESSAGEix-Buildings,SSP1_LED,R12_PAO,Final Energy|Residential|Solids|Biomass,EJ/yr,0.01236,0.01144,0.01047,0.00949,0.00855,0.00767
+MESSAGEix-Buildings,SSP1_LED,R12_PAO,Final Energy|Residential|Solids|Fossil,EJ/yr,0.03792,0.03419,0.03113,0.02782,0.02541,0.02402
+MESSAGEix-Buildings,SSP1_LED,R12_PAS,Final Energy|Residential|Cooling,EJ/yr,0.15282,0.20248,0.26177,0.31369,0.35428,0.38422
+MESSAGEix-Buildings,SSP1_LED,R12_PAS,Final Energy|Residential|Electricity,EJ/yr,0.20482,0.26322999999999996,0.33059,0.39003000000000004,0.43744,0.47343999999999997
+MESSAGEix-Buildings,SSP1_LED,R12_PAS,Final Energy|Residential|Heating|Space,EJ/yr,0.47133,0.41941,0.36786,0.3195,0.27624,0.23898
+MESSAGEix-Buildings,SSP1_LED,R12_PAS,Final Energy|Residential|Heating|Water,EJ/yr,0.21665,0.22304,0.22646,0.22824,0.22813,0.22614
+MESSAGEix-Buildings,SSP1_LED,R12_PAS,Final Energy|Residential|Other,EJ/yr,0,0,0,0,0,0
+MESSAGEix-Buildings,SSP1_LED,R12_PAS,Final Energy|Residential|Solids|Biomass,EJ/yr,0.63597,0.58171,0.5255,0.47139,0.42122,0.37589
+MESSAGEix-Buildings,SSP1_LED,R12_RCPA,Final Energy|Residential|Cooling,EJ/yr,0.02771,0.03687,0.04837,0.06112,0.07631,0.08783
+MESSAGEix-Buildings,SSP1_LED,R12_RCPA,Final Energy|Residential|Electricity,EJ/yr,0.07824,0.08962,0.10008,0.11017,0.12192,0.12995
+MESSAGEix-Buildings,SSP1_LED,R12_RCPA,Final Energy|Residential|Heat,EJ/yr,0.01322,0.01757,0.02161,0.02527,0.02839,0.03085
+MESSAGEix-Buildings,SSP1_LED,R12_RCPA,Final Energy|Residential|Heating|Space,EJ/yr,0.07042,0.06942,0.06489,0.05907,0.05308,0.04745
+MESSAGEix-Buildings,SSP1_LED,R12_RCPA,Final Energy|Residential|Heating|Water,EJ/yr,0.09232,0.09524,0.09387,0.09004,0.08565,0.08028
+MESSAGEix-Buildings,SSP1_LED,R12_RCPA,Final Energy|Residential|Other,EJ/yr,0,0,0,0,0,0
+MESSAGEix-Buildings,SSP1_LED,R12_RCPA,Final Energy|Residential|Solids|Biomass,EJ/yr,0.04594,0.04395,0.0399,0.03472,0.03006,0.02513
+MESSAGEix-Buildings,SSP1_LED,R12_RCPA,Final Energy|Residential|Solids|Fossil,EJ/yr,0.05305,0.05038,0.04554,0.04007,0.03467,0.02962
+MESSAGEix-Buildings,SSP1_LED,R12_SAS,Final Energy|Residential|Cooling,EJ/yr,0.2708,0.33422,0.45098,0.60112,0.78632,0.94914
+MESSAGEix-Buildings,SSP1_LED,R12_SAS,Final Energy|Residential|Electricity,EJ/yr,0.37453,0.46997,0.6191,0.80403,1.02599,1.2269
+MESSAGEix-Buildings,SSP1_LED,R12_SAS,Final Energy|Residential|Heating|Space,EJ/yr,0.47898,0.49749,0.49156,0.45993,0.41347,0.3589
+MESSAGEix-Buildings,SSP1_LED,R12_SAS,Final Energy|Residential|Heating|Water,EJ/yr,0.60054,0.60693,0.6131,0.60877,0.6081,0.61292
+MESSAGEix-Buildings,SSP1_LED,R12_SAS,Final Energy|Residential|Other,EJ/yr,0,0,0,0,0,0
+MESSAGEix-Buildings,SSP1_LED,R12_SAS,Final Energy|Residential|Solids|Biomass,EJ/yr,0.9758,0.96867,0.93654,0.86579,0.7819,0.69405
+MESSAGEix-Buildings,SSP1_LED,R12_WEU,Final Energy|Residential|Cooling,EJ/yr,0.03517,0.03767,0.03992,0.04163,0.04201,0.04212
+MESSAGEix-Buildings,SSP1_LED,R12_WEU,Final Energy|Residential|Electricity,EJ/yr,1.86777,2.17076,2.3211399999999998,2.37959,2.38666,2.36188
+MESSAGEix-Buildings,SSP1_LED,R12_WEU,Final Energy|Residential|Gases,EJ/yr,3.66349,2.43525,1.62992,1.10176,0.75129,0.52252
+MESSAGEix-Buildings,SSP1_LED,R12_WEU,Final Energy|Residential|Heat,EJ/yr,0.84741,0.8507,0.84902,0.84344,0.83544,0.82526
+MESSAGEix-Buildings,SSP1_LED,R12_WEU,Final Energy|Residential|Heating|Space,EJ/yr,6.29477,4.62738,3.50337,2.73664,2.20646,1.83352
+MESSAGEix-Buildings,SSP1_LED,R12_WEU,Final Energy|Residential|Heating|Water,EJ/yr,2.55758,2.43202,2.34287,2.27658,2.22631,2.18341
+MESSAGEix-Buildings,SSP1_LED,R12_WEU,Final Energy|Residential|Liquids,EJ/yr,1.5896,1.06028,0.71464,0.48546,0.33492,0.23295
+MESSAGEix-Buildings,SSP1_LED,R12_WEU,Final Energy|Residential|Other,EJ/yr,0,0,0,0,0,0
+MESSAGEix-Buildings,SSP1_LED,R12_WEU,Final Energy|Residential|Solids|Biomass,EJ/yr,0.52005,0.30608,0.18126,0.10858,0.06528,0.0397
+MESSAGEix-Buildings,SSP1_LED,R12_WEU,Final Energy|Residential|Solids|Fossil,EJ/yr,0.39919,0.274,0.19016,0.13602,0.10119,0.07674
+MESSAGEix-Buildings,SSP1_LED,R12_AFR,Materials Demand|Non-Ferrous Metals|Aluminium|Residential,Mt/yr,1.087,1.895,1.757,1.897,2.668,3.025
+MESSAGEix-Buildings,SSP1_LED,R12_AFR,Total Scrap|Non-Ferrous Metals|Aluminium|Residential,Mt/yr,0.357,0.444,0.541,0.644,0.739,0.83
+MESSAGEix-Buildings,SSP1_LED,R12_AFR,Materials Demand|Non-metallic minerals|Cement|Residential,Mt/yr,67.312,114.159,108.345,117.464,165.241,187.37
+MESSAGEix-Buildings,SSP1_LED,R12_AFR,Materials Demand|Non-Ferrous Metals|Copper|Residential,Mt/yr,0.509,0.894,0.823,0.887,1.248,1.416
+MESSAGEix-Buildings,SSP1_LED,R12_AFR,Total Scrap|Non-Ferrous Metals|Copper|Residential,Mt/yr,0.181,0.225,0.273,0.323,0.368,0.411
+MESSAGEix-Buildings,SSP1_LED,R12_AFR,Materials Demand|Iron and Steel|Residential,Mt/yr,15.806,26.562,25.404,27.583,38.802,43.998
+MESSAGEix-Buildings,SSP1_LED,R12_AFR,Total Scrap|Iron and Steel|Residential,Mt/yr,3.368,4.242,5.307,6.547,7.811,9.171
+MESSAGEix-Buildings,SSP1_LED,R12_CHN,Materials Demand|Non-Ferrous Metals|Aluminium|Residential,Mt/yr,4.928,3.071,2.698,2.337,1.977,1.588
+MESSAGEix-Buildings,SSP1_LED,R12_CHN,Total Scrap|Non-Ferrous Metals|Aluminium|Residential,Mt/yr,2.094,1.94,1.962,1.986,1.983,1.933
+MESSAGEix-Buildings,SSP1_LED,R12_CHN,Materials Demand|Non-metallic minerals|Cement|Residential,Mt/yr,345.894,215.621,189.482,164.197,138.913,111.572
+MESSAGEix-Buildings,SSP1_LED,R12_CHN,Materials Demand|Non-Ferrous Metals|Copper|Residential,Mt/yr,0.627,0.389,0.341,0.294,0.248,0.199
+MESSAGEix-Buildings,SSP1_LED,R12_CHN,Total Scrap|Non-Ferrous Metals|Copper|Residential,Mt/yr,0.402,0.341,0.317,0.297,0.28,0.262
+MESSAGEix-Buildings,SSP1_LED,R12_CHN,Materials Demand|Iron and Steel|Residential,Mt/yr,265.314,165.76,145.927,126.678,107.31,86.261
+MESSAGEix-Buildings,SSP1_LED,R12_CHN,Total Scrap|Iron and Steel|Residential,Mt/yr,85.612,85.669,92.201,98.01,101.173,100.822
+MESSAGEix-Buildings,SSP1_LED,R12_EEU,Materials Demand|Non-Ferrous Metals|Aluminium|Residential,Mt/yr,0.195,0.096,0.079,0.065,0.057,0.05
+MESSAGEix-Buildings,SSP1_LED,R12_EEU,Total Scrap|Non-Ferrous Metals|Aluminium|Residential,Mt/yr,0.083,0.08,0.081,0.082,0.083,0.084
+MESSAGEix-Buildings,SSP1_LED,R12_EEU,Materials Demand|Non-metallic minerals|Cement|Residential,Mt/yr,14.589,7.122,5.868,4.853,4.206,3.722
+MESSAGEix-Buildings,SSP1_LED,R12_EEU,Materials Demand|Non-Ferrous Metals|Copper|Residential,Mt/yr,0.048,0.023,0.019,0.015,0.013,0.012
+MESSAGEix-Buildings,SSP1_LED,R12_EEU,Total Scrap|Non-Ferrous Metals|Copper|Residential,Mt/yr,0.025,0.024,0.024,0.024,0.023,0.023
+MESSAGEix-Buildings,SSP1_LED,R12_EEU,Materials Demand|Iron and Steel|Residential,Mt/yr,6.372,3.184,2.628,2.186,1.912,1.713
+MESSAGEix-Buildings,SSP1_LED,R12_EEU,Total Scrap|Iron and Steel|Residential,Mt/yr,2.222,2.215,2.265,2.333,2.416,2.501
+MESSAGEix-Buildings,SSP1_LED,R12_FSU,Materials Demand|Non-Ferrous Metals|Aluminium|Residential,Mt/yr,0.313,0.25,0.234,0.221,0.215,0.204
+MESSAGEix-Buildings,SSP1_LED,R12_FSU,Total Scrap|Non-Ferrous Metals|Aluminium|Residential,Mt/yr,0.196,0.189,0.193,0.198,0.202,0.205
+MESSAGEix-Buildings,SSP1_LED,R12_FSU,Materials Demand|Non-metallic minerals|Cement|Residential,Mt/yr,20.25,16.195,15.165,14.348,13.953,13.24
+MESSAGEix-Buildings,SSP1_LED,R12_FSU,Materials Demand|Non-Ferrous Metals|Copper|Residential,Mt/yr,0.068,0.054,0.05,0.047,0.045,0.042
+MESSAGEix-Buildings,SSP1_LED,R12_FSU,Total Scrap|Non-Ferrous Metals|Copper|Residential,Mt/yr,0.062,0.057,0.056,0.055,0.054,0.053
+MESSAGEix-Buildings,SSP1_LED,R12_FSU,Materials Demand|Iron and Steel|Residential,Mt/yr,11.779,9.471,8.886,8.435,8.237,7.857
+MESSAGEix-Buildings,SSP1_LED,R12_FSU,Total Scrap|Iron and Steel|Residential,Mt/yr,5.366,5.477,5.797,6.144,6.509,6.865
+MESSAGEix-Buildings,SSP1_LED,R12_LAM,Materials Demand|Non-Ferrous Metals|Aluminium|Residential,Mt/yr,0.661,0.673,0.729,0.756,0.775,0.738
+MESSAGEix-Buildings,SSP1_LED,R12_LAM,Total Scrap|Non-Ferrous Metals|Aluminium|Residential,Mt/yr,0.282,0.32,0.364,0.404,0.44,0.471
+MESSAGEix-Buildings,SSP1_LED,R12_LAM,Materials Demand|Non-metallic minerals|Cement|Residential,Mt/yr,35.188,35.837,38.817,40.222,41.252,39.267
+MESSAGEix-Buildings,SSP1_LED,R12_LAM,Materials Demand|Non-Ferrous Metals|Copper|Residential,Mt/yr,0.297,0.302,0.328,0.339,0.348,0.331
+MESSAGEix-Buildings,SSP1_LED,R12_LAM,Total Scrap|Non-Ferrous Metals|Copper|Residential,Mt/yr,0.13,0.147,0.167,0.184,0.2,0.214
+MESSAGEix-Buildings,SSP1_LED,R12_LAM,Materials Demand|Iron and Steel|Residential,Mt/yr,10.482,10.675,11.563,11.981,12.288,11.697
+MESSAGEix-Buildings,SSP1_LED,R12_LAM,Total Scrap|Iron and Steel|Residential,Mt/yr,3.955,4.589,5.298,5.969,6.583,7.121
+MESSAGEix-Buildings,SSP1_LED,R12_MEA,Materials Demand|Non-Ferrous Metals|Aluminium|Residential,Mt/yr,0.41,0.38,0.427,0.483,0.489,0.523
+MESSAGEix-Buildings,SSP1_LED,R12_MEA,Total Scrap|Non-Ferrous Metals|Aluminium|Residential,Mt/yr,0.115,0.132,0.154,0.174,0.194,0.214
+MESSAGEix-Buildings,SSP1_LED,R12_MEA,Materials Demand|Non-metallic minerals|Cement|Residential,Mt/yr,65.671,60.749,68.377,77.265,78.229,83.741
+MESSAGEix-Buildings,SSP1_LED,R12_MEA,Materials Demand|Non-Ferrous Metals|Copper|Residential,Mt/yr,0.342,0.317,0.357,0.403,0.408,0.437
+MESSAGEix-Buildings,SSP1_LED,R12_MEA,Total Scrap|Non-Ferrous Metals|Copper|Residential,Mt/yr,0.106,0.12,0.139,0.156,0.172,0.188
+MESSAGEix-Buildings,SSP1_LED,R12_MEA,Materials Demand|Iron and Steel|Residential,Mt/yr,26.074,24.12,27.148,30.677,31.06,33.248
+MESSAGEix-Buildings,SSP1_LED,R12_MEA,Total Scrap|Iron and Steel|Residential,Mt/yr,6.924,7.971,9.348,10.63,11.953,13.25
+MESSAGEix-Buildings,SSP1_LED,R12_NAM,Materials Demand|Non-Ferrous Metals|Aluminium|Residential,Mt/yr,1.746,0.985,0.877,0.784,0.734,0.696
+MESSAGEix-Buildings,SSP1_LED,R12_NAM,Total Scrap|Non-Ferrous Metals|Aluminium|Residential,Mt/yr,0.374,0.411,0.464,0.513,0.558,0.598
+MESSAGEix-Buildings,SSP1_LED,R12_NAM,Materials Demand|Non-metallic minerals|Cement|Residential,Mt/yr,51.989,29.314,26.116,23.355,21.862,20.72
+MESSAGEix-Buildings,SSP1_LED,R12_NAM,Materials Demand|Non-Ferrous Metals|Copper|Residential,Mt/yr,0.441,0.249,0.221,0.198,0.185,0.176
+MESSAGEix-Buildings,SSP1_LED,R12_NAM,Total Scrap|Non-Ferrous Metals|Copper|Residential,Mt/yr,0.097,0.106,0.119,0.132,0.143,0.153
+MESSAGEix-Buildings,SSP1_LED,R12_NAM,Materials Demand|Iron and Steel|Residential,Mt/yr,14.024,7.907,7.045,6.3,5.897,5.589
+MESSAGEix-Buildings,SSP1_LED,R12_NAM,Total Scrap|Iron and Steel|Residential,Mt/yr,2.789,3.133,3.555,3.947,4.304,4.627
+MESSAGEix-Buildings,SSP1_LED,R12_PAO,Materials Demand|Non-Ferrous Metals|Aluminium|Residential,Mt/yr,0.035,0.033,0.03,0.027,0.026,0.026
+MESSAGEix-Buildings,SSP1_LED,R12_PAO,Total Scrap|Non-Ferrous Metals|Aluminium|Residential,Mt/yr,0.048,0.052,0.054,0.056,0.057,0.057
+MESSAGEix-Buildings,SSP1_LED,R12_PAO,Materials Demand|Non-metallic minerals|Cement|Residential,Mt/yr,2.792,2.691,2.425,2.17,2.114,2.112
+MESSAGEix-Buildings,SSP1_LED,R12_PAO,Materials Demand|Non-Ferrous Metals|Copper|Residential,Mt/yr,0.017,0.017,0.015,0.014,0.013,0.013
+MESSAGEix-Buildings,SSP1_LED,R12_PAO,Total Scrap|Non-Ferrous Metals|Copper|Residential,Mt/yr,0.026,0.028,0.029,0.03,0.03,0.03
+MESSAGEix-Buildings,SSP1_LED,R12_PAO,Materials Demand|Iron and Steel|Residential,Mt/yr,1.534,1.478,1.332,1.192,1.161,1.16
+MESSAGEix-Buildings,SSP1_LED,R12_PAO,Total Scrap|Iron and Steel|Residential,Mt/yr,1.939,2.088,2.206,2.292,2.346,2.371
+MESSAGEix-Buildings,SSP1_LED,R12_PAS,Materials Demand|Non-Ferrous Metals|Aluminium|Residential,Mt/yr,0.971,0.846,0.94,1.001,1.042,1.037
+MESSAGEix-Buildings,SSP1_LED,R12_PAS,Total Scrap|Non-Ferrous Metals|Aluminium|Residential,Mt/yr,0.456,0.495,0.548,0.59,0.626,0.651
+MESSAGEix-Buildings,SSP1_LED,R12_PAS,Materials Demand|Non-metallic minerals|Cement|Residential,Mt/yr,67.667,58.951,65.5,69.702,72.585,72.236
+MESSAGEix-Buildings,SSP1_LED,R12_PAS,Materials Demand|Non-Ferrous Metals|Copper|Residential,Mt/yr,0.362,0.316,0.351,0.374,0.389,0.387
+MESSAGEix-Buildings,SSP1_LED,R12_PAS,Total Scrap|Non-Ferrous Metals|Copper|Residential,Mt/yr,0.18,0.194,0.214,0.228,0.24,0.248
+MESSAGEix-Buildings,SSP1_LED,R12_PAS,Materials Demand|Iron and Steel|Residential,Mt/yr,17.671,15.374,17.071,18.155,18.896,18.796
+MESSAGEix-Buildings,SSP1_LED,R12_PAS,Total Scrap|Iron and Steel|Residential,Mt/yr,6.551,7.365,8.411,9.353,10.223,10.931
+MESSAGEix-Buildings,SSP1_LED,R12_RCPA,Materials Demand|Non-Ferrous Metals|Aluminium|Residential,Mt/yr,0.268,0.226,0.251,0.269,0.28,0.28
+MESSAGEix-Buildings,SSP1_LED,R12_RCPA,Total Scrap|Non-Ferrous Metals|Aluminium|Residential,Mt/yr,0.211,0.217,0.221,0.216,0.207,0.197
+MESSAGEix-Buildings,SSP1_LED,R12_RCPA,Materials Demand|Non-metallic minerals|Cement|Residential,Mt/yr,18.794,15.896,17.614,18.893,19.658,19.685
+MESSAGEix-Buildings,SSP1_LED,R12_RCPA,Materials Demand|Non-Ferrous Metals|Copper|Residential,Mt/yr,0.034,0.029,0.032,0.034,0.035,0.035
+MESSAGEix-Buildings,SSP1_LED,R12_RCPA,Total Scrap|Non-Ferrous Metals|Copper|Residential,Mt/yr,0.047,0.047,0.045,0.042,0.037,0.032
+MESSAGEix-Buildings,SSP1_LED,R12_RCPA,Materials Demand|Iron and Steel|Residential,Mt/yr,14.413,12.207,13.536,14.527,15.122,15.147
+MESSAGEix-Buildings,SSP1_LED,R12_RCPA,Total Scrap|Iron and Steel|Residential,Mt/yr,7.336,7.857,8.453,8.793,8.981,9.125
+MESSAGEix-Buildings,SSP1_LED,R12_SAS,Materials Demand|Non-Ferrous Metals|Aluminium|Residential,Mt/yr,1.916,1.899,2.249,2.583,3.043,2.973
+MESSAGEix-Buildings,SSP1_LED,R12_SAS,Total Scrap|Non-Ferrous Metals|Aluminium|Residential,Mt/yr,0.857,0.993,1.134,1.244,1.325,1.383
+MESSAGEix-Buildings,SSP1_LED,R12_SAS,Materials Demand|Non-metallic minerals|Cement|Residential,Mt/yr,120.893,118.985,141.909,162.935,191.97,187.566
+MESSAGEix-Buildings,SSP1_LED,R12_SAS,Materials Demand|Non-Ferrous Metals|Copper|Residential,Mt/yr,0.741,0.738,0.87,0.999,1.177,1.15
+MESSAGEix-Buildings,SSP1_LED,R12_SAS,Total Scrap|Non-Ferrous Metals|Copper|Residential,Mt/yr,0.398,0.458,0.518,0.562,0.59,0.605
+MESSAGEix-Buildings,SSP1_LED,R12_SAS,Materials Demand|Iron and Steel|Residential,Mt/yr,41.174,40.372,48.332,55.493,65.382,63.882
+MESSAGEix-Buildings,SSP1_LED,R12_SAS,Total Scrap|Iron and Steel|Residential,Mt/yr,10.865,12.984,15.341,17.601,19.727,21.74
+MESSAGEix-Buildings,SSP1_LED,R12_WEU,Materials Demand|Non-Ferrous Metals|Aluminium|Residential,Mt/yr,0.357,0.226,0.205,0.188,0.178,0.167
+MESSAGEix-Buildings,SSP1_LED,R12_WEU,Total Scrap|Non-Ferrous Metals|Aluminium|Residential,Mt/yr,0.136,0.14,0.146,0.153,0.159,0.164
+MESSAGEix-Buildings,SSP1_LED,R12_WEU,Materials Demand|Non-metallic minerals|Cement|Residential,Mt/yr,51.919,32.925,29.821,27.314,25.891,24.296
+MESSAGEix-Buildings,SSP1_LED,R12_WEU,Materials Demand|Non-Ferrous Metals|Copper|Residential,Mt/yr,0.294,0.187,0.169,0.155,0.147,0.138
+MESSAGEix-Buildings,SSP1_LED,R12_WEU,Total Scrap|Non-Ferrous Metals|Copper|Residential,Mt/yr,0.156,0.152,0.154,0.156,0.157,0.158
+MESSAGEix-Buildings,SSP1_LED,R12_WEU,Materials Demand|Iron and Steel|Residential,Mt/yr,22.571,14.312,12.962,11.872,11.253,10.559
+MESSAGEix-Buildings,SSP1_LED,R12_WEU,Total Scrap|Iron and Steel|Residential,Mt/yr,7.943,8.297,8.783,9.241,9.672,10.068

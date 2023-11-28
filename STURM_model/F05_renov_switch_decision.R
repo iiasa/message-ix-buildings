@@ -19,7 +19,7 @@
 
 ## BEGIN FUNCTION
 fun_ms_ren_sw <- function(yrs,i,
-                       bld_cases_fuel, ct_bld_age, ct_hh_tenr, ct_fuel_comb,
+                       bld_cases_fuel, ct_bld_age, ct_tenr, ct_fuel_comb,
                        ct_ren_eneff, ct_ren_fuel_heat,
                        hh_size, floor_cap,
                        hh_tenure,
@@ -42,7 +42,7 @@ rnd <- 5
 stp <- yrs[i]-yrs[i-1]
   
 # Building cases fuels + tenure
-bld_cases_fuel_tenr <- merge(bld_cases_fuel, as.data.frame(ct_hh_tenr)) %>% rename(tenr = ct_hh_tenr)
+bld_cases_fuel_tenr <- merge(bld_cases_fuel, data.frame(tenr = sort(unique(ct_tenr$tenr)))) # %>% rename(tenr = ct_hh_tenr)
   
 # Removed in v1.0 - now included in lcc_ren_hh processing
 # # Edit fuel excluded on a regional level for renovation (from script 02a_data_processing)
@@ -240,12 +240,12 @@ fun_ms_ren_target <- function(yrs,i,
     rename(fuel_heat_i = fuel_heat) %>%
     left_join(shr_eneff_ren) %>% # Join market share column
     left_join(shr_fuel_heat_ren) %>%
-    mutate(ms_ren = ms_eneff*ms_fuel) %>%
+    mutate(ms_ren = shr_eneff_ren*shr_fuel_heat_ren) %>%
     filter(!is.na(ms_ren)) %>%
     filter(ms_ren > 0) %>%
     filter(mod_decision == 1) %>%
     mutate(ct_fuel_excl_ren = 0) %>% # Placeholder for fuels to be excl
-    select(-c(bld_age,ms_eneff,ms_fuel,
+    select(-c(bld_age,shr_eneff_ren,shr_fuel_heat_ren,
               ct_fuel_excl_ren
               ))
   
@@ -297,11 +297,12 @@ fun_ms_fuel_sw <- function(yrs,i,
     filter(bld_age %in% p_past) %>%
     #rename(fuel_heat_i = fuel_heat) %>%
     left_join(shr_fuel_heat_sw) %>%
-    filter(!is.na(ms)) %>%
-    filter(ms > 0) %>%
+    filter(!is.na(shr_fuel_heat_sw)) %>%
+    filter(shr_fuel_heat_sw > 0) %>%
     filter(mod_decision == 1) %>%
+    rename(ms=shr_fuel_heat_sw) %>%
     #mutate(fuel_excluded = 0) %>% # Placeholder for fuels to be excluded
-    select(-c(bld_age,
+    select(-c(bld_age#, shr_fuel_heat_sw
               #, fuel_excluded
     ))
   

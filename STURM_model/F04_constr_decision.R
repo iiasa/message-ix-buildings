@@ -143,10 +143,10 @@ fun_ms_new_target <- function(yrs,i,
     left_join(shr_eneff_new) %>% # Join market share column
     left_join(shr_fuel_heat_new) %>%
     filter(bld_age %in% p_i) %>%
-    mutate(ms= ms_eneff*ms_fuel) %>%
+    mutate(ms= shr_eneff_new*shr_fuel_heat_new) %>%
     mutate_cond(is.na(ms) & eneff == "ns", ms = 1) %>%
     filter(!is.na(ms)) %>% # temporary fix (renovated buildings are taken as they belong to building period p5)
-    select(-c(bld_age,ms_eneff,ms_fuel))
+    select(-c(bld_age,shr_eneff_new,shr_fuel_heat_new))
 
   
   # ## Prepare dataframe at eneff level (used to assign district heating in script M04) ### MOVED TO stock dynamics script

@@ -7,16 +7,18 @@ library(readxl)
 # library(RCurl) # read file from github
 
 run_scenario <- function(run, 
-                         scenario_name, 
+                         #scenario_name, 
                          sector, 
-                         path_in, path_rcode, path_out, 
+                         path_in, path_inputs, path_rcode, path_out, 
                          prices, 
-                         file_inputs, file_scenarios,
+                         file_inputs, #file_data_model, #file_scenarios,  
                          geo_level, geo_level_aggr, geo_levels, 
                          geo_level_report,
+                         region_select,
                          yrs,
                          input_mode, 
                          mod_arch,
+                         mod_new, mod_ren,
                          report_type, report_var){
   
   print(paste("Start scenario run: ", run, "_", sector))
@@ -47,7 +49,7 @@ run_scenario <- function(run,
   # SOURCE MODEL FUNCTIONS
   print("Load functions")
   source(file.path(path_rcode, "B00_functions.R"))
-  source(file.path(path_rcode, "F01_inputs.R"))
+  source(file.path(path_rcode, "F01_inputs_all.R"))
   source(file.path(path_rcode, "F03_energy_demand.R"))
   source(file.path(path_rcode, "F04_constr_decision.R"))
   # source(file.path(path_rcode, "F05_renov_decision.R"))
@@ -69,10 +71,7 @@ run_scenario <- function(run,
     print("Load data - RData")
     
     basename <- paste("data_input", run, sector, sep="_")
-    # basename <- paste("data_input", ssp_r, run, yrs[length(yrs)], sector, sep="_") # Old name
     load(file.path(path_in, paste0(basename, ".RData")))  # 2100
-    #load(paste0(path_in,"data_input_",r,"_",ssp_r,"_",run,"_2100.RData"), envir=.GlobalEnv) #2100
-    #load(paste0(path_in,"data_input_",r,"_",ssp_r,"_",run,"_2100.RData"), envir=environment()) #2100
     
     rm(basename)
     
@@ -83,72 +82,21 @@ run_scenario <- function(run,
     print("Load data - csv")
     
     # Source - input data
-    d <- fun_inputs_csv(path_in, file_inputs, file_scenarios, sector, run)
+    d <- fun_inputs_csv(path_in, path_inputs, file_inputs, sector, run) #file_scenarios, 
     
     print("Data loaded!")
   }
-    
-  #### FROM HERE: MOVE AND RE-ORGANIZE TO SEPARATE SCRIPT FOR MODEL BUILDING -- CREATE MATRIX OF ALL DIMENSIONS ####
   
   
-  ### MODEL BUILDING ### MOVE TO SEPARATE SCRIPT?
-
-  # PATH DATA INPUT FILES
-  path_in_csv = paste0(path_in,"./input_csv/")
+  ## BUILD DATA MODEL
+  print("Build data model")
   
-  # Regions
-  geo_data <- read_csv(paste0(path_in_csv,"/input_basic_geo/regions.csv"))  # First columns
-  regions <- unlist(geo_data[,paste(geo_level)]) # Regions in the analysis
-  regions_aggr <- sort(unique(unlist(geo_data[,paste(geo_level_aggr)]))) # Regions in the analysis - aggregated level
-
-  # Climatic zones
-  clim_zones <- read_csv(paste0(path_in_csv,"/input_basic_geo/climatic_zones.csv"))
-
-  #Household categories
-  urts <- c("rur","urb") # # Urban-Rural / Total. options: "rur", "urb", "tot"
-  ct_hh_inc <- c("q1","q2","q3")  # Income classes
-  ct_hh_tenr <- c("own", "rent") #c("ownns")
-
-  #Building categories
-  ct_bld_age <- read_csv(paste0(path_in_csv,"input_",sector,"/categories/ct_bld_age.csv")) # Vintage cohorts
-  ct_bld <- read_csv(paste0(path_in_csv,"input_",sector,"/categories/ct_arch.csv"))
-  ct_eneff <- read_csv(paste0(path_in_csv,"input_",sector,"/categories/ct_eneff.csv")) # Energy efficiency categories
-
-  # Fuel type
-  ct_fuel_comb <- read_csv(paste0(path_in_csv,"input_",sector,"/categories/ct_fuel.csv"))
-  ct_fuel_dhw <- read_csv(paste0(path_in_csv,"input_",sector,"/categories/ct_fuel_res.csv"))# fuels domestic hot water - Add solar thermal options
-
-  ## RENOVATION CATEGORIES
-  ct_ren_eneff <- read_csv(paste0(path_in_csv,"input_",sector,"/categories/ct_ren_eneff2.csv")) # "fuel" settings. Energy efficiency transitions for renovations
-  # The following is loaded as input data
-  #ct_ren_fuel_heat <- read_csv(paste0(path_in_csv,"input_",sector,"/decision/ct_ren_fuel_heat.csv")) # Energy efficiency transitions for renovations
-
-  # BUILDING CASES
-
-  bld_cases_fuel <- expand.grid(geo_level = regions,
-                                urt = urts, inc_cl = ct_hh_inc,
-                                #arch = ct_bld_arch,
-                                stringsAsFactors = FALSE) %>%
-    rename_at("geo_level", ~paste0(geo_level)) %>%
-    left_join(geo_data %>% select_at(geo_levels)) %>%
-    left_join(clim_zones, by=c(paste(geo_level), "urt")) %>%
-    left_join(ct_bld) %>%
-    left_join(ct_eneff, by="mat") %>%
-    #left_join(ct_access, by="mat") %>% # REMOVED in this version
-    inner_join(ct_fuel_comb, by=c("mat" = "mat")) %>%
-    # select(!!as.symbol(geo_level), scenario, urt, clim, inc_cl, arch, mat, eneff) %>% # Re-order the columns
-    arrange(!!as.symbol(geo_level), #scenario,
-            urt, clim, inc_cl, arch, mat, eneff,
-            #acc_heat, acc_cool,
-            fuel_heat, fuel_cool) # Sort values ## used eneff (ordered categories)
-
-  ### BUILDING CASES at more aggregate level can be generated from bld_cases_fuel
-  # bld_cases_arch <- bld_cases_fuel %>% select(-c(eneff, bld_age, fuel_heat, fuel_cool, mod_decision)) %>% distinct()
-  bld_cases_eneff <- bld_cases_fuel %>% select(-c(fuel_heat, fuel_cool, mod_decision)) %>% distinct()
-
-  #### TO HERE: MOVE AND RE-ORGANIZE TO SEPARATE SCRIPT FOR MODEL BUILDING -- CREATE MATRIX OF ALL DIMENSIONS ####
+  d <- fun_build_data_model(d, sector, geo_level, geo_level_aggr,geo_levels, region_select)
+  
+  print("Data model - built!")
   
   
+
   ## Energy prices (from MESSAGE)
   if(is.null(prices) == FALSE){
     price_en <- prices %>%
@@ -164,9 +112,11 @@ run_scenario <- function(run,
       select(region, year, fuel, price_en) %>%
       rename_at("region",~paste(substr(prices$node[1],1,3))) # rename region column based on R11/R12
     
-    price_en <- geo_data %>% # use the most granular level for prices
+    price_en <- d$geo_data %>% # use the most granular level for prices
       left_join(price_en) %>% # Join R11/R12 data
       select_at(c(paste(geo_level),"year","fuel","price_en"))
+    
+    rm(prices)
   }
   
   
@@ -178,21 +128,30 @@ run_scenario <- function(run,
     # Initialize housing stock (fun)
     print(paste("Initialize scenario run", sector))
     
-    lst_stock_init <- fun_stock_init_fut(sector,mod_arch,
+    lst_stock_init <- fun_stock_init_fut(sector,
+                                         run,
+                                         mod_arch,
                                          yrs,
-                                         geo_data, geo_levels, geo_level,
-                                         bld_cases_eneff, bld_cases_fuel,
+                                         d$geo_data, geo_levels, geo_level,
+                                         d$bld_cases_eneff, d$bld_cases_fuel,
                                          d$pop,
                                          d$hh_size, # used for residential
                                          d$floor_cap, # used for commercial
-                                         ct_hh_inc,
-                                         ct_eneff, ct_fuel_comb,
+                                         d$ct_inc_cl,
+                                         d$ct_eneff, d$ct_fuel_comb,
                                          d$stock_arch_base,
                                          d$shr_mat, d$shr_arch, d$shr_fuel_heat_base, d$shr_distr_heat,
-                                         # eff_cool_scen, eff_heat_scen,eff_hotwater_scen,
-                                         # ren_en_sav_scen,
-                                         # heat_hours_scen,cool_data_scen, heat_floor, shr_acc_cool,
-                                         # en_m2_sim_r, price_en
+                                         d$en_int_heat, d$en_int_cool,
+                                         d$days_cool,
+                                         d$eff_cool, d$eff_heat,
+                                         d$en_sav_ren, 
+                                         d$hours_heat, d$shr_floor_heat,
+                                         d$hours_cool,d$shr_floor_cool,
+                                         d$hours_fans,d$power_fans,
+                                         d$shr_acc_cool,
+                                         d$eff_hotwater,d$en_int_hotwater,
+                                         d$shr_need_heat,
+                                         price_en,
                                          report_var
                                          )
     
@@ -220,7 +179,7 @@ run_scenario <- function(run,
       # Energy demand intensities - heating/cooling
       lst_en_i <- fun_en_sim(sector,
                              yrs, i,
-                             bld_cases_fuel,
+                             d$bld_cases_fuel,
                              d$en_int_heat, d$en_int_cool,
                              d$days_cool,
                              d$eff_cool, d$eff_heat,
@@ -242,7 +201,7 @@ run_scenario <- function(run,
       
       # Energy demand intensities - hot water
       en_hh_hw_scen <- fun_hw_resid(yrs, i,
-                                    bld_cases_fuel,
+                                    d$bld_cases_fuel,
                                     d$hh_size,
                                     #ct_fuel_dhw,
                                     d$eff_hotwater, 
@@ -250,37 +209,74 @@ run_scenario <- function(run,
                                     d$en_int_heat)
       
       # Market share - new construction options
-      ms_new_i <- fun_ms_new(yrs,i,
-                             bld_cases_fuel, ct_bld_age,
-                             d$hh_size, d$floor_cap,
-                             d$cost_invest_new_shell, d$cost_invest_new_heat,
-                             d$cost_intang_new_shell, d$cost_intang_new_heat,
-                             d$ct_fuel_excl_new, d$ct_fuel_excl_reg,
-                             d$discount_new, d$heterog_new, d$lifetime_new,
-                             en_hh_tot
-      )       
+      
+      if(mod_new == "endogenous"){
+
+        ms_new_i <- fun_ms_new(yrs,i,
+                               d$bld_cases_fuel, d$ct_bld_age,
+                               d$hh_size, d$floor_cap,
+                               d$cost_invest_new_shell, d$cost_invest_new_heat,
+                               d$cost_intang_new_shell, d$cost_intang_new_heat,
+                               d$ct_fuel_excl_new, d$ct_fuel_excl_reg,
+                               d$discount_new, d$heterog_new, d$lifetime_new,
+                               en_hh_tot
+                               
+        )} else if(mod_new == "exogenous"){
+
+        ms_new_i <- fun_ms_new_target(yrs,i,
+                                      d$bld_cases_eneff, d$bld_cases_fuel, 
+                                      d$ct_bld_age,
+                                      d$shr_eneff_new, d$shr_fuel_heat_new
+        )
+        }       
+        
+
+      
       
       try(if(nrow(ms_new_i)==0) stop("Error in new construction calculation! Empty dataframe ms_new_i"))
       
       # Market share - renovation + fuel switches options
-      lst_ms_ren_sw_i <- fun_ms_ren_sw(yrs,i,
-                                       bld_cases_fuel, ct_bld_age, ct_hh_tenr, ct_fuel_comb,
-                                       ct_ren_eneff, d$ct_ren_fuel_heat,
-                                       d$hh_size, d$floor_cap,
-                                       d$hh_tenure,
-                                       d$cost_invest_ren_shell,d$cost_invest_ren_heat,
-                                       d$cost_intang_ren_shell,d$cost_intang_ren_heat,
-                                       d$ct_fuel_excl_ren,d$ct_fuel_excl_reg,
-                                       d$discount_ren, d$heterog_ren, d$lifetime_ren,
-                                       d$rate_ren_low, d$rate_ren_high, #ren_rate, 
-                                       # en_hh_tot_ren_init,
-                                       # en_hh_tot_ren_fin
-                                       en_hh_tot)
       
-      ms_ren_i = lst_ms_ren_sw_i$ms_ren_i
-      rate_ren_i = lst_ms_ren_sw_i$rate_ren_i
-      ms_sw_i = lst_ms_ren_sw_i$ms_sw_i
-      rm(lst_ms_ren_sw_i)
+      if(mod_ren == "endogenous"){
+        
+        lst_ms_ren_sw_i <- fun_ms_ren_sw(yrs,i,
+                                         d$bld_cases_fuel, d$ct_bld_age, d$ct_tenr, d$ct_fuel_comb,
+                                         d$ct_ren_eneff, d$ct_ren_fuel_heat,
+                                         d$hh_size, d$floor_cap,
+                                         d$hh_tenure,
+                                         d$cost_invest_ren_shell,d$cost_invest_ren_heat,
+                                         d$cost_intang_ren_shell,d$cost_intang_ren_heat,
+                                         d$ct_fuel_excl_ren,d$ct_fuel_excl_reg,
+                                         d$discount_ren, d$heterog_ren, d$lifetime_ren,
+                                         d$rate_ren_low, d$rate_ren_high, #ren_rate, 
+                                         # en_hh_tot_ren_init,
+                                         # en_hh_tot_ren_fin
+                                         en_hh_tot)
+        
+        ms_ren_i = lst_ms_ren_sw_i$ms_ren_i
+        rate_ren_i = lst_ms_ren_sw_i$rate_ren_i
+        ms_sw_i = lst_ms_ren_sw_i$ms_sw_i
+        rm(lst_ms_ren_sw_i)
+        
+      } else if(mod_ren == "exogenous"){
+        
+        # Market share - renovation options
+        ms_ren_i <- fun_ms_ren_target(yrs,i,
+                                      d$bld_cases_fuel, d$ct_bld_age,
+                                      d$shr_eneff_ren,d$shr_fuel_heat_ren
+        )
+        
+        # Market share - fuel switches
+        ms_sw_i <- fun_ms_fuel_sw(yrs,i,
+                                  d$bld_cases_fuel, d$ct_bld_age,
+                                  d$shr_fuel_heat_sw
+                                  #ms_fuel_sw_target
+        )
+        
+        rate_ren_i = d$rate_ren %>% filter(year == yrs[i])
+        
+        }       
+      
       
       try(if(nrow(ms_ren_i)==0) stop("Error in renovation calculation! Empty dataframe ms_ren_i"))
       try(if(nrow(ms_sw_i)==0) stop("Error in renovation calculation! Empty dataframe ms_sw_i"))
@@ -291,8 +287,8 @@ run_scenario <- function(run,
                                    yrs,i,
                                    run, #ssp_r, # removed ssp dimension
                                    geo_level, geo_level_aggr,geo_levels,
-                                   bld_cases_fuel, bld_cases_eneff, 
-                                   ct_bld_age, ct_fuel_comb,
+                                   d$bld_cases_fuel, d$bld_cases_eneff, 
+                                   d$ct_bld_age, d$ct_fuel_comb,
                                    d$hh_size, d$floor_cap,
                                    stock_aggr, bld_det_age_i, #bld_det, 
                                    #bld_eneff_age,
@@ -346,7 +342,7 @@ run_scenario <- function(run,
                                          pop_fut,
                                          hh_size, # used for residential
                                          floor_cap, # used for commercial
-                                         ct_hh_inc,
+                                         ct_inc_cl,
                                          ct_eneff, ct_fuel_comb,
                                          stock_arch_base,
                                          shr_mat, shr_arch, shr_fuel_heat_base,shr_distr_heat,
@@ -426,7 +422,7 @@ run_scenario <- function(run,
       lst_stock_i <- fun_stock_dyn(sector,
                                    mod_arch, # mod_arch = "new", mod_arch = "stock"
                                    yrs,i,
-                                   run, ssp_r,
+                                   run, #ssp_r,
                                    geo_level, geo_level_aggr,geo_levels,
                                    bld_cases_fuel, bld_cases_eneff, 
                                    ct_bld_age, ct_fuel_comb,
@@ -470,19 +466,19 @@ run_scenario <- function(run,
   ### REPORTING ###
   
   ## MESSAGE report -  Aggregate results for reporting
-  if ("MESSAGE" %in% report_type) {output <- fun_report_MESSAGE(sector, report_var, report, geo_data, geo_level, geo_level_report)}
+  if ("MESSAGE" %in% report_type) {output <- fun_report_MESSAGE(sector, report_var, report, d$geo_data, geo_level, geo_level_report)}
 
   ## STURM basic report (results written as csv)
-  if ("STURM" %in% report_type) {fun_report_basic(report, report_var, geo_data, geo_level, geo_level_report, sector, scenario_name, path_out)}
+  if ("STURM" %in% report_type) {fun_report_basic(report, report_var, d$geo_data, geo_level, geo_level_report, sector, run, path_out)}
     
   ## Report results - IRP template (results written as csv)
-  if ("IRP" %in% report_type) {fun_report_IRP(report, report_var, geo_data, geo_level, geo_level_report, sector, scenario_name, yrs, path_out)}
+  if ("IRP" %in% report_type) {fun_report_IRP(report, report_var, d$geo_data, geo_level, geo_level_report, sector, run, yrs, path_out)}
   
   ## Report results - NGFS template (results written as csv)
-  if ("NGFS" %in% report_type) {fun_report_NGFS(report, report_var, geo_data, geo_level, geo_level_report, sector, scenario_name, yrs, path_out)}
+  if ("NGFS" %in% report_type) {fun_report_NGFS(report, report_var, d$geo_data, geo_level, geo_level_report, sector, run, yrs, path_out)}
   
   ## Report results - NGFS template (results written as csv)
-  if ("NAVIGATE" %in% report_type) {fun_report_NAVIGATE(report, report_var, geo_data, geo_level, geo_level_report, sector, scenario_name, yrs, path_out,path_in, ct_bld, ct_ren_eneff, ren_en_sav_scen)}
+  if ("NAVIGATE" %in% report_type) {fun_report_NAVIGATE(report, report_var, d$geo_data, geo_level, geo_level_report, sector, run, yrs, path_out)} # path_in, ct_bld, ct_ren_eneff, ren_en_sav_scen # currently not used
   
   # Tracking time
   end_time <- Sys.time()

@@ -3,7 +3,7 @@
 
 ## geo_level_report should be one of the column in the DF "geo_data"
 
-fun_report_NAVIGATE <- function(report, report_var, geo_data, geo_level, geo_level_report, sector, scenario_name, yrs, path_out, path_in, ct_bld, ct_ren_eneff, ren_en_sav_scen){
+fun_report_NAVIGATE <- function(report, report_var, geo_data, geo_level, geo_level_report, sector, scenario_name, yrs, path_out){ # , path_in, ct_bld , ct_ren_eneff , ren_en_sav_scen ## currently not used - for U-values reporting
 
   print(paste0("Aggregate and report results - NAVIGATE Report"))
   
@@ -59,7 +59,7 @@ fun_report_NAVIGATE <- function(report, report_var, geo_data, geo_level, geo_lev
     rename_at(paste(geo_level_report),~paste("Region")) %>%
     mutate(Model = model_name, Scenario = scenario_name, Unit = "bn m2") %>%
     pivot_wider(names_from = "year", values_from = "floor_m2") %>%
-    select_at(paste(c("Model", "Scenario", "Region", "Variable", "Unit", yrs[-1])))
+    select_at(paste(c("Model", "Scenario", "Region", "Variable", "Unit", yrs)))
   
   exp_rep <- bind_rows(exp_rep,stock_rep_tot)
 
@@ -83,7 +83,7 @@ fun_report_NAVIGATE <- function(report, report_var, geo_data, geo_level, geo_lev
       rename_at(paste(geo_level_report),~paste("Region")) %>%
       mutate(Model = model_name, Scenario = scenario_name, Unit = "bn m2") %>%
       pivot_wider(names_from = "year", values_from = "floor_m2") %>%
-      select_at(paste(c("Model", "Scenario", "Region", "Variable", "Unit", yrs[-1])))
+      select_at(paste(c("Model", "Scenario", "Region", "Variable", "Unit", yrs)))
     
     exp_rep <- bind_rows(exp_rep,stock_rep_arch)
   }
@@ -334,7 +334,7 @@ fun_report_NAVIGATE <- function(report, report_var, geo_data, geo_level, geo_lev
     rename_at(paste(geo_level_report),~paste("Region")) %>%
     mutate(Model = model_name, Scenario = scenario_name, Unit = "EJ/yr") %>%
     pivot_wider(names_from = "year", values_from = "value") %>%
-    select_at(paste(c("Model", "Scenario", "Region", "Variable", "Unit", yrs[-1]))) %>%
+    select_at(paste(c("Model", "Scenario", "Region", "Variable", "Unit", yrs))) %>%
     arrange(Region,Variable) %>%
     mutate(Variable = gsub(pattern="\\|total",replacement="", x=Variable)) #replace string. Notice "|" is a special character and is escaped by "\\|"
   
@@ -460,7 +460,8 @@ fun_report_NAVIGATE <- function(report, report_var, geo_data, geo_level, geo_lev
       mutate(Unit = ifelse(commodity == "mat_stock","Mt","Mt/yr")) %>%
       # mutate(Model = model_name, Scenario = scenario_name, Unit = "kt/yr") %>%
       pivot_wider(names_from = "year", values_from = "value") %>%
-      select_at(paste(c("Model", "Scenario", "Region", "Variable", "Unit", yrs[-1])))
+      select_at(paste(c("Model", "Scenario", "Region", "Variable", "Unit", yrs[-1]))) %>%
+      mutate(`2020` = NA, .after="Unit") # PLACEHOLDER
 
     #mat_rep <- mat_rep %>% distinct()
     

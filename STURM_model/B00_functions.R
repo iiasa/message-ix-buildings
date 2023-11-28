@@ -65,16 +65,28 @@ fun_toShort <- function(DF_L, var_name){ ## var_name should be given as quoted
 }
 
 
-# # Function to rename data inputs - script F01_inputs.R
+# # Function to rename data inputs - script F01_inputs.R 
+# ##If a column "value" is in the dataframe: rename column with correspondent parameter name. If not: keep the dataframe as it is.
 fun_rename <- function(DF,name){ ## DF = dataframe; name = name to relabel the "value" column
   if("data.frame"  %in% class(DF) == FALSE) stop(paste(deparse(substitute(DF)),'is not a data.frame'))
-  if(length(grep("value", names(DF)))==0) stop(paste(deparse(substitute(DF)),'no columns named: value'))
-  
-  # DF_R <- DF %>% rename_with(~paste(name), .cols=value) # Works with only one "value" column per dataframe
-  DF_R <- DF %>% rename_with(~gsub("value", name, names(DF)), .cols = everything()) # works also with multiple "value1", "value2", etc. columns
+  if(length(grep("value", names(DF)))!=0){
+    # DF_R <- DF %>% rename_with(~paste(name), .cols=value) # Works with only one "value" column per dataframe
+    DF_R <- DF %>% rename_with(~gsub("value", name, names(DF)), .cols = everything()) # works also with multiple "value1", "value2", etc. columns
+  } else {DF_R <- DF}
   
   output = DF_R
 }
+
+# # # Function to rename data inputs - script F01_inputs.R
+# fun_rename <- function(DF,name){ ## DF = dataframe; name = name to relabel the "value" column
+#   if("data.frame"  %in% class(DF) == FALSE) stop(paste(deparse(substitute(DF)),'is not a data.frame'))
+#   if(length(grep("value", names(DF)))==0) stop(paste(deparse(substitute(DF)),'no columns named: value'))
+#   
+#   # DF_R <- DF %>% rename_with(~paste(name), .cols=value) # Works with only one "value" column per dataframe
+#   DF_R <- DF %>% rename_with(~gsub("value", name, names(DF)), .cols = everything()) # works also with multiple "value1", "value2", etc. columns
+#   
+#   output = DF_R
+# }
 
 # ########################################
 # ## Building stock evolution functions ##

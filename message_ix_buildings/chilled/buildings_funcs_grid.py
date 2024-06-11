@@ -7,6 +7,8 @@ Created on Wed Jan 25 13:34:32 2017
 
 # File to store buildings functions
 import numpy as np
+import pytz  # type: ignore
+import timezonefinder  # type: ignore
 
 ## Input data (only possibly needed for testing)
 t_sp_h = 20  # FIX Indoor setpoint temperature for heating (°C)

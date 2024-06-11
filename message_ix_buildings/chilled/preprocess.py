@@ -3,8 +3,10 @@ import os
 from itertools import product
 
 import numpy as np
-import pandas as pd
+import pandas as pd  # type: ignore
 import xarray as xr
+from dask.diagnostics import ProgressBar
+
 from message_ix_buildings.chilled.buildings_funcs_grid import (
     P_f,
     Q_c_tmax,
@@ -28,20 +30,14 @@ from message_ix_buildings.chilled.buildings_funcs_grid import (
     calc_vdd_h,
     calc_vdd_tmax_c,
 )
-from dask.diagnostics import ProgressBar
-
 from message_ix_buildings.chilled.config import Config
 from message_ix_buildings.chilled.variable_dicts import (
     VARS_ARCHETYPES,
     YEARS_BASELINE,
     YEARS_OTHERS,
 )
-):
-    # clim, arch, parset, urt = args
 
-    parset_name_run = par_var[1]
-
-    print(clims + " + " + archs + " + " + parset_name_run + " + " + urts)
+#     print(clims + " + " + archs + " + " + parset_name_run + " + " + urts)
 
 
 def create_archetype_template_map(
@@ -681,9 +677,7 @@ def map_calculated_variables(args):
             print("t_bal_c")
             t_bal_c = calc_t_bal_c(
                 t_sp_c, dict_netcdf["gn_int"], gn_sol, H_tr, H_v_cl
-            ).astype(
-                "float32"
-            )  # , x_diff0
+            ).astype("float32")  # , x_diff0
             t_bal_c = t_bal_c.chunk(chunks={"lon": Config.chunk_size})
             print("chunked")
             t_bal_c.attrs = {
@@ -917,9 +911,7 @@ def map_calculated_variables(args):
             print("calc_t_bal_h")
             t_bal_h = calc_t_bal_h(
                 t_sp_h, dict_netcdf["gn_int"], gn_sol, H_tr, H_v_cl
-            ).astype(
-                "float32"
-            )  # , x_diff0
+            ).astype("float32")  # , x_diff0
             t_bal_h = t_bal_h.chunk(chunks={"lon": Config.chunk_size})
             print("chunked")
             t_bal_h.attrs = {
@@ -1399,9 +1391,7 @@ def map_calculated_variables_2(
             print("t_bal_c")
             t_bal_c = calc_t_bal_c(
                 t_sp_c, dict_netcdf["gn_int"], gn_sol, H_tr, H_v_cl
-            ).astype(
-                "float32"
-            )  # , x_diff0
+            ).astype("float32")  # , x_diff0
             t_bal_c = t_bal_c.chunk(chunks={"lon": chunk_size})
             print("chunked")
             t_bal_c.attrs = {
@@ -1633,9 +1623,7 @@ def map_calculated_variables_2(
             print("calc_t_bal_h")
             t_bal_h = calc_t_bal_h(
                 t_sp_h, dict_netcdf["gn_int"], gn_sol, H_tr, H_v_cl
-            ).astype(
-                "float32"
-            )  # , x_diff0
+            ).astype("float32")  # , x_diff0
             t_bal_h = t_bal_h.chunk(chunks={"lon": chunk_size})
             print("chunked")
             t_bal_h.attrs = {

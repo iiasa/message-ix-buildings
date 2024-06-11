@@ -2,13 +2,13 @@ import datetime
 import os
 from itertools import product
 
-import cartopy
-import cartopy.crs as ccrs
-import cartopy.feature as cfeature
-import matplotlib.pyplot as plt
+import cartopy  # type: ignore
+import cartopy.crs as ccrs  # type: ignore
+import cartopy.feature as cfeature  # type: ignore
+import matplotlib.pyplot as plt  # type: ignore
 import numpy as np
-import pandas as pd
-import pyam
+import pandas as pd  # type: ignore
+import pyam  # type: ignore
 import xarray as xr
 from dask.diagnostics import ProgressBar
 

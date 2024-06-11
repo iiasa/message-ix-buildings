@@ -1,7 +1,7 @@
 import os
 from itertools import product
 
-import pandas as pd
+import pandas as pd  # type: ignore
 import xarray as xr
 
 from message_ix_buildings.chilled.config import Config
@@ -61,7 +61,7 @@ def process_iso_tables_updated(
         input_gcm,
         input_rcp_scenario,
         "5_ISO_tables",
-    )
+    )  # noqa
 
     vardic = {}
     varundic = {}

@@ -12,7 +12,7 @@ import pyam
 import xarray as xr
 from dask.diagnostics import ProgressBar
 
-from building_funcs.Buildings_funcs_grid_rev2 import (
+from message_ix_buildings.chilled.Buildings_funcs_grid_rev2 import (
     P_f,
     Q_c_tmax,
     Q_h,
@@ -35,7 +35,7 @@ from building_funcs.Buildings_funcs_grid_rev2 import (
     calc_vdd_h,
     calc_vdd_tmax_c,
 )
-from global_VDD.variable_dicts import (
+from message_ix_buildings.chilled.variable_dicts import (
     VARDICT_COOL,
     VARDICT_HEAT,
     VARS_ARCHETYPES,

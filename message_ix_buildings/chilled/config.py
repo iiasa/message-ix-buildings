@@ -13,7 +13,7 @@ from message_ix_buildings.chilled.vdd_functions import (
 
 @dataclass
 class Config:
-    """Configuration for :mod:`.global_VDD`."""
+    """Configuration for :mod:`.message_ix_buildings.chilled`."""
 
     # SPECIFY USER
     user = "MEAS"  # options: ALE, ED, MEAS

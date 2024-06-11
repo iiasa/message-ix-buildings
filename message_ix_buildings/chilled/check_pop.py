@@ -4,8 +4,8 @@ from itertools import product
 import pandas as pd
 import xarray as xr
 
-from global_VDD.config import Config
-from global_VDD.variable_dicts import (
+from message_ix_buildings.chilled.config import Config
+from message_ix_buildings.chilled.variable_dicts import (
     VARDICT_COOL,
     VARDICT_HEAT,
     VARUNDICT_COOL,

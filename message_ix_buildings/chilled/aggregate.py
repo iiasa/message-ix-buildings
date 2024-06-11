@@ -4,13 +4,13 @@ import os
 import pandas as pd  # type: ignore
 from sklearn.utils.fixes import parse_version, sp_version  # type: ignore
 
-from global_VDD.variable_dicts import SCENARIO_NAMES
+from message_ix_buildings.chilled.variable_dicts import SCENARIO_NAMES
 
 # This is line is to avoid incompatibility if older SciPy version.
 # You should use `solver="highs"` with recent version of SciPy.
 solver = "highs" if sp_version >= parse_version("1.6.0") else "interior-point"
 
-# from global_VDD.config import Config
+# from message_ix_buildings.chilled.config import Config
 
 # cfg = Config()
 

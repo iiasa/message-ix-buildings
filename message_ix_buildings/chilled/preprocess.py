@@ -5,8 +5,6 @@ from itertools import product
 import numpy as np
 import pandas as pd
 import xarray as xr
-from dask.diagnostics import ProgressBar
-
 from building_funcs.Buildings_funcs_grid_rev2 import (
     P_f,
     Q_c_tmax,
@@ -30,15 +28,14 @@ from building_funcs.Buildings_funcs_grid_rev2 import (
     calc_vdd_h,
     calc_vdd_tmax_c,
 )
-from global_VDD.config import Config
-from global_VDD.variable_dicts import VARS_ARCHETYPES, YEARS_BASELINE, YEARS_OTHERS
+from dask.diagnostics import ProgressBar
 
-
-def test_func(
-    clims,
-    archs,
-    par_var,
-    urts,
+from message_ix_buildings.chilled.config import Config
+from message_ix_buildings.chilled.variable_dicts import (
+    VARS_ARCHETYPES,
+    YEARS_BASELINE,
+    YEARS_OTHERS,
+)
 ):
     # clim, arch, parset, urt = args
 

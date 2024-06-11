@@ -5,7 +5,7 @@ from itertools import product
 import numpy as np
 import pandas as pd
 import xarray as xr
-from building_funcs.Buildings_funcs_grid_rev2 import (
+from message_ix_buildings.chilled.Buildings_funcs_grid_rev2 import (
     P_f,
     Q_c_tmax,
     Q_h,

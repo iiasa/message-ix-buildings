@@ -2,10 +2,13 @@ import datetime
 
 import numpy as np
 
-from global_VDD.aggregate import aggregate_ISO_tables_to_regions, create_prereg_data
-from global_VDD.regression import apply_regression
-from global_VDD.user_settings import DICT_USER_SETTINGS
-from global_VDD.vdd_functions import (
+from message_ix_buildings.chilled.aggregate import (
+    aggregate_ISO_tables_to_regions,
+    create_prereg_data,
+)
+from message_ix_buildings.chilled.regression import apply_regression
+from message_ix_buildings.chilled.user_settings import DICT_USER_SETTINGS
+from message_ix_buildings.chilled.vdd_functions import (
     aggregate_urban_rural_files,
     calculate_cumulative_carbon_emissions,
     create_archetype_template_map,

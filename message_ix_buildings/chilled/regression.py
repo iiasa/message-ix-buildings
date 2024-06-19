@@ -4,7 +4,7 @@ import pandas as pd  # type: ignore
 import pyam  # type: ignore
 import statsmodels.formula.api as smf  # type: ignore
 
-# from global_VDD.config import Config
+# from message_ix_buildings.chilled.config import Config
 
 # cfg = Config()
 

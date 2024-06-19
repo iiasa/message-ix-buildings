@@ -4,8 +4,8 @@ from dataclasses import dataclass
 
 import numpy as np
 
-from global_VDD.user_settings import DICT_USER_SETTINGS
-from global_VDD.vdd_functions import (
+from message_ix_buildings.chilled.user_settings import DICT_USER_SETTINGS
+from message_ix_buildings.chilled.vdd_functions import (
     load_all_scenarios_data,
     load_parametric_analysis_data,
 )
@@ -13,7 +13,7 @@ from global_VDD.vdd_functions import (
 
 @dataclass
 class Config:
-    """Configuration for :mod:`.global_VDD`."""
+    """Configuration for :mod:`.message_ix_buildings.chilled`."""
 
     # SPECIFY USER
     user = "MEAS"  # options: ALE, ED, MEAS

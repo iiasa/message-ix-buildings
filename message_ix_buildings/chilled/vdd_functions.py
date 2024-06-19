@@ -2,17 +2,17 @@ import datetime
 import os
 from itertools import product
 
-import cartopy
-import cartopy.crs as ccrs
-import cartopy.feature as cfeature
-import matplotlib.pyplot as plt
+import cartopy  # type: ignore
+import cartopy.crs as ccrs  # type: ignore
+import cartopy.feature as cfeature  # type: ignore
+import matplotlib.pyplot as plt  # type: ignore
 import numpy as np
-import pandas as pd
-import pyam
+import pandas as pd  # type: ignore
+import pyam  # type: ignore
 import xarray as xr
 from dask.diagnostics import ProgressBar
 
-from building_funcs.Buildings_funcs_grid_rev2 import (
+from message_ix_buildings.chilled.buildings_funcs_grid import (
     P_f,
     Q_c_tmax,
     Q_h,
@@ -35,7 +35,7 @@ from building_funcs.Buildings_funcs_grid_rev2 import (
     calc_vdd_h,
     calc_vdd_tmax_c,
 )
-from global_VDD.variable_dicts import (
+from message_ix_buildings.chilled.variable_dicts import (
     VARDICT_COOL,
     VARDICT_HEAT,
     VARS_ARCHETYPES,

@@ -7,8 +7,7 @@ import os
 
 import pandas as pd
 import xarray as xr
-
-from message_ix_buildings.chilled.config import Config
+from utils.config import Config
 
 
 def create_archetype_template_map(config: "Config"):

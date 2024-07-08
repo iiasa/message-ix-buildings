@@ -2,7 +2,7 @@ import os
 
 import pandas as pd  # type: ignore
 
-from message_ix_buildings.chilled.config import Config
+from message_ix_buildings.chilled.utils.config import Config
 
 cfg = Config()
 

@@ -4,9 +4,8 @@ from dataclasses import dataclass
 from typing import Literal
 
 import numpy as np
-
-from .functions.user_settings import DICT_USER_SETTINGS
-from .functions.vdd_functions import (
+from functions.user_settings import DICT_USER_SETTINGS
+from functions.vdd_functions import (
     load_all_scenarios_data,
     load_parametric_analysis_data,
 )
@@ -17,7 +16,7 @@ class Config:
     """Configuration for :mod:`.message_ix_buildings.chilled`."""
 
     # SPECIFY USER
-    user = "MEAS"  # options: ALE, ED, MEAS
+    user: Literal["ALE", "ED", "MEAS", "MEAS_EBRO", "MEAS_UNICC"] = "MEAS_UNICC"
     # print(f"USER: {user}")
 
     dle_path = DICT_USER_SETTINGS[user]["dle_path"]

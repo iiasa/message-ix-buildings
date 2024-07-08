@@ -5,9 +5,9 @@ Create raster of MESSAGE regions for CHILLED with specified nodes
 import datetime
 import os
 
-import pandas as pd
-import xarray as xr
-from utils.config import Config
+import pandas as pd  # type: ignore
+import xarray as xr  # type: ignore
+from utils.config import Config  # type: ignore
 
 
 def create_archetype_template_map(config: "Config"):

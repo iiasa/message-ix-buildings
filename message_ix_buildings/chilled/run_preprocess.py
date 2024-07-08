@@ -12,4 +12,4 @@ if not os.path.exists(
 ):
     create_archetype_template_map(cfg)
 else:
-    print(f"map_reg_MESSAGE_{cfg.node}.nc already exists")
+    print(f"map_reg_MESSAGE_{cfg.node}.nc already exists. Using existing file.")

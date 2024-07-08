@@ -1,6 +1,7 @@
 import datetime
 import os
 from dataclasses import dataclass
+from typing import Literal
 
 import numpy as np
 
@@ -188,8 +189,8 @@ class Config:
     # #: - "message": :mod:`message_ix` parameter data.
     # format: Literal["iamc", "message"] = "message"
 
-    # #: Spatial resolution
-    # node: Literal["R11", "R12", "R20"] = "R12"
+    #: Spatial resolution
+    node: Literal["R11", "R12", "R20"] = "R11"
 
     # #: Projection method; one of:
     # #:

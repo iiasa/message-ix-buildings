@@ -20,6 +20,7 @@ DICT_USER_SETTINGS = {
     "MEAS": {
         "chunk_size": 125,
         "sys_path": "/Users/meas/iiasagit/cc_ene_dem",
+        "chilled_data_path": "/Users/meas/Library/CloudStorage/OneDrive-SharedLibraries-IIASA/DLE - Analysis/Climate impacts and space conditioning/Data/chilled",
         "dle_path": "/Users/meas/Library/CloudStorage/OneDrive-SharedLibraries-IIASA/DLE - Analysis/Climate impacts and space conditioning/Data",
         "isimip_bias_adj_path": "/Volumes/mengm.pdrv/watxene/ISIMIP/ISIMIP3b/InputData/climate_updated/bias-adjusted",
         "isimip_ewembi_path": "/Volumes/mengm.pdrv/watxene/ISIMIP/ISIMIP2a_hist/input/EWEMBI",
@@ -34,5 +35,14 @@ DICT_USER_SETTINGS = {
         "isimip_ewembi_path": "P:\\watxene\\ISIMIP\\ISIMIP2a_hist\\input\\EWEMBI",
         "message_region_map_file": "P:\\ene.model\\data\\powerplants\\MESSAGE data\\MESSAGEix_country_region_map.xlsx",
         "ar6_snapshot_file": "D:\\mengm\\IIASA\\DLE - Data\\input_data\\AR6_Scenarios_Database_World\\AR6_Scenarios_Database_World_v1.1.csv",
+    },
+    "MEAS_UNICC": {
+        "chunk_size": 450,
+        "sys_path": "/home/mengm/repo/message-ix-buildings",
+        "dle_path": "/projects/chilled",
+        "isimip_bias_adj_path": "/pdrive/projects/watxene/ISIMIP/ISIMIP3b/InputData/climate_updated/bias-adjusted",
+        "isimip_ewembi_path": "/pdrive/projects/watxene/ISIMIP/ISIMIP2a_hist/input/EWEMBI",
+        "message_region_map_file": "/pdrive/projects/ene.model3/data/powerplants/MESSAGE data/MESSAGEix_country_region_map.xlsx",
+        "ar6_snapshot_file": "/projects/chilled/data/ar6/1668008312256-AR6_Scenarios_Database_World_v1.1.csv/AR6_Scenarios_Database_World_v1.1.csv",
     },
 }

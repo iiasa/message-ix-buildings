@@ -10,7 +10,7 @@ import xarray as xr  # type: ignore
 from utils.config import Config  # type: ignore
 
 
-def create_archetype_template_map(config: "Config"):
+def create_message_raster(config: "Config"):
     input_path = os.path.join(config.dle_path, "data")
     output_path = os.path.join(config.dle_path, "out", "raster")
 

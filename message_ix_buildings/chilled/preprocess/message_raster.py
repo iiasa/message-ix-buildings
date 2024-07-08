@@ -95,11 +95,13 @@ def create_archetype_template_map(config: "Config"):
             "contact": "byers@iiasa.ac.at; mastrucc@iiasa.ac.at",
         }
 
-        map_reg.to_netcdf(os.path.join(output_path, "map_reg_MESSAGE_{config.node}.nc"))
+        filename = "map_reg_MESSAGE_" + config.node + ".nc"
+
+        map_reg.to_netcdf(os.path.join(output_path, filename))
 
         print(
             "Saved MESSAGE and raster map data to "
-            + os.path.join(output_path, "map_reg_MESSAGE_{config.node}.nc")
+            + os.path.join(output_path, filename)
         )
 
     else:

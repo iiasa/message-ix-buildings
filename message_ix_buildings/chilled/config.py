@@ -5,11 +5,8 @@ from typing import Literal
 
 import numpy as np
 
-from message_ix_buildings.chilled.user_settings import DICT_USER_SETTINGS
-from message_ix_buildings.chilled.vdd_functions import (
-    load_all_scenarios_data,
-    load_parametric_analysis_data,
-)
+from .user_settings import DICT_USER_SETTINGS
+from .vdd_functions import load_all_scenarios_data, load_parametric_analysis_data
 
 
 @dataclass

@@ -5,8 +5,11 @@ from typing import Literal
 
 import numpy as np
 
-from .user_settings import DICT_USER_SETTINGS
-from .vdd_functions import load_all_scenarios_data, load_parametric_analysis_data
+from .functions.user_settings import DICT_USER_SETTINGS
+from .functions.vdd_functions import (
+    load_all_scenarios_data,
+    load_parametric_analysis_data,
+)
 
 
 @dataclass

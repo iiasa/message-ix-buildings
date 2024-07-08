@@ -38,7 +38,7 @@ class Config:
     testing_mode = 0  # 1= selects only two years for testing; 0= select all years (full calculation)
 
     # VERSION SETTINGS
-    vstr = "v19_ALPS2023"  # version input data
+    vstr = "ALPS2023"  # version input data
     vstrcntry = "v4"  # version string for country data and floor surface
     gcm = "MRI-ESM2-0"  # options: GFDL-ESM4, IPSL-CM6A-LR, MPI-ESM1-2-HR, MRI-ESM2-0, and UKESM1-0-LL
 

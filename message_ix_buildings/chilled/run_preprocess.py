@@ -2,7 +2,6 @@ from preprocess.archetypes import (  # type: ignore
     create_archetype_variables,
     create_archetypes,
 )
-                                   create_archetypes)
 from utils.config import Config  # type: ignore
 
 cfg = Config()

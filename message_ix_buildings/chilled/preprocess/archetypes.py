@@ -26,6 +26,17 @@ def create_archetypes(config: "Config"):
     # get raster file and message map
     ras, map_reg = create_message_raster(config)
 
+    # save MESSAGE regions map
+    msg_file = "map_reg_MESSAGE_" + config.node + ".nc"
+    map_reg.to_netcdf(os.path.join(archetype_path, msg_file))
+    print(
+        "- Saved MESSAGE and raster map data to "
+        + os.path.join(
+            archetype_path,
+            msg_file,
+        )
+    )
+
     for arch in config.archs:
         suff = arch  # suffix
 
@@ -100,17 +111,6 @@ def create_archetypes(config: "Config"):
             }
 
             encoding = {var: config.comp for var in arch_map.data_vars}
-
-            # save MESSAGE regions map
-            msg_file = "map_reg_MESSAGE_" + config.node + ".nc"
-            map_reg.to_netcdf(os.path.join(archetype_path, msg_file))
-            print(
-                "- Saved MESSAGE and raster map data to "
-                + os.path.join(
-                    archetype_path,
-                    msg_file,
-                )
-            )
 
             arch_file = "arch_map_" + config.arch_setting + "_" + suff + ".nc"
             arch_map.to_netcdf(

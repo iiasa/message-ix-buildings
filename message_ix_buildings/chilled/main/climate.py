@@ -261,43 +261,43 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                             pass
 
                     area_env = xr.open_dataset(
-                        os.path.join(output_path_vdd, "arch_" + suff1 + "_area_env.nc")
+                        os.path.join(archetype_path, "arch_" + suff1 + "_area_env.nc")
                     )[urt]  # Area of the building envelope
                     gl_perc = xr.open_dataset(
-                        os.path.join(output_path_vdd, "arch_" + suff1 + "_gl_perc.nc")
+                        os.path.join(archetype_path, "arch_" + suff1 + "_gl_perc.nc")
                     )[urt]  # 0.1
                     vol = xr.open_dataset(
-                        os.path.join(output_path_vdd, "arch_" + suff1 + "_vol.nc")
+                        os.path.join(archetype_path, "arch_" + suff1 + "_vol.nc")
                     )[urt]  # 3
                     xr.open_dataset(
-                        os.path.join(output_path_vdd, "arch_" + suff1 + "_fl_cnd.nc")
+                        os.path.join(archetype_path, "arch_" + suff1 + "_fl_cnd.nc")
                     )[urt]  # 1
                     u_val = xr.open_dataset(
-                        os.path.join(output_path_vdd, "arch_" + suff1 + "_u_val.nc")
+                        os.path.join(archetype_path, "arch_" + suff1 + "_u_val.nc")
                     )[urt]  # 2.4 # Average U-value of building envelope # float
                     ach_cl = xr.open_dataset(
-                        os.path.join(output_path_vdd, "arch_" + suff1 + "_ach_cl.nc")
+                        os.path.join(archetype_path, "arch_" + suff1 + "_ach_cl.nc")
                     )[urt]  # 0.5
                     ach_op = xr.open_dataset(
-                        os.path.join(output_path_vdd, "arch_" + suff1 + "_ach_op.nc")
+                        os.path.join(archetype_path, "arch_" + suff1 + "_ach_op.nc")
                     )[urt]  # 1.5 # TAB - ACH (1/h) - open windows
                     gn_int = xr.open_dataset(
-                        os.path.join(output_path_vdd, "arch_" + suff1 + "_gn_int.nc")
+                        os.path.join(archetype_path, "arch_" + suff1 + "_gn_int.nc")
                     )[urt]  # 5 # FIX Internal gains (W/m2)
                     gl_g = xr.open_dataset(
-                        os.path.join(output_path_vdd, "arch_" + suff1 + "_gl_g.nc")
+                        os.path.join(archetype_path, "arch_" + suff1 + "_gl_g.nc")
                     )[urt]  # 0.85 # TAB g-value for glazing
                     gl_sh = xr.open_dataset(
-                        os.path.join(output_path_vdd, "arch_" + suff1 + "_gl_sh.nc")
+                        os.path.join(archetype_path, "arch_" + suff1 + "_gl_sh.nc")
                     )[urt]  # 0.9 # TAB shading coeff for openings
                     roof_area = xr.open_dataset(
-                        os.path.join(output_path_vdd, "arch_" + suff1 + "_roof_area.nc")
+                        os.path.join(archetype_path, "arch_" + suff1 + "_roof_area.nc")
                     )[urt]
                     roof_abs = xr.open_dataset(
-                        os.path.join(output_path_vdd, "arch_" + suff1 + "_roof_abs.nc")
+                        os.path.join(archetype_path, "arch_" + suff1 + "_roof_abs.nc")
                     )[urt]
                     u_roof = xr.open_dataset(
-                        os.path.join(output_path_vdd, "arch_" + suff1 + "_u_roof.nc")
+                        os.path.join(archetype_path, "arch_" + suff1 + "_u_roof.nc")
                     )[urt]
 
                     # ==============================================================================

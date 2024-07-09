@@ -23,7 +23,7 @@ def parse_arguments(arguments):
         "-gcm",
         "--gcm",
         default="GFDL-ESM4",
-        help="GCM to run. Options: GFDL-ESM4, IPSL-CM6A-LR, MPI-ESM1-2-HR, MRI-ESM2-0, UKESM1-0. Default: GFDL-ESM4.",
+        help="GCM to run. Options: GFDL-ESM4, IPSL-CM6A-LR, MPI-ESM1-2-HR, MRI-ESM2-0, UKESM1-0-LL. Default: GFDL-ESM4.",
     )
     parser.add_argument(
         "-rcp",

@@ -9,6 +9,46 @@ def get_project_root() -> Path:
     return Path(__file__).parent.parent.parent
 
 
+def get_archs(config: "Config"):
+    root_path = get_project_root()
+    version_path = os.path.join(root_path, "data", "chilled", "version", config.vstr)
+
+    if config.arch_setting == "fixed":
+        input_file = os.path.join(version_path, "arch_input.xlsx")
+
+        if os.path.exists(input_file):
+            input_file = os.path.join(version_path, "arch_input.xlsx")
+            archs = pd.ExcelFile(input_file).sheet_names
+
+            return archs
+        else:
+            print(
+                "Archetypes input file "
+                + input_file
+                + " does not exist! Please create file for input."
+            )
+    elif config.arch_setting == "regional":
+        input_file = os.path.join(
+            version_path,
+            "arch_input_reg.xlsx",
+        )
+
+        if os.path.exists(input_file):
+            archs = pd.read_excel(input_file, sheet_name="arch").arch.unique()
+
+            return archs
+        else:
+            print(
+                "Archetypes input file "
+                + input_file
+                + " does not exist! Please create file for input."
+            )
+
+    # if config.arch_setting == "fixed", then get sheet names of file (these will be the archetypes)
+
+    # if config.arch_setting == "regional", then read in the single file and get the unique values of the "arch" column
+
+
 def read_arch_inputs_df(config: "Config", suff: str):
     root_path = get_project_root()
     version_path = os.path.join(root_path, "data", "chilled", "version", config.vstr)

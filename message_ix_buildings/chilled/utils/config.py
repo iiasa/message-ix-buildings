@@ -38,7 +38,7 @@ class Config:
     vstr: str = "ALPS2023"  # version input data
     vstrcntry = "v4"  # version string for country data and floor surface
     gcm: Literal[
-        "GFDL-ESM4", "IPSL-CM6A-LR", "MPI-ESM1-2-HR", "MRI-ESM2-0", "UKESM1-0"
+        "GFDL-ESM4", "IPSL-CM6A-LR", "MPI-ESM1-2-HR", "MRI-ESM2-0", "UKESM1-0-LL"
     ] = "GFDL-ESM4"
 
     # SCENARIO SETTINGS
@@ -103,7 +103,7 @@ class Config:
     urts = ["urban", "rural"]  # options (mult): "urban", "rural"
 
     # ARCHETYPES
-    archs = ["new", "exist"]
+    # archs = ["new", "exist"]
 
     # PARAMETERS FOR STEP 2 SCRIPT
     verbose = True

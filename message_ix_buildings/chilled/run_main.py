@@ -2,7 +2,7 @@ import datetime
 import sys
 from argparse import ArgumentParser
 
-from main.climate import create_climate_outputs  # type: ignore
+from main.climate import create_climate_variables_maps  # type: ignore
 from utils.config import Config  # type: ignore
 
 
@@ -72,7 +72,7 @@ def main(args=None):
     start = datetime.datetime.now()
     print_arguments(parsed_arguments=parsed_args)
     cfg = create_config(parsed_arguments=parsed_args)
-    create_climate_outputs(cfg, start)
+    create_climate_variables_maps(cfg, start)
 
 
 if __name__ == "__main__":

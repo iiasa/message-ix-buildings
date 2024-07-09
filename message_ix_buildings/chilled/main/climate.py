@@ -34,6 +34,7 @@ from utils.util import load_parametric_analysis_data  # type: ignore
 
 def create_climate_outputs(config: "Config", start_time: datetime.datetime):
     out_path = os.path.join(config.dle_path, "out", "version")
+    archetype_path = os.path.join(out_path, config.vstr, "rasters")
     save_path = os.path.join(out_path, config.vstr, "VDD_ene_calcs")
 
     output_path_vdd = os.path.join(
@@ -137,7 +138,7 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
             if config.arch_setting == "regional":
                 xr.open_dataset(
                     os.path.join(
-                        output_path_vdd,
+                        archetype_path,
                         "arch_map_" + config.arch_setting + "_" + arch + ".nc",
                     )
                 )

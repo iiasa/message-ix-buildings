@@ -66,3 +66,41 @@ def read_arch_reg_df(config: "Config", arch: str):
 
     else:
         print("Archetypes are not regional. No regional file to read.")
+
+
+def load_all_scenarios_data(config: "Config"):
+    root_path = get_project_root()
+    version_path = os.path.join(root_path, "data", "chilled", "version", config.vstr)
+
+    input_file = os.path.join(version_path, "runs.csv")
+
+    if os.path.exists(input_file):
+        df = pd.read_csv(input_file, index_col="id")
+        return df
+    else:
+        print(
+            "Scenarios file "
+            + input_file
+            + " does not exist! Please create file for input."
+        )
+
+
+def load_parametric_analysis_data(config: "Config"):
+    root_path = get_project_root()
+    version_path = os.path.join(root_path, "data", "chilled", "version", config.vstr)
+
+    input_file = os.path.join(version_path, "par_var.csv")
+
+    if os.path.exists(input_file):
+        df = pd.read_csv(input_file, index_col="id_run")
+
+        if config.paranalysis_mode == 0:
+            df = df.loc[df.name_run == "ref", :]
+
+        return df
+    else:
+        print(
+            "Parametric analysis data file "
+            + input_file
+            + " does not exist! Please create file for input."
+        )

@@ -39,7 +39,8 @@ DICT_USER_SETTINGS = {
     "MEAS_UNICC": {
         "chunk_size": 450,
         "sys_path": "/home/mengm/repo/message-ix-buildings",
-        "dle_path": "/projects/chilled",
+        "project_path": "/projects/chilled",
+        "dle_path": "/projects/chilled/data/input_data/",
         "isimip_bias_adj_path": "/pdrive/projects/watxene/ISIMIP/ISIMIP3b/InputData/climate_updated/bias-adjusted",
         "isimip_ewembi_path": "/pdrive/projects/watxene/ISIMIP/ISIMIP2a_hist/input/EWEMBI",
         "message_region_map_file": "/pdrive/projects/ene.model3/data/powerplants/MESSAGE data/MESSAGEix_country_region_map.xlsx",

@@ -15,7 +15,7 @@ from utils.util import read_arch_inputs_df, read_arch_reg_df  # type: ignore
 
 
 def create_archetypes(config: "Config"):
-    out_path = os.path.join(config.dle_path, "out", "version")
+    out_path = os.path.join(config.project_path, "out", "version")
     archetype_path = os.path.join(out_path, config.vstr, "rasters")
 
     # if archetypes folder does not exist, create it
@@ -89,7 +89,7 @@ def create_archetypes(config: "Config"):
 
 
 def create_archetype_variables(config: "Config"):
-    out_path = os.path.join(config.dle_path, "out", "version")
+    out_path = os.path.join(config.project_path, "out", "version")
     archetype_path = os.path.join(out_path, config.vstr, "rasters")
 
     def map_archetype_variables(args):

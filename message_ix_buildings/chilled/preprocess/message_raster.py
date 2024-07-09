@@ -11,7 +11,7 @@ from utils.config import Config  # type: ignore
 
 
 def create_message_raster(config: "Config"):
-    input_path = os.path.join(config.dle_path, "data")
+    input_path = os.path.join(config.project_path, "data")
 
     if config.node == "R11":
         msgregions = pd.read_excel(

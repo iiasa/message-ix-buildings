@@ -4,11 +4,7 @@ from dataclasses import dataclass
 from typing import Literal
 
 import numpy as np
-from functions.user_settings import DICT_USER_SETTINGS
-from functions.vdd_functions import (
-    load_all_scenarios_data,
-    load_parametric_analysis_data,
-)
+from functions.user_settings import DICT_USER_SETTINGS  # type: ignore
 
 
 @dataclass
@@ -19,6 +15,7 @@ class Config:
     user: Literal["ALE", "ED", "MEAS", "MEAS_EBRO", "MEAS_UNICC"] = "MEAS_UNICC"
     # print(f"USER: {user}")
 
+    project_path = DICT_USER_SETTINGS[user]["dle_path"]
     dle_path = DICT_USER_SETTINGS[user]["dle_path"]
     message_region_file = DICT_USER_SETTINGS[user]["message_region_map_file"]
     isimip_bias_adj_path = DICT_USER_SETTINGS[user]["isimip_bias_adj_path"]
@@ -160,17 +157,17 @@ class Config:
     # Final maps (y4) parameters
     nd_thresh = 5
 
-    # Load scenarios data
-    s_runs = load_all_scenarios_data(
-        input_dle_path=DICT_USER_SETTINGS[user]["dle_path"], input_version_name=vstr
-    )
+    # # Load scenarios data
+    # s_runs = load_all_scenarios_data(
+    #     input_dle_path=DICT_USER_SETTINGS[user]["dle_path"], input_version_name=vstr
+    # )
 
-    # Load paramtric analysis data
-    par_var = load_parametric_analysis_data(
-        input_dle_path=DICT_USER_SETTINGS[user]["dle_path"],
-        input_version_name=vstr,
-        input_paranalysis_mode=paranalysis_mode,
-    )
+    # # Load paramtric analysis data
+    # par_var = load_parametric_analysis_data(
+    #     input_dle_path=DICT_USER_SETTINGS[user]["dle_path"],
+    #     input_version_name=vstr,
+    #     input_paranalysis_mode=paranalysis_mode,
+    # )
 
     # #: Base year for projections.
     # base_year: int = BASE_YEAR

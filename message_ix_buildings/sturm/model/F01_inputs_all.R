@@ -74,7 +74,15 @@ fun_build_data_model <- function(d, sector, geo_level, geo_level_aggr,geo_levels
             fuel_heat, fuel_cool) # Sort values ## used eneff (ordered categories)
   
   # Region selection
-  if(!is.null(region_select)){d$bld_cases_fuel <- d$bld_cases_fuel[which(d$bld_cases_fuel[,paste(region_select[[1]])] %in% region_select[[2]]),]}
+  if(!is.null(region_select)){
+    
+    regions_tmp <- d$geo_data[,paste(region_select[[1]])] %>% pull # selection of regions from geo_data dataframe
+  
+    d$geo_data <- d$geo_data[which(regions_tmp %in% region_select[[2]]),]
+    d$bld_cases_fuel <- d$bld_cases_fuel[which(d$bld_cases_fuel[,paste(region_select[[1]])] %in% region_select[[2]]),]
+  
+    rm(regions_tmp)
+    }
   
   ### BUILDING CASES at more aggregate level can be generated from bld_cases_fuel
   # bld_cases_arch <- bld_cases_fuel %>% select(-c(eneff, bld_age, fuel_heat, fuel_cool, mod_decision)) %>% distinct()

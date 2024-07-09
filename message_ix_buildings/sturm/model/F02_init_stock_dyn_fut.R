@@ -31,6 +31,7 @@ fun_stock_init_fut <- function(sector, run,
                                shr_acc_cool,
                                eff_hotwater,
                                en_int_hotwater,
+                               en_int_others, # only for commercial
                                shr_need_heat,
                                price_en,
                                report_var
@@ -62,18 +63,24 @@ fun_stock_init_fut <- function(sector, run,
   
   # Total number of building units: (Residential: number of households (units) - Commercial: total floorspace (m2))
   if (sector == "resid") {
-    bld_units <- pop %>% 
+    bld_units <- geo_data %>%
+      select_at(geo_levels) %>%
+      left_join(pop) %>%
       filter(year %in% yrs[-1]) %>% 
       left_join(hh_size) %>% 
       mutate(bld_units = round(1e6*pop/n_inc_cl/hh_size,rnd)) %>% # convert from million units to units
       select(-c(pop,hh_size)) # %>%
     #filter(year %in% yrs) # years already filtered
     
+    
+    
     try(if(nrow(bld_units) != nrow(distinct(bld_units))) stop("Error in aggregated households calculations! duplicated records in hh"))
   }
 
   if (sector == "comm") {
-    bld_units <- pop %>% 
+    bld_units <- geo_data %>%
+      select_at(geo_levels) %>%
+      left_join(pop) %>% 
       filter(year %in% yrs[-1]) %>% 
       left_join(floor_cap) %>% 
       mutate(bld_units = round(1e6*pop*floor_cap,rnd)) %>% # convert from million units to units
@@ -249,7 +256,7 @@ fun_stock_init_fut <- function(sector, run,
     en_m2_hw_scen <- fun_hw_comm(yrs, 1,
                                              bld_cases_fuel, 
                                              eff_hotwater,
-                                             en_m2_dhw
+                                             en_int_hotwater
     )
   }
   
@@ -330,7 +337,7 @@ fun_stock_init_fut <- function(sector, run,
       left_join(en_m2_scen_heat) %>%
       left_join(en_m2_scen_cool) %>%
       left_join(en_m2_hw_scen) %>%
-      left_join(en_m2_others) %>%
+      left_join(en_int_others) %>%
       mutate(floor_Mm2 = n_units_fuel / 1e6) %>%
       mutate(floor_heat_Mm2 = floor_Mm2) %>%
       #mutate(floor_heat_Mm2 = ifelse(acc_heat == 1, floor_Mm2, 0)) %>%
@@ -341,7 +348,7 @@ fun_stock_init_fut <- function(sector, run,
       mutate(cool_fans_TJ = en_dem_c_fans * shr_acc_cool * n_units_fuel / 1e6 * 3.6) %>% # Note:shr_acc_cool=1 for all cases (access calculated before) #converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
       #mutate(hotwater_TJ = ifelse(fuel_heat == "v_no_heat", 0, en_dem_dhw * n_units_fuel / 1e6 * 3.6)) %>% # converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
       mutate(hotwater_TJ = ifelse(fuel_heat == "v_no_heat", 0, en_dem_dhw * n_units_fuel / 1e6 * 3.6)) %>% # converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
-      mutate(other_uses_TJ = en_dem_others * n_units_fuel / 1e6 * 3.6) %>% # converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
+      mutate(other_uses_TJ = en_int_others * n_units_fuel / 1e6 * 3.6) %>% # converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
       mutate(stock_M = n_units_fuel / 1e6) %>%
       filter(stock_M > 0 & !is.na(stock_M)) %>%
       select_at(c(geo_levels, paste(c("urt", "clim", "inc_cl", "arch", "mat", "eneff", "fuel_heat", "fuel_cool",

@@ -88,7 +88,7 @@ print(paste0("Running energy demand year ", yrs[i]))
   
   u1 <- 3.6/1000 #kWh to GJ (to calculate operational costs)
   
-  if(sector == "resid") { # Calculate household energy demand - for cost calculations - residential only
+  if(sector == "resid" & !is.null(price_en)) { # Calculate household energy demand - for cost calculations - residential only
 
   #Add HH size - HEATING ONLY
   en_hh <- en_m2_scen_heat %>%
@@ -196,9 +196,9 @@ fun_hw_comm <- function(yrs, i,
     #left_join(ct_eneff) %>% # to have "mat" for joining ct_access ## needed for DHW?
     left_join(eff_hotwater) %>%
     left_join(en_m2_dhw) %>%
-    mutate(en_dem_dhw = en_dhw_useful_kwh_m2/eff_hotwater) %>% # DHW energy demand (final) [kWh/m2/y] 
+    mutate(en_dem_dhw = en_int_hotwater/eff_hotwater) %>% # DHW energy demand (final) [kWh/m2/y] 
     select(-year) %>%
-    select(-c(eff_hotwater,en_dhw_useful_kwh_m2,mod_decision, bld_age))  
+    select(-c(eff_hotwater,en_int_hotwater,mod_decision, bld_age))  
   
   output = en_m2_hw_scen
 }

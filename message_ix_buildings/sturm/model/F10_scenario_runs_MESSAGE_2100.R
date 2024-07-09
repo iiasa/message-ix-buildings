@@ -119,6 +119,8 @@ run_scenario <- function(run,
     rm(prices)
   }
   
+  ## Energy prices (from external input data)
+  if(is.null(prices) == TRUE){price_en <- d$price_en}
   
   
   ### RESIDENTIAL SECTOR
@@ -150,6 +152,7 @@ run_scenario <- function(run,
                                          d$hours_fans,d$power_fans,
                                          d$shr_acc_cool,
                                          d$eff_hotwater,d$en_int_hotwater,
+                                         en_int_others =NULL, # only for commercial
                                          d$shr_need_heat,
                                          price_en,
                                          report_var
@@ -302,7 +305,7 @@ run_scenario <- function(run,
                                    d$shr_distr_heat, d$shr_need_heat,
                                    en_m2_scen_heat, en_m2_scen_cool,
                                    en_hh_hw_scen, 
-                                   en_m2_hw_scen, en_m2_others, # used only in commercial
+                                   en_m2_hw_scen, d$en_int_others, # used only in commercial
                                    #en_stock,
                                    d$mat_int,
                                    #mat_stock,
@@ -335,23 +338,34 @@ run_scenario <- function(run,
     # Initialize housing stock (fun)
     print(paste("Initialize scenario run", sector))
     
-    lst_stock_init <- fun_stock_init_fut(sector,mod_arch,
+    lst_stock_init <- fun_stock_init_fut(sector,
+                                         run,
+                                         mod_arch,
                                          yrs,
-                                         geo_data, geo_levels, geo_level,
-                                         bld_cases_eneff, bld_cases_fuel,
-                                         pop_fut,
-                                         hh_size, # used for residential
-                                         floor_cap, # used for commercial
-                                         ct_inc_cl,
-                                         ct_eneff, ct_fuel_comb,
-                                         stock_arch_base,
-                                         shr_mat, shr_arch, shr_fuel_heat_base,shr_distr_heat,
-                                         # eff_cool_scen, eff_heat_scen,eff_hotwater_scen,
-                                         # ren_en_sav_scen,
-                                         # heat_hours_scen,cool_data_scen, heat_floor, shr_acc_cool,
-                                         # en_m2_sim_r, price_en
+                                         d$geo_data, geo_levels, geo_level,
+                                         d$bld_cases_eneff, d$bld_cases_fuel,
+                                         d$pop,
+                                         hh_size=NULL, #hh_size, # used for residential
+                                         d$floor_cap, # used for commercial
+                                         d$ct_inc_cl,
+                                         d$ct_eneff, d$ct_fuel_comb,
+                                         d$stock_arch_base,
+                                         d$shr_mat, d$shr_arch, d$shr_fuel_heat_base,d$shr_distr_heat,
+                                         d$en_int_heat, d$en_int_cool,
+                                         d$days_cool,
+                                         d$eff_cool, d$eff_heat,
+                                         d$en_sav_ren, 
+                                         d$hours_heat, d$shr_floor_heat,
+                                         d$hours_cool,d$shr_floor_cool,
+                                         d$hours_fans,d$power_fans,
+                                         d$shr_acc_cool,
+                                         d$eff_hotwater,d$en_int_hotwater,
+                                         d$en_int_others, # only for commercial
+                                         d$shr_need_heat,
+                                         price_en=NULL, # not used in commercial
                                          report_var
     )
+    
     
     # Extract dataframes from list
     stock_aggr = lst_stock_init$stock_aggr
@@ -371,17 +385,21 @@ run_scenario <- function(run,
       # Energy demand intensities
       lst_en_i <- fun_en_sim(sector,
                              yrs, i,
-                             bld_cases_fuel,
-                             en_m2_sim_r,
-                             eff_cool_scen, eff_heat_scen,
-                             en_sav_ren,
-                             heat_hours_scen,heat_floor,
-                             cool_data_scen,
-                             shr_acc_cool,
+                             d$bld_cases_fuel,
+                             d$en_int_heat, d$en_int_cool,
+                             d$days_cool,
+                             d$eff_cool, d$eff_heat,
+                             d$en_sav_ren,
+                             d$hours_heat, d$shr_floor_heat,
+                             d$hours_cool, d$shr_floor_cool,
+                             d$hours_fans, d$power_fans,
+                             d$shr_acc_cool,
                              hh_size=NULL, # not used for commercial
-                             floor_cap, 
+                             d$floor_cap, 
                              price_en=NULL # not used for commercial
       )
+      
+
       
       # Extract dataframes from list
       en_m2_scen_heat = lst_en_i$en_m2_scen_heat
@@ -393,30 +411,35 @@ run_scenario <- function(run,
       
       # Energy demand intensities - hot water
       en_m2_hw_scen <- fun_hw_comm(yrs, i,
-                                   bld_cases_fuel, 
-                                   eff_hotwater_scen,
-                                   en_m2_dhw
+                                   d$bld_cases_fuel, 
+                                   d$eff_hotwater,
+                                   d$en_int_hotwater
       )
+  
       
       # Market share - new construction options
       ms_new_i <- fun_ms_new_target(yrs,i,
-                                    bld_cases_eneff, bld_cases_fuel, 
-                                    ct_bld_age,
-                                    shr_eneff_new, shr_fuel_new
+                                    d$bld_cases_eneff, d$bld_cases_fuel, 
+                                    d$ct_bld_age,
+                                    d$shr_eneff_new, d$shr_fuel_heat_new
       )       
       
       # Market share - renovation options
       ms_ren_i <- fun_ms_ren_target(yrs,i,
-                                    bld_cases_fuel, ct_bld_age,
-                                    shr_eneff_ren,shr_fuel_ren
+                                    d$bld_cases_fuel, d$ct_bld_age,
+                                    d$shr_eneff_ren,d$shr_fuel_heat_ren
       )
       
       # Market share - fuel switches
       ms_sw_i <- fun_ms_fuel_sw(yrs,i,
-                                bld_cases_fuel, ct_bld_age,
-                                # ms_fuel_sw_target
-                                shr_fuel_sw
+                                d$bld_cases_fuel, d$ct_bld_age,
+                                d$shr_fuel_heat_sw
+                                #ms_fuel_sw_target
       )
+      
+      rate_ren_i = d$rate_ren %>% filter(year == yrs[i])
+      
+      
       
       # Stock turnover
       lst_stock_i <- fun_stock_dyn(sector,
@@ -424,27 +447,28 @@ run_scenario <- function(run,
                                    yrs,i,
                                    run, #ssp_r,
                                    geo_level, geo_level_aggr,geo_levels,
-                                   bld_cases_fuel, bld_cases_eneff, 
-                                   ct_bld_age, ct_fuel_comb,
+                                   d$bld_cases_fuel, d$bld_cases_eneff, 
+                                   d$ct_bld_age, d$ct_fuel_comb,
                                    hh_size = NULL, # Not used for commercial
-                                   floor_cap,
+                                   d$floor_cap,
                                    stock_aggr, bld_det_age_i, #bld_det, 
                                    #bld_eneff_age, # keep track of age
-                                   bld_dyn_par,
-                                   rate_ren_low, rate_ren_high, #ren_rate,
-                                   rate_switch_fuel_heat,
+                                   d$prob_dem,
+                                   #rate_ren_low, rate_ren_high, #ren_rate,
+                                   d$rate_switch_fuel_heat,
                                    #ms_new, ms_ren,
                                    ms_new_i, ms_ren_i, rate_ren_i,
                                    ms_sw_i,
                                    #shr_acc_cool, 
-                                   shr_distr_heat, shr_need_heat,
+                                   d$shr_distr_heat, d$shr_need_heat,
                                    en_m2_scen_heat, en_m2_scen_cool,
-                                   en_hh_hw_scen, en_m2_hw_scen, en_m2_others,
+                                   en_hh_hw_scen, en_m2_hw_scen, d$en_int_others,
                                    #en_stock,
-                                   mat_int,
+                                   d$mat_int,
                                    #mat_stock,
                                    report_var,
                                    report)
+      
       
       # Extract dataframes from list
       report = lst_stock_i$report

@@ -28,7 +28,7 @@ fun_stock_dyn <- function(sector,
                           #shr_acc_cool, # included in en_m2_scen_cool
                           shr_distr_heat, shr_need_heat,
                           en_m2_scen_heat, en_m2_scen_cool,
-                          en_hh_hw_scen, en_m2_hw_scen, en_m2_others,
+                          en_hh_hw_scen, en_m2_hw_scen, en_int_others,
                           #en_stock,
                           mat_int,
                           #mat_stock,
@@ -561,7 +561,7 @@ if(sector == "comm"){
     left_join(en_m2_scen_heat) %>%
     left_join(en_m2_scen_cool) %>%
     left_join(en_m2_hw_scen) %>%
-    left_join(en_m2_others) %>%
+    left_join(en_int_others) %>%
     mutate(floor_Mm2 = n_units_fuel / 1e6) %>%
     mutate(floor_heat_Mm2 = floor_Mm2) %>%
     #mutate(floor_heat_Mm2 = ifelse(acc_heat == 1, floor_Mm2, 0)) %>%
@@ -572,7 +572,7 @@ if(sector == "comm"){
     mutate(cool_fans_TJ = en_dem_c_fans * shr_acc_cool * n_units_fuel / 1e6 * 3.6) %>% # Note:shr_acc_cool=1 for all cases (access calculated before) #converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
     #mutate(hotwater_TJ = ifelse(fuel_heat == "v_no_heat", 0, en_dem_dhw * n_units_fuel / 1e6 * 3.6)) %>% # converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
     mutate(hotwater_TJ = ifelse(fuel_heat == "v_no_heat", 0, en_dem_dhw * n_units_fuel / 1e6 * 3.6)) %>% # converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
-    mutate(other_uses_TJ = en_dem_others * n_units_fuel / 1e6 * 3.6) %>% # converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
+    mutate(other_uses_TJ = en_int_others * n_units_fuel / 1e6 * 3.6) %>% # converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
     mutate(stock_M = n_units_fuel / 1e6) %>%
     filter(stock_M > 0 & !is.na(stock_M)) %>%
     select_at(c(geo_levels, paste(c("urt", "clim", "inc_cl", "arch", "mat", "eneff", "fuel_heat", "fuel_cool", 

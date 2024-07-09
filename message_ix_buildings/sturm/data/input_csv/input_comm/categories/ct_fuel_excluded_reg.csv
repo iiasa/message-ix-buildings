@@ -1,8 +1,0 @@
-mat,region_gea,fuel_heat,fuel_cool,fuel_excluded_reg
-perm,NAM,coal,electricity,1
-perm,PAS,coal,electricity,1
-perm,PAO,biomass_solid,electricity,1
-perm,SAS,gas,electricity,1
-perm,SAS,oil,electricity,1
-perm,PAS,gas,electricity,1
-perm,PAS,oil,electricity,1

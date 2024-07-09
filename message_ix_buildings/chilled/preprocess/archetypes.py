@@ -6,26 +6,25 @@ import datetime
 import os
 
 import numpy as np
-import pandas as pd
+import pandas as pd  # type: ignore
 import xarray as xr
+from preprocess.message_raster import create_message_raster  # type: ignore
 from utils.config import Config  # type: ignore
 from utils.util import get_project_root  # type: ignore
 
 
 def create_archetypes(config: "Config"):
     root_path = get_project_root()
-    raster_path = os.path.join(config.dle_path, "out", "raster")
     version_path = os.path.join(root_path, "data", "chilled", "versions", config.vstr)
-    archetype_path = os.path.join(raster_path, "archetypes", config.vstr)
+    raster_path = os.path.join(config.dle_path, "out", "raster")
+    archetype_path = os.path.join(raster_path, config.vstr)
 
     # if archetypes folder does not exist, create it
     if not os.path.exists(archetype_path):
         os.makedirs(archetype_path)
 
-    # read in message raster
-    reg_ras = xr.open_dataarray(
-        os.path.join(raster_path, "map_reg_MESSAGE_" + config.node + ".nc")
-    )
+    # get raster file and message map
+    ras, map_reg = create_message_raster(config)
 
     for arch in config.archs:
         suff = arch  # suffix
@@ -74,17 +73,18 @@ def create_archetypes(config: "Config"):
             # Create map of archetypes based on MESSAGE regions raster
             arch_map = xr.Dataset(
                 {
-                    "urban": reg_ras.MESSAGE11.copy(deep=True),
-                    "rural": reg_ras.MESSAGE11.copy(deep=True),
+                    "urban": ras.MESSAGE11.copy(deep=True),
+                    "rural": ras.MESSAGE11.copy(deep=True),
                 }
             )
 
             for row in arch_reg.itertuples():
-                arch_map["urban"].values[reg_ras == row.RegNum] = float(row.urban)
-                arch_map["rural"].values[reg_ras == row.RegNum] = float(row.rural)
+                arch_map["urban"].values[map_reg == row.RegNum] = float(row.urban)
+                arch_map["rural"].values[map_reg == row.RegNum] = float(row.rural)
 
             arch_map = arch_map.astype(float)
-            # NOT WORKING with integers!!
+
+            # TODO: NOT WORKING with integers!!
             for urt in config.urts:
                 arch_map[urt].values[arch_map[urt] < 0] = np.nan
 
@@ -101,19 +101,36 @@ def create_archetypes(config: "Config"):
 
             encoding = {var: config.comp for var in arch_map.data_vars}
 
-            filename = "arch_map_" + config.arch_setting + "_" + suff + ".nc"
+            # save MESSAGE regions map
+            msg_file = "map_reg_MESSAGE_" + config.node + ".nc"
+            map_reg.to_netcdf(
+                os.path.join(
+                    archetype_path,
+                    msg_file,
+                ),
+                encoding=encoding,
+            )
+            print(
+                "- Saved MESSAGE and raster map data to "
+                + os.path.join(
+                    archetype_path,
+                    msg_file,
+                )
+            )
+
+            arch_file = "arch_map_" + config.arch_setting + "_" + suff + ".nc"
             arch_map.to_netcdf(
                 os.path.join(
                     archetype_path,
-                    filename,
+                    arch_file,
                 ),
                 encoding=encoding,
             )
 
             print(
-                "Completed archetype map at "
+                "-- Saved archetype map to "
                 + os.path.join(
                     archetype_path,
-                    filename,
+                    arch_file,
                 )
             )

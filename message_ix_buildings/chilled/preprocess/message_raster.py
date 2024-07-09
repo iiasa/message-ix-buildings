@@ -12,7 +12,6 @@ from utils.config import Config  # type: ignore
 
 def create_message_raster(config: "Config"):
     input_path = os.path.join(config.dle_path, "data")
-    output_path = os.path.join(config.dle_path, "out", "raster")
 
     if config.node == "R11":
         msgregions = pd.read_excel(
@@ -95,14 +94,16 @@ def create_message_raster(config: "Config"):
             "contact": "byers@iiasa.ac.at; mastrucc@iiasa.ac.at",
         }
 
-        filename = "map_reg_MESSAGE_" + config.node + ".nc"
+        # filename = "map_reg_MESSAGE_" + config.node + ".nc"
 
-        map_reg.to_netcdf(os.path.join(output_path, filename))
+        # map_reg.to_netcdf(os.path.join(output_path, filename))
 
-        print(
-            "Saved MESSAGE and raster map data to "
-            + os.path.join(output_path, filename)
-        )
+        # print(
+        #     "Saved MESSAGE and raster map data to "
+        #     + os.path.join(output_path, filename)
+        # )
+
+        return reg_ras, map_reg
 
     else:
         print("Only R11 is supported at the moment.")

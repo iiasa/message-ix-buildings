@@ -33,15 +33,14 @@ from utils.util import load_parametric_analysis_data  # type: ignore
 
 
 def create_climate_outputs(config: "Config", start_time: datetime.datetime):
-    out_path = os.path.join(config.dle_path, "out", "version")
-    archetype_path = os.path.join(out_path, config.vstr, "rasters")
-    save_path = os.path.join(out_path, config.vstr, "VDD_ene_calcs")
+    out_path = os.path.join(config.project_path, "out", "version", config.vstr)
+    archetype_path = os.path.join(out_path, "rasters")
+    save_path = os.path.join(out_path, "VDD_ene_calcs")
 
     output_path_vdd = os.path.join(
         save_path,
         config.gcm,
         config.rcp,
-        "2_VDD_ene_calcs",
     )
 
     if not os.path.exists(output_path_vdd):
@@ -217,6 +216,7 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                             fname = suff + "_sdd_c_" + str(bal_temp) + ".nc"
                             filestr = os.path.join(output_path_vdd, fname)
                             sdd_c.to_netcdf(filestr, encoding=encoding)
+                            print("Saved: " + filestr)
                             if config.verbose:
                                 print(datetime.datetime.now() - start_time)
                             sdd_c = xr.open_dataarray(filestr)
@@ -248,6 +248,7 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                             fname = suff + "_sdd_h_" + str(bal_temp) + ".nc"
                             filestr = os.path.join(output_path_vdd, fname)
                             sdd_h.to_netcdf(filestr, encoding=encoding)
+                            print("Saved: " + filestr)
                             if config.verbose:
                                 print(datetime.datetime.now() - start_time)
                             sdd_h = xr.open_dataarray(filestr)
@@ -332,6 +333,7 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                             )
                             filestr = os.path.join(output_path_vdd, fname)
                             gn_sol.to_netcdf(filestr, encoding=encoding)
+                            print("Saved: " + filestr)
                             if config.verbose:
                                 print(datetime.datetime.now() - start_time)
                         gn_sol = xr.open_dataarray(filestr).load()
@@ -373,6 +375,7 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                             )
                             filestr = os.path.join(output_path_vdd, fname)
                             gn_sol.to_netcdf(filestr, encoding=encoding)
+                            print("Saved: " + filestr)
                             if config.verbose:
                                 print(datetime.datetime.now() - start_time)
                         gn_sol = xr.open_dataarray(filestr).load()
@@ -405,6 +408,7 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                             )
                             filestr = os.path.join(output_path_vdd, fname)
                             gn_sol.to_netcdf(filestr, encoding=encoding)
+                            print("Saved: " + filestr)
                             if config.verbose:
                                 print(datetime.datetime.now() - start_time)
                             gn_sol = xr.open_dataarray(filestr).load()
@@ -519,6 +523,7 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                             )
                             filestr = os.path.join(output_path_vdd, fname)
                             t_bal_c.to_netcdf(filestr, encoding=encoding)
+                            print("Saved: " + filestr)
                             if config.verbose:
                                 print(datetime.datetime.now() - start_time)
                             t_bal_c = xr.open_dataarray(filestr)
@@ -553,6 +558,7 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                             )
                             filestr = os.path.join(output_path_vdd, fname)
                             t_max_c.to_netcdf(filestr, encoding=encoding)
+                            print("Saved: " + filestr)
                             if config.verbose:
                                 print(datetime.datetime.now() - start_time)
                         t_max_c = xr.open_dataarray(filestr).load()
@@ -579,6 +585,7 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                             )
                             filestr = os.path.join(output_path_vdd, fname)
                             Nd.to_netcdf(filestr, encoding=encoding)
+                            print("Saved: " + filestr)
                             if config.verbose:
                                 print(datetime.datetime.now() - start_time)
                             Nd = xr.open_dataarray(filestr)
@@ -606,6 +613,7 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                             )
                             filestr = os.path.join(output_path_vdd, fname)
                             Nf.to_netcdf(filestr, encoding=encoding)
+                            print("Saved: " + filestr)
                             if config.verbose:
                                 print(datetime.datetime.now() - start_time)
                             Nf = xr.open_dataarray(filestr)
@@ -644,6 +652,7 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                             )
                             filestr = os.path.join(output_path_vdd, fname)
                             vdd_tmax_c.to_netcdf(filestr, encoding=encoding)
+                            print("Saved: " + filestr)
                             if config.verbose:
                                 print(datetime.datetime.now() - start_time)
                             vdd_tmax_c = xr.open_dataarray(filestr)
@@ -690,6 +699,7 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                             )
                             filestr = os.path.join(output_path_vdd, fname)
                             qctmax.to_netcdf(filestr, encoding=encoding)
+                            print("Saved: " + filestr)
                             if config.verbose:
                                 print(datetime.datetime.now() - start_time)
                         t_bal_c.close()
@@ -724,6 +734,7 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                             )
                             filestr = os.path.join(output_path_vdd, fname)
                             E_c_ac.to_netcdf(filestr, encoding=encoding)
+                            print("Saved: " + filestr)
                             if config.verbose:
                                 print(datetime.datetime.now() - start_time)
                         #    qlat_month = xr.open_dataarray(output_folder2+'qlat_month_'+urt+'.nc')
@@ -753,6 +764,7 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                             )
                             filestr = os.path.join(output_path_vdd, fname)
                             E_c_fan.to_netcdf(filestr, encoding=encoding)
+                            print("Saved: " + filestr)
                             if config.verbose:
                                 print(datetime.datetime.now() - start_time)
                     # =============================================================================
@@ -797,6 +809,7 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                             )
                             filestr = os.path.join(output_path_vdd, fname)
                             t_bal_h.to_netcdf(filestr, encoding=encoding)
+                            print("Saved: " + filestr)
                             if config.verbose:
                                 print(datetime.datetime.now() - start_time)
                             t_bal_h = xr.open_dataarray(filestr)
@@ -828,6 +841,7 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                             )
                             filestr = os.path.join(output_path_vdd, fname)
                             vdd_h.to_netcdf(filestr, encoding=encoding)
+                            print("Saved: " + filestr)
                             if config.verbose:
                                 print(datetime.datetime.now() - start_time)
                         vdd_h = xr.open_dataarray(filestr)
@@ -867,6 +881,7 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                             )
                             filestr = os.path.join(output_path_vdd, fname)
                             qh.to_netcdf(filestr, encoding=encoding)
+                            print("Saved: " + filestr)
                             if config.verbose:
                                 print(datetime.datetime.now() - start_time)
                         qh = xr.open_dataarray(filestr)
@@ -895,6 +910,7 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                             )
                             filestr = os.path.join(output_path_vdd, fname)
                             E_h.to_netcdf(filestr, encoding=encoding)
+                            print("Saved: " + filestr)
                             if config.verbose:
                                 print(datetime.datetime.now() - start_time)
                             #    qlat_month = xr.open_dataarray(output_folder2+'qlat_month_'+urt+'.nc')

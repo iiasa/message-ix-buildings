@@ -83,6 +83,7 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
             config.gcm,
             f"{filestr.lower()}*{config.endstr}",
         )
+        print("Reading: " + filepath)
         if config.rcp == "rcp26":
             dst = xr.open_mfdataset(
                 filepath,

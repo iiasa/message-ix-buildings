@@ -514,6 +514,6 @@ run_scenario <- function(run,
   print("scenario run completed!")
   
   #return(en_stock)
-  return(output) 
+  if ("MESSAGE" %in% report_type) {return(output)} 
 
 }

@@ -128,16 +128,6 @@ class Config:
 
     overwrite = 0
 
-    # Climate input variable format
-    climate_filestr_hist = f"tas_day_{gcm}_{rcpdata}_r1i1p1_EWEMBI_landonly_"  # ISIMIP2
-
-    if gcm == "UKESM1-0-LL":
-        climate_filestr_future = f"{gcm}_r1i1p1f2_w5e5_{rcpdata}_{var}_global_daily_"
-    else:
-        climate_filestr_future = f"{gcm}_r1i1p1f1_w5e5_{rcpdata}_{var}_global_daily_"
-
-    endstr = ".nc"
-
     # BULDING PARAMETERS
     # Fixed values
     bal_temps = [18.3, 21.1, 26]  # [21.1] #  For simple cooling degree days

@@ -70,19 +70,29 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
 
         nyrs_clim = int(years_clim[1]) - int(years_clim[0]) + 1
 
+        # Climate input variable format
+        climate_filestr_hist = (
+            f"tas_day_{config.gcm}_{config.rcpdata}_r1i1p1_EWEMBI_landonly_"  # ISIMIP2
+        )
+
+        if config.gcm == "UKESM1-0-LL":
+            climate_filestr_future = f"{config.gcm}_r1i1p1f2_w5e5_{config.rcpdata}_{config.var}_global_daily_"
+        else:
+            climate_filestr_future = f"{config.gcm}_r1i1p1f1_w5e5_{config.rcpdata}_{config.var}_global_daily_"
+
+        endstr = ".nc"
+
         if str(clim) == "hist":
             isi_folder = config.isimip_ewemib_path
-            filestr = config.climate_filestr_hist
+            filestr = climate_filestr_hist
         else:
             isi_folder = config.isimip_bias_adj_path
-            filestr = config.climate_filestr_future
+            filestr = climate_filestr_future
 
         filepath = os.path.join(
-            isi_folder,
-            config.rcpdata,
-            config.gcm,
-            f"{filestr.lower()}*{config.endstr}",
+            isi_folder, config.rcpdata, config.gcm, f"{filestr.lower()}*{endstr}"
         )
+
         print("Reading: " + filepath)
         if config.rcp == "rcp26":
             dst = xr.open_mfdataset(

@@ -201,6 +201,6 @@ def create_archetype_variables(config: "Config"):
 
     # create archetype variables maps
 
-    func_inputs = product(config.arch_settings, config.archs, VARS_ARCHETYPES)
+    func_inputs = product(config.arch_setting, config.archs, VARS_ARCHETYPES)
 
     list(map(map_archetype_variables, func_inputs))

@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 
 import pandas as pd  # type: ignore
-from config import Config  # type: ignore
+from utils.config import Config  # type: ignore
 
 
 def get_project_root() -> Path:

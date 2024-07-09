@@ -54,9 +54,9 @@ def print_arguments(parsed_arguments):
 # create climate outputs
 def create_config(parsed_arguments):
     cfg = Config(
+        vstr=parsed_arguments.version,
         gcm=parsed_arguments.gcm,
         rcp=parsed_arguments.rcp,
-        vstr=parsed_arguments.version,
     )
 
     return cfg

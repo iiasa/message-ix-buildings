@@ -15,9 +15,9 @@ from utils.util import get_project_root  # type: ignore
 
 def create_archetypes(config: "Config"):
     root_path = get_project_root()
-    version_path = os.path.join(root_path, "data", "chilled", "versions", config.vstr)
-    raster_path = os.path.join(config.dle_path, "out", "raster")
-    archetype_path = os.path.join(raster_path, config.vstr)
+    version_path = os.path.join(root_path, "data", "chilled", "version", config.vstr)
+    out_path = os.path.join(config.dle_path, "out", "version")
+    archetype_path = os.path.join(out_path, config.vstr, "rasters")
 
     # if archetypes folder does not exist, create it
     if not os.path.exists(archetype_path):

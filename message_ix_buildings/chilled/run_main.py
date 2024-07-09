@@ -13,7 +13,12 @@ def parse_arguments(arguments):
     """
     parser = ArgumentParser(add_help=True)
 
-    # Scenario name and location options
+    parser.add_argument(
+        "-version",
+        "--version",
+        default="ALPS2023",
+        help="Version of inputs to run. Default: ALPS2023.",
+    )
     parser.add_argument(
         "-gcm",
         "--gcm",
@@ -41,13 +46,18 @@ def print_arguments(parsed_arguments):
 
     # Print arguments
     print("---------- Parsed arguments ------------")
+    print("Selected version: " + parsed_arguments.version)
     print("Selected GCM: " + parsed_arguments.gcm)
     print("Selected RCP scenario: " + parsed_arguments.rcp)
 
 
 # create climate outputs
 def create_config(parsed_arguments):
-    cfg = Config(gcm=parsed_arguments.gcm, rcp=parsed_arguments.rcp)
+    cfg = Config(
+        gcm=parsed_arguments.gcm,
+        rcp=parsed_arguments.rcp,
+        vstr=parsed_arguments.version,
+    )
 
     return cfg
 

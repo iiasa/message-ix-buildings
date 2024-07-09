@@ -1,4 +1,8 @@
-from preprocess.archetypes import create_archetypes  # type: ignore
+from preprocess.archetypes import (  # type: ignore
+    create_archetype_variables,
+    create_archetypes,
+)
+                                   create_archetypes)
 from utils.config import Config  # type: ignore
 
 cfg = Config()
@@ -14,3 +18,8 @@ cfg = Config()
 
 # run create_archetypes
 create_archetypes(cfg)
+print("Archetypes created successfully.")
+
+# create maps of archetype variables
+create_archetype_variables(cfg)
+print("Archetype variables created successfully.")

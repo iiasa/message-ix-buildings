@@ -4,10 +4,12 @@ Create buildings archetypes maps using specified inputs
 
 import datetime
 import os
+from itertools import product
 
 import numpy as np
 import pandas as pd  # type: ignore
 import xarray as xr
+from functions.variable_dicts import VARS_ARCHETYPES  # type: ignore
 from preprocess.message_raster import create_message_raster  # type: ignore
 from utils.config import Config  # type: ignore
 from utils.util import get_project_root  # type: ignore
@@ -73,8 +75,6 @@ def read_arch_reg_df(config: "Config", arch: str):
 
 
 def create_archetypes(config: "Config"):
-    root_path = get_project_root()
-    version_path = os.path.join(root_path, "data", "chilled", "version", config.vstr)
     out_path = os.path.join(config.dle_path, "out", "version")
     archetype_path = os.path.join(out_path, config.vstr, "rasters")
 
@@ -97,7 +97,6 @@ def create_archetypes(config: "Config"):
     )
 
     for arch in config.archs:
-        arch_inputs = read_arch_inputs_df(config, arch)
         arch_reg = read_arch_reg_df(config, arch)
 
         # Create map of archetypes based on MESSAGE regions raster
@@ -147,3 +146,61 @@ def create_archetypes(config: "Config"):
                 arch_file,
             )
         )
+
+
+def create_archetype_variables(config: "Config"):
+    out_path = os.path.join(config.dle_path, "out", "version")
+    archetype_path = os.path.join(out_path, config.vstr, "rasters")
+
+    def map_archetype_variables(args):
+        arch_setting, arch, varname = args
+
+        print(
+            "Creating archetype map for: " + arch_setting + " " + arch + " " + varname
+        )
+
+        # read in input files
+        arch_inputs = read_arch_inputs_df(config, arch)
+
+        # read in relevant archetype raster
+        map = xr.open_dataset(
+            os.path.join(
+                archetype_path, "arch_map_" + arch_setting + "_" + arch + ".nc"
+            )
+        )
+
+        # print(".....Writing to netCDF")
+        for urt in config.urts:
+            for index, row in arch_inputs.iterrows():
+                map[urt].values[map[urt] == row["id"]] = float(row[varname])
+                map[urt].values[map[urt] == -1] = np.nan
+
+        map.attrs = {
+            "title": "map_" + varname,
+            "authors": "Edward Byers & Alessio Mastrucci",
+            "date": str(datetime.datetime.now()),
+            "institution": "IIASA Energy Program",
+            "contact": "byers@iiasa.ac.at; mastrucc@iiasa.ac.at",
+            "arch_setting": arch_setting,
+        }
+
+        encoding = {var: config.comp for var in map.data_vars}
+
+        # save archetype variables maps to netcdf
+        filename = "arch_" + arch + "_" + varname + ".nc"
+
+        map.to_netcdf(
+            os.path.join(archetype_path, filename),
+            encoding=encoding,
+        )
+
+        print(
+            ".......Completed writing to file: "
+            + os.path.join(archetype_path, filename)
+        )
+
+    # create archetype variables maps
+
+    func_inputs = product(config.arch_settings, config.archs, VARS_ARCHETYPES)
+
+    list(map(map_archetype_variables, func_inputs))

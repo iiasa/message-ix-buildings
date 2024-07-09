@@ -103,13 +103,7 @@ def create_archetypes(config: "Config"):
 
             # save MESSAGE regions map
             msg_file = "map_reg_MESSAGE_" + config.node + ".nc"
-            map_reg.to_netcdf(
-                os.path.join(
-                    archetype_path,
-                    msg_file,
-                ),
-                encoding=encoding,
-            )
+            map_reg.to_netcdf(os.path.join(archetype_path, msg_file))
             print(
                 "- Saved MESSAGE and raster map data to "
                 + os.path.join(

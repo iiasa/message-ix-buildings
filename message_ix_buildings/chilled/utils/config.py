@@ -37,11 +37,13 @@ class Config:
     # VERSION SETTINGS
     vstr = "ALPS2023"  # version input data
     vstrcntry = "v4"  # version string for country data and floor surface
-    gcm = "MRI-ESM2-0"  # options: GFDL-ESM4, IPSL-CM6A-LR, MPI-ESM1-2-HR, MRI-ESM2-0, and UKESM1-0-LL
+    gcm: Literal[
+        "GFDL-ESM4", "IPSL-CM6A-LR", "MPI-ESM1-2-HR", "MRI-ESM2-0", "UKESM1-0"
+    ] = "GFDL-ESM4"
 
     # SCENARIO SETTINGS
     rcps = ["ssp126", "ssp370", "ssp585", "baseline"]  # list all possible scenarios
-    rcp = "ssp126"  # options: "ssp126", "ssp370", "ssp585", "baseline"
+    rcp: Literal["ssp126", "ssp370", "ssp585", "baseline"] = "baseline"
 
     if rcp == "baseline":
         rcpdata = "ssp126"

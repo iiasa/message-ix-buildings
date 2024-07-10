@@ -1882,7 +1882,7 @@ def process_iso_tables(config: "Config"):
 
     # Read country data
     dfd = pd.read_csv(
-        os.path.join(input_path, "GAUL_lvl0_raster0.5"), index_col="ID"
+        os.path.join(input_path, "GAUL_lvl0_raster0.5.csv"), index_col="ID"
     ).assign(ISONUM=lambda x: x.index)
 
     # Import MESSAGE regions and North/South classification

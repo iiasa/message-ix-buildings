@@ -24,13 +24,13 @@ def create_message_raster(config: "Config"):
             os.path.join(input_path, "gaul_lvl0_hybrid_05_3.nc")
         )
 
-        ISO_attrs = pd.DataFrame([country_ras.attrs]).T.rename(columns={0: "ISO"})
+        iso_attrs = pd.DataFrame([country_ras.attrs]).T.rename(columns={0: "ISO"})
 
         # Region raster
         reg_ras = xr.Dataset({"MESSAGE11": country_ras.copy(deep=True)})
         reg_ras["ISO"] = country_ras.copy(deep=True)
 
-        for row in ISO_attrs.itertuples():
+        for row in iso_attrs.itertuples():
             code = row.ISO  # get country ISO code
             regval = msgregions.loc[msgregions.iso_code == code, "RegNum"]
             if regval.values.size != 0:
@@ -103,7 +103,7 @@ def create_message_raster(config: "Config"):
         #     + os.path.join(output_path, filename)
         # )
 
-        return reg_ras, map_reg
+        return reg_ras, map_reg, iso_attrs
 
     else:
         print("Only R11 is supported at the moment.")

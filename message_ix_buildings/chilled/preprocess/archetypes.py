@@ -23,7 +23,7 @@ def create_archetypes(config: "Config"):
         os.makedirs(archetype_path)
 
     # get raster file and message map
-    ras, map_reg = create_message_raster(config)
+    ras, map_reg, iso_attrs = create_message_raster(config)
 
     # save MESSAGE regions map
     msg_file = "map_reg_MESSAGE_" + config.node + ".nc"

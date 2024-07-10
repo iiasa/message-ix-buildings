@@ -101,7 +101,7 @@ class Config:
     urts = ["urban", "rural"]  # options (mult): "urban", "rural"
 
     # ARCHETYPES
-    archs: list = ["new", "exist"]
+    archs = ["new", "exist"]
 
     # PARAMETERS FOR STEP 2 SCRIPT
     verbose = True

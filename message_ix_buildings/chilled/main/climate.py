@@ -65,9 +65,9 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
     def map_calculated_variables(args):
         clim, arch, parset, urt = args
 
-        print(clim + " + " + arch + " + " + parset.name_run + " + " + urt)
+        print(str(clim) + " + " + arch + " + " + parset.name_run + " + " + urt)
 
-        years_clim = config.yeardic[clim]
+        years_clim = config.yeardic[str(clim)]
         # << this selects the correct years.
         # But when testing you’ll want to use just say 3 years data,
         # so set years manually, e.g.

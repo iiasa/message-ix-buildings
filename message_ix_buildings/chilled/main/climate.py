@@ -42,7 +42,7 @@ from functions.variable_dicts import (
 )
 from preprocess.message_raster import create_message_raster  # type: ignore
 from utils.config import Config  # type: ignore
-from utils.util import load_all_scenarios_data, load_parametric_analysis_data
+from utils.util import get_archs, load_all_scenarios_data, load_parametric_analysis_data
 
 
 def create_climate_variables_maps(config: "Config", start_time: datetime.datetime):
@@ -59,6 +59,7 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
     if not os.path.exists(output_path_vdd):
         os.makedirs(output_path_vdd)
 
+    vers_archs = get_archs(config)
     par_var = load_parametric_analysis_data(config)
 
     def map_calculated_variables(args):
@@ -736,7 +737,7 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
             # print('Finished!')
             print(datetime.datetime.now() - start_time)
 
-    inputs = product(config.clims, config.archs, par_var.itertuples(), config.urts)
+    inputs = product(config.clims, vers_archs, par_var.itertuples(), config.urts)
     list(map(map_calculated_variables, inputs))
 
     # mypool = Pool(4)
@@ -753,13 +754,14 @@ def aggregate_urban_rural_files(config: "Config"):
         config.rcp,
     )
 
+    vers_archs = get_archs(config)
     par_var = load_parametric_analysis_data(config)
 
     if not os.path.exists(output_path_vdd):
         os.makedirs(output_path_vdd)
 
     for clim in config.clims:
-        for arch in config.archs:
+        for arch in vers_archs:
             suff = clim + "_" + arch  # suffix
 
             print("Aggregating results for " + suff)
@@ -829,6 +831,7 @@ def make_vdd_total_maps(config: "Config"):
         config.rcp,
     )
 
+    vers_archs = get_archs(config)
     par_var = load_parametric_analysis_data(config)
 
     # TODO: (meas) the original code does not query for clims,
@@ -839,7 +842,7 @@ def make_vdd_total_maps(config: "Config"):
     s_runs = load_all_scenarios_data(config)
 
     for s_run in s_runs.itertuples():
-        for arch in config.archs:
+        for arch in vers_archs:
             for urt in config.urts:
                 suff = str(s_run.clim) + "_" + arch  # suffix
 
@@ -1130,6 +1133,7 @@ def process_construction_shares(config: "Config"):
     if not os.path.exists(output_path):
         os.makedirs(output_path)
 
+    vers_archs = get_archs(config)
     par_var = load_parametric_analysis_data(config)
 
     # get raster file and message map
@@ -1223,6 +1227,7 @@ def process_floor_area_maps(config: "Config"):
     if not os.path.exists(output_path):
         os.makedirs(output_path)
 
+    vers_archs = get_archs(config)
     par_var = load_parametric_analysis_data(config)
     country_ras, reg_ras, map_reg, iso_attrs = create_message_raster(config)
     s_runs = load_all_scenarios_data(config)
@@ -1350,6 +1355,7 @@ def process_country_maps(config: "Config"):
     if not os.path.exists(output_path):
         os.makedirs(output_path)
 
+    vers_archs = get_archs(config)
     par_var = load_parametric_analysis_data(config)
     s_runs = load_all_scenarios_data(config)
     country_ras, reg_ras, map_reg, iso_attrs = create_message_raster(config)
@@ -1437,6 +1443,7 @@ def process_final_maps(config: "Config"):
     if not os.path.exists(finalmaps_path):
         os.makedirs(finalmaps_path)
 
+    vers_archs = get_archs(config)
     par_var = load_parametric_analysis_data(config)
     s_runs = load_all_scenarios_data(config)
     # country_ras, reg_ras, map_reg, iso_attrs = create_message_raster(config)
@@ -1491,7 +1498,7 @@ def process_final_maps(config: "Config"):
     s_runs = s_runs.query("clim in @clims_int")
 
     for s_run in s_runs.itertuples():
-        for arch in config.archs:
+        for arch in vers_archs:
             suff = (
                 str(s_run.scen)
                 + "_"
@@ -1826,6 +1833,7 @@ def process_iso_tables(config: "Config"):
     if not os.path.exists(iso_path):
         os.makedirs(iso_path)
 
+    vers_archs = get_archs(config)
     par_var = load_parametric_analysis_data(config)
     s_runs = load_all_scenarios_data(config)
     # ras, map_reg, iso_attrs = create_message_raster(config)
@@ -1930,14 +1938,14 @@ def process_iso_tables(config: "Config"):
     # then convert the map object to a list
     inputs_cool = product(
         s_runs.itertuples(),
-        config.archs,
+        vers_archs,
         updated_urts,
         par_var.itertuples(),
         varlist_cool,
     )
     inputs_heat = product(
         s_runs.itertuples(),
-        config.archs,
+        vers_archs,
         updated_urts,
         par_var.itertuples(),
         varlist_heat,
@@ -2133,6 +2141,7 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
     if not os.path.exists(output_path_vdd):
         os.makedirs(output_path_vdd)
 
+    vers_archs = get_archs(config)
     par_var = load_parametric_analysis_data(config)
 
     for clim in config.clims:
@@ -2219,7 +2228,7 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
         #  Start Degree Days calculations
         # =============================================================================
 
-        for arch in config.archs:
+        for arch in vers_archs:
             # Read in archetype parameters
             if config.arch_setting == "regional":
                 xr.open_dataset(

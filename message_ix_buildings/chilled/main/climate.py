@@ -14,12 +14,6 @@ from functions.buildings_funcs_grid import Q_h  # type: ignore
 from functions.buildings_funcs_grid import (
     P_f,
     Q_c_tmax,
-    calc_gn_sol_tot,
-    calc_H_tr,
-    calc_H_v_cl,
-    calc_H_v_op,
-    calc_Nd,
-    calc_Nf,
     calc_SCDD_m,
     calc_SHDD_m,
     calc_t_bal_c,
@@ -1229,8 +1223,8 @@ def process_floor_area_maps(config: "Config"):
 
         floormap = xr.Dataset(
             {
-                "urban": map_reg.MESSAGE11.copy(deep=True),
-                "rural": map_reg.MESSAGE11.copy(deep=True),
+                "urban": ras.MESSAGE11.copy(deep=True),
+                "rural": ras.MESSAGE11.copy(deep=True),
             }
         )
 
@@ -1281,8 +1275,8 @@ def process_floor_area_maps(config: "Config"):
 
             floormap = xr.Dataset(
                 {
-                    "urban": map_reg.MESSAGE11.copy(deep=True),
-                    "rural": map_reg.MESSAGE11.copy(deep=True),
+                    "urban": ras.MESSAGE11.copy(deep=True),
+                    "rural": ras.MESSAGE11.copy(deep=True),
                 }
             )
 

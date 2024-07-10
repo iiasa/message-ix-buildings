@@ -98,10 +98,10 @@ class Config:
     arch_setting = "regional"  # options: ["fixed", "regional"]
 
     # URBAN/RURAL DISAGGREGATIONS
-    urts = ["low", "urban", "rural"]  # options (mult): "urban", "rural"
+    urts = ["urban", "rural"]  # options (mult): "urban", "rural"
 
     # ARCHETYPES
-    archs = ["new", "exist"]
+    archs = ["low", "new", "exist"]
 
     # PARAMETERS FOR STEP 2 SCRIPT
     verbose = True

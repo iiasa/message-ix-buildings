@@ -737,7 +737,8 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
             # print('Finished!')
             print(datetime.datetime.now() - start_time)
 
-    inputs = product(config.clims, vers_archs, par_var.itertuples(), config.urts)
+    s_runs = load_all_scenarios_data(config).clim
+    inputs = product(s_runs, vers_archs, par_var.itertuples(), config.urts)
     list(map(map_calculated_variables, inputs))
 
     # mypool = Pool(4)
@@ -756,11 +757,12 @@ def aggregate_urban_rural_files(config: "Config"):
 
     vers_archs = get_archs(config)
     par_var = load_parametric_analysis_data(config)
+    runs_clims = load_all_scenarios_data(config).clim
 
     if not os.path.exists(output_path_vdd):
         os.makedirs(output_path_vdd)
 
-    for clim in config.clims:
+    for clim in runs_clims:
         for arch in vers_archs:
             suff = clim + "_" + arch  # suffix
 
@@ -833,13 +835,13 @@ def make_vdd_total_maps(config: "Config"):
 
     vers_archs = get_archs(config)
     par_var = load_parametric_analysis_data(config)
+    s_runs = load_all_scenarios_data(config)
+    run_clims = s_runs.clim
 
     # TODO: (meas) the original code does not query for clims,
     # but without it the code will crash if not all years have been run
-    clims_int = list(map(int, config.clims))
-    print(clims_int)
-
-    s_runs = load_all_scenarios_data(config)
+    # clims_int = list(map(int, run_clims))
+    # print(clims_int)
 
     for s_run in s_runs.itertuples():
         for arch in vers_archs:
@@ -1493,9 +1495,9 @@ def process_final_maps(config: "Config"):
 
     # TODO: (meas) the original code does not query for clims,
     # but without it the code will crash if not all years have been run
-    clims_int = list(map(int, config.clims))
-    print("Years of data available: " + str(clims_int))
-    s_runs = s_runs.query("clim in @clims_int")
+    # clims_int = list(map(int, config.clims))
+    # print("Years of data available: " + str(clims_int))
+    # s_runs = s_runs.query("clim in @clims_int")
 
     for s_run in s_runs.itertuples():
         for arch in vers_archs:
@@ -1873,9 +1875,9 @@ def process_iso_tables(config: "Config"):
 
     # TODO: (meas) the original code does not query for clims,
     # but without it the code will crash if not all years have been run
-    clims_int = list(map(int, config.clims))
-    print("Years of data available: " + str(clims_int))
-    s_runs = s_runs.query("clim in @clims_int")
+    # clims_int = list(map(int, config.clims))
+    # print("Years of data available: " + str(clims_int))
+    # s_runs = s_runs.query("clim in @clims_int")
 
     # Read raster data
     raster = xr.open_dataarray(os.path.join(input_path, "gaul_lvl0_hybrid_05_3.nc"))

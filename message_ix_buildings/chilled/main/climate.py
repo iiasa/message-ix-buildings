@@ -754,7 +754,6 @@ def aggregate_urban_rural_files(config: "Config"):
     )
 
     par_var = load_parametric_analysis_data(config)
-    print(par_var)
 
     if not os.path.exists(output_path_vdd):
         os.makedirs(output_path_vdd)
@@ -788,7 +787,7 @@ def aggregate_urban_rural_files(config: "Config"):
 
             for parset in par_var.itertuples():
                 for var in varlist:
-                    print(var)
+                    print("." + var)
                     mds = xr.open_mfdataset(
                         os.path.join(
                             output_path_vdd,

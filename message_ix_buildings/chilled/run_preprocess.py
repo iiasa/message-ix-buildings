@@ -1,10 +1,7 @@
 import sys
 from argparse import ArgumentParser
 
-from preprocess.archetypes import (
-    create_archetype_variables,  # type: ignore
-    create_archetypes,
-)
+from preprocess.archetypes import create_archetype_variables, create_archetypes
 from utils.config import Config  # type: ignore
 
 

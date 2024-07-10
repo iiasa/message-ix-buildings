@@ -15,13 +15,13 @@ class Config:
     user: Literal["ALE", "ED", "MEAS", "MEAS_EBRO", "MEAS_UNICC"] = "MEAS_UNICC"
     # print(f"USER: {user}")
 
-    project_path = DICT_USER_SETTINGS[user]["dle_path"]
+    project_path = DICT_USER_SETTINGS[user]["project_path"]
     dle_path = DICT_USER_SETTINGS[user]["dle_path"]
+    input_path = os.path.join(dle_path, "input_data")
     message_region_file = DICT_USER_SETTINGS[user]["message_region_map_file"]
     isimip_bias_adj_path = DICT_USER_SETTINGS[user]["isimip_bias_adj_path"]
     isimip_ewemib_path = DICT_USER_SETTINGS[user]["isimip_ewembi_path"]
     chunk_size = DICT_USER_SETTINGS[user]["chunk_size"]
-    input_path = os.path.join(dle_path, "input_data")  # type: ignore
 
     # RUN SETTINGS
     paranalysis_mode = 1  # 1 = run entire parametric analysis; 0 = run only ref case

@@ -1,5 +1,4 @@
 import datetime
-import os
 from dataclasses import dataclass
 from typing import Literal
 
@@ -17,7 +16,6 @@ class Config:
 
     project_path = DICT_USER_SETTINGS[user]["project_path"]
     dle_path = DICT_USER_SETTINGS[user]["dle_path"]
-    input_path = os.path.join(dle_path, "input_data")
     message_region_file = DICT_USER_SETTINGS[user]["message_region_map_file"]
     isimip_bias_adj_path = DICT_USER_SETTINGS[user]["isimip_bias_adj_path"]
     isimip_ewemib_path = DICT_USER_SETTINGS[user]["isimip_ewembi_path"]

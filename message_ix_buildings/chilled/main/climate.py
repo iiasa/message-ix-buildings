@@ -113,12 +113,12 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
         t_oa_gbm = t_out_ave.groupby("time.month")
 
         i_sol_v = xr.open_dataarray(
-            os.path.join(config.input_path, "EWEMBI_vert_irrad_1980-2009_avg.nc")
+            os.path.join(config.dle_path, "EWEMBI_vert_irrad_1980-2009_avg.nc")
         )  # Values  in daily Wh/m2
 
         # Horizontal irradiation
         i_sol_h = xr.open_dataarray(
-            os.path.join(config.input_path, "EWEMBI_horiz_irrad_1980-2009_avg.nc")
+            os.path.join(config.dle_path, "EWEMBI_horiz_irrad_1980-2009_avg.nc")
         )  # Values in daily Wh/m2
 
         if config.arch_setting == "regional":
@@ -818,12 +818,12 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
         # Vertical irradiation
         # i_sol_v = xr.open_dataarray(input_folder+'CERES_vert_irrad_2001-13_avg.nc') #Values  in daily Wh/m2
         i_sol_v = xr.open_dataarray(
-            os.path.join(config.input_path, "EWEMBI_vert_irrad_1980-2009_avg.nc")
+            os.path.join(config.dle_path, "EWEMBI_vert_irrad_1980-2009_avg.nc")
         )  # Values  in daily Wh/m2
 
         # Horizontal irradiation
         i_sol_h = xr.open_dataarray(
-            os.path.join(config.input_path, "EWEMBI_horiz_irrad_1980-2009_avg.nc")
+            os.path.join(config.dle_path, "EWEMBI_horiz_irrad_1980-2009_avg.nc")
         )  # Values in daily Wh/m2
 
         # i_sol = i_sol.sel(time=slice(years_clim[0],years_clim[1]))

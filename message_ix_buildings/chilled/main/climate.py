@@ -767,7 +767,7 @@ def aggregate_urban_rural_files(config: "Config"):
             # Aggregate archetypes into same files.
             varlist = []
 
-            if config.archs == 1:
+            if config.cool == 1:
                 varlist.extend(
                     [
                         "t_bal_c",

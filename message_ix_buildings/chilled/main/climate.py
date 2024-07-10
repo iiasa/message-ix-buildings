@@ -143,7 +143,7 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
 
         dfa = pd.DataFrame(columns=["H_v_cl", "H_v_op", "H_tr"], index=par_var.index)
 
-        suff = clim + "_" + arch  # suffix
+        suff = str(clim) + "_" + arch  # suffix
         # suff =  clim+'_'+arch+'_'+str(parset.name_run)  #suffix
         suff1 = arch  # only arch (for imports arch data)
 
@@ -764,7 +764,7 @@ def aggregate_urban_rural_files(config: "Config"):
 
     for clim in runs_clims:
         for arch in vers_archs:
-            suff = clim + "_" + arch  # suffix
+            suff = str(clim) + "_" + arch  # suffix
 
             print("Aggregating results for " + suff)
             # Aggregate archetypes into same files.

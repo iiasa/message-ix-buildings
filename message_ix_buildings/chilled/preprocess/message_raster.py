@@ -5,6 +5,7 @@ Create raster of MESSAGE regions for CHILLED with specified nodes
 import datetime
 import os
 
+import numpy as np
 import pandas as pd  # type: ignore
 import xarray as xr  # type: ignore
 from utils.config import Config  # type: ignore
@@ -23,6 +24,9 @@ def create_message_raster(config: "Config"):
         country_ras = xr.open_dataarray(
             os.path.join(input_path, "gaul_lvl0_hybrid_05_3.nc")
         )
+
+        country_ras.values = country_ras.values.astype(float)
+        country_ras.values[country_ras == -1] = np.nan
 
         iso_attrs = pd.DataFrame([country_ras.attrs]).T.rename(columns={0: "ISO"})
 

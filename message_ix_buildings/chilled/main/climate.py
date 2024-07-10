@@ -10,10 +10,21 @@ import numpy as np
 import pandas as pd  # type: ignore
 import xarray as xr
 from dask.diagnostics import ProgressBar
-from functions.buildings_funcs_grid import Q_h  # type: ignore
 from functions.buildings_funcs_grid import (
     P_f,
     Q_c_tmax,
+    Q_h,
+    calc_E_c_ac,
+    calc_E_c_fan,
+    calc_E_h,
+    calc_gn_sol,
+    calc_gn_sol_h,
+    calc_gn_sol_tot,
+    calc_H_tr,
+    calc_H_v_cl,
+    calc_H_v_op,
+    calc_Nd,
+    calc_Nf,
     calc_SCDD_m,
     calc_SHDD_m,
     calc_t_bal_c,
@@ -1122,7 +1133,7 @@ def process_construction_shares(config: "Config"):
     par_var = load_parametric_analysis_data(config)
 
     # get raster file and message map
-    ras, map_reg, iso_attrs = create_message_raster(config)
+    country_ras, reg_ras, map_reg, iso_attrs = create_message_raster(config)
 
     # If constr_setting == 1, then process construction shares. Otherwise, skip
     if config.constr_setting == 1:
@@ -1139,8 +1150,8 @@ def process_construction_shares(config: "Config"):
 
             # build dummy dataset
             block = np.full((360, 720, 20), np.nan)
-            lats = ras.lat
-            lons = ras.lon
+            lats = country_ras.lat
+            lons = country_ras.lon
             coords = {"lat": lats, "lon": lons, "arch": arcs}
             ds = xr.DataArray(block, coords=coords, dims=["lat", "lon", "arch"])
 
@@ -1157,7 +1168,7 @@ def process_construction_shares(config: "Config"):
                     ats = conshare.loc[conshare.ISO == row.ISO, :]
 
                     try:
-                        ta[ras == int(row.Index)] = ats.loc[
+                        ta[country_ras == int(row.Index)] = ats.loc[
                             ats.ISO == row.ISO, arch
                         ].values[0]
                     except IndexError:
@@ -1213,7 +1224,7 @@ def process_floor_area_maps(config: "Config"):
         os.makedirs(output_path)
 
     par_var = load_parametric_analysis_data(config)
-    ras, map_reg, iso_attrs = create_message_raster(config)
+    country_ras, reg_ras, map_reg, iso_attrs = create_message_raster(config)
     s_runs = load_all_scenarios_data(config)
 
     if config.floor_setting == "std_cap":
@@ -1223,8 +1234,8 @@ def process_floor_area_maps(config: "Config"):
 
         floormap = xr.Dataset(
             {
-                "urban": ras.MESSAGE11.copy(deep=True),
-                "rural": ras.MESSAGE11.copy(deep=True),
+                "urban": reg_ras.MESSAGE11.copy(deep=True),
+                "rural": reg_ras.MESSAGE11.copy(deep=True),
             }
         )
 
@@ -1275,8 +1286,8 @@ def process_floor_area_maps(config: "Config"):
 
             floormap = xr.Dataset(
                 {
-                    "urban": ras.MESSAGE11.copy(deep=True),
-                    "rural": ras.MESSAGE11.copy(deep=True),
+                    "urban": reg_ras.MESSAGE11.copy(deep=True),
+                    "rural": reg_ras.MESSAGE11.copy(deep=True),
                 }
             )
 
@@ -1341,7 +1352,7 @@ def process_country_maps(config: "Config"):
 
     par_var = load_parametric_analysis_data(config)
     s_runs = load_all_scenarios_data(config)
-    ras, map_reg, iso_attrs = create_message_raster(config)
+    country_ras, reg_ras, map_reg, iso_attrs = create_message_raster(config)
 
     for s_run in s_runs.itertuples():
         suff = str(s_run.scen) + "_" + str(s_run.year) + "_" + str(s_run.clim)  # suffix
@@ -1371,9 +1382,9 @@ def process_country_maps(config: "Config"):
         country_data = country_data.merge(iso_attrs, on="ISO", how="outer")
 
         # create dataset four country data
-        cd_map = xr.Dataset({cols[0]: ras.copy(deep=True).astype("float")})
+        cd_map = xr.Dataset({cols[0]: country_ras.copy(deep=True).astype("float")})
         for col in cols[1:]:
-            cd_map[col] = ras.copy(deep=True).astype("float")
+            cd_map[col] = country_ras.copy(deep=True).astype("float")
 
         # Populate the dataset with country data
         for col in cols:
@@ -1428,7 +1439,7 @@ def process_final_maps(config: "Config"):
 
     par_var = load_parametric_analysis_data(config)
     s_runs = load_all_scenarios_data(config)
-    ras, map_reg, iso_attrs = create_message_raster(config)
+    # country_ras, reg_ras, map_reg, iso_attrs = create_message_raster(config)
 
     # country_maps_path = os.path.join(
     #     input_dle_path,
@@ -1817,7 +1828,7 @@ def process_iso_tables(config: "Config"):
 
     par_var = load_parametric_analysis_data(config)
     s_runs = load_all_scenarios_data(config)
-    ras, map_reg, iso_attrs = create_message_raster(config)
+    # ras, map_reg, iso_attrs = create_message_raster(config)
 
     updated_urts = config.urts + ["total"]
 

@@ -23,7 +23,7 @@ def create_archetypes(config: "Config"):
         os.makedirs(archetype_path)
 
     # get raster file and message map
-    ras, map_reg, iso_attrs = create_message_raster(config)
+    country_ras, reg_ras, map_reg, iso_attrs = create_message_raster(config)
 
     # save MESSAGE regions map
     msg_file = "map_reg_MESSAGE_" + config.node + ".nc"
@@ -42,8 +42,8 @@ def create_archetypes(config: "Config"):
         # Create map of archetypes based on MESSAGE regions raster
         arch_map = xr.Dataset(
             {
-                "urban": ras.MESSAGE11.copy(deep=True),
-                "rural": ras.MESSAGE11.copy(deep=True),
+                "urban": reg_ras.MESSAGE11.copy(deep=True),
+                "rural": reg_ras.MESSAGE11.copy(deep=True),
             }
         )
 

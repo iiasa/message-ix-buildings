@@ -98,7 +98,7 @@ class Config:
     arch_setting = "regional"  # options: ["fixed", "regional"]
 
     # URBAN/RURAL DISAGGREGATIONS
-    urts = ["urban", "rural"]  # options (mult): "urban", "rural"
+    urts = ["low", "urban", "rural"]  # options (mult): "urban", "rural"
 
     # ARCHETYPES
     archs = ["new", "exist"]

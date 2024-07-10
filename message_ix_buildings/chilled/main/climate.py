@@ -2,19 +2,18 @@ import datetime
 import os
 from itertools import product
 
+import cartopy  # type: ignore
+import cartopy.crs as ccrs  # type: ignore
+import cartopy.feature as cfeature  # type: ignore
+import matplotlib.pyplot as plt  # type: ignore
 import numpy as np
 import pandas as pd  # type: ignore
 import xarray as xr
 from dask.diagnostics import ProgressBar
+from functions.buildings_funcs_grid import Q_h  # type: ignore
 from functions.buildings_funcs_grid import (
     P_f,
     Q_c_tmax,
-    Q_h,
-    calc_E_c_ac,
-    calc_E_c_fan,
-    calc_E_h,
-    calc_gn_sol,
-    calc_gn_sol_h,
     calc_gn_sol_tot,
     calc_H_tr,
     calc_H_v_cl,
@@ -29,9 +28,16 @@ from functions.buildings_funcs_grid import (
     calc_vdd_h,
     calc_vdd_tmax_c,
 )
-from functions.variable_dicts import VARS_ARCHETYPES  # type: ignore
+from functions.variable_dicts import (
+    VARDICT_COOL,
+    VARDICT_HEAT,
+    VARS_ARCHETYPES,
+    VARUNDICT_COOL,
+    VARUNDICT_HEAT,
+)
+from preprocess.message_raster import create_message_raster  # type: ignore
 from utils.config import Config  # type: ignore
-from utils.util import load_parametric_analysis_data  # type: ignore
+from utils.util import load_all_scenarios_data, load_parametric_analysis_data
 
 
 def create_climate_variables_maps(config: "Config", start_time: datetime.datetime):
@@ -730,6 +736,1382 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
 
     # mypool = Pool(4)
     # return list(mypool.map(map_calculated_variables, inputs))
+
+
+def aggregate_urban_rural_files(config: "Config"):
+    out_path = os.path.join(config.project_path, "out", "version", config.vstr)
+    save_path = os.path.join(out_path, "VDD_ene_calcs")
+
+    output_path_vdd = os.path.join(
+        save_path,
+        config.gcm,
+        config.rcp,
+    )
+
+    par_var = load_parametric_analysis_data(config)
+
+    if not os.path.exists(output_path_vdd):
+        os.makedirs(output_path_vdd)
+
+    for clim in config.clims:
+        for arch in config.archs:
+            suff = clim + "_" + arch  # suffix
+
+            print("Aggregating results for " + suff)
+            # Aggregate archetypes into same files.
+            varlist = []
+
+            if config.archs == 1:
+                varlist.extend(
+                    [
+                        "t_bal_c",
+                        "vdd_tmax_c",
+                        "qctmax",
+                        "Nd",
+                        "Nf",
+                        "E_c_ac",
+                        "E_c_fan",
+                        "t_max_c",
+                    ]
+                )
+
+            if config.heat == 1:
+                varlist.extend(["t_bal_h", "vdd_h", "qh", "E_h"])
+
+            comp = {"zlib": True}
+
+            for parset in par_var.itertuples():
+                for var in varlist:
+                    print(var)
+                    mds = xr.open_mfdataset(
+                        os.path.join(
+                            output_path_vdd,
+                            suff + "_" + str(parset.Index) + "_" + var + "_*.nc",
+                        ),
+                        concat_dim="urt",
+                        combine="nested",
+                    )  # +urt[0]
+                    # mds['arch'] = al #arcs#[:4]
+                    mds["urt"] = config.urts  # arcs#[:4]
+
+                    mds.attrs = {
+                        "title": mds[var].attrs["name"],
+                        "authors": "Edward Byers & Alessio Mastrucci",
+                        "date": str(datetime.datetime.now()),
+                        "institution": "IIASA Energy Program",
+                        "contact": "byers@iiasa.ac.at; mastrucc@iiasa.ac.at",
+                        # 'archetypes': al,
+                        "urb_rur": config.urts,
+                        "name_run": parset.name_run,
+                        "id_run": str(parset.Index),
+                    }
+                    encoding = {var: comp for var in mds.data_vars}
+                    filestr = os.path.join(
+                        output_path_vdd,
+                        suff + "_" + str(parset.Index) + "_" + var + "ALL.nc",
+                    )
+                    mds.to_netcdf(filestr, encoding=encoding)
+                    print("...Saved " + filestr)
+
+
+def make_vdd_total_maps(config: "Config"):
+    out_path = os.path.join(config.project_path, "out", "version", config.vstr)
+    save_path = os.path.join(out_path, "VDD_ene_calcs")
+
+    output_path_vdd = os.path.join(
+        save_path,
+        config.gcm,
+        config.rcp,
+    )
+
+    par_var = load_parametric_analysis_data(config)
+
+    # TODO: (meas) the original code does not query for clims,
+    # but without it the code will crash if not all years have been run
+    clims_int = list(map(int, config.clims))
+    print(clims_int)
+
+    s_runs = load_all_scenarios_data(config)
+
+    for s_run in s_runs.itertuples():
+        for arch in config.archs:
+            for urt in config.urts:
+                suff = str(s_run.clim) + "_" + arch  # suffix
+
+                print("Running " + suff)
+
+                def make_map(
+                    data,
+                    ax=None,
+                    add_features=True,
+                    cbar=True,
+                    grid=False,
+                    logNorm=False,
+                    crs=ccrs.PlateCarree(),
+                    plotargs={},
+                ):
+                    if ax is None:
+                        fig, ax = plt.subplots(subplot_kw=dict(projection=crs))
+                    elif not isinstance(ax, cartopy.mpl.geoaxes.GeoAxesSubplot):
+                        msg = "Must provide a cartopy axes object, not: {}"
+                        raise ValueError(msg.format(type(ax)))
+
+                    #    ax = plt.axes(projection=ccrs.Robinson())
+                    if add_features:
+                        #        ax.add_feature(cartopy.feature.LAND, zorder=0)
+
+                        ax.add_feature(
+                            cartopy.feature.OCEAN, facecolor="#bde6ed", zorder=0
+                        )
+                        ax.add_feature(
+                            cartopy.feature.LAND, facecolor=[0.8, 0.8, 0.8]
+                        )  # , zorder=0)
+
+                        ax.coastlines(linewidth=0.3, edgecolor="k")  # '#778899'
+                        ax.add_feature(
+                            cfeature.BORDERS, linewidth=0.3, edgecolor="#778899"
+                        )
+
+                    #        ax.add_feature(cartopy.feature.COASTLINE)
+                    #        ax.add_feature(cartopy.feature.BORDERS)
+
+                    if logNorm:
+                        from matplotlib.colors import LogNorm  # type: ignore
+
+                        plotargs["norm"] = LogNorm(
+                            vmin=plotargs["vmin"], vmax=plotargs["vmax"]
+                        )
+
+                    if data is not None:
+                        p = data.plot(
+                            transform=ccrs.PlateCarree(),
+                            ax=ax,
+                            add_colorbar=cbar,
+                            **plotargs,
+                        )
+
+                    if grid:
+                        import matplotlib.ticker as mticker  # type: ignore
+                        from cartopy.mpl.gridliner import (
+                            LATITUDE_FORMATTER,
+                            LONGITUDE_FORMATTER,
+                        )
+
+                        gl = ax.gridlines(
+                            crs=crs,
+                            draw_labels=True,
+                            linewidth=1,
+                            color="gray",
+                            alpha=0.5,
+                            linestyle="--",
+                        )
+                        gl.xlabels_top = False
+                        gl.ylabels_left = False
+                        gl.xlines = False
+                        gl.xlocator = mticker.FixedLocator([-180, -90, 0, 90, 180])
+                        gl.ylocator = mticker.FixedLocator(
+                            [-90, -60, -30, 0, 30, 60, 90]
+                        )
+                        gl.xformatter = LONGITUDE_FORMATTER
+                        gl.yformatter = LATITUDE_FORMATTER
+                        gl.xlabel_style = {"size": 15, "color": "gray"}
+                        gl.xlabel_style = {"color": "black"}  # , 'weight': 'bold'}
+
+                    return p
+
+                if config.cool == 1:
+                    vdd_c_in = xr.open_dataarray(
+                        os.path.join(
+                            output_path_vdd, suff + "_0_vdd_tmax_c_" + urt + ".nc"
+                        )
+                    ).load()
+                    vdd_c_year = vdd_c_in.sum(dim="month")
+                    E_c_ac_in = xr.open_dataarray(
+                        os.path.join(output_path_vdd, suff + "_0_E_c_ac_" + urt + ".nc")
+                    ).load()
+                    (E_c_ac_in.sum(dim="month") * 0.2777778)  # Yearly total in kWh/m2
+
+                if config.heat == 1:
+                    vdd_h_in = xr.open_dataarray(
+                        os.path.join(output_path_vdd, suff + "_0_vdd_h_" + urt + ".nc")
+                    ).load()
+                    vdd_h_year = vdd_h_in.sum(dim="month")
+                    E_h_in = xr.open_dataarray(
+                        os.path.join(output_path_vdd, suff + "_0_E_h_" + urt + ".nc")
+                    ).load()
+                    (E_h_in.sum(dim="month") * 0.2777778)  # Yearly total in kWh/m2
+
+                cbloc = [
+                    0.86,
+                    0.185,
+                    0.03,
+                    0.61,
+                ]  # [0.3, 0.07, 0.4, cbh] #color bar location
+                cbor = "vertical"
+
+                proj = ccrs.PlateCarree()
+                rows = 1
+                fw = "bold"
+                tfs = 9
+                cmap = "magma_r"
+
+                # cb8 = plt.colorbar(im8, cax=cbaxes8, orientation=cbor, extend='max')
+                # cb8.ax.tick_params(labelsize=tfs-2)
+                # cbaxes8.text(-3,-0.12, u'people/km\u00b2', fontsize=10)
+
+                poplog = False
+
+                # Cooling Degree Days
+                if config.cool == 1:
+                    vmin = 0
+                    vmax = 4000
+                    plotargs = {"cmap": cmap, "vmin": vmin, "vmax": vmax}
+
+                    dvar = eval("vdd_c_year")  # / larea
+                    # dvar = dvar[urt]
+                    fig = plt.figure(figsize=(6, 4))
+                    ax8 = fig.add_subplot(rows, 1, 1, projection=proj)
+                    im8 = make_map(
+                        dvar.where(dvar > 0),
+                        ax=ax8,
+                        cbar=False,
+                        grid=False,
+                        logNorm=poplog,
+                        plotargs=plotargs,
+                    )
+                    plt.title("Cooling Degree Days", fontsize=tfs, fontweight=fw)
+                    cbaxes8 = fig.add_axes(cbloc)
+                    cb8 = plt.colorbar(im8, cax=cbaxes8, orientation=cbor)
+                    cb8.ax.tick_params(labelsize=tfs - 2)
+
+                    # cbaxes8.text(-3,-0.12, u'VDD/year', fontsize=10)
+                    plt.tight_layout()
+                    fig.subplots_adjust(
+                        left=0.05, right=0.85, top=0.95, bottom=0.03
+                    )  # subplot margins
+                    plt.savefig(
+                        os.path.join(
+                            output_path_vdd,
+                            suff + "_VDD_c_" + cmap + str(poplog) + ".png",
+                        ),
+                        dpi=300,
+                        bbox_inches="tight",
+                    )
+
+                # Heating Degree Days
+                if config.heat == 1:
+                    vmin = 0
+                    vmax = 10000
+                    plotargs = {"cmap": cmap, "vmin": vmin, "vmax": vmax}
+
+                    dvar = eval("vdd_h_year")  # / larea
+                    # dvar = dvar[urt]
+                    fig = plt.figure(figsize=(6, 4))
+                    ax8 = fig.add_subplot(rows, 1, 1, projection=proj)
+                    im8 = make_map(
+                        dvar.where(dvar > 0),
+                        ax=ax8,
+                        cbar=False,
+                        grid=False,
+                        logNorm=poplog,
+                        plotargs=plotargs,
+                    )
+                    plt.title("Heating Degree Days", fontsize=tfs, fontweight=fw)
+                    cbaxes8 = fig.add_axes(cbloc)
+                    cb8 = plt.colorbar(im8, cax=cbaxes8, orientation=cbor)
+                    cb8.ax.tick_params(labelsize=tfs - 2)
+
+                    # cbaxes8.text(-3,-0.12, u'VDD/year', fontsize=10)
+                    plt.tight_layout()
+                    fig.subplots_adjust(
+                        left=0.05, right=0.85, top=0.95, bottom=0.03
+                    )  # subplot margins
+                    plt.savefig(
+                        os.path.join(
+                            output_path_vdd,
+                            suff + "_VDD_h_" + cmap + str(poplog) + ".png",
+                        ),
+                        dpi=300,
+                        bbox_inches="tight",
+                    )
+
+                # Energy demand - Heating [kWh/m2]
+                if config.heat == 1:
+                    vmin = 0
+                    vmax = 300
+                    plotargs = {"cmap": cmap, "vmin": vmin, "vmax": vmax}
+
+                    dvar = eval("E_h_year")  # / larea
+                    # dvar = dvar[urt]
+                    fig = plt.figure(figsize=(6, 4))
+                    ax8 = fig.add_subplot(rows, 1, 1, projection=proj)
+                    im8 = make_map(
+                        dvar.where(dvar > 0),
+                        ax=ax8,
+                        cbar=False,
+                        grid=False,
+                        logNorm=poplog,
+                        plotargs=plotargs,
+                    )
+                    plt.title("Energy demand - Heating", fontsize=tfs, fontweight=fw)
+                    cbaxes8 = fig.add_axes(cbloc)
+                    cb8 = plt.colorbar(im8, cax=cbaxes8, orientation=cbor)
+                    cb8.ax.tick_params(labelsize=tfs - 2)
+
+                    # cbaxes8.text(-3,-0.12, u'VDD/year', fontsize=10)
+                    plt.tight_layout()
+                    fig.subplots_adjust(
+                        left=0.05, right=0.85, top=0.95, bottom=0.03
+                    )  # subplot margins
+                    plt.savefig(
+                        os.path.join(
+                            output_path_vdd,
+                            suff + "_E_h_" + cmap + str(poplog) + ".png",
+                        ),
+                        dpi=300,
+                        bbox_inches="tight",
+                    )
+
+                # Energy demand - Cooling - AC only [kWh/m2]
+                if config.cool == 1:
+                    vmin = 0
+                    vmax = 100
+                    plotargs = {"cmap": cmap, "vmin": vmin, "vmax": vmax}
+
+                    dvar = eval("vdd_c_year")  # / larea
+                    # dvar = dvar[urt]
+                    fig = plt.figure(figsize=(6, 4))
+                    ax8 = fig.add_subplot(rows, 1, 1, projection=proj)
+                    im8 = make_map(
+                        dvar.where(dvar > 0),
+                        ax=ax8,
+                        cbar=False,
+                        grid=False,
+                        logNorm=poplog,
+                        plotargs=plotargs,
+                    )
+                    plt.title(
+                        "Energy demand - Cooling (AC only)", fontsize=tfs, fontweight=fw
+                    )
+                    cbaxes8 = fig.add_axes(cbloc)
+                    cb8 = plt.colorbar(im8, cax=cbaxes8, orientation=cbor)
+                    cb8.ax.tick_params(labelsize=tfs - 2)
+
+                    # cbaxes8.text(-3,-0.12, u'VDD/year', fontsize=10)
+                    plt.tight_layout()
+                    fig.subplots_adjust(
+                        left=0.05, right=0.85, top=0.95, bottom=0.03
+                    )  # subplot margins
+                    plt.savefig(
+                        os.path.join(
+                            output_path_vdd,
+                            suff + "_E_c_ac_" + cmap + str(poplog) + ".png",
+                        ),
+                        dpi=300,
+                        bbox_inches="tight",
+                    )
+
+
+def process_construction_shares(config: "Config"):
+    out_path = os.path.join(config.project_path, "out", "version", config.vstr)
+    floorarea_path = os.path.join(out_path, "floorarea_country")
+
+    output_path = os.path.join(
+        floorarea_path,
+        config.gcm,
+        config.rcp,
+    )
+
+    if not os.path.exists(output_path):
+        os.makedirs(output_path)
+
+    par_var = load_parametric_analysis_data(config)
+
+    # get raster file and message map
+    ras, map_reg, iso_attrs = create_message_raster(config)
+
+    # If constr_setting == 1, then process construction shares. Otherwise, skip
+    if config.constr_setting == 1:
+        input_path = config.dle_path
+
+        dsc = xr.Dataset()
+        for urt in config.urts:
+            # Read in excel files
+            conshare = pd.read_csv(
+                os.path.join(input_path, "constr_share_" + urt + ".csv")
+            )
+            tl = list(conshare.columns)
+            arcs = [s for s in tl if s[0] == urt[0]]
+
+            # build dummy dataset
+            block = np.full((360, 720, 20), np.nan)
+            lats = ras.lat
+            lons = ras.lon
+            coords = {"lat": lats, "lon": lons, "arch": arcs}
+            ds = xr.DataArray(block, coords=coords, dims=["lat", "lon", "arch"])
+
+            for row in iso_attrs.itertuples():
+                conshare.loc[conshare.ISO == row.ISO, "regnum"] = row.Index
+
+            # missing  AND, Andorra DMA, Dominica GRD,Grenada LIE,
+            # liechenstein ATG, Antigua & barbuda KNA, Saint kitts SYC seychelles
+            for arch in arcs:  # For each arch
+                ai = arcs.index(arch)
+                ta = ds.sel(arch=arch).values
+
+                for row in iso_attrs.itertuples():  # For each country
+                    ats = conshare.loc[conshare.ISO == row.ISO, :]
+
+                    try:
+                        ta[ras == int(row.Index)] = ats.loc[
+                            ats.ISO == row.ISO, arch
+                        ].values[0]
+                    except IndexError:
+                        print("map:" + row.ISO)
+                ds.values[:, :, ai] = ta
+
+            ds.attrs = {
+                "title": "Construction shares by archetype",
+                "urb_rur": urt,
+                "authors": "Edward Byers & Alessio Mastrucci",
+                "date": str(datetime.datetime.now()),
+                "institution": "IIASA Energy Program",
+                "contact": "byers@iiasa.ac.at; mastrucc@iiasa.ac.at",
+            }
+            ds = ds.to_dataset(name=urt)
+            comp = {"zlib": True}
+            encoding = {var: comp for var in ds.data_vars}
+            ds.to_netcdf(
+                os.path.join(output_path, "constr_share_" + urt + ".nc"),
+                encoding=encoding,
+            )
+            dsc[urt] = ds[urt]
+
+        dsc.attrs = {
+            "title": "Construction share by archetype",
+            "authors": "Edward Byers & Alessio Mastrucci",
+            "date": str(datetime.datetime.now()),
+            "institution": "IIASA Energy Program",
+            "contact": "byers@iiasa.ac.at; mastrucc@iiasa.ac.at",
+        }
+
+        encoding = {var: comp for var in dsc.data_vars}
+        dsc.to_netcdf(
+            os.path.join(output_path, "constr_share_urbanrural.nc"), encoding=encoding
+        )
+        print("Completed construction share maps")
+    else:
+        print("Skipping construction share maps because constr_setting != 1")
+
+
+def process_floor_area_maps(config: "Config"):
+    input_path = config.dle_path
+    out_path = os.path.join(config.project_path, "out", "version", config.vstr)
+    save_path = os.path.join(out_path, "floorarea_country")
+
+    output_path = os.path.join(
+        save_path,
+        config.gcm,
+        config.rcp,
+    )
+
+    if not os.path.exists(output_path):
+        os.makedirs(output_path)
+
+    par_var = load_parametric_analysis_data(config)
+    ras, map_reg, iso_attrs = create_message_raster(config)
+    s_runs = load_all_scenarios_data(config)
+
+    if config.floor_setting == "std_cap":
+        floorarea = pd.read_csv(
+            os.path.join(input_path, "floor_std_cap.csv")
+        )  # STD conditioned floor area (same for all regions, based on DLE)
+
+        floormap = xr.Dataset(
+            {
+                "urban": map_reg.MESSAGE11.copy(deep=True),
+                "rural": map_reg.MESSAGE11.copy(deep=True),
+            }
+        )
+
+        for row in floorarea.itertuples():
+            floormap["urban"].values[floormap.urban == row.RegNum] = float(row.urban)
+            floormap["rural"].values[floormap.rural == row.RegNum] = float(row.rural)
+            # floormap['urban'].values[floormap.urban==row.RegNum] = getattr(row,'urban'+suff)
+            # floormap['rural'].values[floormap.rural==row.RegNum] = getattr(row,'rural'+suff)
+
+        floormap = floormap.astype(float)
+        for urt in config.urts:
+            floormap[urt].values[floormap[urt] == -1] = np.nan
+
+        plt.figure()
+        floormap.urban.plot()
+        plt.figure()
+        floormap.rural.plot()
+
+        # % Write out to netcdf
+        floormap.attrs = {
+            "title": "Floor area by region",
+            "authors": "Edward Byers & Alessio Mastrucci",
+            "date": str(datetime.datetime.now()),
+            "institution": "IIASA Energy Program",
+            "contact": "byers@iiasa.ac.at; mastrucc@iiasa.ac.at",
+            "floor_setting": config.floor_setting,
+        }
+        comp = {"zlib": True}
+        encoding = {var: comp for var in floormap.data_vars}
+        floormap.to_netcdf(
+            os.path.join(output_path, "floor_area_map_std_cap.nc"), encoding=encoding
+        )
+        print("Completed floor area maps")
+
+    elif config.floor_setting == "per_cap":
+        for s_run in s_runs.itertuples():
+            suff = (
+                str(s_run.scen) + "_" + str(s_run.year) + "_" + str(s_run.clim)
+            )  # suffix
+            suff2 = (
+                str(s_run.scen) + "_" + str(s_run.year)
+            )  # suffix: only scen and year
+
+            floorarea = pd.read_excel(
+                os.path.join(input_path, "floor_per_cap_" + config.vstrcntry + ".xlsx"),
+                sheet_name=suff2,
+            )
+
+            floormap = xr.Dataset(
+                {
+                    "urban": map_reg.MESSAGE11.copy(deep=True),
+                    "rural": map_reg.MESSAGE11.copy(deep=True),
+                }
+            )
+
+            for row in floorarea.itertuples():
+                floormap["urban"].values[floormap.urban == row.RegNum] = float(
+                    row.urban
+                )
+                floormap["rural"].values[floormap.rural == row.RegNum] = float(
+                    row.rural
+                )
+                # floormap['urban'].values[floormap.urban==row.RegNum] = getattr(row,'urban'+suff)
+                # floormap['rural'].values[floormap.rural==row.RegNum] = getattr(row,'rural'+suff)
+
+            floormap = floormap.astype(float)
+            for urt in config.urts:
+                floormap[urt].values[floormap[urt] == -1] = np.nan
+
+            plt.figure()
+            floormap.urban.plot()
+            plt.figure()
+            floormap.rural.plot()
+
+            # % Write out to netcdf
+
+            floormap.attrs = {
+                "title": "Floor area by region",
+                "authors": "Edward Byers & Alessio Mastrucci",
+                "date": str(datetime.datetime.now()),
+                "institution": "IIASA Energy Program",
+                "contact": "byers@iiasa.ac.at; mastrucc@iiasa.ac.at",
+                "floor_setting": config.floor_setting,
+            }
+            comp = {"zlib": True}
+            encoding = {var: comp for var in floormap.data_vars}
+            floormap.to_netcdf(
+                os.path.join(
+                    output_path,
+                    "floor_area_map_" + config.floor_setting + "_" + suff + ".nc",
+                ),
+                encoding=encoding,
+            )
+
+            print("Completed floor area maps")
+
+    else:
+        print("Skipping floor area maps because floor_setting != std_cap or per_cap")
+
+
+def process_country_maps(config: "Config"):
+    input_path = config.dle_path
+    out_path = os.path.join(config.project_path, "out", "version", config.vstr)
+    save_path = os.path.join(out_path, "floorarea_country")
+
+    output_path = os.path.join(
+        save_path,
+        config.gcm,
+        config.rcp,
+    )
+
+    if not os.path.exists(output_path):
+        os.makedirs(output_path)
+
+    par_var = load_parametric_analysis_data(config)
+    s_runs = load_all_scenarios_data(config)
+    ras, map_reg, iso_attrs = create_message_raster(config)
+
+    for s_run in s_runs.itertuples():
+        suff = str(s_run.scen) + "_" + str(s_run.year) + "_" + str(s_run.clim)  # suffix
+        str(s_run.scen) + "_" + str(s_run.year)  # suffix: only scen and year
+
+        # Read in country_data for AC penetration, electricity access, slumpop
+        # country_data = pd.read_excel(input_folder+'country_data_'+vstrcntry+'.xlsx', sheet_name = 'suff2')
+        country_data = pd.read_excel(
+            os.path.join(input_path, "country_data_" + config.vstrcntry + ".xlsx"),
+            sheet_name="ssp2_2010",
+        )  # hack to use same sheet every time
+
+        # Column names
+        # cols = ['AC_penetr','access_elec','slum_pop']
+        cols = [
+            "AC_penetr",
+            "AC_penetr_U",
+            "AC_penetr_R",
+            "access_elec",
+            "slum_pop",
+            "GLOBAL_SOUTH",
+        ]
+        # cols = ['AC_penetr'+suff,'AC_penetr_U'+suff,'AC_penetr_R'+suff,'access_elec'+suff,'slum_pop'+suff,'GLOBAL_SOUTH']
+
+        # Match the GAUL country numbers to the ISOs in country_data table (just in case)
+        iso_attrs["GAULi"] = iso_attrs.index.astype(float)
+        country_data = country_data.merge(iso_attrs, on="ISO", how="outer")
+
+        # create dataset four country data
+        cd_map = xr.Dataset({cols[0]: ras.copy(deep=True).astype("float")})
+        for col in cols[1:]:
+            cd_map[col] = ras.copy(deep=True).astype("float")
+
+        # Populate the dataset with country data
+        for col in cols:
+            for idx in iso_attrs.GAULi:
+                cd_map[col].values[cd_map[col] == idx] = country_data.loc[
+                    country_data.GAULi == idx, col
+                ]
+
+            plt.figure()
+            cd_map[col].plot()
+            plt.close()
+
+        # Write out to netcdf
+        cd_map.attrs = {
+            "title": "Maps of country data",
+            "authors": "Edward Byers & Alessio Mastrucci",
+            "date": str(datetime.datetime.now()),
+            "institution": "IIASA Energy Program",
+            "contact": "byers@iiasa.ac.at; mastrucc@iiasa.ac.at",
+            "variables": cols,
+        }
+
+        comp = {"zlib": True, "complevel": 5}
+        encoding = {var: comp for var in cd_map.data_vars}
+        cd_map.to_netcdf(
+            os.path.join(output_path, "country_data_maps_" + suff + ".nc"),
+            encoding=encoding,
+        )
+
+    print("Finished country data maps")
+
+
+def process_final_maps(config: "Config"):
+    input_path = config.dle_path
+    out_path = os.path.join(config.project_path, "out", "version", config.vstr)
+    vdd_path = os.path.join(
+        out_path,
+        "VDD_ene_calcs",
+        config.gcm,
+        config.rcp,
+    )
+    floorarea_path = os.path.join(
+        out_path,
+        "floorarea_country",
+        config.gcm,
+        config.rcp,
+    )
+    finalmaps_path = os.path.join(out_path, "final_maps", config.gcm, config.rcp)
+
+    if not os.path.exists(finalmaps_path):
+        os.makedirs(finalmaps_path)
+
+    par_var = load_parametric_analysis_data(config)
+    s_runs = load_all_scenarios_data(config)
+    ras, map_reg, iso_attrs = create_message_raster(config)
+
+    # country_maps_path = os.path.join(
+    #     input_dle_path,
+    #     f"output_data_{input_version_name}",
+    #     input_gcm,
+    #     input_rcp_scenario,
+    #     "3_floorarea_country_data",
+    # )
+
+    # ene_calcs_path = os.path.join(
+    #     input_dle_path,
+    #     f"output_data_{input_version_name}",
+    #     input_gcm,
+    #     input_rcp_scenario,
+    #     "2_VDD_ene_calcs",
+    # )
+
+    # final_maps_path = os.path.join(
+    #     input_dle_path,
+    #     f"output_data_{input_version_name}",
+    #     input_gcm,
+    #     input_rcp_scenario,
+    #     "4_final_maps",
+    # )
+
+    vardic = {}
+    varundic = {}
+
+    # Update dictionaries if config.cool == 1
+    if config.cool == 1:
+        vardic.update(VARDICT_COOL)
+        varundic.update(VARUNDICT_COOL)
+    # Update dictionaries if config.heat == 1
+    if config.heat == 1:
+        vardic.update(VARDICT_HEAT)
+        varundic.update(VARUNDICT_HEAT)
+
+    [key for key in varundic.keys()]
+
+    if (
+        config.paranalysis_mode == 0
+    ):  # If running in ref mode, keep only the ref parameter set
+        par_var = par_var.loc[par_var.name_run == "ref", :]
+
+    # TODO: (meas) the original code does not query for clims,
+    # but without it the code will crash if not all years have been run
+    clims_int = list(map(int, config.clims))
+    print("Years of data available: " + str(clims_int))
+    s_runs = s_runs.query("clim in @clims_int")
+
+    for s_run in s_runs.itertuples():
+        for arch in config.archs:
+            suff = (
+                str(s_run.scen)
+                + "_"
+                + str(s_run.year)
+                + "_"
+                + str(s_run.clim)
+                + "_"
+                + arch
+            )  # suffix
+            suff1 = str(s_run.clim) + "_" + arch  # suffix
+            if config.popfix is True:
+                suff2 = "ssp2_" + str(s_run.year)
+            else:
+                suff2 = (
+                    str(s_run.scen) + "_" + str(s_run.year)
+                )  # suffix: only scen and year
+            suff3 = (
+                str(s_run.scen) + "_" + str(s_run.year) + "_" + str(s_run.clim)
+            )  # suffix: scen, year and arch
+
+            print("Starting " + suff)
+
+            # Load country data
+            country_data = xr.open_dataset(
+                os.path.join(floorarea_path, "country_data_maps_" + suff3 + ".nc")
+            )
+
+            # Load population data
+            popdata = xr.Dataset()
+            popdata["urban"] = xr.open_dataarray(
+                os.path.join(
+                    input_path, "population", "population", suff2 + "_urban_hd.nc4"
+                )
+            )
+            popdata["rural"] = xr.open_dataarray(
+                os.path.join(
+                    input_path, "population", "population", suff2 + "_rural_hd.nc4"
+                )
+            )
+            popdata["total"] = xr.open_dataarray(
+                os.path.join(
+                    input_path, "population", "population", suff2 + "_total_hd.nc4"
+                )
+            )
+
+            # Floor area data
+            if config.floor_setting == "std_cap":
+                floorarea = xr.open_dataset(
+                    os.path.join(
+                        floorarea_path,
+                        "floor_area_map_" + config.floor_setting + ".nc",
+                    )
+                )
+            elif config.floor_setting == "per_cap":
+                floorarea = xr.open_dataset(
+                    os.path.join(
+                        floorarea_path,
+                        "floor_area_map_" + config.floor_setting + "_" + suff3 + ".nc",
+                    )
+                )
+
+            # Construction shares
+            # constr = xr.open_dataset(input_folder+'map_constr_floorarea\\constr_share_urbanrural.nc')
+
+            # =============================================================================
+            # First apply population weighting to energy demand:
+            # =============================================================================
+
+            for parset in par_var.itertuples():
+                if config.cool == 1:
+                    Nd1 = xr.open_dataarray(
+                        os.path.join(
+                            vdd_path,
+                            suff1 + "_" + str(parset.Index) + "_NdALL.nc",
+                        )
+                    ).load()  # For calculation
+                    # Nd = Nd.sum(dim=['arch','month'])/2    #<<< divide by 2 because 2 archetypes
+                    Nd1 = (
+                        Nd1.sum(dim=["urt", "month"]) / 2
+                    )  # <<< divide by 2 (rural + urban)
+
+                    Ndr = xr.open_dataarray(
+                        os.path.join(
+                            vdd_path,
+                            suff1 + "_" + str(parset.Index) + "_NdALL.nc",
+                        )
+                    ).load()  # For reporting
+                    # Nd = Nd.sum(dim=['arch','month'])/2    #<<< divide by 2 because 2 archetypes
+                    # Nd = Nd.sum(dim=['month'])    #<<< divide by 2 (rural + urban)
+
+                    Nfr = xr.open_dataarray(
+                        os.path.join(
+                            vdd_path,
+                            suff1 + "_" + str(parset.Index) + "_NfALL.nc",
+                        )
+                    ).load()
+                    # Nf = Nf.sum(dim=['arch','month'])/2    #<<< divide by 2 because 2 archetypes
+                    # Nf = Nf.sum(dim=['month'])  #<<< divide by 2 (rural + urban)
+
+                    E_c_ac = (
+                        xr.open_dataarray(
+                            os.path.join(
+                                vdd_path,
+                                suff1 + "_" + str(parset.Index) + "_E_c_ac" + "ALL.nc",
+                            )
+                        ).where(Nd1 >= config.nd_thresh)
+                    ).load()
+                    E_c_fan = (
+                        xr.open_dataarray(
+                            os.path.join(
+                                vdd_path,
+                                suff1 + "_" + str(parset.Index) + "_E_c_fan" + "ALL.nc",
+                            )
+                        ).where(Nd1 >= config.nd_thresh)
+                    ).load()
+                    E_c = E_c_ac + E_c_fan
+                    vdd_c_in = xr.open_dataarray(
+                        os.path.join(
+                            vdd_path,
+                            suff1 + "_" + str(parset.Index) + "_vdd_tmax_cALL.nc",
+                        )
+                    ).load()
+
+                if config.heat == 1:
+                    E_h = (
+                        xr.open_dataarray(
+                            os.path.join(
+                                vdd_path,
+                                suff1 + "_" + str(parset.Index) + "_E_h" + "ALL.nc",
+                            )
+                        ).where(Nd1 >= 0)
+                    ).load()  # ******************************
+                    vdd_h_in = xr.open_dataarray(
+                        os.path.join(
+                            vdd_path,
+                            suff1 + "_" + str(parset.Index) + "_vdd_hALL.nc",
+                        )
+                    ).load()
+                #    vdd_in = vdd_in.sum(dim='arch')
+
+                #    if (runsdd==1) and (parset.Index==0):
+                #        for bal_temp in bal_temps:
+                #            sdd_c_in = xr.open_dataarray(input_folder2+str(parset.Index)+'_s_cddALL.nc').load()
+                #            sdd_h_in = xr.open_dataarray(input_folder2+str(parset.Index)+'_s_hddALL.nc').load()
+                #        print(xkss)
+
+                if config.cool == 1:
+                    # Cooling outputs
+                    E_c_perpix = (
+                        xr.Dataset()
+                    )  # Pixel / person per gridsquare energy demand
+                    E_c_ac_popwei = (
+                        xr.Dataset()
+                    )  # Total Energy, population weighted, per pixel
+                    E_c_fan_popwei = xr.Dataset()
+                    E_c_popwei = xr.Dataset()
+                    E_c_ac_wAccess = xr.Dataset()
+                    E_c_ac_gap = xr.Dataset()
+                    E_c_fan_wAccess = xr.Dataset()
+                    E_c_fan_gap = xr.Dataset()
+                    E_c_wAccess = xr.Dataset()
+                    E_c_gap = xr.Dataset()
+                    Nf = xr.Dataset()
+                    Nd = xr.Dataset()
+                    vdd_c_popwei = xr.Dataset()  # Degree Days multiplied by population
+                    #    sdd_c = xr.Dataset()
+
+                    P_c_ac_potential = xr.Dataset()
+                    P_c_ac_gap = xr.Dataset()
+                    P_c_fan_gap = xr.Dataset()
+                    P_c_fanNoAC = xr.Dataset()
+
+                if config.heat == 1:
+                    # Heating outputs
+                    E_h_perpix = (
+                        xr.Dataset()
+                    )  # Pixel / person per gridsquare energy demand
+                    E_h_popwei = xr.Dataset()  # population weighted (FULL demand)
+
+                    P_h_potential = xr.Dataset()
+
+                    vdd_h_popwei = xr.Dataset()  # Degree Days multiplied by population
+                #    sdd_h = xr.Dataset()
+
+                # % Produce spatial results
+                for urt in config.urts:
+                    if config.cool == 1:
+                        if urt == "urban":
+                            # at = au
+                            acp = "AC_penetr_U"
+                        elif urt == "rural":
+                            # at = ar
+                            acp = "AC_penetr_R"
+
+                        #        print(sddddd)
+                        E_c_perpix[urt] = (
+                            floorarea[urt] * E_c["urt" == urt]
+                        )  # energy  per person per pixel
+                        E_c_ac_popwei[urt] = (
+                            popdata[urt] * floorarea[urt] * E_c_ac["urt" == urt]
+                        )  # Total Energy, population weighted, per pixel
+                        E_c_fan_popwei[urt] = (
+                            popdata[urt] * floorarea[urt] * E_c_fan["urt" == urt]
+                        )  # Total Energy, population weighted, per pixel
+                        E_c_popwei[urt] = (
+                            popdata[urt] * E_c_perpix[urt]
+                        )  # Total Energy, population weighted, per pixel
+                        # E_c_pwpercap = E_c_popwei[urt] / popdata[urt]
+
+                        E_c_ac_wAccess[urt] = (
+                            E_c_ac_popwei[urt] * country_data[acp]
+                        )  # AC energy incl AC penetre
+                        E_c_ac_gap[urt] = E_c_ac_popwei[urt] * (
+                            1 - country_data[acp]
+                        )  # AC energy gap
+
+                        E_c_fan_wAccess[urt] = (
+                            E_c_fan_popwei[urt] * country_data["access_elec"]
+                        )  # Fan energy incl elec access
+                        E_c_fan_gap[urt] = E_c_fan_popwei[urt] * (
+                            1 - country_data["access_elec"]
+                        )  # Fan energy gap
+
+                        E_c_wAccess[urt] = (
+                            E_c_ac_wAccess[urt] + E_c_fan_wAccess[urt]
+                        )  # << Current energy usage
+                        E_c_gap[urt] = (
+                            E_c_ac_gap[urt] + E_c_fan_gap[urt]
+                        )  # Total energy gap
+
+                        Nd[urt] = Ndr[
+                            "urt" == urt
+                        ]  # .sum(dim='month') # summed later over months
+                        Nf[urt] = Nfr["urt" == urt]
+
+                        vdd_c_popwei[urt] = (
+                            popdata[urt] * vdd_c_in["urt" == urt]
+                        )  # Degree Days multiplied by population
+                        #        if (runsdd==1) and (parset.Index==0):
+                        #            sdd_c[urt] =  sdd_c_in # popdata[urt] *
+
+                        # Population that needs access to AC (AC market)
+                        P_c_ac_potential[urt] = popdata[urt].where(
+                            E_c_ac["urt" == urt].sum(dim="month") > 0
+                        )
+                        # Population (unsatisfied) that needs access to AC
+                        P_c_ac_gap[urt] = popdata[urt].where(
+                            E_c_ac["urt" == urt].sum(dim="month") > 0
+                        ) * (1 - country_data[acp])
+                        P_c_fan_gap[urt] = popdata[urt].where(
+                            E_c_fan["urt" == urt].sum(dim="month") > 0
+                        ) * (1 - country_data["access_elec"])
+                        P_c_fanNoAC[urt] = P_c_ac_gap[urt] - P_c_fan_gap[urt]
+
+                    if config.heat == 1:
+                        # Heating results
+                        E_h_perpix[urt] = (
+                            floorarea[urt] * E_h["urt" == urt]
+                        )  # energy  per person per pixel
+                        E_h_popwei[urt] = (
+                            popdata[urt] * floorarea[urt] * E_h["urt" == urt]
+                        )  # Total Energy, population weighted, per pixel
+
+                        P_h_potential[urt] = popdata[urt].where(
+                            E_h["urt" == urt].sum(dim="month") > 0
+                        )  # Population that needs access to heating
+
+                        vdd_h_popwei[urt] = (
+                            popdata[urt] * vdd_h_in["urt" == urt]
+                        )  # Degree Days multiplied by population
+                #        if (runsdd==1) and (parset.Index==0):
+                #            sdd_h[urt] =  sdd_h_in # popdata[urt] *
+
+                for var in vardic.keys():
+                    #        if (runsdd==1) and (var=='sdd_c' or var =='sdd_h') and (parset.Index>0):
+                    #            print('do nothing')
+                    #        else:
+                    ds = eval(var)
+                    # ds['arch'] = al
+                    ds["urt"] = config.urts
+                    ds.attrs = {
+                        "title": var,
+                        "description": vardic[var],
+                        "units": varundic[var],
+                        "authors": "Edward Byers & Alessio Mastrucci",
+                        "date": str(datetime.datetime.now()),
+                        "institution": "IIASA Energy Program",
+                        "contact": "byers@iiasa.ac.at; mastrucc@iiasa.ac.at",
+                        "name_run": parset.name_run,
+                        "id_run": str(parset.Index),
+                    }
+
+                    #            if (runsdd==1) and (var=='sdd_c' or var=='sdd_h'):
+                    #                ds.attrs['bal_temps'] = str(bal_temps)
+                    #            else:
+                    # ds.attrs['archetypes']  = al
+
+                    encoding = {vari: config.comp for vari in ds.data_vars}
+                    fname = suff + "_" + str(parset.Index) + "_" + var + ".nc"
+                    filestr = os.path.join(finalmaps_path, fname)
+                    ds.to_netcdf(filestr, encoding=encoding)
+
+                    if varundic[var][-5:] == "month":
+                        dsy = ds.sum(dim="month")
+                        for urt in config.urts:
+                            #                    if (runsdd==1) and (var == 'sdd_c' or var=='sdd_h'):
+                            #                        dsy[urt] = (['bal_temp', 'lat','lon',], dsy[urt].values) #.sum(dim='arch')
+                            #                    else:
+                            dsy[urt] = (
+                                ["lat", "lon"],
+                                dsy[urt].values,
+                            )  # .sum(dim='arch')
+
+                        dsy.attrs = ds.attrs
+                        dsy.attrs["units"] = varundic[var][:-5] + "year"
+                        encoding = {vari: config.comp for vari in dsy.data_vars}
+                        fname = suff + "_" + str(parset.Index) + "_" + var + "_year.nc"
+                        filestr = os.path.join(finalmaps_path, fname)
+                        dsy.to_netcdf(filestr, encoding=encoding)
+
+
+def process_iso_tables(config: "Config"):
+    start = datetime.datetime.now()
+
+    input_path = config.dle_path
+    out_path = os.path.join(config.project_path, "out", "version", config.vstr)
+    vdd_path = os.path.join(out_path, "VDD_ene_calcs", config.gcm, config.rcp)
+    floorarea_path = os.path.join(out_path, "floorarea_country", config.gcm, config.rcp)
+    finalmaps_path = os.path.join(out_path, "final_maps", config.gcm, config.rcp)
+    iso_path = os.path.join(out_path, "iso_tables", config.gcm, config.rcp)
+
+    if not os.path.exists(iso_path):
+        os.makedirs(iso_path)
+
+    par_var = load_parametric_analysis_data(config)
+    s_runs = load_all_scenarios_data(config)
+    ras, map_reg, iso_attrs = create_message_raster(config)
+
+    updated_urts = config.urts + ["total"]
+
+    # final_maps_path = os.path.join(
+    #     input_dle_path,
+    #     f"output_data_{input_version_name}",
+    #     input_gcm,
+    #     input_rcp_scenario,
+    #     "4_final_maps",
+    # )
+
+    # iso_tables_path = os.path.join(
+    #     input_dle_path,
+    #     f"output_data_{input_version_name}",
+    #     input_gcm,
+    #     input_rcp_scenario,
+    #     "5_ISO_tables",
+    # )
+
+    vardic = {}
+    varundic = {}
+
+    # Update dictionaries if config.cool == 1
+    if config.cool == 1:
+        vardic.update(VARDICT_COOL)
+        varundic.update(VARUNDICT_COOL)
+    # Update dictionaries if config.heat == 1
+    if config.heat == 1:
+        vardic.update(VARDICT_HEAT)
+        varundic.update(VARUNDICT_HEAT)
+
+    varlist_cool = [key for key in VARDICT_COOL.keys()]
+    varlist_heat = [key for key in VARDICT_HEAT.keys()]
+
+    # TODO: (meas) the original code does not query for clims,
+    # but without it the code will crash if not all years have been run
+    clims_int = list(map(int, config.clims))
+    print("Years of data available: " + str(clims_int))
+    s_runs = s_runs.query("clim in @clims_int")
+
+    # Read raster data
+    raster = xr.open_dataarray(os.path.join(input_path, "gaul_lvl0_hybrid_05_3.nc"))
+
+    # Read country data
+    dfd = pd.read_csv(
+        os.path.join(input_path, "gaul_lvl0_raster0.5.csv"), index_col="ID"
+    ).assign(ISONUM=lambda x: x.index)
+
+    # Import MESSAGE regions and North/South classification
+    msgNS = pd.read_excel(
+        os.path.join(input_path, "country_data_" + config.vstrcntry + ".xlsx"),
+        sheet_name="ssp2_2010",
+    )
+
+    # Add 'GLOBAL_SOUTH' and 'REGION_GEA' to dfd
+    dfd = dfd.merge(
+        msgNS.reindex(columns=["ISO", "GLOBAL_SOUTH", "REGION_GEA"]),
+        left_on="ISO3",
+        right_on="ISO",
+    ).set_index("ISONUM")
+
+    # Load population data
+    print("Opening population data....")
+    l_popdata = []
+    for s_run in s_runs.itertuples():
+        suff = str(s_run.scen) + "_" + str(s_run.year)
+        print(suff)
+
+        popdata = xr.Dataset()
+        for urt in updated_urts:
+            popdata[urt] = xr.open_dataarray(
+                os.path.join(
+                    input_path,
+                    "population",
+                    "population",
+                    suff + "_" + urt + "_hd.nc4",
+                )
+            )
+
+        agg_popdata = (
+            popdata.groupby(raster)
+            .sum()
+            .to_dataframe()
+            .reset_index()
+            .melt(id_vars="gaul_lvl0", var_name="urt", value_name="popsum")
+            .assign(population_scenario=s_run.scen, year=s_run.year)
+        )
+
+        l_popdata.append(agg_popdata)
+
+    pop_agg = (
+        pd.concat(l_popdata)
+        .reset_index(drop=True)
+        .assign(year=lambda x: x.year.astype(int))
+    )
+
+    # map s_runs, archs, updated_urts, and par_var to a tuple
+    # then map the tuple to the process_data function
+    # then convert the map object to a list
+    inputs_cool = product(
+        s_runs.itertuples(),
+        config.archs,
+        updated_urts,
+        par_var.itertuples(),
+        varlist_cool,
+    )
+    inputs_heat = product(
+        s_runs.itertuples(),
+        config.archs,
+        updated_urts,
+        par_var.itertuples(),
+        varlist_heat,
+    )
+
+    def aggregate_ncfile(args: tuple) -> xr.Dataset:
+        s_run, arch, urt, parset, varname = args
+        str_varname = str(varname)
+
+        print(
+            f"Opening {varname} data for: {s_run.scen}_{s_run.year}_{s_run.clim}_{arch}_{urt}_{parset.Index}"
+        )
+        suff = (
+            str(s_run.scen) + "_" + str(s_run.year) + "_" + str(s_run.clim) + "_" + arch
+        )
+
+        # if urt is "urban" or "rural" then load the data from the file
+        # otherwise if urt is "total" then add the data from the "urban" and "rural" files
+        if (urt == "urban") or (urt == "rural"):
+            varname = xr.open_dataset(
+                os.path.join(
+                    finalmaps_path,
+                    suff + "_" + str(parset.Index) + "_" + varname + ".nc",
+                )
+            )[urt]
+
+        elif urt == "total":
+            varname = (
+                xr.open_dataset(
+                    os.path.join(
+                        finalmaps_path,
+                        suff + "_" + str(parset.Index) + "_" + varname + ".nc",
+                    )
+                )["urban"]
+                + xr.open_dataset(
+                    os.path.join(
+                        finalmaps_path,
+                        suff + "_" + str(parset.Index) + "_" + varname + ".nc",
+                    )
+                )["rural"]
+            )
+
+        # If varname is Nd or Nf, then take the mean. Otherwise, take the sum
+        if str_varname in ["Nd", "Nf"]:
+            # Group varname by raster index and take the mean
+            print("...Aggregating data by raster")
+            agg_ras_month = (
+                varname.groupby(raster).mean().to_dataframe(name="value").reset_index()
+            )
+
+            # Group by gaul_lvl0 and take the mean
+            print(".....Aggregating data by gaul_lvl0")
+            agg_gaul_lvl0 = (
+                agg_ras_month.groupby("gaul_lvl0")["value"]
+                .agg(lambda x: x.mean() / 2)
+                .reset_index()
+            )
+        else:
+            # Group varname by raster index and sum
+            print("...Aggregating data by raster")
+            agg_ras_month = (
+                varname.groupby(raster).sum().to_dataframe(name="value").reset_index()
+            )
+
+            # Group by gaul_lvl0 and sum
+            print(".....Aggregating data by gaul_lvl0")
+            agg_gaul_lvl0 = (
+                agg_ras_month.groupby("gaul_lvl0")["value"].sum().reset_index()
+            )
+
+        # Add columns for:
+        # - s_run.scen
+        # - s_run.year
+        # - s_run.clim
+        # - arch
+        # - urt
+        # - varname
+        df = agg_gaul_lvl0.assign(
+            gcm=str(config.gcm),
+            scenario=str(config.rcp),
+            scen=str(s_run.scen),
+            year=str(s_run.year),
+            clim=str(s_run.clim),
+            arch=str(arch),
+            urt=str(urt),
+            par_var=str(parset.Index),
+            name_run=str(parset.name_run),
+            varname=str_varname,
+        )
+
+        return df
+
+    if config.cool == 1:
+        list_cool = list(map(aggregate_ncfile, inputs_cool))
+        df_agg = (
+            pd.concat(list_cool)
+            .reset_index(drop=True)
+            .merge(dfd, left_on="gaul_lvl0", right_on="ISONUM")
+        )
+    if config.heat == 1:
+        list_heat = list(map(aggregate_ncfile, inputs_heat))
+        df_heat = (
+            pd.concat(list_heat)
+            .reset_index(drop=True)
+            .merge(dfd, left_on="gaul_lvl0", right_on="ISONUM")
+        )
+        # Add df_heat to df_agg
+        df_agg = df_agg.append(df_heat, ignore_index=True)
+
+    print("Completed aggregating raster data! Now processing and saving...")
+
+    # Merge df_agg with pop_agg
+    df_agg = df_agg.assign(year=lambda x: x.year.astype(int)).merge(
+        pop_agg,
+        left_on=["gaul_lvl0", "urt", "year"],
+        right_on=["gaul_lvl0", "urt", "year"],
+    )
+
+    # Convert from long to wide on varname
+    df_agg_wide = df_agg.pivot_table(
+        index=[
+            "gaul_lvl0",
+            "ADM0_CODE",
+            "ADM0_NAME",
+            "CONTINENT",
+            "FAO_CODE",
+            "ISO3",
+            "UN_CODE",
+            "UN_REGION",
+            "ISO",
+            "GLOBAL_SOUTH",
+            "REGION_GEA",
+            "gcm",
+            "scenario",
+            "scen",
+            "population_scenario",
+            "year",
+            "clim",
+            "arch",
+            "urt",
+            "par_var",
+            "name_run",
+            "popsum",
+        ],
+        columns="varname",
+        values="value",
+    ).reset_index()
+
+    # Calculate population-averaged degree days
+    if config.cool == 1:
+        df_agg_wide = df_agg_wide.assign(vdd_c_avg=lambda x: x.vdd_c_popwei / x.popsum)
+    if config.heat == 1:
+        df_agg_wide = df_agg_wide.assign(vdd_h_avg=lambda x: x.vdd_h_popwei / x.popsum)
+
+    # Drop and rename columns
+    df_agg_wide = df_agg_wide.drop(
+        columns=["ADM0_CODE", "CONTINENT", "FAO_CODE", "ISO3", "UN_CODE", "UN_REGION"]
+    ).rename(columns={"gaul_lvl0": "id", "ADM0_NAME": "NAME"})
+
+    # Save to excel and csv
+    df_agg_wide.to_excel(
+        os.path.join(
+            iso_path,
+            "ISO_agg_data_" + config.vstr + ".xlsx",
+        )
+    )
+    df_agg_wide.to_csv(
+        os.path.join(
+            iso_path,
+            "ISO_agg_data_" + config.vstr + ".csv",
+        ),
+        index=False,
+    )
+
+    end = datetime.datetime.now()
+    print(
+        "Done! Total time to aggregate variables and process ISO tables: "
+        + str(end - start)
+    )
 
 
 def create_climate_outputs(config: "Config", start_time: datetime.datetime):

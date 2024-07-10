@@ -754,6 +754,7 @@ def aggregate_urban_rural_files(config: "Config"):
     )
 
     par_var = load_parametric_analysis_data(config)
+    print(par_var)
 
     if not os.path.exists(output_path_vdd):
         os.makedirs(output_path_vdd)

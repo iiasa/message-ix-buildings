@@ -2,15 +2,7 @@ import datetime
 import sys
 from argparse import ArgumentParser
 
-from main.climate import (
-    aggregate_urban_rural_files,
-    make_vdd_total_maps,
-    process_construction_shares,
-    process_country_maps,
-    process_final_maps,
-    process_floor_area_maps,
-    process_iso_tables,
-)
+from main.climate import aggregate_urban_rural_files
 from utils.config import Config  # type: ignore
 
 
@@ -83,23 +75,23 @@ def main(args=None):
     print("RUNNING aggregate_urban_rural_files()........")
     aggregate_urban_rural_files(cfg)
 
-    print("RUNNING make_vdd_total_maps()........")
-    make_vdd_total_maps(cfg)
+    # print("RUNNING make_vdd_total_maps()........")
+    # make_vdd_total_maps(cfg)
 
-    print("RUNNING process_construction_shares()........")
-    process_construction_shares(cfg)
+    # print("RUNNING process_construction_shares()........")
+    # process_construction_shares(cfg)
 
-    print("RUNNING process_floor_area_maps()........")
-    process_floor_area_maps(cfg)
+    # print("RUNNING process_floor_area_maps()........")
+    # process_floor_area_maps(cfg)
 
-    print("RUNNING process_country_maps()........")
-    process_country_maps(cfg)
+    # print("RUNNING process_country_maps()........")
+    # process_country_maps(cfg)
 
-    print("RUNNING process_final_maps()........")
-    process_final_maps(cfg)
+    # print("RUNNING process_final_maps()........")
+    # process_final_maps(cfg)
 
-    print("RUNNING process_iso_tables()........")
-    process_iso_tables(cfg)
+    # print("RUNNING process_iso_tables()........")
+    # process_iso_tables(cfg)
 
 
 if __name__ == "__main__":

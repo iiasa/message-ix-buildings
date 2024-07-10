@@ -11,7 +11,8 @@ import xarray as xr
 from functions.variable_dicts import VARS_ARCHETYPES  # type: ignore
 from preprocess.message_raster import create_message_raster  # type: ignore
 from utils.config import Config  # type: ignore
-from utils.util import read_arch_inputs_df, read_arch_reg_df  # type: ignore
+from utils.util import get_archs, read_arch_inputs_df, read_arch_reg_df  # type: ignore
+                        read_arch_reg_df)
 
 
 def create_archetypes(config: "Config"):
@@ -25,6 +26,9 @@ def create_archetypes(config: "Config"):
     # get raster file and message map
     country_ras, reg_ras, map_reg, iso_attrs = create_message_raster(config)
 
+    # get archs
+    vers_archs = get_archs(config)
+
     # save MESSAGE regions map
     msg_file = "map_reg_MESSAGE_" + config.node + ".nc"
     map_reg.to_netcdf(os.path.join(archetype_path, msg_file))
@@ -36,7 +40,7 @@ def create_archetypes(config: "Config"):
         )
     )
 
-    for arch in config.archs:
+    for arch in vers_archs:
         arch_reg = read_arch_reg_df(config, arch)
 
         # Create map of archetypes based on MESSAGE regions raster
@@ -92,6 +96,9 @@ def create_archetype_variables(config: "Config"):
     out_path = os.path.join(config.project_path, "out", "version")
     archetype_path = os.path.join(out_path, config.vstr, "rasters")
 
+    # get archs
+    vers_archs = get_archs(config)
+
     def map_archetype_variables(args):
         arch_setting, arch, varname = args
 
@@ -141,6 +148,6 @@ def create_archetype_variables(config: "Config"):
 
     # create archetype variables maps
 
-    func_inputs = product([config.arch_setting], config.archs, VARS_ARCHETYPES)
+    func_inputs = product([config.arch_setting], vers_archs, VARS_ARCHETYPES)
 
     list(map(map_archetype_variables, func_inputs))

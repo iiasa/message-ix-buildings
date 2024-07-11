@@ -9,18 +9,19 @@ Welcome to MESSAGEix-Buildings's documentation!
 “MESSAGEix-Buildings” refers to a collection of linked models, including:
 
 - ACCESS
-- CHILLED
+- :doc:`chilled`
 - :doc:`sturm`
 
 …and their integration with the :doc:`MESSAGEix-GLOBIOM model family <message_ix_models:index>`.
 
-At present, the package :mod:`message_ix_buildings` contains STURM only.
+At present, the package :mod:`message_ix_buildings` contains STURM and CHILLED only.
 
 .. toctree::
    :maxdepth: 2
    :hidden:
 
    sturm
+   chilled
    dev
 
 Indices and tables

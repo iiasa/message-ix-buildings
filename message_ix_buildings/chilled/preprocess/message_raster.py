@@ -12,6 +12,28 @@ from utils.config import Config  # type: ignore
 
 
 def create_message_raster(config: "Config"):
+    """
+    Process global raster into MESSAGE regions
+
+    Parameters
+    ----------
+    config : .Config
+        The function responds to, or passes on to other functions, the fields:
+        :attr:`~.Config.dle_path` and
+        :attr:`~.Config.node`,
+
+    Returns
+    -------
+    country_ras : xarray.DataArray
+        Raster of countries
+    reg_ras : xarray.Dataset
+        Raster of regions
+    map_reg : xarray.DataArray
+        Map of regions
+    iso_attrs : pd.DataFrame
+        ISO attributes in a dataframe
+
+    """
     input_path = os.path.join(config.dle_path)
 
     if config.node == "R11":
@@ -97,15 +119,6 @@ def create_message_raster(config: "Config"):
             "institution": "IIASA Energy Program",
             "contact": "byers@iiasa.ac.at; mastrucc@iiasa.ac.at",
         }
-
-        # filename = "map_reg_MESSAGE_" + config.node + ".nc"
-
-        # map_reg.to_netcdf(os.path.join(output_path, filename))
-
-        # print(
-        #     "Saved MESSAGE and raster map data to "
-        #     + os.path.join(output_path, filename)
-        # )
 
         return country_ras, reg_ras, map_reg, iso_attrs
 

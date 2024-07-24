@@ -7,7 +7,7 @@ import cartopy.crs as ccrs  # type: ignore
 import cartopy.feature as cfeature  # type: ignore
 import matplotlib.pyplot as plt  # type: ignore
 import numpy as np
-import pandas as pd  # type: ignore
+import pandas as pd
 import pyam  # type: ignore
 import xarray as xr
 from dask.diagnostics import ProgressBar

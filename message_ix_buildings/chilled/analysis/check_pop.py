@@ -1,7 +1,7 @@
 import os
 from itertools import product
 
-import pandas as pd  # type: ignore
+import pandas as pd
 import xarray as xr
 
 from message_ix_buildings.chilled.functions.variable_dicts import (
@@ -10,7 +10,6 @@ from message_ix_buildings.chilled.functions.variable_dicts import (
     VARUNDICT_COOL,
     VARUNDICT_HEAT,
 )
-from message_ix_buildings.chilled.utils.config import Config
 
 vstr = cfg.vstr
 vstrcntry = cfg.vstrcntry

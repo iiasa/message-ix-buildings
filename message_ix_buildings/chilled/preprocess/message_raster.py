@@ -6,8 +6,8 @@ import datetime
 import os
 
 import numpy as np
-import pandas as pd  # type: ignore
-import xarray as xr  # type: ignore
+import pandas as pd
+import xarray as xr
 from utils.config import Config  # type: ignore
 
 

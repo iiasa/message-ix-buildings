@@ -29,7 +29,7 @@ When specifying a version, CHILLED will look in the `/data/chilled/version` dire
 Usage
 =====
 
-The preprocessing (preparing MESSAGE region rasters and country codes) happens without specifying GCM or RCP scenario. Therefore, it can be run first on its own using the following command (from the within :mod:`chilled.run`):
+The preprocessing (preparing MESSAGE region rasters and country codes) happens without specifying GCM or RCP scenario. Therefore, it can be run first on its own using the following command (from within :mod:`chilled.run`):
 
 .. code-block:: bash
 

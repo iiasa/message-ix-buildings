@@ -3,7 +3,7 @@
 CHILLED (:mod:`.chilled`)
 *************************
 
-:mod:`.chilled` (Cooling and Heating gLobaL Energy Demand) is a model that assesses the impacts of climate change (temperature change)
+:mod:`.chilled` (Cooling and HeatIng gLobaL Energy Demand) is a model that assesses the impacts of climate change (temperature change).
 
 Methods
 =======

@@ -10,10 +10,127 @@ from functions.user_settings import DICT_USER_SETTINGS  # type: ignore
 class Config:
     """Configuration for :mod:`.message_ix_buildings.chilled`."""
 
-    # SPECIFY USER
+    #: Select user to set the paths to the project and data directories.
+    #:
+    #: One of: "ALE", "ED", "MEAS", "MEAS_EBRO", "MEAS_UNICC".
     user: Literal["ALE", "ED", "MEAS", "MEAS_EBRO", "MEAS_UNICC"] = "MEAS_UNICC"
-    # print(f"USER: {user}")
 
+    #: Set the version of the module run.
+    #:
+    #: This is used to name the output files and directories.
+    vstr: str = "ALPS2023"
+
+    #: Select the climate model.
+    #:
+    #: One of: "GFDL-ESM4", "IPSL-CM6A-LR", "MPI-ESM1-2-HR", "MRI-ESM2-0", "UKESM1-0-LL".
+    gcm: Literal[
+        "GFDL-ESM4", "IPSL-CM6A-LR", "MPI-ESM1-2-HR", "MRI-ESM2-0", "UKESM1-0-LL"
+    ] = "GFDL-ESM4"
+
+    #: Select RCP scenario.
+    #:
+    #: One of: "ssp126", "ssp370", "ssp585", "baseline".
+    rcp: Literal["ssp126", "ssp370", "ssp585", "baseline"] = "baseline"
+
+    #: List all possible RCP scenarios.
+    rcps = ["ssp126", "ssp370", "ssp585", "baseline"]
+
+    #: Set what data to use for the RCP scenario.
+    #: If rcp is "baseline", then use "ssp126" data.
+    #: Otherwise, use the data corresponding to the RCP scenario selected.
+    if rcp == "baseline":
+        rcpdata = "ssp126"
+    else:
+        rcpdata = rcp
+
+    #: Select the version of the country data and floor surface.
+    vstrcntry = "v4"  # version string for country data and floor surface
+
+    #: Set paranalysys mode
+    #:
+    #: 1 = run entire parametric analysis
+    #: 0 = run only ref case
+    paranalysis_mode = 1  # 1 = run entire parametric analysis; 0 = run only ref case
+
+    #: Select whether to run simple (standard) degree days calculation.
+    #:
+    #: 1 = run simple (standard) degree days calculation
+    #: 0 = don't run
+    runsdd = 0  # 1= run simple (standard) degree days calculation; 0 = don't run
+
+    #: Select whether to run testing mode.
+    #:
+    #: 1 = selects only two years for testing
+    #: 0 = select all years (full calculation)
+    testing_mode = 0
+
+    #: Select whether to fix population to SSP2.
+    popfix = True  # If True, fix to SSP2, else.... (see script 4/5)
+
+    #: Select construction setting.
+    constr_setting = 0
+
+    #: Select floor setting. One of:
+    #:
+    #: - "std_cap": standard capacity
+    #: - "per_cap": per capita
+    floor_setting: Literal["std_cap", "per_cap"] = "std_cap"
+
+    #: Select building archetypes setting. One of:
+    #:
+    #: - "fixed": fixed values (same for all regions)
+    #: - "regional": different values by MESSAGE region
+    arch_setting: Literal["fixed", "regional"] = "regional"
+
+    #: Select urban/rural disaggregations.
+    #: Multiple options are allowed. Options:
+    #:
+    #: - "urban": urban areas
+    #: - "rural": rural areas
+    urts = ["urban", "rural"]
+
+    #: Select option whether to have verbose output
+    verbose = True
+
+    #: Select whether to run cooling calculations.
+    #:
+    #: 1 = calculate
+    #: 0 = skip
+    cool = 1
+
+    #: Select whether to run heating calculations.
+    #:
+    #: 1 = calculate
+    #: 0 = skip
+    heat = 0
+
+    #: Select solar gain calculation. One of:
+    #:
+    #: - "TOT": from windows and roof
+    #: - "VERT": from windows only
+    #: - "HOR": from windows only
+    solar_gains: Literal["TOT", "VERT", "HOR"] = "TOT"
+
+    #: Select temperature variable. One of:
+    #:
+    #: - "tas": near-surface air temperature
+    #: - "twb": wet-bulb temperature
+    var: Literal["tas", "twb"] = "tas"
+
+    #: Set variable based on temperature variable.
+    if var == "tas":
+        davar = "tas"
+    elif var == "twb":
+        davar = "twb"
+
+    overwrite = 0
+
+    #: Spatial resolution
+    #: Currently only "R11" is supported.
+    #: TODO: In the future, support "R12".
+    node: Literal["R11"] = "R11"
+
+    #: Paths settings by user
     project_path = DICT_USER_SETTINGS[user]["project_path"]
     dle_path = DICT_USER_SETTINGS[user]["dle_path"]
     message_region_file = DICT_USER_SETTINGS[user]["message_region_map_file"]
@@ -21,34 +138,11 @@ class Config:
     isimip_ewemib_path = DICT_USER_SETTINGS[user]["isimip_ewembi_path"]
     chunk_size = DICT_USER_SETTINGS[user]["chunk_size"]
 
-    # RUN SETTINGS
-    paranalysis_mode = 1  # 1 = run entire parametric analysis; 0 = run only ref case
-    runsdd = 0  # 1= run simple (standard) degree days calculation; 0 = don't run
-
-    # Netcdf settings
+    #: NetCDF settings
     netcdf4_format = "NETCDF4_CLASSIC"
     comp = dict(zlib=True, complevel=5)  # Compression between 0 and 9 (highest)
 
-    # TESTING MODE
-    testing_mode = 0  # 1= selects only two years for testing; 0= select all years (full calculation)
-
-    # VERSION SETTINGS
-    vstr: str = "ALPS2023"  # version input data
-    vstrcntry = "v4"  # version string for country data and floor surface
-    gcm: Literal[
-        "GFDL-ESM4", "IPSL-CM6A-LR", "MPI-ESM1-2-HR", "MRI-ESM2-0", "UKESM1-0-LL"
-    ] = "GFDL-ESM4"
-
-    # SCENARIO SETTINGS
-    rcps = ["ssp126", "ssp370", "ssp585", "baseline"]  # list all possible scenarios
-    rcp: Literal["ssp126", "ssp370", "ssp585", "baseline"] = "baseline"
-
-    if rcp == "baseline":
-        rcpdata = "ssp126"
-    else:
-        rcpdata = rcp
-
-    # CLIMATIC DATA INPUTS
+    #: Climate years dictionary settings.
     if rcp == "baseline":
         yeardic = {
             "2015": ("2015", "2020"),
@@ -76,58 +170,7 @@ class Config:
             "2100": ("2095", "2100"),
         }
 
-    # climatic inputs for sensitivity runs
-    # clims = ["hist"]  # options: "hist", "1p5"
-    # clims = list(yeardic.keys())
-
-    # POPULATION SETTINGS
-    popfix = True  # If True, fix to SSP2, else.... (see script 4/5)
-
-    # BUILDING SCENARIO SETTINGS
-
-    # CONMSTRUCTION MATERIAL SHARES
-    constr_setting = 0
-
-    # FLOOR_SETTING CHOICE
-    # Choose per_cap for different values by MESSAGE region or std_cap for fixed values
-    floor_setting = "std_cap"  # v16; options: "std_cap", "per_cap"
-
-    # BUILDING ARCHETYPE SETTINGS
-    # Choose "regional" for different values by MESSAGE region or "fixed" for fixed values
-    # (same for all regions)
-    arch_setting = "regional"  # options: ["fixed", "regional"]
-
-    # URBAN/RURAL DISAGGREGATIONS
-    urts = ["urban", "rural"]  # options (mult): "urban", "rural"
-
-    # ARCHETYPES
-    # archs = ["new", "exist"]
-
-    # PARAMETERS FOR STEP 2 SCRIPT
-    verbose = True
-
-    ## SWITCH COOLING/HEATING CALCULATIONS
-    ## 1=calculate; 0=skip
-    heat = 0
-    cool = 1
-
-    # CHOICE: SOLAR GAIN CALCULATION
-    solar_gains = "TOT"  # from windows and roof
-    # solar_gains = 'VERT' #from windows only
-    # solar_gains = 'HOR' #from windows only
-
-    # SELECT VAR
-    var = "tas"
-
-    if var == "tas":
-        davar = "tas"
-    elif var == "twb":
-        davar = "twb"
-
-    overwrite = 0
-
-    # BULDING PARAMETERS
-    # Fixed values
+    #: Fixed values for buildings settings.
     bal_temps = [18.3, 21.1, 26]  # [21.1] #  For simple cooling degree days
     arb_fan = 2
     t_sp_h = np.int8(20)  # Indoor setpoint temperature for heating
@@ -135,6 +178,7 @@ class Config:
     area_fan = 25  # Numer of m2 per fan
     gridshape2 = (360, 720)
 
+    #: Attributes for netCDF files
     y2_attrs_dic = {
         "title": "map_area_env",
         "authors": "Alessio Mastrucci & Edward Byers",
@@ -144,62 +188,6 @@ class Config:
         "arch_setting": arch_setting,
     }
 
-    # Final maps (y4) parameters
+    #: Threshold for number of days (?)
+    #: TODO: check if this is the correct description.
     nd_thresh = 5
-
-    # # Load scenarios data
-    # s_runs = load_all_scenarios_data(
-    #     input_dle_path=DICT_USER_SETTINGS[user]["dle_path"], input_version_name=vstr
-    # )
-
-    # # Load paramtric analysis data
-    # par_var = load_parametric_analysis_data(
-    #     input_dle_path=DICT_USER_SETTINGS[user]["dle_path"],
-    #     input_version_name=vstr,
-    #     input_paranalysis_mode=paranalysis_mode,
-    # )
-
-    # #: Base year for projections.
-    # base_year: int = BASE_YEAR
-
-    # #: Year of convergence; used when :attr:`.method` is "convergence". See
-    # #: :func:`.create_projections_converge`.
-    # convergence_year: int = 2050
-
-    # #: Rate of increase/decrease of fixed operating and maintenance costs.
-    # fom_rate: float = 0.025
-
-    # #: Format of output. One of:
-    # #:
-    # #: - "iamc": IAMC time series data structure.
-    # #: - "message": :mod:`message_ix` parameter data.
-    # format: Literal["iamc", "message"] = "message"
-
-    #: Spatial resolution
-    node: Literal["R11", "R12", "R20"] = "R11"
-
-    # #: Projection method; one of:
-    # #:
-    # #: - "convergence": uses :func:`.create_projections_converge`
-    # #: - "gdp": :func:`.create_projections_gdp`
-    # #: - "learning": :func:`.create_projections_converge`
-    # method: Literal["convergence", "gdp", "learning"] = "gdp"
-
-    # #: Model variant to prepare data for.
-    # module: Literal["base", "materials"] = "base"
-
-    # #: Reference region; default "{node}_NAM".
-    # ref_region: Optional[str] = None
-
-    # #: Set of SSPs referenced by :attr:`scenario`. One of:
-    # #:
-    # #: - "original": :obj:`SSP_2017`
-    # #: - "updated": :obj:`SSP_2024`
-    # scenario_version: Literal["original", "updated"] = "updated"
-
-    # #: Scenario(s) for which to create data.
-    # scenario: Literal["all", "LED", "SSP1", "SSP2", "SSP3", "SSP4", "SSP5"] = "all"
-
-    # def __post_init__(self):
-    #     if self.ref_region is None:
-    #         self.ref_region = f"{self.node}_NAM"

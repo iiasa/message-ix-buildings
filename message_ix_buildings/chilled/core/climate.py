@@ -1216,7 +1216,7 @@ def process_construction_shares(config: "Config"):
 
 
 def process_floor_area_maps(config: "Config"):
-    input_path = os.path.join(config.dle_path, "input_data")
+    input_path = config.dle_path
     out_path = os.path.join(config.project_path, "out", "version", config.vstr)
     save_path = os.path.join(out_path, "floorarea_country")
 

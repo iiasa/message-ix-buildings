@@ -12,7 +12,7 @@ from core.climate import (
     process_floor_area_maps,
     process_iso_tables,
 )
-from utils.config import Config  # type: ignore
+from util.config import Config  # type: ignore
 
 
 def parse_arguments(arguments):

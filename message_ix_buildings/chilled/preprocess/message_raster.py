@@ -8,7 +8,7 @@ import os
 import numpy as np
 import pandas as pd
 import xarray as xr
-from utils.config import Config  # type: ignore
+from util.config import Config  # type: ignore
 
 
 def create_message_raster(config: "Config"):

@@ -2,7 +2,7 @@ import sys
 from argparse import ArgumentParser
 
 from preprocess.archetypes import create_archetype_variables, create_archetypes
-from utils.config import Config  # type: ignore
+from util.config import Config  # type: ignore
 
 
 def parse_arguments(arguments):

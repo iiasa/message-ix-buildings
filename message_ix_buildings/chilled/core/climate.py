@@ -41,8 +41,8 @@ from functions.variable_dicts import (
     VARUNDICT_HEAT,
 )
 from preprocess.message_raster import create_message_raster  # type: ignore
-from utils.config import Config  # type: ignore
-from utils.util import get_archs, load_all_scenarios_data, load_parametric_analysis_data
+from util.config import Config  # type: ignore
+from util.util import get_archs, load_all_scenarios_data, load_parametric_analysis_data
 
 
 def create_climate_variables_maps(config: "Config", start_time: datetime.datetime):

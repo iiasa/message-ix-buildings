@@ -1,8 +1,8 @@
 import os
 from pathlib import Path
 
-import pandas as pd  # type: ignore
-from utils.config import Config  # type: ignore
+import pandas as pd
+from util.config import Config  # type: ignore
 
 
 def get_project_root() -> Path:
@@ -43,10 +43,6 @@ def get_archs(config: "Config"):
                 + input_file
                 + " does not exist! Please create file for input."
             )
-
-    # if config.arch_setting == "fixed", then get sheet names of file (these will be the archetypes)
-
-    # if config.arch_setting == "regional", then read in the single file and get the unique values of the "arch" column
 
 
 def read_arch_inputs_df(config: "Config", suff: str):

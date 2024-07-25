@@ -3,11 +3,11 @@ import os
 from itertools import product
 
 import numpy as np
-import pandas as pd  # type: ignore
+import pandas as pd
 import xarray as xr
 from dask.diagnostics import ProgressBar
 
-from message_ix_buildings.chilled.utils.config import Config
+from message_ix_buildings.chilled.util.config import Config
 from message_ix_buildings.chilled.functions.buildings_funcs_grid import (
     P_f,
     Q_c_tmax,

@@ -10,8 +10,8 @@ import numpy as np
 import xarray as xr
 from functions.variable_dicts import VARS_ARCHETYPES  # type: ignore
 from preprocess.message_raster import create_message_raster  # type: ignore
-from utils.config import Config  # type: ignore
-from utils.util import get_archs, read_arch_inputs_df, read_arch_reg_df
+from util.config import Config  # type: ignore
+from util.util import get_archs, read_arch_inputs_df, read_arch_reg_df
 
 
 def create_archetypes(config: "Config"):

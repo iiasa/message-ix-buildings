@@ -3,7 +3,8 @@ from dataclasses import dataclass
 from typing import Literal
 
 import numpy as np
-from functions.user_settings import DICT_USER_SETTINGS  # type: ignore
+
+from message_ix_buildings.chilled.user_settings import DICT_USER_SETTINGS
 
 
 @dataclass
@@ -22,7 +23,7 @@ class Config:
 
     #: Select the climate model.
     #:
-    #: One of: "GFDL-ESM4", "IPSL-CM6A-LR", "MPI-ESM1-2-HR", "MRI-ESM2-0", "UKESM1-0-LL".
+    #: One of: "GFDL-ESM4", "IPSL-CM6A-LR", "MPI-ESM1-2-HR", "MRI-ESM2-0", "UKESM1-0-LL"
     gcm: Literal[
         "GFDL-ESM4", "IPSL-CM6A-LR", "MPI-ESM1-2-HR", "MRI-ESM2-0", "UKESM1-0-LL"
     ] = "GFDL-ESM4"
@@ -132,7 +133,7 @@ class Config:
 
     #: Paths settings by user
     project_path = DICT_USER_SETTINGS[user]["project_path"]
-    dle_path = DICT_USER_SETTINGS[user]["dle_path"]
+    dle_path: str = str(DICT_USER_SETTINGS[user]["dle_path"])
     message_region_file = DICT_USER_SETTINGS[user]["message_region_map_file"]
     isimip_bias_adj_path = DICT_USER_SETTINGS[user]["isimip_bias_adj_path"]
     isimip_ewemib_path = DICT_USER_SETTINGS[user]["isimip_ewembi_path"]

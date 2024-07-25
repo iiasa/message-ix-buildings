@@ -8,7 +8,8 @@ import os
 import numpy as np
 import pandas as pd
 import xarray as xr
-from util.config import Config  # type: ignore
+
+from message_ix_buildings.chilled.util.config import Config
 
 
 def create_message_raster(config: "Config"):
@@ -59,10 +60,10 @@ def create_message_raster(config: "Config"):
         for row in iso_attrs.itertuples():
             code = row.ISO  # get country ISO code
             regval = msgregions.loc[msgregions.iso_code == code, "RegNum"]
-            if regval.values.size != 0:
-                reg_ras.MESSAGE11.values[country_ras.values == float(row.Index)] = (
-                    regval
-                )
+            if len(regval.values) != 0:
+                reg_ras.MESSAGE11.values[
+                    country_ras.values == float(str(row.Index))
+                ] = regval
             else:
                 print(row.Index)
                 print()

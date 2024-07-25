@@ -12,6 +12,7 @@ from core.climate import (
     process_floor_area_maps,
     process_iso_tables,
 )
+from rich.progress import track  # type: ignore
 from util.config import Config  # type: ignore
 
 
@@ -77,34 +78,25 @@ def main(args=None):
 
     parsed_args = parse_arguments(arguments=args)
 
-    # Run the main function
+    # Run the core functions
     start = datetime.datetime.now()
     print_arguments(parsed_arguments=parsed_args)
     cfg = create_config(parsed_arguments=parsed_args)
 
-    print("RUNNING create_climate_variables_maps()........")
-    create_climate_variables_maps(cfg, start)
+    steps = [
+        create_climate_variables_maps(cfg, start),
+        aggregate_urban_rural_files(cfg),
+        make_vdd_total_maps(cfg),
+        process_construction_shares(cfg),
+        process_floor_area_maps(cfg),
+        process_country_maps(cfg),
+        process_final_maps(cfg),
+        process_iso_tables(cfg),
+    ]
 
-    print("RUNNING aggregate_urban_rural_files()........")
-    aggregate_urban_rural_files(cfg)
-
-    print("RUNNING make_vdd_total_maps()........")
-    make_vdd_total_maps(cfg)
-
-    print("RUNNING process_construction_shares()........")
-    process_construction_shares(cfg)
-
-    print("RUNNING process_floor_area_maps()........")
-    process_floor_area_maps(cfg)
-
-    print("RUNNING process_country_maps()........")
-    process_country_maps(cfg)
-
-    print("RUNNING process_final_maps()........")
-    process_final_maps(cfg)
-
-    print("RUNNING process_iso_tables()........")
-    process_iso_tables(cfg)
+    for step in track(steps, description="Running functions: "):
+        print(f"RUNNING {step.__name__}()........")
+        step()
 
 
 if __name__ == "__main__":

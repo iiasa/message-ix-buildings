@@ -83,20 +83,15 @@ def main(args=None):
     print_arguments(parsed_arguments=parsed_args)
     cfg = create_config(parsed_arguments=parsed_args)
 
-    steps = [
-        create_climate_variables_maps(cfg, start),
-        aggregate_urban_rural_files(cfg),
-        make_vdd_total_maps(cfg),
-        process_construction_shares(cfg),
-        process_floor_area_maps(cfg),
-        process_country_maps(cfg),
-        process_final_maps(cfg),
-        process_iso_tables(cfg),
-    ]
-
-    for step in track(steps, description="Running functions: "):
-        print(f"RUNNING {step.__name__}()........")
-        step()
+    for step in track([cfg], description="Running core functions..."):
+        (create_climate_variables_maps(step, start),)
+        (aggregate_urban_rural_files(step),)
+        (make_vdd_total_maps(step),)
+        (process_construction_shares(step),)
+        (process_floor_area_maps(step),)
+        (process_country_maps(step),)
+        (process_final_maps(step),)
+        (process_iso_tables(step),)
 
 
 if __name__ == "__main__":

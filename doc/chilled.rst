@@ -48,21 +48,21 @@ If the `-version` command is not provided, then the default version is "ALPS2023
 If the `-gcm` and `-rcp` commands are not provided, then the default GCM is "GFDL-ESM2M" and the default RCP is "baseline".
 
 
-.. Code reference
-.. ==============
+Code reference
+==============
 
-.. .. automodule:: message_ix_buildings.chilled
-..    :members:
+.. automodule:: message_ix_buildings.chilled
+   :members:
 
-.. .. currentmodule:: message_ix_buildings.chilled.preprocess.message_raster
+.. currentmodule:: message_ix_buildings.chilled.preprocess.message_raster
 
-.. Create raster of MESSAGE regions (:mod:`~.chilled.preprocess.message_raster`)
-.. -----------------------------------------------------------------------------
+Create raster of MESSAGE regions (:mod:`~.chilled.preprocess.message_raster`)
+-----------------------------------------------------------------------------
 
-.. .. automodule:: message_ix_buildings.chilled.preprocess.message_raster
-..    :members:
+.. automodule:: message_ix_buildings.chilled.preprocess.message_raster
+   :members:
 
-..    .. autosummary::
+   .. autosummary::
 
-..       create_message_raster
+      create_message_raster
 

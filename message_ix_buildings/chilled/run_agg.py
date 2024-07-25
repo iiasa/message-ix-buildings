@@ -2,7 +2,7 @@ import datetime
 import sys
 from argparse import ArgumentParser
 
-from main.climate import process_iso_tables
+from core.climate import process_iso_tables
 from utils.config import Config  # type: ignore
 
 

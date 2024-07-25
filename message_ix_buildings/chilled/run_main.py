@@ -2,7 +2,7 @@ import datetime
 import sys
 from argparse import ArgumentParser
 
-from main.climate import (
+from core.climate import (
     aggregate_urban_rural_files,
     create_climate_variables_maps,
     make_vdd_total_maps,
@@ -107,5 +107,7 @@ def main(args=None):
     process_iso_tables(cfg)
 
 
+if __name__ == "__main__":
+    main()
 if __name__ == "__main__":
     main()

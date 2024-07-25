@@ -21,6 +21,7 @@ Parameters
 
 In this module, the "version" refers to the version of the model, not the version of the data. For example, the "ALPS2023" version refers to the set of scenario inputs/parameters for the "ALPS2023" run.
 When specifying a version, CHILLED will look in the `/data/chilled/version` directory that the version name exists and that the following files exist as well:
+
 - `arch_input_reg.xlsx` (or `arch_input.xlsx`)
 - `arch_regions.xlsx`
 - `par_var.csv`

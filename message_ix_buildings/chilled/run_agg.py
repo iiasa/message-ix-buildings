@@ -2,8 +2,8 @@ import datetime
 import sys
 from argparse import ArgumentParser
 
-from core.climate import process_iso_tables
-from util.config import Config  # type: ignore
+from message_ix_buildings.chilled.core.climate import process_iso_tables
+from message_ix_buildings.chilled.util.config import Config  # type: ignore
 
 
 def parse_arguments(arguments):

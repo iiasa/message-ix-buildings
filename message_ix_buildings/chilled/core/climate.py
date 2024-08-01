@@ -10,7 +10,8 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 from dask.diagnostics import ProgressBar
-from functions.buildings_funcs_grid import (
+
+from message_ix_buildings.chilled.functions.buildings_funcs_grid import (
     P_f,
     Q_c_tmax,
     Q_h,
@@ -33,16 +34,22 @@ from functions.buildings_funcs_grid import (
     calc_vdd_h,
     calc_vdd_tmax_c,
 )
-from functions.variable_dicts import (
+from message_ix_buildings.chilled.functions.variable_dicts import (
     VARDICT_COOL,
     VARDICT_HEAT,
     VARS_ARCHETYPES,
     VARUNDICT_COOL,
     VARUNDICT_HEAT,
 )
-from preprocess.message_raster import create_message_raster  # type: ignore
-from util.config import Config  # type: ignore
-from util.util import get_archs, load_all_scenarios_data, load_parametric_analysis_data
+from message_ix_buildings.chilled.preprocess.message_raster import (
+    create_message_raster,  # type: ignore
+)
+from message_ix_buildings.chilled.util.config import Config  # type: ignore
+from message_ix_buildings.chilled.util.util import (
+    get_archs,
+    load_all_scenarios_data,
+    load_parametric_analysis_data,
+)
 
 
 def create_climate_variables_maps(config: "Config", start_time: datetime.datetime):

@@ -1,8 +1,11 @@
 import sys
 from argparse import ArgumentParser
 
-from preprocess.archetypes import create_archetype_variables, create_archetypes
-from util.config import Config  # type: ignore
+from message_ix_buildings.chilled.preprocess.archetypes import (
+    create_archetype_variables,
+    create_archetypes,
+)
+from message_ix_buildings.chilled.util.config import Config
 
 
 def parse_arguments(arguments):

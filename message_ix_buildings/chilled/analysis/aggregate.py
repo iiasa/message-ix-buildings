@@ -1,7 +1,7 @@
 import glob
 import os
 
-import pandas as pd  # type: ignore
+import pandas as pd
 from sklearn.utils.fixes import parse_version, sp_version  # type: ignore
 
 from message_ix_buildings.chilled.variable_dicts import SCENARIO_NAMES

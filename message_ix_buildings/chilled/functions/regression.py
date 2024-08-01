@@ -1,6 +1,6 @@
 import os
 
-import pandas as pd  # type: ignore
+import pandas as pd
 import pyam  # type: ignore
 import statsmodels.formula.api as smf  # type: ignore
 

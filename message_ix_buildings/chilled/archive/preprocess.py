@@ -3,11 +3,12 @@ import os
 from itertools import product
 
 import numpy as np
-import pandas as pd  # type: ignore
+import pandas as pd
 import xarray as xr
 from dask.diagnostics import ProgressBar
 
-from message_ix_buildings.chilled.buildings_funcs_grid import (
+from message_ix_buildings.chilled.util.config import Config
+from message_ix_buildings.chilled.functions.buildings_funcs_grid import (
     P_f,
     Q_c_tmax,
     Q_h,
@@ -30,28 +31,6 @@ from message_ix_buildings.chilled.buildings_funcs_grid import (
     calc_vdd_h,
     calc_vdd_tmax_c,
 )
-from message_ix_buildings.chilled.config import Config
-from message_ix_buildings.chilled.variable_dicts import (
-    VARS_ARCHETYPES,
-    YEARS_BASELINE,
-    YEARS_OTHERS,
-)
-
-#     print(clims + " + " + archs + " + " + parset_name_run + " + " + urts)
-
-
-def create_archetype_template_map(
-    dle_path,
-    version_name,
-    gcm,
-    rcp_scenario,
-    message_region_file,
-    archs_specified,
-    arch_setting,
-    urts,
-    comp,
-):
-    output_path_arch = os.path.join(
         dle_path,
         f"output_data_{version_name}",
         gcm,

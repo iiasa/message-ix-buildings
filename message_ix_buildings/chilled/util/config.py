@@ -4,7 +4,7 @@ from typing import Literal
 
 import numpy as np
 
-from message_ix_buildings.chilled.user_settings import DICT_USER_SETTINGS
+from message_ix_buildings.chilled.functions.user_settings import DICT_USER_SETTINGS
 
 
 @dataclass
@@ -132,11 +132,11 @@ class Config:
     node: Literal["R11"] = "R11"
 
     #: Paths settings by user
-    project_path = DICT_USER_SETTINGS[user]["project_path"]
+    project_path: str = str(DICT_USER_SETTINGS[user]["project_path"])
     dle_path: str = str(DICT_USER_SETTINGS[user]["dle_path"])
-    message_region_file = DICT_USER_SETTINGS[user]["message_region_map_file"]
-    isimip_bias_adj_path = DICT_USER_SETTINGS[user]["isimip_bias_adj_path"]
-    isimip_ewemib_path = DICT_USER_SETTINGS[user]["isimip_ewembi_path"]
+    message_region_file: str = str(DICT_USER_SETTINGS[user]["message_region_map_file"])
+    isimip_bias_adj_path: str = str(DICT_USER_SETTINGS[user]["isimip_bias_adj_path"])
+    isimip_ewemib_path: str = str(DICT_USER_SETTINGS[user]["isimip_ewembi_path"])
     chunk_size = DICT_USER_SETTINGS[user]["chunk_size"]
 
     #: NetCDF settings

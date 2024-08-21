@@ -65,18 +65,3 @@ def main(args=None):
 
 if __name__ == "__main__":
     main()
-
-
-# check to see if "map_reg_MESSAGE_{config.node}.nc" exists
-# if not, create the file
-# if not os.path.exists(
-#     os.path.join(cfg.dle_path, "out", "raster", "map_reg_MESSAGE_" + cfg.node + ".nc")
-# ):
-#     create_message_raster(cfg)
-# else:
-#     print(f"map_reg_MESSAGE_{cfg.node}.nc already exists. Using existing file.")
-
-# run create_archetypes
-
-
-# create maps of archetype variables

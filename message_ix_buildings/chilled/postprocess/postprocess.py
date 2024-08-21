@@ -1,8 +1,8 @@
 import os
 
-import pandas as pd  # type: ignore
+import pandas as pd
 
-from message_ix_buildings.chilled.config import Config
+from message_ix_buildings.chilled.util.config import Config
 
 cfg = Config()
 

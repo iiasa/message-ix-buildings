@@ -21,3 +21,6 @@ doc/_build
 
 # Scratch code
 scratch*
+
+# CHILLED user settings
+user_settings.py

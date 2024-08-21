@@ -1,20 +1,16 @@
 import os
 from itertools import product
 
-import pandas as pd  # type: ignore
+import pandas as pd
 import xarray as xr
 
-from message_ix_buildings.chilled.config import Config
-from message_ix_buildings.chilled.variable_dicts import (
+from message_ix_buildings.chilled.functions.variable_dicts import (
     VARDICT_COOL,
     VARDICT_HEAT,
     VARUNDICT_COOL,
     VARUNDICT_HEAT,
 )
 
-cfg = Config()
-
-dle_path = cfg.dle_path
 vstr = cfg.vstr
 vstrcntry = cfg.vstrcntry
 gcm = cfg.gcm

@@ -1,8 +1,15 @@
-import datetime
 import sys
 from argparse import ArgumentParser
 
-from message_ix_buildings.chilled.core.climate import process_iso_tables
+from message_ix_buildings.chilled.core.climate import (
+    aggregate_urban_rural_files,
+    make_vdd_total_maps,
+    process_construction_shares,
+    process_country_maps,
+    process_final_maps,
+    process_floor_area_maps,
+    process_iso_tables,
+)
 from message_ix_buildings.chilled.util.config import Config  # type: ignore
 
 
@@ -68,27 +75,26 @@ def main(args=None):
     parsed_args = parse_arguments(arguments=args)
 
     # Run the main function
-    start = datetime.datetime.now()
     print_arguments(parsed_arguments=parsed_args)
     cfg = create_config(parsed_arguments=parsed_args)
 
-    # print("RUNNING aggregate_urban_rural_files()........")
-    # aggregate_urban_rural_files(cfg)
+    print("RUNNING aggregate_urban_rural_files()........")
+    aggregate_urban_rural_files(cfg)
 
-    # print("RUNNING make_vdd_total_maps()........")
-    # make_vdd_total_maps(cfg)
+    print("RUNNING make_vdd_total_maps()........")
+    make_vdd_total_maps(cfg)
 
-    # print("RUNNING process_construction_shares()........")
-    # process_construction_shares(cfg)
+    print("RUNNING process_construction_shares()........")
+    process_construction_shares(cfg)
 
-    # print("RUNNING process_floor_area_maps()........")
-    # process_floor_area_maps(cfg)
+    print("RUNNING process_floor_area_maps()........")
+    process_floor_area_maps(cfg)
 
-    # print("RUNNING process_country_maps()........")
-    # process_country_maps(cfg)
+    print("RUNNING process_country_maps()........")
+    process_country_maps(cfg)
 
-    # print("RUNNING process_final_maps()........")
-    # process_final_maps(cfg)
+    print("RUNNING process_final_maps()........")
+    process_final_maps(cfg)
 
     print("RUNNING process_iso_tables()........")
     process_iso_tables(cfg)

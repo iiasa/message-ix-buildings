@@ -124,4 +124,4 @@ def create_message_raster(config: "Config"):
         return country_ras, reg_ras, map_reg, iso_attrs
 
     else:
-        print("Only R11 is supported at the moment.")
+        raise TypeError("Only R11 is supported at the moment.")

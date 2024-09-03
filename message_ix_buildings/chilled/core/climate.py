@@ -53,6 +53,17 @@ from message_ix_buildings.chilled.util.util import (
 )
 
 log = logging.getLogger(__name__)
+log.setLevel(logging.INFO)
+
+# configure the handler and formatter as needed
+handler = logging.FileHandler(f"{__name__}.log", mode="w")
+formatter = logging.Formatter("%(name)s %(asctime)s %(levelname)s %(message)s")
+
+# add formatter to the handler
+handler.setFormatter(formatter)
+
+# add handler to the logger
+log.addHandler(handler)
 
 
 def create_climate_variables_maps(config: "Config", start_time: datetime.datetime):

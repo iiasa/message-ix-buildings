@@ -6,6 +6,17 @@ import pandas as pd
 from util.config import Config  # type: ignore
 
 log = logging.getLogger(__name__)
+log.setLevel(logging.INFO)
+
+# configure the handler and formatter as needed
+handler = logging.FileHandler(f"{__name__}.log", mode="w")
+formatter = logging.Formatter("%(name)s %(asctime)s %(levelname)s %(message)s")
+
+# add formatter to the handler
+handler.setFormatter(formatter)
+
+# add handler to the logger
+log.addHandler(handler)
 
 
 def get_project_root() -> Path:

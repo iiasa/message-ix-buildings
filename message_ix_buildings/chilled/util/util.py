@@ -1,8 +1,11 @@
+import logging
 import os
 from pathlib import Path
 
 import pandas as pd
 from util.config import Config  # type: ignore
+
+log = logging.getLogger(__name__)
 
 
 def get_project_root() -> Path:
@@ -22,11 +25,12 @@ def get_archs(config: "Config"):
 
             return archs
         else:
-            print(
+            raise TypeError(
                 "Archetypes input file "
                 + input_file
                 + " does not exist! Please create file for input."
             )
+
     elif config.arch_setting == "regional":
         input_file = os.path.join(
             version_path,
@@ -34,14 +38,14 @@ def get_archs(config: "Config"):
         )
 
         if os.path.exists(input_file):
-            archs = pd.read_excel(input_file, sheet_name="arch").arch.unique()
+            archs = pd.read_excel(input_file, sheet_name="arch").arch.unique()  # type: ignore
 
             return archs
         else:
-            print(
+            raise TypeError(
                 "Archetypes input file "
                 + input_file
-                + " does not exist! Please create file for input."
+                + " does not exist! Please create file for input"
             )
 
 
@@ -57,7 +61,7 @@ def read_arch_inputs_df(config: "Config", suff: str):
 
             return arch_inputs
         else:
-            print(
+            raise TypeError(
                 "Archetypes input file "
                 + input_file
                 + " does not exist! Please create file for input."
@@ -73,7 +77,7 @@ def read_arch_inputs_df(config: "Config", suff: str):
 
             return arch_inputs
         else:
-            print(
+            raise TypeError(
                 "Archetypes input file "
                 + input_file
                 + " does not exist! Please create file for input."
@@ -94,14 +98,14 @@ def read_arch_reg_df(config: "Config", arch: str):
             arch_reg = pd.read_excel(reg_file, sheet_name=arch)
             return arch_reg
         else:
-            print(
+            raise TypeError(
                 "Regional archetypes input file "
                 + reg_file
                 + " does not exist! Please create file for input."
             )
 
     else:
-        print("Archetypes are not regional. No regional file to read.")
+        log.warning("Archetypes are not regional. No regional file to read.")
 
 
 def load_all_scenarios_data(config: "Config"):
@@ -114,7 +118,7 @@ def load_all_scenarios_data(config: "Config"):
         df = pd.read_csv(input_file, index_col="id")
         return df
     else:
-        print(
+        raise TypeError(
             "Scenarios file "
             + input_file
             + " does not exist! Please create file for input."
@@ -135,7 +139,7 @@ def load_parametric_analysis_data(config: "Config"):
 
         return df
     else:
-        print(
+        raise TypeError(
             "Parametric analysis data file "
             + input_file
             + " does not exist! Please create file for input."

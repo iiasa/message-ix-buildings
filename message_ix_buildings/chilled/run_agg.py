@@ -1,4 +1,3 @@
-import logging
 import sys
 from argparse import ArgumentParser
 
@@ -12,19 +11,9 @@ from message_ix_buildings.chilled.core.climate import (
     process_iso_tables,
 )
 from message_ix_buildings.chilled.util.config import Config  # type: ignore
+from message_ix_buildings.chilled.util.util import get_logger
 
-log = logging.getLogger(__name__)
-log.setLevel(logging.INFO)
-
-# configure the handler and formatter as needed
-handler = logging.FileHandler(f"{__name__}.log", mode="w")
-formatter = logging.Formatter("%(name)s %(asctime)s %(levelname)s %(message)s")
-
-# add formatter to the handler
-handler.setFormatter(formatter)
-
-# add handler to the logger
-log.addHandler(handler)
+log = get_logger(__name__)
 
 
 def parse_arguments(arguments):

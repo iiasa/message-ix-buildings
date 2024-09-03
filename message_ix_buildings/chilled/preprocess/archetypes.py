@@ -3,7 +3,6 @@ Create buildings archetypes maps using specified inputs
 """
 
 import datetime
-import logging
 import os
 from itertools import product
 
@@ -15,22 +14,12 @@ from preprocess.message_raster import create_message_raster  # type: ignore
 from message_ix_buildings.chilled.util.config import Config  # type: ignore
 from message_ix_buildings.chilled.util.util import (
     get_archs,
+    get_logger,
     read_arch_inputs_df,
     read_arch_reg_df,
 )
 
-log = logging.getLogger(__name__)
-log.setLevel(logging.INFO)
-
-# configure the handler and formatter as needed
-handler = logging.FileHandler(f"{__name__}.log", mode="w")
-formatter = logging.Formatter("%(name)s %(asctime)s %(levelname)s %(message)s")
-
-# add formatter to the handler
-handler.setFormatter(formatter)
-
-# add handler to the logger
-log.addHandler(handler)
+log = get_logger(__name__)
 
 
 def create_archetypes(config: "Config"):

@@ -49,9 +49,12 @@ def print_arguments(parsed_arguments):
     """
 
     # Print arguments
-    log.warning(
-        "---------- Parsed arguments ------------" + "\n"
-        "Selected version: " + parsed_arguments.version
+    log.info(
+        "\n"
+        + "---------- Parsed arguments ------------"
+        + "\n"
+        + "Selected version: "
+        + parsed_arguments.version
     )
 
 

@@ -66,11 +66,18 @@ def print_arguments(parsed_arguments):
     """
 
     # Print arguments
-    log.warning(
-        "---------- Parsed arguments ------------" + "\n"
-        "Selected version: " + parsed_arguments.version + "\n"
-        "Selected GCM: " + parsed_arguments.gcm + "\n"
-        "Selected RCP scenario: " + parsed_arguments.rcp
+    log.info(
+        "\n"
+        + "---------- Parsed arguments ------------"
+        + "\n"
+        + "Selected version: "
+        + parsed_arguments.version
+        + "\n"
+        + "Selected GCM: "
+        + parsed_arguments.gcm
+        + "\n"
+        + "Selected RCP scenario: "
+        + parsed_arguments.rcp
     )
 
 

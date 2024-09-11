@@ -120,7 +120,7 @@ def read_arch_reg_df(config: "Config", arch: str):
             )
 
     else:
-        log.warning("Archetypes are not regional. No regional file to read.")
+        raise TypeError("Archetypes are not regional. No regional file to read.")
 
 
 def load_all_scenarios_data(config: "Config"):

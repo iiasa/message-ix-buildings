@@ -57,7 +57,7 @@ def get_archs(config: "Config"):
 
             return archs
         else:
-            raise TypeError(
+            raise FileNotFoundError(
                 "Archetypes input file "
                 + input_file
                 + " does not exist! Please create file for input"
@@ -76,7 +76,7 @@ def read_arch_inputs_df(config: "Config", suff: str):
 
             return arch_inputs
         else:
-            raise TypeError(
+            raise FileNotFoundError(
                 "Archetypes input file "
                 + input_file
                 + " does not exist! Please create file for input."
@@ -92,7 +92,7 @@ def read_arch_inputs_df(config: "Config", suff: str):
 
             return arch_inputs
         else:
-            raise TypeError(
+            raise FileNotFoundError(
                 "Archetypes input file "
                 + input_file
                 + " does not exist! Please create file for input."
@@ -113,7 +113,7 @@ def read_arch_reg_df(config: "Config", arch: str):
             arch_reg = pd.read_excel(reg_file, sheet_name=arch)
             return arch_reg
         else:
-            raise TypeError(
+            raise FileNotFoundError(
                 "Regional archetypes input file "
                 + reg_file
                 + " does not exist! Please create file for input."
@@ -133,7 +133,7 @@ def load_all_scenarios_data(config: "Config"):
         df = pd.read_csv(input_file, index_col="id")
         return df
     else:
-        raise TypeError(
+        raise FileNotFoundError(
             "Scenarios file "
             + input_file
             + " does not exist! Please create file for input."
@@ -154,7 +154,7 @@ def load_parametric_analysis_data(config: "Config"):
 
         return df
     else:
-        raise TypeError(
+        raise FileNotFoundError(
             "Parametric analysis data file "
             + input_file
             + " does not exist! Please create file for input."

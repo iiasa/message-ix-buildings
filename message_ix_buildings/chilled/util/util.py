@@ -53,7 +53,7 @@ def get_archs(config: "Config"):
         )
 
         if os.path.exists(input_file):
-            archs = pd.read_excel(input_file, sheet_name="arch").arch.unique()  # type: ignore
+            archs = pd.read_excel(input_file, sheet_name="arch").arch.unique().tolist()
 
             return archs
         else:

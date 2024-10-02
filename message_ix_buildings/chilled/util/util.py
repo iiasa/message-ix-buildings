@@ -40,7 +40,7 @@ def get_archs(config: "Config"):
 
             return archs
         else:
-            raise TypeError(
+            raise FileNotFoundError(
                 "Archetypes input file "
                 + input_file
                 + " does not exist! Please create file for input."

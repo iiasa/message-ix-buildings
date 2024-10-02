@@ -3,7 +3,9 @@ import os
 from pathlib import Path
 
 import pandas as pd
-from util.config import Config  # type: ignore
+import xarray as xr
+
+from message_ix_buildings.chilled.util.config import Config  # type: ignore
 
 
 def get_project_root() -> Path:
@@ -35,7 +37,6 @@ def get_archs(config: "Config"):
         input_file = os.path.join(version_path, "arch_input.xlsx")
 
         if os.path.exists(input_file):
-            input_file = os.path.join(version_path, "arch_input.xlsx")
             archs = pd.ExcelFile(input_file).sheet_names
 
             return archs
@@ -159,3 +160,53 @@ def load_parametric_analysis_data(config: "Config"):
             + input_file
             + " does not exist! Please create file for input."
         )
+
+
+def set_climate_data_paths(config: "Config"):
+    # Climate input variable format
+    climate_filestr_hist = (
+        f"tas_day_{config.gcm}_{config.rcpdata}_r1i1p1_EWEMBI_landonly_"  # ISIMIP2
+    )
+
+    if config.gcm == "UKESM1-0-LL":
+        climate_filestr_future = (
+            f"{config.gcm}_r1i1p1f2_w5e5_{config.rcpdata}_{config.var}_global_daily_"
+        )
+    else:
+        climate_filestr_future = (
+            f"{config.gcm}_r1i1p1f1_w5e5_{config.rcpdata}_{config.var}_global_daily_"
+        )
+
+    endstr = ".nc"
+
+    clim = "hist"
+
+    if str(clim) == "hist":
+        isi_folder = config.isimip_ewemib_path
+        filestr = climate_filestr_hist
+    else:
+        isi_folder = config.isimip_bias_adj_path
+        filestr = climate_filestr_future
+
+    filepath = os.path.join(
+        isi_folder, config.rcpdata, config.gcm, f"{filestr.lower()}*{endstr}"
+    )
+
+    print(filepath)
+
+    assert False
+
+    if config.rcp == "rcp26":
+        dst = xr.open_mfdataset(
+            filepath,
+            chunks={"lon": config.chunk_size},
+            concat_dim="time",
+            use_cftime=True,
+        )  # Setting for RCP2.6
+    else:
+        dst = xr.open_mfdataset(
+            filepath,
+            chunks={"lon": config.chunk_size},
+        )  # , concat_dim='time' )  # Setting for RCP6.0
+
+    return dst

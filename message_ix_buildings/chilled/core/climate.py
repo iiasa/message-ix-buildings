@@ -47,9 +47,12 @@ from message_ix_buildings.chilled.preprocess.message_raster import (
 from message_ix_buildings.chilled.util.config import Config  # type: ignore
 from message_ix_buildings.chilled.util.util import (
     get_archs,
+    get_logger,
     load_all_scenarios_data,
     load_parametric_analysis_data,
 )
+
+log = get_logger(__name__)
 
 
 def create_climate_variables_maps(config: "Config", start_time: datetime.datetime):
@@ -72,7 +75,7 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
     def map_calculated_variables(args):
         clim, arch, parset, urt = args
 
-        print(str(clim) + " + " + arch + " + " + parset.name_run + " + " + urt)
+        log.info(str(clim) + " + " + arch + " + " + parset.name_run + " + " + urt)
 
         years_clim = config.yeardic[str(clim)]
         # << this selects the correct years.
@@ -112,7 +115,7 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
             isi_folder, config.rcpdata, config.gcm, f"{filestr.lower()}*{endstr}"
         )
 
-        print("Reading: " + filepath)
+        log.info("Reading: " + filepath)
         if config.rcp == "rcp26":
             dst = xr.open_mfdataset(
                 filepath,
@@ -154,7 +157,7 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
         # suff =  clim+'_'+arch+'_'+str(parset.name_run)  #suffix
         suff1 = arch  # only arch (for imports arch data)
 
-        print("Starting: " + suff + "_" + str(parset.name_run))
+        log.info("Starting: " + suff + "_" + str(parset.name_run))
         if config.cool == 1:
             cop = parset.cop
             t_sp_c = np.int8(
@@ -181,7 +184,7 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
         #                ar = parset.arch_r
         #                al = [ar, au]
 
-        #    print(sddf)
+        #    log.info(sddf)
 
         if config.runsdd == 1:
             # =============================================================
@@ -190,11 +193,11 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
 
             for bal_temp in config.bal_temps:
                 with ProgressBar():
-                    print("Stage 3 - Simple HDDCDD - cooling")
-                    print("Balance temp " + str(bal_temp) + "C")
+                    log.info("Stage 3 - Simple HDDCDD - cooling")
+                    log.info("Balance temp " + str(bal_temp) + "C")
                     sdd_c = calc_SCDD_m(t_out_ave, bal_temp)
                     sdd_c = sdd_c.chunk(chunks={"lon": config.chunk_size})
-                    print("chunked")
+                    log.info("chunked")
                     sdd_c.attrs = {
                         "name": "sdd_c",
                         "description": "Simple cooling degree days",
@@ -205,16 +208,16 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
                         "id_run": str(parset.Index),
                         "bal_temp": str(bal_temp),
                     }
-                    print(sdd_c)
+                    log.info(sdd_c)
                     sdd_c = sdd_c.to_dataset(name="sdd_c")
                     encoding = {"sdd_c": config.comp}
                     # fname = suff+'_'+str(parset.Index)+'_sdd_c_'+str(bal_temp)+'.nc'
                     fname = suff + "_sdd_c_" + str(bal_temp) + ".nc"
                     filestr = os.path.join(output_path_vdd, fname)
                     sdd_c.to_netcdf(filestr, encoding=encoding)
-                    print("...Saved " + filestr)
+                    log.info("...Saved " + filestr)
                     if config.verbose:
-                        print(datetime.datetime.now() - start_time)
+                        log.info(datetime.datetime.now() - start_time)
                     sdd_c = xr.open_dataarray(filestr)
 
             # ==============================================================
@@ -223,11 +226,11 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
 
             for bal_temp in config.bal_temps:
                 with ProgressBar():
-                    print("Stage 3 - Simple HDDCDD - heating")
-                    print("Balance temp " + str(bal_temp) + "C")
+                    log.info("Stage 3 - Simple HDDCDD - heating")
+                    log.info("Balance temp " + str(bal_temp) + "C")
                     sdd_h = calc_SHDD_m(t_out_ave, bal_temp)
                     sdd_h = sdd_h.chunk(chunks={"lon": config.chunk_size})
-                    print("chunked")
+                    log.info("chunked")
                     sdd_h.attrs = {
                         "name": "sdd_h",
                         "description": "Simple heating degree days",
@@ -244,9 +247,9 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
                     fname = suff + "_sdd_h_" + str(bal_temp) + ".nc"
                     filestr = os.path.join(output_path_vdd, fname)
                     sdd_h.to_netcdf(filestr, encoding=encoding)
-                    print("...Saved " + filestr)
+                    log.info("...Saved " + filestr)
                     if config.verbose:
-                        print(datetime.datetime.now() - start_time)
+                        log.info(datetime.datetime.now() - start_time)
                     sdd_h = xr.open_dataarray(filestr)
 
         def read_netcdf_files(input_args):
@@ -266,7 +269,7 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
         if config.solar_gains == "VERT":
             # Solar gains - From windows only
             with ProgressBar():
-                print("Stage 3 - calc gn_sol")
+                log.info("Stage 3 - calc gn_sol")
                 gn_sol = calc_gn_sol(
                     i_sol_v,
                     dict_netcdf["gl_perc"],
@@ -274,7 +277,7 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
                     dict_netcdf["gl_sh"],
                 )
                 gn_sol = gn_sol.chunk(chunks={"lon": config.chunk_size})
-                print("chunked")
+                log.info("chunked")
                 gn_sol.attrs = {
                     "name": "gn_sol",
                     "description": "Solar gains - Windows",
@@ -289,15 +292,15 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
                 fname = suff + "_" + str(parset.Index) + "_gn_sol_" + urt + ".nc"
                 filestr = os.path.join(output_path_vdd, fname)
                 gn_sol.to_netcdf(filestr, encoding=encoding)
-                print("...Saved " + filestr)
+                log.info("...Saved " + filestr)
                 if config.verbose:
-                    print(datetime.datetime.now() - start_time)
+                    log.info(datetime.datetime.now() - start_time)
                 gn_sol = xr.open_dataarray(filestr).load()
 
         elif config.solar_gains == "TOT":
             # Solar gains - Total
             with ProgressBar():
-                print("Stage 3 - calc gn_sol")
+                log.info("Stage 3 - calc gn_sol")
                 gn_sol = calc_gn_sol_tot(
                     i_sol_v,
                     dict_netcdf["gl_perc"],
@@ -309,7 +312,7 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
                     dict_netcdf["u_roof"],
                 )
                 gn_sol = gn_sol.chunk(chunks={"lon": config.chunk_size})
-                print("chunked")
+                log.info("chunked")
                 gn_sol.attrs = {
                     "name": "gn_sol",
                     "description": "Solar gains",
@@ -324,15 +327,15 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
                 fname = suff + "_" + str(parset.Index) + "_gn_sol_" + urt + ".nc"
                 filestr = os.path.join(output_path_vdd, fname)
                 gn_sol.to_netcdf(filestr, encoding=encoding)
-                print("...Saved " + filestr)
+                log.info("...Saved " + filestr)
                 if config.verbose:
-                    print(datetime.datetime.now() - start_time)
+                    log.info(datetime.datetime.now() - start_time)
                 gn_sol = xr.open_dataarray(filestr).load()
 
         elif config.solar_gains == "HOR":
             # Solar gains - Total
             with ProgressBar():
-                print("Stage 3 - calc gn_sol")
+                log.info("Stage 3 - calc gn_sol")
                 gn_sol = calc_gn_sol_h(
                     i_sol_h,
                     dict_netcdf["roof_area"],
@@ -340,7 +343,7 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
                     dict_netcdf["u_roof"],
                 )
                 gn_sol = gn_sol.chunk(chunks={"lon": config.chunk_size})
-                print("chunked")
+                log.info("chunked")
                 gn_sol.attrs = {
                     "name": "gn_sol",
                     "description": "Solar gains",
@@ -355,9 +358,9 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
                 fname = suff + "_" + str(parset.Index) + "_gn_sol_" + urt + ".nc"
                 filestr = os.path.join(output_path_vdd, fname)
                 gn_sol.to_netcdf(filestr, encoding=encoding)
-                print("...Saved " + filestr)
+                log.info("...Saved " + filestr)
                 if config.verbose:
-                    print(datetime.datetime.now() - start_time)
+                    log.info(datetime.datetime.now() - start_time)
                 gn_sol = xr.open_dataarray(filestr).load()
 
         # ==============================================================================
@@ -366,22 +369,22 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
         with ProgressBar():
             H_v_cl = calc_H_v_cl(dict_netcdf["vol"], dict_netcdf["ach_cl"])
             if config.verbose:
-                print("Stage 3 - calc_H_v_cl")
-                # print(datetime.datetime.now() - start_time)
+                log.info("Stage 3 - calc_H_v_cl")
+                # log.info(datetime.datetime.now() - start_time)
         # H_v_cl = xr.open_dataarray(output_folder2+'H_v_cl_'+urt+'.nc').load()
 
         with ProgressBar():
             H_v_op = calc_H_v_op(dict_netcdf["vol"], dict_netcdf["ach_op"])
             if config.verbose:
-                print("Stage 3 - calc_H_v_op")
-                # print(datetime.datetime.now() - start_time)
+                log.info("Stage 3 - calc_H_v_op")
+                # log.info(datetime.datetime.now() - start_time)
         # H_v_op = xr.open_dataarray(output_folder2+'H_v_op_'+urt+'.nc').load()
 
         with ProgressBar():
             H_tr = calc_H_tr(dict_netcdf["u_val"], dict_netcdf["area_env"])
             if config.verbose:
-                print("Stage 3 - calc_H_tr")
-                # print(datetime.datetime.now() - start_time)
+                log.info("Stage 3 - calc_H_tr")
+                # log.info(datetime.datetime.now() - start_time)
         #    H_tr = xr.open_dataarray(output_folder2+'H_tr_'+urt+'.nc').load()
         dfa.loc[parset.Index, :] = [H_v_cl, H_v_op, H_tr]
 
@@ -390,12 +393,12 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
             # Variable CDD functions
             # ==============================================================================
             with ProgressBar():
-                print("t_bal_c")
+                log.info("t_bal_c")
                 t_bal_c = calc_t_bal_c(
                     t_sp_c, dict_netcdf["gn_int"], gn_sol, H_tr, H_v_cl
                 ).astype("float32")  # , x_diff0
                 t_bal_c = t_bal_c.chunk(chunks={"lon": config.chunk_size})
-                print("chunked")
+                log.info("chunked")
                 t_bal_c.attrs = {
                     "name": "t_bal_c",
                     "description": "Balance (base) temperature",
@@ -412,16 +415,16 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
                 fname = suff + "_" + str(parset.Index) + "_t_bal_c_" + urt + ".nc"
                 filestr = os.path.join(output_path_vdd, fname)
                 t_bal_c.to_netcdf(filestr, encoding=encoding)
-                print("...Saved " + filestr)
+                log.info("...Saved " + filestr)
                 if config.verbose:
-                    print(datetime.datetime.now() - start_time)
+                    log.info(datetime.datetime.now() - start_time)
                 t_bal_c = xr.open_dataarray(filestr)
 
             # =============================================================================
             # t_max_c
             # =============================================================================
             with ProgressBar():
-                print("Calc_t_max_c")
+                log.info("Calc_t_max_c")
                 t_max_c = calc_t_max_c(
                     t_sp_c_max, dict_netcdf["gn_int"], gn_sol, H_tr, H_v_op
                 )  # , x_diff0)
@@ -439,16 +442,16 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
                 fname = suff + "_" + str(parset.Index) + "_t_max_c_" + urt + ".nc"
                 filestr = os.path.join(output_path_vdd, fname)
                 t_max_c.to_netcdf(filestr, encoding=encoding)
-                print("...Saved " + filestr)
+                log.info("...Saved " + filestr)
                 if config.verbose:
-                    print(datetime.datetime.now() - start_time)
+                    log.info(datetime.datetime.now() - start_time)
                 t_max_c = xr.open_dataarray(filestr).load()
             # =============================================================================
             # Nd - only this one uses daily
             # =============================================================================
             # Days per month over t_max_c
             with ProgressBar():
-                print("Calc Nd")
+                log.info("Calc Nd")
                 Nd = calc_Nd(t_out_ave, t_max_c, nyrs_clim)
                 Nd.attrs = {
                     "name": "Nd",
@@ -464,9 +467,9 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
                 fname = suff + "_" + str(parset.Index) + "_Nd_" + urt + ".nc"
                 filestr = os.path.join(output_path_vdd, fname)
                 Nd.to_netcdf(filestr, encoding=encoding)
-                print("...Saved " + filestr)
+                log.info("...Saved " + filestr)
                 if config.verbose:
-                    print(datetime.datetime.now() - start_time)
+                    log.info(datetime.datetime.now() - start_time)
                 Nd = xr.open_dataarray(filestr)
 
             # =============================================================================
@@ -474,7 +477,7 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
             # =============================================================================
             # Days per month over t_max_c
             with ProgressBar():
-                print("Calc Nf")
+                log.info("Calc Nf")
                 Nf = calc_Nf(t_out_ave, t_bal_c, nyrs_clim)
                 Nf.attrs = {
                     "name": "Nf",
@@ -490,9 +493,9 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
                 fname = suff + "_" + str(parset.Index) + "_Nf_" + urt + ".nc"
                 filestr = os.path.join(output_path_vdd, fname)
                 Nf.to_netcdf(filestr, encoding=encoding)
-                print("...Saved " + filestr)
+                log.info("...Saved " + filestr)
                 if config.verbose:
-                    print(datetime.datetime.now() - start_time)
+                    log.info(datetime.datetime.now() - start_time)
                 Nf = xr.open_dataarray(filestr)
 
             # =============================================================================
@@ -500,7 +503,7 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
             # =============================================================================
             # Days per month over t_max_c
             with ProgressBar():
-                print("Calc_vdd_tmax_c")
+                log.info("Calc_vdd_tmax_c")
                 vdd_tmax_c = calc_vdd_tmax_c(t_oa_gbm, t_max_c)
                 vdd_tmax_c = vdd_tmax_c.chunk(chunks={"lon": config.chunk_size})
                 vdd_tmax_c = (
@@ -522,9 +525,9 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
                 fname = suff + "_" + str(parset.Index) + "_vdd_tmax_c_" + urt + ".nc"
                 filestr = os.path.join(output_path_vdd, fname)
                 vdd_tmax_c.to_netcdf(filestr, encoding=encoding)
-                print("...Saved " + filestr)
+                log.info("...Saved " + filestr)
                 if config.verbose:
-                    print(datetime.datetime.now() - start_time)
+                    log.info(datetime.datetime.now() - start_time)
                 vdd_tmax_c = xr.open_dataarray(filestr)
 
             # =============================================================================
@@ -537,7 +540,7 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
             #     )
             # )
             with ProgressBar():
-                print("Calc_qctmax")
+                log.info("Calc_qctmax")
                 qctmax = Q_c_tmax(H_tr, H_v_cl, vdd_tmax_c, t_max_c, t_bal_c, Nd, f_c)
                 qctmax.attrs = {
                     "name": "qctmax",
@@ -555,9 +558,9 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
                 fname = suff + "_" + str(parset.Index) + "_qctmax_" + urt + ".nc"
                 filestr = os.path.join(output_path_vdd, fname)
                 qctmax.to_netcdf(filestr, encoding=encoding)
-                print("...Saved " + filestr)
+                log.info("...Saved " + filestr)
                 if config.verbose:
-                    print(datetime.datetime.now() - start_time)
+                    log.info(datetime.datetime.now() - start_time)
             # t_bal_c.close()
             qctmax = xr.open_dataarray(filestr)
 
@@ -566,7 +569,7 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
             # =============================================================================
             # qlat_month = xr.open_dataarray(output_folder2+'qlat_month_'+urt+'.nc')
             with ProgressBar():
-                print("E_c AC")
+                log.info("E_c AC")
                 E_c_ac = calc_E_c_ac(qctmax, cop)
                 E_c_ac.attrs = {
                     "name": "E_c_ac",
@@ -583,12 +586,12 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
                 fname = suff + "_" + str(parset.Index) + "_E_c_ac_" + urt + ".nc"
                 filestr = os.path.join(output_path_vdd, fname)
                 E_c_ac.to_netcdf(filestr, encoding=encoding)
-                print("...Saved " + filestr)
+                log.info("...Saved " + filestr)
                 if config.verbose:
-                    print(datetime.datetime.now() - start_time)
+                    log.info(datetime.datetime.now() - start_time)
             #    qlat_month = xr.open_dataarray(output_folder2+'qlat_month_'+urt+'.nc')
             with ProgressBar():
-                print("E_f fans")
+                log.info("E_f fans")
                 E_c_fan = calc_E_c_fan(
                     f_f, P_f, Nf, config.area_fan
                 )  # Where Nf is same as Nd
@@ -606,13 +609,13 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
                 fname = suff + "_" + str(parset.Index) + "_E_c_fan_" + urt + ".nc"
                 filestr = os.path.join(output_path_vdd, fname)
                 E_c_fan.to_netcdf(filestr, encoding=encoding)
-                print("...Saved " + filestr)
+                log.info("...Saved " + filestr)
                 if config.verbose:
-                    print(datetime.datetime.now() - start_time)
+                    log.info(datetime.datetime.now() - start_time)
         # =============================================================================
         # dfa.to_csv(output_folder2+'constant_vars_out.csv')
-        # print('Finished!: '+str(parset))
-        # print(datetime.datetime.now()-start)
+        # log.info('Finished!: '+str(parset))
+        # log.info(datetime.datetime.now()-start)
         # =============================================================================
 
         # ==============================================================================
@@ -624,12 +627,12 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
             # Variable HDD functions
             # ==============================================================================
             with ProgressBar():
-                print("calc_t_bal_h")
+                log.info("calc_t_bal_h")
                 t_bal_h = calc_t_bal_h(
                     t_sp_h, dict_netcdf["gn_int"], gn_sol, H_tr, H_v_cl
                 ).astype("float32")  # , x_diff0
                 t_bal_h = t_bal_h.chunk(chunks={"lon": config.chunk_size})
-                print("chunked")
+                log.info("chunked")
                 t_bal_h.attrs = {
                     "name": "t_bal_h",
                     "description": "Balance (base) temperature",
@@ -644,9 +647,9 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
                 fname = suff + "_" + str(parset.Index) + "_t_bal_h_" + urt + ".nc"
                 filestr = os.path.join(output_path_vdd, fname)
                 t_bal_h.to_netcdf(filestr, encoding=encoding)
-                print("...Saved " + filestr)
+                log.info("...Saved " + filestr)
                 if config.verbose:
-                    print(datetime.datetime.now() - start_time)
+                    log.info(datetime.datetime.now() - start_time)
                 t_bal_h = xr.open_dataarray(filestr)
 
             # =============================================================================
@@ -654,7 +657,7 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
             # =============================================================================
 
             with ProgressBar():
-                print("calc_vdd_h")
+                log.info("calc_vdd_h")
                 vdd_h = calc_vdd_h(t_oa_gbm, t_bal_h)
                 vdd_h = vdd_h.chunk(chunks={"lon": config.chunk_size})
                 vdd_h = (
@@ -674,9 +677,9 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
                 fname = suff + "_" + str(parset.Index) + "_vdd_h_" + urt + ".nc"
                 filestr = os.path.join(output_path_vdd, fname)
                 vdd_h.to_netcdf(filestr, encoding=encoding)
-                print("...Saved " + filestr)
+                log.info("...Saved " + filestr)
                 if config.verbose:
-                    print(datetime.datetime.now() - start_time)
+                    log.info(datetime.datetime.now() - start_time)
                 vdd_h = xr.open_dataarray(filestr)
 
             # =============================================================================
@@ -689,7 +692,7 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
             #     )
             # )
             with ProgressBar():
-                print("Calc_qh")
+                log.info("Calc_qh")
                 qh = Q_h(H_tr, H_v_cl, f_h, vdd_h)
                 qh.attrs = {
                     "name": "qh",
@@ -707,9 +710,9 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
                 fname = suff + "_" + str(parset.Index) + "_qh_" + urt + ".nc"
                 filestr = os.path.join(output_path_vdd, fname)
                 qh.to_netcdf(filestr, encoding=encoding)
-                print("...Saved " + filestr)
+                log.info("...Saved " + filestr)
                 if config.verbose:
-                    print(datetime.datetime.now() - start_time)
+                    log.info(datetime.datetime.now() - start_time)
                 qh = xr.open_dataarray(filestr)
 
             # =============================================================================
@@ -717,7 +720,7 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
             # =============================================================================
             # qlat_month = xr.open_dataarray(output_folder2+'qlat_month_'+urt+'.nc')
             with ProgressBar():
-                print("E_h")
+                log.info("E_h")
                 E_h = calc_E_h(qh, eff)
                 E_h.attrs = {
                     "name": "E_h",
@@ -735,14 +738,14 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
                 filestr = os.path.join(output_path_vdd, fname)
                 E_h.to_netcdf(filestr, encoding=encoding)
                 if config.verbose:
-                    print(datetime.datetime.now() - start_time)
+                    log.info(datetime.datetime.now() - start_time)
                 #    qlat_month = xr.open_dataarray(output_folder2+'qlat_month_'+urt+'.nc')
             dfa.to_csv(
                 os.path.join(output_path_vdd, suff + "_" + "constant_vars_out.csv")
             )
-            # print('Finished!: '+suff+'+str(parset))
-            # print('Finished!')
-            print(datetime.datetime.now() - start_time)
+            # log.info('Finished!: '+suff+'+str(parset))
+            # log.info('Finished!')
+            log.info(datetime.datetime.now() - start_time)
 
     s_runs = load_all_scenarios_data(config).clim
     inputs = product(s_runs, vers_archs, par_var.itertuples(), config.urts)
@@ -773,7 +776,7 @@ def aggregate_urban_rural_files(config: "Config"):
         for arch in vers_archs:
             suff = str(clim) + "_" + arch  # suffix
 
-            print("Aggregating results for " + suff)
+            log.info("Aggregating results for " + suff)
             # Aggregate archetypes into same files.
             varlist = []
 
@@ -798,7 +801,7 @@ def aggregate_urban_rural_files(config: "Config"):
 
             for parset in par_var.itertuples():
                 for var in varlist:
-                    print("." + var)
+                    log.info("." + var)
                     mds = xr.open_mfdataset(
                         os.path.join(
                             output_path_vdd,
@@ -827,7 +830,7 @@ def aggregate_urban_rural_files(config: "Config"):
                         suff + "_" + str(parset.Index) + "_" + var + "ALL.nc",
                     )
                     mds.to_netcdf(filestr, encoding=encoding)
-                    print("...Saved " + filestr)
+                    log.info("...Saved " + filestr)
 
 
 def make_vdd_total_maps(config: "Config"):
@@ -848,14 +851,14 @@ def make_vdd_total_maps(config: "Config"):
     # TODO: (meas) the original code does not query for clims,
     # but without it the code will crash if not all years have been run
     # clims_int = list(map(int, run_clims))
-    # print(clims_int)
+    # log.info(clims_int)
 
     for s_run in s_runs.itertuples():
         for arch in vers_archs:
             for urt in config.urts:
                 suff = str(s_run.clim) + "_" + arch  # suffix
 
-                print("Running " + suff)
+                log.info("Running " + suff)
 
                 def make_map(
                     data,
@@ -1185,7 +1188,7 @@ def process_construction_shares(config: "Config"):
                             ats.ISO == row.ISO, arch
                         ].values[0]
                     except IndexError:
-                        print("map:" + row.ISO)
+                        log.info("map:" + row.ISO)
                 ds.values[:, :, ai] = ta
 
             ds.attrs = {
@@ -1217,9 +1220,9 @@ def process_construction_shares(config: "Config"):
         dsc.to_netcdf(
             os.path.join(output_path, "constr_share_urbanrural.nc"), encoding=encoding
         )
-        print("Completed construction share maps")
+        log.info("Completed construction share maps")
     else:
-        print("Skipping construction share maps because constr_setting != 1")
+        log.info("Skipping construction share maps because constr_setting != 1")
 
 
 def process_floor_area_maps(config: "Config"):
@@ -1282,7 +1285,7 @@ def process_floor_area_maps(config: "Config"):
         floormap.to_netcdf(
             os.path.join(output_path, "floor_area_map_std_cap.nc"), encoding=encoding
         )
-        print("Completed floor area maps")
+        log.info("Completed floor area maps")
 
     elif config.floor_setting == "per_cap":
         for s_run in s_runs.itertuples():
@@ -1344,10 +1347,10 @@ def process_floor_area_maps(config: "Config"):
                 encoding=encoding,
             )
 
-            print("Completed floor area maps")
+            log.info("Completed floor area maps")
 
     else:
-        print("Skipping floor area maps because floor_setting != std_cap or per_cap")
+        log.info("Skipping floor area maps because floor_setting != std_cap or per_cap")
 
 
 def process_country_maps(config: "Config"):
@@ -1429,7 +1432,7 @@ def process_country_maps(config: "Config"):
             encoding=encoding,
         )
 
-    print("Finished country data maps")
+    log.info("Finished country data maps")
 
 
 def process_final_maps(config: "Config"):
@@ -1503,7 +1506,7 @@ def process_final_maps(config: "Config"):
     # TODO: (meas) the original code does not query for clims,
     # but without it the code will crash if not all years have been run
     # clims_int = list(map(int, config.clims))
-    # print("Years of data available: " + str(clims_int))
+    # log.info("Years of data available: " + str(clims_int))
     # s_runs = s_runs.query("clim in @clims_int")
 
     for s_run in s_runs.itertuples():
@@ -1528,7 +1531,7 @@ def process_final_maps(config: "Config"):
                 str(s_run.scen) + "_" + str(s_run.year) + "_" + str(s_run.clim)
             )  # suffix: scen, year and arch
 
-            print("Starting " + suff)
+            log.info("Starting " + suff)
 
             # Load country data
             country_data = xr.open_dataset(
@@ -1652,7 +1655,7 @@ def process_final_maps(config: "Config"):
                 #        for bal_temp in bal_temps:
                 #            sdd_c_in = xr.open_dataarray(input_folder2+str(parset.Index)+'_s_cddALL.nc').load()
                 #            sdd_h_in = xr.open_dataarray(input_folder2+str(parset.Index)+'_s_hddALL.nc').load()
-                #        print(xkss)
+                #        log.info(xkss)
 
                 if config.cool == 1:
                     # Cooling outputs
@@ -1702,7 +1705,7 @@ def process_final_maps(config: "Config"):
                             # at = ar
                             acp = "AC_penetr_R"
 
-                        #        print(sddddd)
+                        #        log.info(sddddd)
                         E_c_perpix[urt] = (
                             floorarea[urt] * E_c["urt" == urt]
                         )  # energy  per person per pixel
@@ -1783,7 +1786,7 @@ def process_final_maps(config: "Config"):
 
                 for var in vardic.keys():
                     #        if (runsdd==1) and (var=='sdd_c' or var =='sdd_h') and (parset.Index>0):
-                    #            print('do nothing')
+                    #            log.info('do nothing')
                     #        else:
                     ds = eval(var)
                     # ds['arch'] = al
@@ -1883,7 +1886,7 @@ def process_iso_tables(config: "Config"):
     # TODO: (meas) the original code does not query for clims,
     # but without it the code will crash if not all years have been run
     # clims_int = list(map(int, config.clims))
-    # print("Years of data available: " + str(clims_int))
+    # log.info("Years of data available: " + str(clims_int))
     # s_runs = s_runs.query("clim in @clims_int")
 
     # Read raster data
@@ -1908,11 +1911,11 @@ def process_iso_tables(config: "Config"):
     ).set_index("ISONUM")
 
     # Load population data
-    print("Opening population data....")
+    log.info("Opening population data....")
     l_popdata = []
     for s_run in s_runs.itertuples():
         suff = str(s_run.scen) + "_" + str(s_run.year)
-        print(suff)
+        log.info(suff)
 
         popdata = xr.Dataset()
         for urt in updated_urts:
@@ -1964,7 +1967,7 @@ def process_iso_tables(config: "Config"):
         s_run, arch, urt, parset, varname = args
         str_varname = str(varname)
 
-        print(
+        log.info(
             f"Opening {varname} data for: {s_run.scen}_{s_run.year}_{s_run.clim}_{arch}_{urt}_{parset.Index}"
         )
         suff = (
@@ -2000,13 +2003,13 @@ def process_iso_tables(config: "Config"):
         # If varname is Nd or Nf, then take the mean. Otherwise, take the sum
         if str_varname in ["Nd", "Nf"]:
             # Group varname by raster index and take the mean
-            print("...Aggregating data by raster")
+            log.info("...Aggregating data by raster")
             agg_ras_month = (
                 varname.groupby(raster).mean().to_dataframe(name="value").reset_index()
             )
 
             # Group by gaul_lvl0 and take the mean
-            print(".....Aggregating data by gaul_lvl0")
+            log.info(".....Aggregating data by gaul_lvl0")
             agg_gaul_lvl0 = (
                 agg_ras_month.groupby("gaul_lvl0")["value"]
                 .agg(lambda x: x.mean() / 2)
@@ -2014,13 +2017,13 @@ def process_iso_tables(config: "Config"):
             )
         else:
             # Group varname by raster index and sum
-            print("...Aggregating data by raster")
+            log.info("...Aggregating data by raster")
             agg_ras_month = (
                 varname.groupby(raster).sum().to_dataframe(name="value").reset_index()
             )
 
             # Group by gaul_lvl0 and sum
-            print(".....Aggregating data by gaul_lvl0")
+            log.info(".....Aggregating data by gaul_lvl0")
             agg_gaul_lvl0 = (
                 agg_ras_month.groupby("gaul_lvl0")["value"].sum().reset_index()
             )
@@ -2064,7 +2067,7 @@ def process_iso_tables(config: "Config"):
         # Add df_heat to df_agg
         df_agg = df_agg.append(df_heat, ignore_index=True)
 
-    print("Completed aggregating raster data! Now processing and saving...")
+    log.info("Completed aggregating raster data! Now processing and saving...")
 
     # Merge df_agg with pop_agg
     df_agg = df_agg.assign(year=lambda x: x.year.astype(int)).merge(
@@ -2130,7 +2133,7 @@ def process_iso_tables(config: "Config"):
     )
 
     end = datetime.datetime.now()
-    print(
+    log.info(
         "Done! Total time to aggregate variables and process ISO tables: "
         + str(end - start)
     )
@@ -2154,7 +2157,7 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
     par_var = load_parametric_analysis_data(config)
 
     for clim in config.clims:
-        print(f"Starting {clim} ######################")
+        log.info(f"Starting {clim} ######################")
 
         ## =============================================================================
         #  Mean air temperature
@@ -2264,7 +2267,7 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                 # suff =  clim+'_'+arch+'_'+str(parset.name_run)  #suffix
                 suff1 = arch  # only arch (for imports arch data)
 
-                print("Starting: " + suff + "_" + str(parset.name_run))
+                log.info("Starting: " + suff + "_" + str(parset.name_run))
                 if config.cool == 1:
                     cop = parset.cop
                     t_sp_c = np.int8(
@@ -2291,7 +2294,7 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                 #                ar = parset.arch_r
                 #                al = [ar, au]
 
-                #    print(sddf)
+                #    log.info(sddf)
 
                 if config.runsdd == 1:
                     # =============================================================
@@ -2300,11 +2303,11 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
 
                     for bal_temp in config.bal_temps:
                         with ProgressBar():
-                            print("Stage 3 - Simple HDDCDD - cooling")
-                            print("Balance temp " + str(bal_temp) + "C")
+                            log.info("Stage 3 - Simple HDDCDD - cooling")
+                            log.info("Balance temp " + str(bal_temp) + "C")
                             sdd_c = calc_SCDD_m(t_out_ave, bal_temp)
                             sdd_c = sdd_c.chunk(chunks={"lon": config.chunk_size})
-                            print("chunked")
+                            log.info("chunked")
                             sdd_c.attrs = {
                                 "name": "sdd_c",
                                 "description": "Simple cooling degree days",
@@ -2321,9 +2324,9 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                             fname = suff + "_sdd_c_" + str(bal_temp) + ".nc"
                             filestr = os.path.join(output_path_vdd, fname)
                             sdd_c.to_netcdf(filestr, encoding=encoding)
-                            print("Saved: " + filestr)
+                            log.info("Saved: " + filestr)
                             if config.verbose:
-                                print(datetime.datetime.now() - start_time)
+                                log.info(datetime.datetime.now() - start_time)
                             sdd_c = xr.open_dataarray(filestr)
 
                     # ==============================================================
@@ -2332,11 +2335,11 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
 
                     for bal_temp in config.bal_temps:
                         with ProgressBar():
-                            print("Stage 3 - Simple HDDCDD - heating")
-                            print("Balance temp " + str(bal_temp) + "C")
+                            log.info("Stage 3 - Simple HDDCDD - heating")
+                            log.info("Balance temp " + str(bal_temp) + "C")
                             sdd_h = calc_SHDD_m(t_out_ave, bal_temp)
                             sdd_h = sdd_h.chunk(chunks={"lon": config.chunk_size})
-                            print("chunked")
+                            log.info("chunked")
                             sdd_h.attrs = {
                                 "name": "sdd_h",
                                 "description": "Simple heating degree days",
@@ -2353,9 +2356,9 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                             fname = suff + "_sdd_h_" + str(bal_temp) + ".nc"
                             filestr = os.path.join(output_path_vdd, fname)
                             sdd_h.to_netcdf(filestr, encoding=encoding)
-                            print("Saved: " + filestr)
+                            log.info("Saved: " + filestr)
                             if config.verbose:
-                                print(datetime.datetime.now() - start_time)
+                                log.info(datetime.datetime.now() - start_time)
                             sdd_h = xr.open_dataarray(filestr)
 
                 for urt in config.urts:
@@ -2413,10 +2416,10 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                     if config.solar_gains == "VERT":
                         # Solar gains - From windows only
                         with ProgressBar():
-                            print("Stage 3 - calc gn_sol")
+                            log.info("Stage 3 - calc gn_sol")
                             gn_sol = calc_gn_sol(i_sol_v, gl_perc, gl_g, gl_sh)
                             gn_sol = gn_sol.chunk(chunks={"lon": config.chunk_size})
-                            print("chunked")
+                            log.info("chunked")
                             gn_sol.attrs = {
                                 "name": "gn_sol",
                                 "description": "Solar gains - Windows",
@@ -2438,15 +2441,15 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                             )
                             filestr = os.path.join(output_path_vdd, fname)
                             gn_sol.to_netcdf(filestr, encoding=encoding)
-                            print("Saved: " + filestr)
+                            log.info("Saved: " + filestr)
                             if config.verbose:
-                                print(datetime.datetime.now() - start_time)
+                                log.info(datetime.datetime.now() - start_time)
                         gn_sol = xr.open_dataarray(filestr).load()
 
                     elif config.solar_gains == "TOT":
                         # Solar gains - Total
                         with ProgressBar():
-                            print("Stage 3 - calc gn_sol")
+                            log.info("Stage 3 - calc gn_sol")
                             gn_sol = calc_gn_sol_tot(
                                 i_sol_v,
                                 gl_perc,
@@ -2458,7 +2461,7 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                                 u_roof,
                             )
                             gn_sol = gn_sol.chunk(chunks={"lon": config.chunk_size})
-                            print("chunked")
+                            log.info("chunked")
                             gn_sol.attrs = {
                                 "name": "gn_sol",
                                 "description": "Solar gains",
@@ -2480,18 +2483,18 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                             )
                             filestr = os.path.join(output_path_vdd, fname)
                             gn_sol.to_netcdf(filestr, encoding=encoding)
-                            print("Saved: " + filestr)
+                            log.info("Saved: " + filestr)
                             if config.verbose:
-                                print(datetime.datetime.now() - start_time)
+                                log.info(datetime.datetime.now() - start_time)
                         gn_sol = xr.open_dataarray(filestr).load()
 
                     elif config.solar_gains == "HOR":
                         # Solar gains - Total
                         with ProgressBar():
-                            print("Stage 3 - calc gn_sol")
+                            log.info("Stage 3 - calc gn_sol")
                             gn_sol = calc_gn_sol_h(i_sol_h, roof_area, roof_abs, u_roof)
                             gn_sol = gn_sol.chunk(chunks={"lon": config.chunk_size})
-                            print("chunked")
+                            log.info("chunked")
                             gn_sol.attrs = {
                                 "name": "gn_sol",
                                 "description": "Solar gains",
@@ -2513,20 +2516,20 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                             )
                             filestr = os.path.join(output_path_vdd, fname)
                             gn_sol.to_netcdf(filestr, encoding=encoding)
-                            print("Saved: " + filestr)
+                            log.info("Saved: " + filestr)
                             if config.verbose:
-                                print(datetime.datetime.now() - start_time)
+                                log.info(datetime.datetime.now() - start_time)
                             gn_sol = xr.open_dataarray(filestr).load()
                     #
                     #        #Solar gains - From roof only
                     #        with ProgressBar():
-                    #            print('Stage 3 - calc gn_sol_h')
+                    #            log.info('Stage 3 - calc gn_sol_h')
                     #            gn_sol_h = calc_gn_sol_h(i_sol_h, roof_area, roof_abs, u_roof)
                     #            gn_sol_h = gn_sol_h.chunk(chunks={'lon':chunksize2})
                     #    #        t_out_ave = t_out_ave.chunk(chunks={'lon':chunksize2})
-                    #            print('chunked')
+                    #            log.info('chunked')
                     #    #        vdd_c = calc_vdd_c(t_out_ave, t_bal_c, arb_fan=2) # Not needed any more
-                    #            print('out')
+                    #            log.info('out')
                     #            gn_sol_h.attrs = {'name':'gn_sol_h',
                     #                           'description':'Solar gains - Roof',
                     #                           'units':'W/m2',
@@ -2539,18 +2542,18 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                     #            fname = suff+'_'+str(parset.Index)+'_gn_sol_h_'+urt+'.nc'
                     #            filestr = output_folder2+fname
                     #            gn_sol_h.to_netcdf(filestr, encoding=encoding)
-                    #            print(datetime.datetime.now()-start)
+                    #            log.info(datetime.datetime.now()-start)
                     #        gn_sol_h = xr.open_dataarray(filestr).load()
                     #
                     #                #Solar gains - From windows only
                     #        with ProgressBar():
-                    #            print('Stage 3 - calc gn_sol_v')
+                    #            log.info('Stage 3 - calc gn_sol_v')
                     #            gn_sol_v = calc_gn_sol_v(i_sol_v, gl_perc, gl_g, gl_sh)
                     #            gn_sol_v = gn_sol_v.chunk(chunks={'lon':chunksize2})
                     #    #        t_out_ave = t_out_ave.chunk(chunks={'lon':chunksize2})
-                    #            print('chunked')
+                    #            log.info('chunked')
                     #    #        vdd_c = calc_vdd_c(t_out_ave, t_bal_c, arb_fan=2) # Not needed any more
-                    #            print('out')
+                    #            log.info('out')
                     #            gn_sol_v.attrs = {'name':'gn_sol_v',
                     #                           'description':'Solar gains - Windows',
                     #                           'units':'W/m2',
@@ -2563,7 +2566,7 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                     #            fname = suff+'_'+str(parset.Index)+'_gn_sol_v_'+urt+'.nc'
                     #            filestr = output_folder2+fname
                     #            gn_sol_v.to_netcdf(filestr, encoding=encoding)
-                    #            print(datetime.datetime.now()-start)
+                    #            log.info(datetime.datetime.now()-start)
                     #        gn_sol_v = xr.open_dataarray(filestr).load()
 
                     # ==============================================================================
@@ -2573,22 +2576,22 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                     with ProgressBar():
                         H_v_cl = calc_H_v_cl(vol, ach_cl)
                         if config.verbose:
-                            print("Stage 3 - calc_H_v_cl")
-                            print(datetime.datetime.now() - start_time)
+                            log.info("Stage 3 - calc_H_v_cl")
+                            log.info(datetime.datetime.now() - start_time)
                     # H_v_cl = xr.open_dataarray(output_folder2+'H_v_cl_'+urt+'.nc').load()
 
                     with ProgressBar():
                         H_v_op = calc_H_v_op(vol, ach_op)
                         if config.verbose:
-                            print("Stage 3 - calc_H_v_op")
-                            print(datetime.datetime.now() - start_time)
+                            log.info("Stage 3 - calc_H_v_op")
+                            log.info(datetime.datetime.now() - start_time)
                     # H_v_op = xr.open_dataarray(output_folder2+'H_v_op_'+urt+'.nc').load()
 
                     with ProgressBar():
                         H_tr = calc_H_tr(u_val, area_env)
                         if config.verbose:
-                            print("Stage 3 - calc_H_tr")
-                            print(datetime.datetime.now() - start_time)
+                            log.info("Stage 3 - calc_H_tr")
+                            log.info(datetime.datetime.now() - start_time)
                     #    H_tr = xr.open_dataarray(output_folder2+'H_tr_'+urt+'.nc').load()
                     dfa.loc[parset.Index, :] = [H_v_cl, H_v_op, H_tr]
 
@@ -2601,12 +2604,12 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                         # Variable CDD functions
                         # ==============================================================================
                         with ProgressBar():
-                            print("t_bal_c")
+                            log.info("t_bal_c")
                             t_bal_c = calc_t_bal_c(
                                 t_sp_c, gn_int, gn_sol, H_tr, H_v_cl
                             ).astype("float32")  # , x_diff0
                             t_bal_c = t_bal_c.chunk(chunks={"lon": config.chunk_size})
-                            print("chunked")
+                            log.info("chunked")
                             t_bal_c.attrs = {
                                 "name": "t_bal_c",
                                 "description": "Balance (base) temperature",
@@ -2628,16 +2631,16 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                             )
                             filestr = os.path.join(output_path_vdd, fname)
                             t_bal_c.to_netcdf(filestr, encoding=encoding)
-                            print("Saved: " + filestr)
+                            log.info("Saved: " + filestr)
                             if config.verbose:
-                                print(datetime.datetime.now() - start_time)
+                                log.info(datetime.datetime.now() - start_time)
                             t_bal_c = xr.open_dataarray(filestr)
 
                         # =============================================================================
                         # t_max_c
                         # =============================================================================
                         with ProgressBar():
-                            print("Calc_t_max_c")
+                            log.info("Calc_t_max_c")
                             t_max_c = calc_t_max_c(
                                 t_sp_c_max, gn_int, gn_sol, H_tr, H_v_op
                             )  # , x_diff0)
@@ -2663,16 +2666,16 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                             )
                             filestr = os.path.join(output_path_vdd, fname)
                             t_max_c.to_netcdf(filestr, encoding=encoding)
-                            print("Saved: " + filestr)
+                            log.info("Saved: " + filestr)
                             if config.verbose:
-                                print(datetime.datetime.now() - start_time)
+                                log.info(datetime.datetime.now() - start_time)
                         t_max_c = xr.open_dataarray(filestr).load()
                         # =============================================================================
                         # Nd - only this one uses daily
                         # =============================================================================
                         # Days per month over t_max_c
                         with ProgressBar():
-                            print("Calc Nd")
+                            log.info("Calc Nd")
                             Nd = calc_Nd(t_out_ave, t_max_c, nyrs_clim)
                             Nd.attrs = {
                                 "name": "Nd",
@@ -2690,9 +2693,9 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                             )
                             filestr = os.path.join(output_path_vdd, fname)
                             Nd.to_netcdf(filestr, encoding=encoding)
-                            print("Saved: " + filestr)
+                            log.info("Saved: " + filestr)
                             if config.verbose:
-                                print(datetime.datetime.now() - start_time)
+                                log.info(datetime.datetime.now() - start_time)
                             Nd = xr.open_dataarray(filestr)
 
                         # =============================================================================
@@ -2700,7 +2703,7 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                         # =============================================================================
                         # Days per month over t_max_c
                         with ProgressBar():
-                            print("Calc Nf")
+                            log.info("Calc Nf")
                             Nf = calc_Nf(t_out_ave, t_bal_c, nyrs_clim)
                             Nf.attrs = {
                                 "name": "Nf",
@@ -2718,9 +2721,9 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                             )
                             filestr = os.path.join(output_path_vdd, fname)
                             Nf.to_netcdf(filestr, encoding=encoding)
-                            print("Saved: " + filestr)
+                            log.info("Saved: " + filestr)
                             if config.verbose:
-                                print(datetime.datetime.now() - start_time)
+                                log.info(datetime.datetime.now() - start_time)
                             Nf = xr.open_dataarray(filestr)
 
                         # =============================================================================
@@ -2728,7 +2731,7 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                         # =============================================================================
                         # Days per month over t_max_c
                         with ProgressBar():
-                            print("Calc_vdd_tmax_c")
+                            log.info("Calc_vdd_tmax_c")
                             vdd_tmax_c = calc_vdd_tmax_c(t_oa_gbm, t_max_c)
                             vdd_tmax_c = vdd_tmax_c.chunk(
                                 chunks={"lon": config.chunk_size}
@@ -2757,9 +2760,9 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                             )
                             filestr = os.path.join(output_path_vdd, fname)
                             vdd_tmax_c.to_netcdf(filestr, encoding=encoding)
-                            print("Saved: " + filestr)
+                            log.info("Saved: " + filestr)
                             if config.verbose:
-                                print(datetime.datetime.now() - start_time)
+                                log.info(datetime.datetime.now() - start_time)
                             vdd_tmax_c = xr.open_dataarray(filestr)
 
                         # =============================================================================
@@ -2777,7 +2780,7 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                             )
                         )
                         with ProgressBar():
-                            print("Calc_qctmax")
+                            log.info("Calc_qctmax")
                             qctmax = Q_c_tmax(
                                 H_tr, H_v_cl, vdd_tmax_c, t_max_c, t_bal_c, Nd, f_c
                             )
@@ -2804,9 +2807,9 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                             )
                             filestr = os.path.join(output_path_vdd, fname)
                             qctmax.to_netcdf(filestr, encoding=encoding)
-                            print("Saved: " + filestr)
+                            log.info("Saved: " + filestr)
                             if config.verbose:
-                                print(datetime.datetime.now() - start_time)
+                                log.info(datetime.datetime.now() - start_time)
                         t_bal_c.close()
                         qctmax = xr.open_dataarray(filestr)
 
@@ -2815,7 +2818,7 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                         # =============================================================================
                         # qlat_month = xr.open_dataarray(output_folder2+'qlat_month_'+urt+'.nc')
                         with ProgressBar():
-                            print("E_c AC")
+                            log.info("E_c AC")
                             E_c_ac = calc_E_c_ac(qctmax, cop)
                             E_c_ac.attrs = {
                                 "name": "E_c_ac",
@@ -2839,12 +2842,12 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                             )
                             filestr = os.path.join(output_path_vdd, fname)
                             E_c_ac.to_netcdf(filestr, encoding=encoding)
-                            print("Saved: " + filestr)
+                            log.info("Saved: " + filestr)
                             if config.verbose:
-                                print(datetime.datetime.now() - start_time)
+                                log.info(datetime.datetime.now() - start_time)
                         #    qlat_month = xr.open_dataarray(output_folder2+'qlat_month_'+urt+'.nc')
                         with ProgressBar():
-                            print("E_f fans")
+                            log.info("E_f fans")
                             E_c_fan = calc_E_c_fan(
                                 f_f, P_f, Nf, config.area_fan
                             )  # Where Nf is same as Nd
@@ -2869,13 +2872,13 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                             )
                             filestr = os.path.join(output_path_vdd, fname)
                             E_c_fan.to_netcdf(filestr, encoding=encoding)
-                            print("Saved: " + filestr)
+                            log.info("Saved: " + filestr)
                             if config.verbose:
-                                print(datetime.datetime.now() - start_time)
+                                log.info(datetime.datetime.now() - start_time)
                     # =============================================================================
                     # dfa.to_csv(output_folder2+'constant_vars_out.csv')
-                    # print('Finished!: '+str(parset))
-                    # print(datetime.datetime.now()-start)
+                    # log.info('Finished!: '+str(parset))
+                    # log.info(datetime.datetime.now()-start)
                     # =============================================================================
 
                     # ==============================================================================
@@ -2887,12 +2890,12 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                         # Variable HDD functions
                         # ==============================================================================
                         with ProgressBar():
-                            print("calc_t_bal_h")
+                            log.info("calc_t_bal_h")
                             t_bal_h = calc_t_bal_h(
                                 t_sp_h, gn_int, gn_sol, H_tr, H_v_cl
                             ).astype("float32")  # , x_diff0
                             t_bal_h = t_bal_h.chunk(chunks={"lon": config.chunk_size})
-                            print("chunked")
+                            log.info("chunked")
                             t_bal_h.attrs = {
                                 "name": "t_bal_h",
                                 "description": "Balance (base) temperature",
@@ -2914,9 +2917,9 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                             )
                             filestr = os.path.join(output_path_vdd, fname)
                             t_bal_h.to_netcdf(filestr, encoding=encoding)
-                            print("Saved: " + filestr)
+                            log.info("Saved: " + filestr)
                             if config.verbose:
-                                print(datetime.datetime.now() - start_time)
+                                log.info(datetime.datetime.now() - start_time)
                             t_bal_h = xr.open_dataarray(filestr)
 
                         # =============================================================================
@@ -2924,7 +2927,7 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                         # =============================================================================
 
                         with ProgressBar():
-                            print("calc_vdd_h")
+                            log.info("calc_vdd_h")
                             vdd_h = calc_vdd_h(t_oa_gbm, t_bal_h)
                             vdd_h = vdd_h.chunk(chunks={"lon": config.chunk_size})
                             vdd_h = (
@@ -2946,9 +2949,9 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                             )
                             filestr = os.path.join(output_path_vdd, fname)
                             vdd_h.to_netcdf(filestr, encoding=encoding)
-                            print("Saved: " + filestr)
+                            log.info("Saved: " + filestr)
                             if config.verbose:
-                                print(datetime.datetime.now() - start_time)
+                                log.info(datetime.datetime.now() - start_time)
                         vdd_h = xr.open_dataarray(filestr)
 
                         # =============================================================================
@@ -2966,7 +2969,7 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                             )
                         )
                         with ProgressBar():
-                            print("Calc_qh")
+                            log.info("Calc_qh")
                             qh = Q_h(H_tr, H_v_cl, f_h, vdd_h)
                             qh.attrs = {
                                 "name": "qh",
@@ -2986,9 +2989,9 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                             )
                             filestr = os.path.join(output_path_vdd, fname)
                             qh.to_netcdf(filestr, encoding=encoding)
-                            print("Saved: " + filestr)
+                            log.info("Saved: " + filestr)
                             if config.verbose:
-                                print(datetime.datetime.now() - start_time)
+                                log.info(datetime.datetime.now() - start_time)
                         qh = xr.open_dataarray(filestr)
 
                         # =============================================================================
@@ -2996,7 +2999,7 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                         # =============================================================================
                         # qlat_month = xr.open_dataarray(output_folder2+'qlat_month_'+urt+'.nc')
                         with ProgressBar():
-                            print("E_h")
+                            log.info("E_h")
                             E_h = calc_E_h(qh, eff)
                             E_h.attrs = {
                                 "name": "E_h",
@@ -3015,15 +3018,15 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                             )
                             filestr = os.path.join(output_path_vdd, fname)
                             E_h.to_netcdf(filestr, encoding=encoding)
-                            print("Saved: " + filestr)
+                            log.info("Saved: " + filestr)
                             if config.verbose:
-                                print(datetime.datetime.now() - start_time)
+                                log.info(datetime.datetime.now() - start_time)
                             #    qlat_month = xr.open_dataarray(output_folder2+'qlat_month_'+urt+'.nc')
                         dfa.to_csv(
                             os.path.join(
                                 output_path_vdd, suff + "_" + "constant_vars_out.csv"
                             )
                         )
-                        # print('Finished!: '+suff+'+str(parset))
-                        # print('Finished!')
-                        print(datetime.datetime.now() - start_time)
+                        # log.info('Finished!: '+suff+'+str(parset))
+                        # log.info('Finished!')
+                        log.info(datetime.datetime.now() - start_time)

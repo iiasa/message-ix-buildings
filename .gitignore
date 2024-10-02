@@ -24,3 +24,6 @@ scratch*
 
 # CHILLED user settings
 user_settings.py
+
+# log files
+*.log

@@ -14,9 +14,12 @@ from preprocess.message_raster import create_message_raster  # type: ignore
 from message_ix_buildings.chilled.util.config import Config  # type: ignore
 from message_ix_buildings.chilled.util.util import (
     get_archs,
+    get_logger,
     read_arch_inputs_df,
     read_arch_reg_df,
 )
+
+log = get_logger(__name__)
 
 
 def create_archetypes(config: "Config"):
@@ -36,7 +39,8 @@ def create_archetypes(config: "Config"):
     # save MESSAGE regions map
     msg_file = "map_reg_MESSAGE_" + config.node + ".nc"
     map_reg.to_netcdf(os.path.join(archetype_path, msg_file))
-    print(
+
+    log.info(
         "- Saved MESSAGE and raster map data to "
         + os.path.join(
             archetype_path,
@@ -87,7 +91,7 @@ def create_archetypes(config: "Config"):
             encoding=encoding,
         )
 
-        print(
+        log.info(
             "-- Saved archetype map to "
             + os.path.join(
                 archetype_path,
@@ -106,7 +110,7 @@ def create_archetype_variables(config: "Config"):
     def map_archetype_variables(args):
         arch_setting, arch, varname = args
 
-        print(
+        log.info(
             "Creating archetype map for: " + arch_setting + " " + arch + " " + varname
         )
 
@@ -120,7 +124,6 @@ def create_archetype_variables(config: "Config"):
             )
         )
 
-        # print(".....Writing to netCDF")
         for urt in config.urts:
             for index, row in arch_inputs.iterrows():
                 map[urt].values[map[urt] == row["id"]] = float(row[varname])
@@ -145,13 +148,12 @@ def create_archetype_variables(config: "Config"):
             encoding=encoding,
         )
 
-        print(
+        log.info(
             ".......Completed writing to file: "
             + os.path.join(archetype_path, filename)
         )
 
     # create archetype variables maps
-
     func_inputs = product([config.arch_setting], vers_archs, VARS_ARCHETYPES)
 
     list(map(map_archetype_variables, func_inputs))

@@ -15,6 +15,9 @@ from message_ix_buildings.chilled.core.climate import (
     process_iso_tables,
 )
 from message_ix_buildings.chilled.util.config import Config  # type: ignore
+from message_ix_buildings.chilled.util.util import get_logger
+
+log = get_logger(__name__)
 
 
 def parse_arguments(arguments):
@@ -34,13 +37,15 @@ def parse_arguments(arguments):
         "-gcm",
         "--gcm",
         default="GFDL-ESM4",
-        help="GCM to run. Options: GFDL-ESM4, IPSL-CM6A-LR, MPI-ESM1-2-HR, MRI-ESM2-0, UKESM1-0-LL. Default: GFDL-ESM4.",
+        help="GCM to run. Options: GFDL-ESM4, IPSL-CM6A-LR, MPI-ESM1-2-HR, MRI-ESM2-0, \
+            UKESM1-0-LL. Default: GFDL-ESM4.",
     )
     parser.add_argument(
         "-rcp",
         "--rcp",
         default="baseline",
-        help="RCP to run. Options: ssp126, ssp370, ssp585, baseline. Default: baseline.",
+        help="RCP to run. Options: ssp126, ssp370, ssp585, baseline. \
+            Default: baseline.",
     )
 
     # Parse arguments
@@ -56,10 +61,19 @@ def print_arguments(parsed_arguments):
     """
 
     # Print arguments
-    print("---------- Parsed arguments ------------")
-    print("Selected version: " + parsed_arguments.version)
-    print("Selected GCM: " + parsed_arguments.gcm)
-    print("Selected RCP scenario: " + parsed_arguments.rcp)
+    log.info(
+        "\n"
+        + "---------- Parsed arguments ------------"
+        + "\n"
+        + "Selected version: "
+        + parsed_arguments.version
+        + "\n"
+        + "Selected GCM: "
+        + parsed_arguments.gcm
+        + "\n"
+        + "Selected RCP scenario: "
+        + parsed_arguments.rcp
+    )
 
 
 # create climate outputs

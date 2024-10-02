@@ -11,6 +11,9 @@ from message_ix_buildings.chilled.core.climate import (
     process_iso_tables,
 )
 from message_ix_buildings.chilled.util.config import Config  # type: ignore
+from message_ix_buildings.chilled.util.util import get_logger
+
+log = get_logger(__name__)
 
 
 def parse_arguments(arguments):
@@ -52,10 +55,19 @@ def print_arguments(parsed_arguments):
     """
 
     # Print arguments
-    print("---------- Parsed arguments ------------")
-    print("Selected version: " + parsed_arguments.version)
-    print("Selected GCM: " + parsed_arguments.gcm)
-    print("Selected RCP scenario: " + parsed_arguments.rcp)
+    log.info(
+        "\n"
+        + "---------- Parsed arguments ------------"
+        + "\n"
+        + "Selected version: "
+        + parsed_arguments.version
+        + "\n"
+        + "Selected GCM: "
+        + parsed_arguments.gcm
+        + "\n"
+        + "Selected RCP scenario: "
+        + parsed_arguments.rcp
+    )
 
 
 def create_config(parsed_arguments):
@@ -78,25 +90,25 @@ def main(args=None):
     print_arguments(parsed_arguments=parsed_args)
     cfg = create_config(parsed_arguments=parsed_args)
 
-    print("RUNNING aggregate_urban_rural_files()........")
+    log.info("RUNNING aggregate_urban_rural_files()........")
     aggregate_urban_rural_files(cfg)
 
-    print("RUNNING make_vdd_total_maps()........")
+    log.info("RUNNING make_vdd_total_maps()........")
     make_vdd_total_maps(cfg)
 
-    print("RUNNING process_construction_shares()........")
+    log.info("RUNNING process_construction_shares()........")
     process_construction_shares(cfg)
 
-    print("RUNNING process_floor_area_maps()........")
+    log.info("RUNNING process_floor_area_maps()........")
     process_floor_area_maps(cfg)
 
-    print("RUNNING process_country_maps()........")
+    log.info("RUNNING process_country_maps()........")
     process_country_maps(cfg)
 
-    print("RUNNING process_final_maps()........")
+    log.info("RUNNING process_final_maps()........")
     process_final_maps(cfg)
 
-    print("RUNNING process_iso_tables()........")
+    log.info("RUNNING process_iso_tables()........")
     process_iso_tables(cfg)
 
 

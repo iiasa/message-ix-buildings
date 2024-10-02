@@ -4,6 +4,10 @@ import pandas as pd
 import pyam  # type: ignore
 import statsmodels.formula.api as smf  # type: ignore
 
+from message_ix_buildings.chilled.util.util import get_logger
+
+log = get_logger(__name__)
+
 # from message_ix_buildings.chilled.config import Config
 
 # cfg = Config()
@@ -246,14 +250,14 @@ def apply_regression(
         os.path.join(version_output_path, "regression_results.csv"), index=False
     )
 
-    print("Saved: " + os.path.join(version_output_path, "regression_results.csv"))
+    log.info("Saved: " + os.path.join(version_output_path, "regression_results.csv"))
 
     df_cc.to_csv(
         os.path.join(version_output_path, "REGIONAL_EI_PATHWAYS_cc_long.csv"),
         index=False,
     )
 
-    print(
+    log.info(
         "Saved: "
         + os.path.join(version_output_path, "REGIONAL_EI_PATHWAYS_cc_long.csv")
     )
@@ -263,7 +267,7 @@ def apply_regression(
         index=False,
     )
 
-    print(
+    log.info(
         "Saved: "
         + os.path.join(version_output_path, "REGIONAL_EI_PATHWAYS_nocc_long.csv")
     )

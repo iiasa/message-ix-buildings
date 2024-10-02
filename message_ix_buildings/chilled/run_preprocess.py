@@ -6,6 +6,9 @@ from message_ix_buildings.chilled.preprocess.archetypes import (
     create_archetypes,
 )
 from message_ix_buildings.chilled.util.config import Config
+from message_ix_buildings.chilled.util.util import get_logger
+
+log = get_logger(__name__)
 
 
 def parse_arguments(arguments):
@@ -35,8 +38,13 @@ def print_arguments(parsed_arguments):
     """
 
     # Print arguments
-    print("---------- Parsed arguments ------------")
-    print("Selected version: " + parsed_arguments.version)
+    log.info(
+        "\n"
+        + "---------- Parsed arguments ------------"
+        + "\n"
+        + "Selected version: "
+        + parsed_arguments.version
+    )
 
 
 # create climate outputs
@@ -57,10 +65,12 @@ def main(args=None):
     # Run the main function
     print_arguments(parsed_arguments=parsed_args)
     cfg = create_config(parsed_arguments=parsed_args)
+
     create_archetypes(cfg)
-    print("Archetypes created successfully.")
+    log.info("Archetypes created successfully.")
+
     create_archetype_variables(cfg)
-    print("Archetype variables created successfully.")
+    log.info("Archetype variables created successfully.")
 
 
 if __name__ == "__main__":

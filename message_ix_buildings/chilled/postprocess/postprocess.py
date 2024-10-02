@@ -3,7 +3,9 @@ import os
 import pandas as pd
 
 from message_ix_buildings.chilled.util.config import Config
+from message_ix_buildings.chilled.util.util import get_logger
 
+log = get_logger(__name__)
 cfg = Config()
 
 
@@ -199,7 +201,7 @@ def postprocess_electricity_demand(input_path, input_version_name):
         index=False,
     )
 
-    print(
+    log.info(
         "Saved: " + os.path.join(version_output_path, "sturm_building_stock_inputs.csv")
     )
 
@@ -211,7 +213,7 @@ def postprocess_electricity_demand(input_path, input_version_name):
         index=False,
     )
 
-    print(
+    log.info(
         "Saved: "
         + os.path.join(
             version_output_path,
@@ -227,8 +229,8 @@ def postprocess_electricity_demand(input_path, input_version_name):
         index=False,
     )
 
-    print(
-        "Saved: "
+    log.info(
+        "Saved :"
         + os.path.join(
             version_output_path,
             "reg_en_cool_tot_" + input_version_name + "_2024_3settemps.csv",
@@ -243,11 +245,11 @@ def postprocess_electricity_demand(input_path, input_version_name):
         index=False,
     )
 
-    print(
+    log.info(
         "Saved: "
         + os.path.join(
             version_output_path,
-            "reg_en_cool_sect_" + input_version_name + "_2024_3settemp.csv",
+            "reg_en_cool_sect_" + input_version_name + "_2024_3settemps.csv",
         )
     )
 

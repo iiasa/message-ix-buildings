@@ -2,8 +2,8 @@ import os
 
 import pandas as pd
 
+from message_ix_buildings.chilled.util.base import get_logger
 from message_ix_buildings.chilled.util.config import Config
-from message_ix_buildings.chilled.util.util import get_logger
 
 log = get_logger(__name__)
 cfg = Config()

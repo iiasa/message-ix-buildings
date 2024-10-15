@@ -49,7 +49,7 @@ def create_archetypes(config: "Config"):
     )
 
     for arch in vers_archs:
-        arch_reg = read_arch_reg_df(config, arch)
+        arch_reg = read_arch_reg_df(config).query("arch == @arch")
 
         # Create map of archetypes based on MESSAGE regions raster
         arch_map = xr.Dataset(

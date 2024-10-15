@@ -32,85 +32,56 @@ def get_archs(config: "Config"):
     version_path = os.path.join(root_path, "data", "chilled", "version", config.vstr)
 
     if config.arch_setting == "fixed":
-        input_file = os.path.join(version_path, "arch_input.xlsx")
-
-        if os.path.exists(input_file):
-            input_file = os.path.join(version_path, "arch_input.xlsx")
-            archs = pd.ExcelFile(input_file).sheet_names
-
-            return archs
-        else:
-            raise FileNotFoundError(
-                "Archetypes input file "
-                + input_file
-                + " does not exist! Please create file for input."
-            )
-
+        input_file = os.path.join(version_path, "arch_input.csv")
     elif config.arch_setting == "regional":
-        input_file = os.path.join(
-            version_path,
-            "arch_input_reg.xlsx",
+        input_file = os.path.join(version_path, "arch_input_reg.csv")
+
+    if os.path.exists(input_file):
+        archs = pd.read_csv(input_file).arch.unique().tolist()
+
+        return archs
+    else:
+        raise FileNotFoundError(
+            "Archetypes input file "
+            + input_file
+            + " does not exist! Please create file for input."
         )
 
-        if os.path.exists(input_file):
-            archs = pd.read_excel(input_file, sheet_name="arch").arch.unique().tolist()
 
-            return archs
-        else:
-            raise FileNotFoundError(
-                "Archetypes input file "
-                + input_file
-                + " does not exist! Please create file for input"
-            )
-
-
-def read_arch_inputs_df(config: "Config", suff: str):
+def read_arch_inputs_df(config: "Config"):
     root_path = get_project_root()
     version_path = os.path.join(root_path, "data", "chilled", "version", config.vstr)
 
     if config.arch_setting == "fixed":
-        input_file = os.path.join(version_path, "arch_input.xlsx")
-
-        if os.path.exists(input_file):
-            arch_inputs = pd.read_excel(input_file, sheet_name=suff, index_col="id")
-
-            return arch_inputs
-        else:
-            raise FileNotFoundError(
-                "Archetypes input file "
-                + input_file
-                + " does not exist! Please create file for input."
-            )
+        input_file = os.path.join(version_path, "arch_input.csv")
     elif config.arch_setting == "regional":
-        input_file = os.path.join(
-            version_path,
-            "arch_input_reg.xlsx",
+        input_file = os.path.join(version_path, "arch_input_reg.csv")
+
+    if os.path.exists(input_file):
+        arch_inputs = pd.read_csv(input_file)
+
+        return arch_inputs
+
+    else:
+        raise FileNotFoundError(
+            "Archetypes input file "
+            + input_file
+            + " does not exist! Please create file for input."
         )
 
-        if os.path.exists(input_file):
-            arch_inputs = pd.read_excel(input_file, sheet_name="arch")
 
-            return arch_inputs
-        else:
-            raise FileNotFoundError(
-                "Archetypes input file "
-                + input_file
-                + " does not exist! Please create file for input."
-            )
-
-
-def read_arch_reg_df(config: "Config", arch: str):
+def read_arch_reg_df(config: "Config"):
     root_path = get_project_root()
     version_path = os.path.join(root_path, "data", "chilled", "version", config.vstr)
 
     if config.arch_setting == "regional":
         reg_file = os.path.join(
             version_path,
-            "arch_regions.xlsx",
+            "arch_regions.csv",
         )
 
         if os.path.exists(reg_file):
-            arch_reg = pd.read_excel(reg_file, sheet_name=arch)
+            arch_reg = pd.read_excel(reg_file)
             return arch_reg
         else:
             raise FileNotFoundError(

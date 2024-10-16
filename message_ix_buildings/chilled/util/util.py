@@ -81,7 +81,7 @@ def read_arch_reg_df(config: "Config"):
         )
 
         if os.path.exists(reg_file):
-            arch_reg = pd.read_excel(reg_file)
+            arch_reg = pd.read_csv(reg_file)
             return arch_reg
         else:
             raise FileNotFoundError(

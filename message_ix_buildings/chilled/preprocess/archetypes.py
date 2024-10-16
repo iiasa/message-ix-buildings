@@ -11,13 +11,13 @@ import xarray as xr
 from functions.variable_dicts import VARS_ARCHETYPES  # type: ignore
 from preprocess.message_raster import create_message_raster  # type: ignore
 
-from message_ix_buildings.chilled.util.config import Config  # type: ignore
-from message_ix_buildings.chilled.util.util import (
+from message_ix_buildings.chilled.util.base import (
     get_archs,
-    get_logger,
     read_arch_inputs_df,
     read_arch_reg_df,
 )
+from message_ix_buildings.chilled.util.common import get_logger
+from message_ix_buildings.chilled.util.config import Config  # type: ignore
 
 log = get_logger(__name__)
 
@@ -157,3 +157,5 @@ def create_archetype_variables(config: "Config"):
     func_inputs = product([config.arch_setting], vers_archs, VARS_ARCHETYPES)
 
     list(map(map_archetype_variables, func_inputs))
+
+    log.info("Completed building input maps.")

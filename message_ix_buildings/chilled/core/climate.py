@@ -44,13 +44,13 @@ from message_ix_buildings.chilled.functions.variable_dicts import (
 from message_ix_buildings.chilled.preprocess.message_raster import (
     create_message_raster,  # type: ignore
 )
-from message_ix_buildings.chilled.util.config import Config  # type: ignore
-from message_ix_buildings.chilled.util.util import (
+from message_ix_buildings.chilled.util.base import (
     get_archs,
-    get_logger,
     load_all_scenarios_data,
     load_parametric_analysis_data,
 )
+from message_ix_buildings.chilled.util.common import get_logger
+from message_ix_buildings.chilled.util.config import Config  # type: ignore
 
 log = get_logger(__name__)
 

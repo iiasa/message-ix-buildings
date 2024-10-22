@@ -255,4 +255,4 @@ def postprocess_electricity_demand(input_path, input_version_name):
     )
 
 
-postprocess_electricity_demand(dle_path, cfg.vstr)
+postprocess_electricity_demand(dle_path, cfg.vstr2 + "_" + cfg.vstr)

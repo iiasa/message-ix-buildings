@@ -18,6 +18,7 @@ class Config:
     #:
     #: This is used to name the output files and directories.
     vstr: str = "ALPS2023"
+    vstr2 = "v19"
 
     #: Select the climate model.
     #:

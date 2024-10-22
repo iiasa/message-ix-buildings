@@ -60,6 +60,7 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
     project_path = get_paths(config, "project_path")
     dle_path = get_paths(config, "dle_path")
     isimip_bias_adj_path = get_paths(config, "isimip_bias_adj_path")
+    isimip_ewembi_path = get_paths(config, "isimip_ewembi_path")
 
     out_path = os.path.join(project_path, "out", "version", config.vstr)
     archetype_path = os.path.join(out_path, "rasters")
@@ -110,7 +111,7 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
         endstr = ".nc"
 
         if str(clim) == "hist":
-            isi_folder = isimip_ewemib_path
+            isi_folder = isimip_ewembi_path
             filestr = climate_filestr_hist
         else:
             isi_folder = isimip_bias_adj_path

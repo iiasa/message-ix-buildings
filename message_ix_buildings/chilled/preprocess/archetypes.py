@@ -15,6 +15,7 @@ from message_ix_buildings.chilled.util.config import Config  # type: ignore
 from message_ix_buildings.chilled.util.util import (
     get_archs,
     get_logger,
+    get_paths,
     read_arch_inputs_df,
     read_arch_reg_df,
 )
@@ -23,7 +24,9 @@ log = get_logger(__name__)
 
 
 def create_archetypes(config: "Config"):
-    out_path = os.path.join(config.project_path, "out", "version")
+    project_path = get_paths(config, "dle_path")
+
+    out_path = os.path.join(project_path, "out", "version")
     archetype_path = os.path.join(out_path, config.vstr, "rasters")
 
     # if archetypes folder does not exist, create it
@@ -101,7 +104,9 @@ def create_archetypes(config: "Config"):
 
 
 def create_archetype_variables(config: "Config"):
-    out_path = os.path.join(config.project_path, "out", "version")
+    project_path = get_paths(config, "dle_path")
+
+    out_path = os.path.join(project_path, "out", "version")
     archetype_path = os.path.join(out_path, config.vstr, "rasters")
 
     # get archs

@@ -197,6 +197,14 @@ def postprocess_electricity_demand(input_path, input_version_name):
     )
 
     # Save files
+
+    df_chilled.to_csv(
+        os.path.join(version_output_path, "chilled_postprocessed.csv"),
+        index=False,
+    )
+
+    log.info("Saved: " + os.path.join(version_output_path, "chilled_postprocessed.csv"))
+
     df_sturm.to_csv(
         os.path.join(version_output_path, "sturm_building_stock_inputs.csv"),
         index=False,

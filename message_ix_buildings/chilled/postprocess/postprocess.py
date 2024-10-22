@@ -3,10 +3,11 @@ import os
 import pandas as pd
 
 from message_ix_buildings.chilled.util.config import Config
-from message_ix_buildings.chilled.util.util import get_logger
+from message_ix_buildings.chilled.util.util import get_logger, get_paths
 
 log = get_logger(__name__)
-cfg = Config()
+cfg = Config(user="MEAS")
+dle_path = get_paths(cfg, "dle_path")
 
 
 def get_sturm_data(input_path, input_version_name):
@@ -254,4 +255,4 @@ def postprocess_electricity_demand(input_path, input_version_name):
     )
 
 
-postprocess_electricity_demand(cfg.dle_path, cfg.vstr)
+postprocess_electricity_demand(dle_path, cfg.vstr)

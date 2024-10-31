@@ -3,11 +3,22 @@ import os
 from pathlib import Path
 
 import pandas as pd
-from util.config import Config  # type: ignore
+
+from message_ix_buildings.chilled.functions.user_settings import DICT_USER_SETTINGS
+from message_ix_buildings.chilled.util.config import Config  # type: ignore
 
 
 def get_project_root() -> Path:
     return Path(__file__).parent.parent.parent
+
+
+def get_paths(config: "Config", selection):
+    # if selection is chunk_size, then return chunk_size as is
+    # else, return string version of the path
+    if selection == "chunk_size":
+        return DICT_USER_SETTINGS[config.user][selection]
+    else:
+        return str(DICT_USER_SETTINGS[config.user][selection])
 
 
 def get_logger(name: str):

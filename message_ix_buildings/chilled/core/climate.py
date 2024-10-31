@@ -48,6 +48,7 @@ from message_ix_buildings.chilled.util.config import Config  # type: ignore
 from message_ix_buildings.chilled.util.util import (
     get_archs,
     get_logger,
+    get_paths,
     load_all_scenarios_data,
     load_parametric_analysis_data,
 )
@@ -56,7 +57,12 @@ log = get_logger(__name__)
 
 
 def create_climate_variables_maps(config: "Config", start_time: datetime.datetime):
-    out_path = os.path.join(config.project_path, "out", "version", config.vstr)
+    project_path = get_paths(config, "project_path")
+    dle_path = get_paths(config, "dle_path")
+    isimip_bias_adj_path = get_paths(config, "isimip_bias_adj_path")
+    isimip_ewembi_path = get_paths(config, "isimip_ewembi_path")
+
+    out_path = os.path.join(project_path, "out", "version", config.vstr)
     archetype_path = os.path.join(out_path, "rasters")
     save_path = os.path.join(out_path, "VDD_ene_calcs")
 
@@ -105,10 +111,10 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
         endstr = ".nc"
 
         if str(clim) == "hist":
-            isi_folder = config.isimip_ewemib_path
+            isi_folder = isimip_ewembi_path
             filestr = climate_filestr_hist
         else:
-            isi_folder = config.isimip_bias_adj_path
+            isi_folder = isimip_bias_adj_path
             filestr = climate_filestr_future
 
         filepath = os.path.join(
@@ -135,12 +141,12 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
         t_oa_gbm = t_out_ave.groupby("time.month")
 
         i_sol_v = xr.open_dataarray(
-            os.path.join(config.dle_path, "EWEMBI_vert_irrad_1980-2009_avg.nc")
+            os.path.join(dle_path, "EWEMBI_vert_irrad_1980-2009_avg.nc")
         )  # Values  in daily Wh/m2
 
         # Horizontal irradiation
         i_sol_h = xr.open_dataarray(
-            os.path.join(config.dle_path, "EWEMBI_horiz_irrad_1980-2009_avg.nc")
+            os.path.join(dle_path, "EWEMBI_horiz_irrad_1980-2009_avg.nc")
         )  # Values in daily Wh/m2
 
         if config.arch_setting == "regional":
@@ -756,7 +762,8 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
 
 
 def aggregate_urban_rural_files(config: "Config"):
-    out_path = os.path.join(config.project_path, "out", "version", config.vstr)
+    project_path = get_paths(config, "project_path")
+    out_path = os.path.join(project_path, "out", "version", config.vstr)
     save_path = os.path.join(out_path, "VDD_ene_calcs")
 
     output_path_vdd = os.path.join(
@@ -834,7 +841,8 @@ def aggregate_urban_rural_files(config: "Config"):
 
 
 def make_vdd_total_maps(config: "Config"):
-    out_path = os.path.join(config.project_path, "out", "version", config.vstr)
+    project_path = get_paths(config, "project_path")
+    out_path = os.path.join(project_path, "out", "version", config.vstr)
     save_path = os.path.join(out_path, "VDD_ene_calcs")
 
     output_path_vdd = os.path.join(
@@ -1133,7 +1141,9 @@ def make_vdd_total_maps(config: "Config"):
 
 
 def process_construction_shares(config: "Config"):
-    out_path = os.path.join(config.project_path, "out", "version", config.vstr)
+    project_path = get_paths(config, "project_path")
+    dle_path = get_paths(config, "dle_path")
+    out_path = os.path.join(project_path, "out", "version", config.vstr)
     floorarea_path = os.path.join(out_path, "floorarea_country")
 
     output_path = os.path.join(
@@ -1153,7 +1163,7 @@ def process_construction_shares(config: "Config"):
 
     # If constr_setting == 1, then process construction shares. Otherwise, skip
     if config.constr_setting == 1:
-        input_path = config.dle_path
+        input_path = dle_path
 
         dsc = xr.Dataset()
         for urt in config.urts:
@@ -1226,8 +1236,10 @@ def process_construction_shares(config: "Config"):
 
 
 def process_floor_area_maps(config: "Config"):
-    input_path = config.dle_path
-    out_path = os.path.join(config.project_path, "out", "version", config.vstr)
+    project_path = get_paths(config, "project_path")
+    dle_path = get_paths(config, "dle_path")
+    input_path = dle_path
+    out_path = os.path.join(project_path, "out", "version", config.vstr)
     save_path = os.path.join(out_path, "floorarea_country")
 
     output_path = os.path.join(
@@ -1354,8 +1366,11 @@ def process_floor_area_maps(config: "Config"):
 
 
 def process_country_maps(config: "Config"):
-    input_path = config.dle_path
-    out_path = os.path.join(config.project_path, "out", "version", config.vstr)
+    project_path = get_paths(config, "project_path")
+    dle_path = get_paths(config, "dle_path")
+
+    input_path = dle_path
+    out_path = os.path.join(project_path, "out", "version", config.vstr)
     save_path = os.path.join(out_path, "floorarea_country")
 
     output_path = os.path.join(
@@ -1436,8 +1451,11 @@ def process_country_maps(config: "Config"):
 
 
 def process_final_maps(config: "Config"):
-    input_path = config.dle_path
-    out_path = os.path.join(config.project_path, "out", "version", config.vstr)
+    project_path = get_paths(config, "project_path")
+    dle_path = get_paths(config, "dle_path")
+
+    input_path = dle_path
+    out_path = os.path.join(project_path, "out", "version", config.vstr)
     vdd_path = os.path.join(
         out_path,
         "VDD_ene_calcs",
@@ -1835,8 +1853,11 @@ def process_final_maps(config: "Config"):
 def process_iso_tables(config: "Config"):
     start = datetime.datetime.now()
 
-    input_path = config.dle_path
-    out_path = os.path.join(config.project_path, "out", "version", config.vstr)
+    project_path = get_paths(config, "project_path")
+    dle_path = get_paths(config, "dle_path")
+
+    input_path = dle_path
+    out_path = os.path.join(project_path, "out", "version", config.vstr)
     vdd_path = os.path.join(out_path, "VDD_ene_calcs", config.gcm, config.rcp)
     floorarea_path = os.path.join(out_path, "floorarea_country", config.gcm, config.rcp)
     finalmaps_path = os.path.join(out_path, "final_maps", config.gcm, config.rcp)
@@ -2140,7 +2161,11 @@ def process_iso_tables(config: "Config"):
 
 
 def create_climate_outputs(config: "Config", start_time: datetime.datetime):
-    out_path = os.path.join(config.project_path, "out", "version", config.vstr)
+    project_path = get_paths(config, "project_path")
+    dle_path = get_paths(config, "dle_path")
+    isimip_bias_adj_path = get_paths(config, "isimip_bias_adj_path")
+    isimip_ewemib_path = get_paths(config, "isimip_ewemib_path")
+    out_path = os.path.join(project_path, "out", "version", config.vstr)
     archetype_path = os.path.join(out_path, "rasters")
     save_path = os.path.join(out_path, "VDD_ene_calcs")
 
@@ -2180,10 +2205,10 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
         nyrs_clim = int(years_clim[1]) - int(years_clim[0]) + 1
 
         if str(clim) == "hist":
-            isi_folder = config.isimip_ewemib_path
+            isi_folder = isimip_ewemib_path
             filestr = config.climate_filestr_hist
         else:
-            isi_folder = config.isimip_bias_adj_path
+            isi_folder = isimip_bias_adj_path
             filestr = config.climate_filestr_future
 
         filepath = os.path.join(
@@ -2226,12 +2251,12 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
         # Vertical irradiation
         # i_sol_v = xr.open_dataarray(input_folder+'CERES_vert_irrad_2001-13_avg.nc') #Values  in daily Wh/m2
         i_sol_v = xr.open_dataarray(
-            os.path.join(config.dle_path, "EWEMBI_vert_irrad_1980-2009_avg.nc")
+            os.path.join(dle_path, "EWEMBI_vert_irrad_1980-2009_avg.nc")
         )  # Values  in daily Wh/m2
 
         # Horizontal irradiation
         i_sol_h = xr.open_dataarray(
-            os.path.join(config.dle_path, "EWEMBI_horiz_irrad_1980-2009_avg.nc")
+            os.path.join(dle_path, "EWEMBI_horiz_irrad_1980-2009_avg.nc")
         )  # Values in daily Wh/m2
 
         # i_sol = i_sol.sel(time=slice(years_clim[0],years_clim[1]))

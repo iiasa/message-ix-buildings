@@ -5,7 +5,7 @@ from message_ix_buildings.chilled.preprocess.archetypes import (
     create_archetype_variables,
     create_archetypes,
 )
-from message_ix_buildings.chilled.util.base import get_logger
+from message_ix_buildings.chilled.util.common import get_logger
 from message_ix_buildings.chilled.util.config import Config
 
 log = get_logger(__name__)

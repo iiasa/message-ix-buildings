@@ -14,7 +14,7 @@ from message_ix_buildings.chilled.core.climate import (
     process_floor_area_maps,
     process_iso_tables,
 )
-from message_ix_buildings.chilled.util.base import get_logger
+from message_ix_buildings.chilled.util.common import get_logger
 from message_ix_buildings.chilled.util.config import Config  # type: ignore
 
 log = get_logger(__name__)

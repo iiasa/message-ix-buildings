@@ -13,11 +13,11 @@ from preprocess.message_raster import create_message_raster  # type: ignore
 
 from message_ix_buildings.chilled.util.base import (
     get_archs,
-    get_logger,
     get_paths,
     read_arch_inputs_df,
     read_arch_reg_df,
 )
+from message_ix_buildings.chilled.util.common import get_logger
 from message_ix_buildings.chilled.util.config import Config  # type: ignore
 
 log = get_logger(__name__)

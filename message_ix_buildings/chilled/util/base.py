@@ -1,15 +1,10 @@
-import logging
 import os
-from pathlib import Path
 
 import pandas as pd
 
 from message_ix_buildings.chilled.functions.user_settings import DICT_USER_SETTINGS
-from message_ix_buildings.chilled.util.config import Config  # type: ignore
-
-
-def get_project_root() -> Path:
-    return Path(__file__).parent.parent.parent
+from message_ix_buildings.chilled.util.common import get_project_root  # type: ignore
+from message_ix_buildings.chilled.util.config import Config
 
 
 def get_paths(config: "Config", selection):
@@ -19,23 +14,6 @@ def get_paths(config: "Config", selection):
         return DICT_USER_SETTINGS[config.user][selection]
     else:
         return str(DICT_USER_SETTINGS[config.user][selection])
-
-
-def get_logger(name: str):
-    log = logging.getLogger(name)
-    log.setLevel(logging.INFO)
-
-    # configure the handler and formatter as needed
-    handler = logging.FileHandler(f"{name}.log", mode="w")
-    formatter = logging.Formatter("%(name)s %(asctime)s %(levelname)s %(message)s")
-
-    # add formatter to the handler
-    handler.setFormatter(formatter)
-
-    # add handler to the logger
-    log.addHandler(handler)
-
-    return log
 
 
 def get_archs(config: "Config"):

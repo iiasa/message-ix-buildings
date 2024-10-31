@@ -9,8 +9,8 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 
+from message_ix_buildings.chilled.util.base import get_paths
 from message_ix_buildings.chilled.util.config import Config
-from message_ix_buildings.chilled.util.util import get_paths
 
 
 def create_message_raster(config: "Config"):

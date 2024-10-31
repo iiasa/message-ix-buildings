@@ -1,4 +1,5 @@
 import logging
+import sys
 from pathlib import Path
 
 
@@ -11,7 +12,7 @@ def get_logger(name: str):
     log.setLevel(logging.INFO)
 
     # configure the handler and formatter as needed
-    handler = logging.FileHandler(f"{name}.log", mode="w")
+    handler = logging.StreamHandler(sys.stdout)
     formatter = logging.Formatter("%(name)s %(asctime)s %(levelname)s %(message)s")
 
     # add formatter to the handler

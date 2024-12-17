@@ -94,13 +94,13 @@ class Config:
     #:
     #: 1 = calculate
     #: 0 = skip
-    cool = 1
+    cool = 0
 
     #: Select whether to run heating calculations.
     #:
     #: 1 = calculate
     #: 0 = skip
-    heat = 0
+    heat = 1
 
     #: Select solar gain calculation. One of:
     #:

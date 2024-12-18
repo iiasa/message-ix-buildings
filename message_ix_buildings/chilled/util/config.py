@@ -47,25 +47,29 @@ class Config:
     #:
     #: 1 = run entire parametric analysis
     #: 0 = run only ref case
-    paranalysis_mode = 1  # 1 = run entire parametric analysis; 0 = run only ref case
+    paranalysis_mode: Literal[0, 1] = (
+        1  # 1 = run entire parametric analysis; 0 = run only ref case
+    )
 
     #: Select whether to run simple (standard) degree days calculation.
     #:
     #: 1 = run simple (standard) degree days calculation
     #: 0 = don't run
-    runsdd = 0  # 1= run simple (standard) degree days calculation; 0 = don't run
+    runsdd: Literal[0, 1] = (
+        0  # 1= run simple (standard) degree days calculation; 0 = don't run
+    )
 
     #: Select whether to run testing mode.
     #:
     #: 1 = selects only two years for testing
     #: 0 = select all years (full calculation)
-    testing_mode = 0
+    testing_mode: Literal[0, 1] = 0
 
     #: Select whether to fix population to SSP2.
-    popfix = True  # If True, fix to SSP2, else.... (see script 4/5)
+    popfix: Literal[0, 1] = True  # If True, fix to SSP2, else.... (see script 4/5)
 
     #: Select construction setting.
-    constr_setting = 0
+    constr_setting: Literal[0, 1] = 0
 
     #: Select floor setting. One of:
     #:
@@ -93,13 +97,13 @@ class Config:
     #:
     #: 1 = calculate
     #: 0 = skip
-    cool = 1
+    cool: Literal[0, 1] = 1
 
     #: Select whether to run heating calculations.
     #:
     #: 1 = calculate
     #: 0 = skip
-    heat = 0
+    heat: Literal[0, 1] = 0
 
     #: Select solar gain calculation. One of:
     #:

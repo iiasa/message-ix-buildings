@@ -66,7 +66,9 @@ class Config:
     testing_mode: Literal[0, 1] = 0
 
     #: Select whether to fix population to SSP2.
-    popfix: Literal[0, 1] = True  # If True, fix to SSP2, else.... (see script 4/5)
+    popfix: Literal[True, False] = (
+        True  # If True, fix to SSP2, else.... (see script 4/5)
+    )
 
     #: Select construction setting.
     constr_setting: Literal[0, 1] = 0

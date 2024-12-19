@@ -125,14 +125,14 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
         if config.rcp == "rcp26":
             dst = xr.open_mfdataset(
                 filepath,
-                chunks={"lon": config.chunk_size},
+                chunks={"lon": get_paths(config, "chunk_size")},
                 concat_dim="time",
                 use_cftime=True,
             )  # Setting for RCP2.6
         else:
             dst = xr.open_mfdataset(
                 filepath,
-                chunks={"lon": config.chunk_size},
+                chunks={"lon": get_paths(config, "chunk_size")},
             )  # , concat_dim='time' )  # Setting for RCP6.0
 
         dst_crop = dst.sel(time=slice(years_clim[0], years_clim[1]))
@@ -202,7 +202,7 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
                     log.info("Stage 3 - Simple HDDCDD - cooling")
                     log.info("Balance temp " + str(bal_temp) + "C")
                     sdd_c = calc_SCDD_m(t_out_ave, bal_temp)
-                    sdd_c = sdd_c.chunk(chunks={"lon": config.chunk_size})
+                    sdd_c = sdd_c.chunk(chunks={"lon": get_paths(config, "chunk_size")})
                     log.info("chunked")
                     sdd_c.attrs = {
                         "name": "sdd_c",
@@ -235,7 +235,7 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
                     log.info("Stage 3 - Simple HDDCDD - heating")
                     log.info("Balance temp " + str(bal_temp) + "C")
                     sdd_h = calc_SHDD_m(t_out_ave, bal_temp)
-                    sdd_h = sdd_h.chunk(chunks={"lon": config.chunk_size})
+                    sdd_h = sdd_h.chunk(chunks={"lon": get_paths(config, "chunk_size")})
                     log.info("chunked")
                     sdd_h.attrs = {
                         "name": "sdd_h",
@@ -282,7 +282,7 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
                     dict_netcdf["gl_g"],
                     dict_netcdf["gl_sh"],
                 )
-                gn_sol = gn_sol.chunk(chunks={"lon": config.chunk_size})
+                gn_sol = gn_sol.chunk(chunks={"lon": get_paths(config, "chunk_size")})
                 log.info("chunked")
                 gn_sol.attrs = {
                     "name": "gn_sol",
@@ -317,7 +317,7 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
                     dict_netcdf["roof_abs"],
                     dict_netcdf["u_roof"],
                 )
-                gn_sol = gn_sol.chunk(chunks={"lon": config.chunk_size})
+                gn_sol = gn_sol.chunk(chunks={"lon": get_paths(config, "chunk_size")})
                 log.info("chunked")
                 gn_sol.attrs = {
                     "name": "gn_sol",
@@ -348,7 +348,7 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
                     dict_netcdf["roof_abs"],
                     dict_netcdf["u_roof"],
                 )
-                gn_sol = gn_sol.chunk(chunks={"lon": config.chunk_size})
+                gn_sol = gn_sol.chunk(chunks={"lon": get_paths(config, "chunk_size")})
                 log.info("chunked")
                 gn_sol.attrs = {
                     "name": "gn_sol",
@@ -403,7 +403,7 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
                 t_bal_c = calc_t_bal_c(
                     t_sp_c, dict_netcdf["gn_int"], gn_sol, H_tr, H_v_cl
                 ).astype("float32")  # , x_diff0
-                t_bal_c = t_bal_c.chunk(chunks={"lon": config.chunk_size})
+                t_bal_c = t_bal_c.chunk(chunks={"lon": get_paths(config, "chunk_size")})
                 log.info("chunked")
                 t_bal_c.attrs = {
                     "name": "t_bal_c",
@@ -511,7 +511,9 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
             with ProgressBar():
                 log.info("Calc_vdd_tmax_c")
                 vdd_tmax_c = calc_vdd_tmax_c(t_oa_gbm, t_max_c)
-                vdd_tmax_c = vdd_tmax_c.chunk(chunks={"lon": config.chunk_size})
+                vdd_tmax_c = vdd_tmax_c.chunk(
+                    chunks={"lon": get_paths(config, "chunk_size")}
+                )
                 vdd_tmax_c = (
                     vdd_tmax_c.groupby("time.month").sum("time") / nyrs_clim
                 )  # <<< divide by years
@@ -637,7 +639,7 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
                 t_bal_h = calc_t_bal_h(
                     t_sp_h, dict_netcdf["gn_int"], gn_sol, H_tr, H_v_cl
                 ).astype("float32")  # , x_diff0
-                t_bal_h = t_bal_h.chunk(chunks={"lon": config.chunk_size})
+                t_bal_h = t_bal_h.chunk(chunks={"lon": get_paths(config, "chunk_size")})
                 log.info("chunked")
                 t_bal_h.attrs = {
                     "name": "t_bal_h",
@@ -665,7 +667,7 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
             with ProgressBar():
                 log.info("calc_vdd_h")
                 vdd_h = calc_vdd_h(t_oa_gbm, t_bal_h)
-                vdd_h = vdd_h.chunk(chunks={"lon": config.chunk_size})
+                vdd_h = vdd_h.chunk(chunks={"lon": get_paths(config, "chunk_size")})
                 vdd_h = (
                     vdd_h.groupby("time.month").sum("time") / nyrs_clim
                 )  # <<< divide by years
@@ -2217,14 +2219,14 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
         if config.rcp == "rcp26":
             dst = xr.open_mfdataset(
                 filepath,
-                chunks={"lon": config.chunk_size},
+                chunks={"lon": get_paths(config, "chunk_size")},
                 concat_dim="time",
                 use_cftime=True,
             )  # Setting for RCP2.6
         else:
             dst = xr.open_mfdataset(
                 filepath,
-                chunks={"lon": config.chunk_size},
+                chunks={"lon": get_paths(config, "chunk_size")},
             )  # , concat_dim='time' )  # Setting for RCP6.0
 
         dst_crop = dst.sel(time=slice(years_clim[0], years_clim[1]))
@@ -2331,7 +2333,9 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                             log.info("Stage 3 - Simple HDDCDD - cooling")
                             log.info("Balance temp " + str(bal_temp) + "C")
                             sdd_c = calc_SCDD_m(t_out_ave, bal_temp)
-                            sdd_c = sdd_c.chunk(chunks={"lon": config.chunk_size})
+                            sdd_c = sdd_c.chunk(
+                                chunks={"lon": get_paths(config, "chunk_size")}
+                            )
                             log.info("chunked")
                             sdd_c.attrs = {
                                 "name": "sdd_c",
@@ -2363,7 +2367,9 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                             log.info("Stage 3 - Simple HDDCDD - heating")
                             log.info("Balance temp " + str(bal_temp) + "C")
                             sdd_h = calc_SHDD_m(t_out_ave, bal_temp)
-                            sdd_h = sdd_h.chunk(chunks={"lon": config.chunk_size})
+                            sdd_h = sdd_h.chunk(
+                                chunks={"lon": get_paths(config, "chunk_size")}
+                            )
                             log.info("chunked")
                             sdd_h.attrs = {
                                 "name": "sdd_h",
@@ -2443,7 +2449,9 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                         with ProgressBar():
                             log.info("Stage 3 - calc gn_sol")
                             gn_sol = calc_gn_sol(i_sol_v, gl_perc, gl_g, gl_sh)
-                            gn_sol = gn_sol.chunk(chunks={"lon": config.chunk_size})
+                            gn_sol = gn_sol.chunk(
+                                chunks={"lon": get_paths(config, "chunk_size")}
+                            )
                             log.info("chunked")
                             gn_sol.attrs = {
                                 "name": "gn_sol",
@@ -2485,7 +2493,9 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                                 roof_abs,
                                 u_roof,
                             )
-                            gn_sol = gn_sol.chunk(chunks={"lon": config.chunk_size})
+                            gn_sol = gn_sol.chunk(
+                                chunks={"lon": get_paths(config, "chunk_size")}
+                            )
                             log.info("chunked")
                             gn_sol.attrs = {
                                 "name": "gn_sol",
@@ -2518,7 +2528,9 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                         with ProgressBar():
                             log.info("Stage 3 - calc gn_sol")
                             gn_sol = calc_gn_sol_h(i_sol_h, roof_area, roof_abs, u_roof)
-                            gn_sol = gn_sol.chunk(chunks={"lon": config.chunk_size})
+                            gn_sol = gn_sol.chunk(
+                                chunks={"lon": get_paths(config, "chunk_size")}
+                            )
                             log.info("chunked")
                             gn_sol.attrs = {
                                 "name": "gn_sol",
@@ -2633,7 +2645,9 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                             t_bal_c = calc_t_bal_c(
                                 t_sp_c, gn_int, gn_sol, H_tr, H_v_cl
                             ).astype("float32")  # , x_diff0
-                            t_bal_c = t_bal_c.chunk(chunks={"lon": config.chunk_size})
+                            t_bal_c = t_bal_c.chunk(
+                                chunks={"lon": get_paths(config, "chunk_size")}
+                            )
                             log.info("chunked")
                             t_bal_c.attrs = {
                                 "name": "t_bal_c",
@@ -2759,7 +2773,7 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                             log.info("Calc_vdd_tmax_c")
                             vdd_tmax_c = calc_vdd_tmax_c(t_oa_gbm, t_max_c)
                             vdd_tmax_c = vdd_tmax_c.chunk(
-                                chunks={"lon": config.chunk_size}
+                                chunks={"lon": get_paths(config, "chunk_size")}
                             )
                             vdd_tmax_c = (
                                 vdd_tmax_c.groupby("time.month").sum("time") / nyrs_clim
@@ -2919,7 +2933,9 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                             t_bal_h = calc_t_bal_h(
                                 t_sp_h, gn_int, gn_sol, H_tr, H_v_cl
                             ).astype("float32")  # , x_diff0
-                            t_bal_h = t_bal_h.chunk(chunks={"lon": config.chunk_size})
+                            t_bal_h = t_bal_h.chunk(
+                                chunks={"lon": get_paths(config, "chunk_size")}
+                            )
                             log.info("chunked")
                             t_bal_h.attrs = {
                                 "name": "t_bal_h",
@@ -2954,7 +2970,9 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                         with ProgressBar():
                             log.info("calc_vdd_h")
                             vdd_h = calc_vdd_h(t_oa_gbm, t_bal_h)
-                            vdd_h = vdd_h.chunk(chunks={"lon": config.chunk_size})
+                            vdd_h = vdd_h.chunk(
+                                chunks={"lon": get_paths(config, "chunk_size")}
+                            )
                             vdd_h = (
                                 vdd_h.groupby("time.month").sum("time") / nyrs_clim
                             )  # <<< divide by years

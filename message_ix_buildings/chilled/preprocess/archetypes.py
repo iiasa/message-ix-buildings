@@ -24,7 +24,7 @@ log = get_logger(__name__)
 
 
 def create_archetypes(config: "Config"):
-    project_path = get_paths(config, "dle_path")
+    project_path = get_paths(config, "project_path")
 
     out_path = os.path.join(project_path, "out", "version")
     archetype_path = os.path.join(out_path, config.vstr, "rasters")
@@ -104,7 +104,7 @@ def create_archetypes(config: "Config"):
 
 
 def create_archetype_variables(config: "Config"):
-    project_path = get_paths(config, "dle_path")
+    project_path = get_paths(config, "project_path")
 
     out_path = os.path.join(project_path, "out", "version")
     archetype_path = os.path.join(out_path, config.vstr, "rasters")

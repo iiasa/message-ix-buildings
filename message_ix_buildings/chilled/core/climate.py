@@ -959,7 +959,9 @@ def make_vdd_total_maps(config: "Config"):
                     E_c_ac_in = xr.open_dataarray(
                         os.path.join(output_path_vdd, suff + "_0_E_c_ac_" + urt + ".nc")
                     ).load()
-                    (E_c_ac_in.sum(dim="month") * 0.2777778)  # Yearly total in kWh/m2
+                    E_c_ac_year = (
+                        E_c_ac_in.sum(dim="month") * 0.2777778
+                    )  # Yearly total in kWh/m2
 
                 if config.heat == 1:
                     vdd_h_in = xr.open_dataarray(
@@ -969,7 +971,9 @@ def make_vdd_total_maps(config: "Config"):
                     E_h_in = xr.open_dataarray(
                         os.path.join(output_path_vdd, suff + "_0_E_h_" + urt + ".nc")
                     ).load()
-                    (E_h_in.sum(dim="month") * 0.2777778)  # Yearly total in kWh/m2
+                    E_h_year = (
+                        E_h_in.sum(dim="month") * 0.2777778
+                    )  # Yearly total in kWh/m2
 
                 cbloc = [
                     0.86,

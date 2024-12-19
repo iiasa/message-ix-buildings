@@ -105,7 +105,7 @@ class Config:
     #:
     #: 1 = calculate
     #: 0 = skip
-    heat: Literal[0, 1] = 0
+    heat: Literal[0, 1] = 1
 
     #: Select solar gain calculation. One of:
     #:

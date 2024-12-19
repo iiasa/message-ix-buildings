@@ -80,6 +80,8 @@ def create_config(parsed_arguments):
         vstr=parsed_arguments.version,
         gcm=parsed_arguments.gcm,
         rcp=parsed_arguments.rcp,
+        cool=0,
+        heat=1,
     )
 
     return cfg

@@ -1665,8 +1665,8 @@ def process_final_maps(config: "Config"):
                                 vdd_path,
                                 suff1 + "_" + str(parset.Index) + "_E_h" + "ALL.nc",
                             )
-                        ).where(Nd1 >= 0)
-                    ).load()  # ******************************
+                        )
+                    ).load()
                     vdd_h_in = xr.open_dataarray(
                         os.path.join(
                             vdd_path,

@@ -4,7 +4,14 @@ from argparse import ArgumentParser
 
 from rich.progress import track  # type: ignore
 
-from message_ix_buildings.chilled.core.climate import process_iso_tables
+from message_ix_buildings.chilled.core.climate import (
+    make_vdd_total_maps,
+    process_construction_shares,
+    process_country_maps,
+    process_final_maps,
+    process_floor_area_maps,
+    process_iso_tables,
+)
 from message_ix_buildings.chilled.util.common import get_logger
 from message_ix_buildings.chilled.util.config import Config  # type: ignore
 
@@ -90,6 +97,11 @@ def main(args=None):
     cfg = create_config(parsed_arguments=parsed_args)
 
     for step in track([cfg], description="Running core functions..."):
+        (make_vdd_total_maps(step),)
+        (process_construction_shares(step),)
+        (process_floor_area_maps(step),)
+        (process_country_maps(step),)
+        (process_final_maps(step),)
         (process_iso_tables(step),)
 
 

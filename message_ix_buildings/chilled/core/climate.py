@@ -2079,7 +2079,7 @@ def process_iso_tables(config: "Config"):
 
     if config.cool == 1:
         list_cool = list(map(aggregate_ncfile, inputs_cool))
-        df_agg = (
+        df_cool = (
             pd.concat(list_cool)
             .reset_index(drop=True)
             .merge(dfd, left_on="gaul_lvl0", right_on="ISONUM")
@@ -2091,8 +2091,15 @@ def process_iso_tables(config: "Config"):
             .reset_index(drop=True)
             .merge(dfd, left_on="gaul_lvl0", right_on="ISONUM")
         )
-        # Add df_heat to df_agg
-        df_agg = df_agg.append(df_heat, ignore_index=True)
+
+    # if only cool or only heat is selected, df_agg = df_cool or df_heat
+    # if both cool and heat are selected, df_agg = df_cool + df_heat (concatenated)
+    if (config.cool == 1) and (config.heat == 0):
+        df_agg = df_cool
+    elif (config.cool == 0) and (config.heat == 1):
+        df_agg = df_heat
+    elif (config.cool == 1) and (config.heat == 1):
+        df_agg = pd.concat([df_cool, df_heat], ignore_index=True)
 
     log.info("Completed aggregating raster data! Now processing and saving...")
 

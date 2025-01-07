@@ -106,7 +106,11 @@ def calculate_cumulative_carbon_emissions(config: "Config"):
 
         df = (
             ts_engage.apply(
-                pyam.cumulative, raw=False, axis=1, first_year=2015, last_year=int_year
+                pyam.timeseries.cumulative,
+                raw=False,
+                axis=1,
+                first_year=2015,
+                last_year=int_year,
             )
             .to_frame()
             .reset_index()
@@ -125,7 +129,11 @@ def calculate_cumulative_carbon_emissions(config: "Config"):
 
         df = (
             ts_native.apply(
-                pyam.cumulative, raw=False, axis=1, first_year=2015, last_year=int_year
+                pyam.timeseries.cumulative,
+                raw=False,
+                axis=1,
+                first_year=2015,
+                last_year=int_year,
             )
             .to_frame()
             .reset_index()
@@ -137,7 +145,11 @@ def calculate_cumulative_carbon_emissions(config: "Config"):
 
         df = (
             ts_infilled.apply(
-                pyam.cumulative, raw=False, axis=1, first_year=2015, last_year=int_year
+                pyam.timeseries.cumulative,
+                raw=False,
+                axis=1,
+                first_year=2015,
+                last_year=int_year,
             )
             .to_frame()
             .reset_index()
@@ -415,6 +427,8 @@ def create_prereg_data(config: "Config"):
         os.path.join(out_path, "region_EI_cumCO2_pre-regress.csv"),
         index=False,
     )
+    log.info("Saved: " + os.path.join(out_path, "region_EI_cumCO2_pre-regress.csv"))
+    log.info("Saved: " + os.path.join(out_path, "region_EI_cumCO2_pre-regress.csv"))
     log.info("Saved: " + os.path.join(out_path, "region_EI_cumCO2_pre-regress.csv"))
     log.info("Saved: " + os.path.join(out_path, "region_EI_cumCO2_pre-regress.csv"))
     log.info("Saved: " + os.path.join(out_path, "region_EI_cumCO2_pre-regress.csv"))

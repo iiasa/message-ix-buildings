@@ -2,106 +2,192 @@ import glob
 import os
 
 import pandas as pd
+import pyam  # type: ignore
 from sklearn.utils.fixes import parse_version, sp_version  # type: ignore
 
-from message_ix_buildings.chilled.variable_dicts import SCENARIO_NAMES
+from message_ix_buildings.chilled.functions.variable_dicts import SCENARIO_NAMES
+from message_ix_buildings.chilled.util.base import get_paths
+from message_ix_buildings.chilled.util.common import get_logger
+from message_ix_buildings.chilled.util.config import Config  # type: ignore
 
 # This is line is to avoid incompatibility if older SciPy version.
 # You should use `solver="highs"` with recent version of SciPy.
 solver = "highs" if sp_version >= parse_version("1.6.0") else "interior-point"
 
-# from message_ix_buildings.chilled.config import Config
-
-# cfg = Config()
-
-# dle_path = cfg.dle_path
-# version_name = cfg.vstr
-
-# model = "MESS-CHILL-URM"
-
-# main_path = os.path.join(dle_path, f"output_data_{version_name}")
-
-# version_output_path = os.path.join(dle_path, f"output_data_{version_name}", "output")
-
-# files = glob.glob(
-#     os.path.join(main_path, "**/*/" + "ISO_agg_data_" + version_name + ".csv"),
-#     recursive=True,
-# )
-
-# print("Reading files....")
-# data = pd.concat((pd.read_csv(f) for f in files), ignore_index=True).rename(
-#     columns={"REGION_GEA": "region"}
-# )
+# load logger
+log = get_logger(__name__)
 
 
-# data_sub.query(
-#     "gcm == 'IPSL-CM6A-LR' and scenario == 'ssp126' and year == 2015 and region == 'LAC' and urt == 'total' and arch == 'exist' and par_var == 0"
-# ).sort_values(by=["ISO"], ascending=False)
+# Function to calculate cumulative carbon emissions
+def calculate_cumulative_carbon_emissions(config: "Config"):
+    """Calculate cumulative carbon emissions
 
-# data_sub.query("E_c_ac_popwei == 0")
+    Adapted from `y7_process_results_to_CumCarb_table.py`
 
-# data_sub.query(
-#     "gcm == 'GFDL-ESM4' and year == 2015 and region == 'LAC' and urt == 'total' and arch == 'exist' and par_var == 0"
-# ).sort_values(by=["NAME"], ascending=False)
+    """
 
+    project_path = get_paths(config, "project_path")
+    out_path = os.path.join(project_path, "out", "version", config.vstr, "output")
+    snapshot_file = get_paths(config, "ar6_snapshot_file")
 
-# gb.query(
-#     "scenario == 'ssp126' and year == 2015 and arch == 'exist' and urt == 'total' and par_var == 0 and region == 'LAC'"
-# )
-# data_new_pop.query(
-#     "scenario == 'ssp126' and year == 2015 and arch == 'exist' and urt == 'total' and par_var == 0 and region == 'LAC'"
-# ).sort_values(by=["popsum"], ascending=False)
+    log.info("Calculating cumulative carbon emissions...")
 
-# # count how many countries in LAC under each gcm
-# data_new_pop.query(
-#     "scenario == 'ssp126' and year == 2015 and arch == 'exist' and urt == 'total' and par_var == 0 and region == 'LAC'"
-# ).groupby(["gcm"])["ISO"].count()
+    varins = [
+        "Emissions|CO2",
+        "AR6 climate diagnostics|Surface Temperature (GSAT)|MAGICCv7.5.3|50.0th Percentile",
+        "AR6 climate diagnostics|Infilled|Emissions|CO2",
+    ]
 
+    msdic = {
+        "IMAGE 3.0.1": "SSP1-26",
+        "AIM/CGE 2.0": "SSP3-Baseline",
+        "REMIND-MAgPIE 1.5": "SSP5-Baseline",
+    }
 
-# # count how many countries in LAC under each gcm
-# data_new_pop.groupby(["gcm"])["ISO"].count()
+    log.info("Reading in AR6 snapshot file...")
+    dfar6 = pyam.IamDataFrame(snapshot_file)
+    log.info("...AR6 snapshot file read.")
 
+    log.info("Filtering AR6 data...")
+    a = dfar6.filter(scenario="SSP*")
+    ndf = a.filter(model="xxx")
+    for m, s in msdic.items():
+        ndf.append(a.filter(model=m, scenario=s, variable=varins), inplace=True)
+    log.info("...AR6 data filtered.")
 
-# # list unique countries in GFDL-ESM4 gcm
-# iso_gfdl = data_new_pop.query(
-#     "gcm == 'GFDL-ESM4' and scenario == 'ssp126' and year == 2015 and arch == 'exist' and urt == 'total' and par_var == 0 and region == 'LAC'"
-# ).ISO.unique()
+    log.info("Interpolating AR6 data...")
+    ndf.interpolate(range(2000, 2101, 1), inplace=True)
+    log.info("...AR6 data interpolated.")
 
-# # list unique countries in UKESM1-0-LL gcm
-# iso_uk = data_new_pop.query(
-#     "gcm == 'UKESM1-0-LL' and scenario == 'ssp126' and year == 2015 and arch == 'exist' and urt == 'total' and par_var == 0 and region == 'LAC'"
-# ).ISO.unique()
+    # ENGAGE scenarios
+    scenarios = ["EN_NPi2020_300f", "EN_NPi2020_1400f", "EN_NPi2100"]
 
-# list countries that are in GFSL-ESM4 but not UKESM1-0-LL
-# iso_gfdl_not_uk = [x for x in iso_gfdl if x not in iso_uk]
-# iso_gfdl_not_uk
+    log.info("Selected scenarios: " + str(scenarios))
 
-# gb.query(
-#     "scenario == 'ssp126' and year == 2050 and arch == 'exist' and urt == 'urban' and par_var == 0 and region == 'NAM'"
-# )
-# gb.query(
-#     "scenario == 'ssp126' and year == 2050 and arch == 'exist' and urt == 'total' and par_var == 0 and region == 'NAM'"
-# )
+    log.info("Filtering for ENGAGE data...")
+    engage = dfar6.filter(model="MESSAGE*", scenario=scenarios, variable=varins)
+    log.info("...ENGAGE data filtered.")
 
+    # Calculate Cumulative CO2 emissions
+    unit = "Gt CO2"
 
-def aggregate_ISO_tables_to_regions(dle_path, version_name):
-    model = "MESS-CHILL-URM"
-
-    main_path = os.path.join(dle_path, f"output_data_{version_name}")
-
-    version_output_path = os.path.join(
-        dle_path, f"output_data_{version_name}", "output"
+    ts_engage = (
+        engage.filter(variable="Emissions|CO2", year=range(2015, 2101))
+        .convert_unit(
+            "Mt CO2/yr",
+            "Gt CO2/yr",
+        )
+        .timeseries()
     )
 
+    ts_native = (
+        ndf.filter(variable="Emissions|CO2", year=range(2015, 2101))
+        .convert_unit(
+            "Mt CO2/yr",
+            "Gt CO2/yr",
+        )
+        .timeseries()
+    )
+    ts_infilled = (
+        ndf.filter(
+            variable="AR6 climate diagnostics|Infilled|Emissions|CO2",
+            year=range(2015, 2101),
+        )
+        .convert_unit(
+            "Mt CO2/yr",
+            "Gt CO2/yr",
+        )
+        .timeseries()
+    )
+
+    engage_cumCO2 = pd.DataFrame()
+    for year in config.yeardic.keys():
+        int_year = int(year)
+
+        df = (
+            ts_engage.apply(
+                pyam.cumulative, raw=False, axis=1, first_year=2015, last_year=int_year
+            )
+            .to_frame()
+            .reset_index()
+        )
+        df["year"] = int_year
+        df["variable"] = f"Cumulative CO2 infilled 2015-{int_year}, Gt CO2"
+        df.rename(columns={0: "value"}, inplace=True)
+        engage_cumCO2 = pd.concat([engage_cumCO2, df])
+        engage_cumCO2["unit"] = unit
+
+    engage.append(engage_cumCO2, inplace=True)
+
+    df_cumCO2 = pd.DataFrame()
+    for year in config.yeardic.keys():
+        int_year = int(year)
+
+        df = (
+            ts_native.apply(
+                pyam.cumulative, raw=False, axis=1, first_year=2015, last_year=int_year
+            )
+            .to_frame()
+            .reset_index()
+        )
+        df["year"] = int_year
+        df["variable"] = f"Cumulative CO2 native 2015-{int_year}, Gt CO2"
+        df.rename(columns={0: "value"}, inplace=True)
+        df_cumCO2 = pd.concat([df_cumCO2, df])
+
+        df = (
+            ts_infilled.apply(
+                pyam.cumulative, raw=False, axis=1, first_year=2015, last_year=int_year
+            )
+            .to_frame()
+            .reset_index()
+        )
+        df["year"] = int_year
+        df["variable"] = f"Cumulative CO2 infilled 2015-{year}, Gt CO2"
+        df.rename(columns={0: "value"}, inplace=True)
+
+        df_cumCO2 = pd.concat([df_cumCO2, df])
+
+    df_cumCO2["unit"] = unit
+
+    ndf.append(df_cumCO2, inplace=True)
+
+    log.info("Writing out cumulative carbon emissions to " + out_path + "...")
+
+    engage.to_excel(os.path.join(out_path, "engage_emissions_tempAR6_cumCO2.xlsx"))
+    log.info(
+        "...Saved: " + os.path.join(out_path, "engage_emissions_tempAR6_cumCO2.xlsx")
+    )
+
+    engage_cumCO2.to_csv(os.path.join(out_path, "engage_cumCO2.csv"), index=False)
+    log.info("...Saved: " + os.path.join(out_path, "engage_cumCO2.csv"))
+
+    ndf.to_excel(os.path.join(out_path, "isimip3b_emissions_tempAR6_cumCO2.xlsx"))
+    log.info(
+        "...Saved: " + os.path.join(out_path, "isimip3b_emissions_tempAR6_cumCO2.xlsx")
+    )
+
+    df_cumCO2.to_csv(os.path.join(out_path, "isimip3b_cumCO2.csv"), index=False)
+    log.info("...Saved: " + os.path.join(out_path, "isimip3b_cumCO2.csv"))
+
+
+def aggregate_ISO_tables_to_regions(config: "Config"):
+    project_path = get_paths(config, "project_path")
+    version_path = os.path.join(project_path, "out", "version", config.vstr)
+    out_path = os.path.join(version_path, "output")
+
+    model = "MESS-CHILL-URM"
+
     files = glob.glob(
-        os.path.join(main_path, "**/*/" + "ISO_agg_data_" + version_name + ".csv"),
+        os.path.join(version_path, "**/*/" + "ISO_agg_data_" + config.vstr + ".csv"),
         recursive=True,
     )
 
-    print("Reading files....")
+    log.info("Reading ISO table files....")
     data = pd.concat((pd.read_csv(f) for f in files), ignore_index=True).rename(
         columns={"REGION_GEA": "region"}
     )
+    log.info("...ISO table files read.")
 
     # get population data from UKESM1-0-LL gcm and get unique combinations of population
     pop_uk = (
@@ -238,9 +324,11 @@ def aggregate_ISO_tables_to_regions(dle_path, version_name):
     gb = pd.concat([gb_region, gb_world])
 
     # calculate EI_ac_m2 assuming 10m2 per person
+    log.info("Calculating EI_ac_m2 assuming 10m2 per person...")
     gb = gb.assign(
         EI_ac_m2=lambda x: x.E_c_ac_popwei / (x.popsum * 10)
     )  # 10 because 10m2 per person assumed
+    log.info("...EI_ac_m2 calculated.")
 
     # gb = (
     #     data_new_pop.groupby(
@@ -264,9 +352,9 @@ def aggregate_ISO_tables_to_regions(dle_path, version_name):
     #     )  # 10 because 10m2 per person assumed
     # )
 
-    gb.to_csv(os.path.join(version_output_path, "region_agg_EI_ac_m2.csv"), index=False)
+    gb.to_csv(os.path.join(out_path, "region_agg_EI_ac_m2.csv"), index=False)
 
-    print("Saved: " + os.path.join(version_output_path, "region_agg_EI_ac_m2.csv"))
+    log.info("Saved: " + os.path.join(out_path, "region_agg_EI_ac_m2.csv"))
 
     pop_only = (
         gb.reindex(
@@ -292,37 +380,41 @@ def aggregate_ISO_tables_to_regions(dle_path, version_name):
         # )
     )
 
-    pop_only.to_csv(
-        os.path.join(version_output_path, "population_by_region.csv"), index=False
-    )
+    pop_only.to_csv(os.path.join(out_path, "population_by_region.csv"), index=False)
 
-    print("Saved: " + os.path.join(version_output_path, "population_by_region.csv"))
+    log.info("Saved: " + os.path.join(out_path, "population_by_region.csv"))
 
 
-def create_prereg_data(dle_path, version_name):
-    version_output_path = os.path.join(
-        dle_path, f"output_data_{version_name}", "output"
-    )
+def create_prereg_data(config: "Config"):
+    project_path = get_paths(config, "project_path")
+    version_path = os.path.join(project_path, "out", "version", config.vstr)
+    out_path = os.path.join(version_path, "output")
 
-    df_cumCO2 = pd.read_csv(os.path.join(version_output_path, "isimip3b_cumCO2.csv"))
+    log.info("Read in isimip3b_cumCO2.csv...")
+    df_cumCO2 = pd.read_csv(os.path.join(out_path, "isimip3b_cumCO2.csv"))
+    log.info("...isimip3b_cumCO2.csv read.")
+
     df_cumCO2.scenario.replace(SCENARIO_NAMES, inplace=True)
     df_cumCO2 = df_cumCO2.loc[df_cumCO2.variable.str.contains("infilled")]
 
-    df_ei = pd.read_csv(os.path.join(version_output_path, "region_agg_EI_ac_m2.csv"))
+    log.info("Read in region_agg_EI_ac_m2.csv...")
+    df_ei = pd.read_csv(os.path.join(out_path, "region_agg_EI_ac_m2.csv"))
+    log.info("...region_agg_EI_ac_m2.csv read.")
 
+    log.info("Combine EI_ac_m2 and cumCO2 data...")
     ei_cumCO2 = pd.merge(
         df_ei,
         df_cumCO2.reindex(["scenario", "year", "value"], axis=1),
         on=["scenario", "year"],
         how="left",
     ).rename(columns={"value": "cumCO2"})
+    log.info("...EI_ac_m2 and cumCO2 data combined.")
 
+    log.info("Saving pre-regress data...")
     ei_cumCO2.to_csv(
-        os.path.join(version_output_path, "region_EI_cumCO2_pre-regress.csv"),
+        os.path.join(out_path, "region_EI_cumCO2_pre-regress.csv"),
         index=False,
     )
-
-    print(
-        "Saved: "
-        + os.path.join(version_output_path, "region_EI_cumCO2_pre-regress.csv")
-    )
+    log.info("Saved: " + os.path.join(out_path, "region_EI_cumCO2_pre-regress.csv"))
+    log.info("Saved: " + os.path.join(out_path, "region_EI_cumCO2_pre-regress.csv"))
+    log.info("Saved: " + os.path.join(out_path, "region_EI_cumCO2_pre-regress.csv"))

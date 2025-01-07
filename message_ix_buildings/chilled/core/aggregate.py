@@ -538,25 +538,52 @@ def create_prereg_data(config: "Config"):
     df_cumCO2.scenario.replace(SCENARIO_NAMES, inplace=True)
     df_cumCO2 = df_cumCO2.loc[df_cumCO2.variable.str.contains("infilled")]
 
-    log.info("Read in region_agg_EI_ac_m2.csv...")
-    df_ei = pd.read_csv(os.path.join(out_path, "region_agg_EI_ac_m2.csv"))
-    log.info("...region_agg_EI_ac_m2.csv read.")
+    if config.cool == 1:
+        log.info("COOLING: Create pre-regress data for cooling")
+        log.info("Read in region_agg_EI_ac_m2.csv...")
+        df_ei = pd.read_csv(os.path.join(out_path, "region_agg_EI_ac_m2.csv"))
+        log.info("...region_agg_EI_ac_m2.csv read.")
 
-    log.info("Combine EI_ac_m2 and cumCO2 data...")
-    ei_cumCO2 = pd.merge(
-        df_ei,
-        df_cumCO2.reindex(["scenario", "year", "value"], axis=1),
-        on=["scenario", "year"],
-        how="left",
-    ).rename(columns={"value": "cumCO2"})
-    log.info("...EI_ac_m2 and cumCO2 data combined.")
+        log.info("Combine EI_ac_m2 and cumCO2 data...")
+        ei_cumCO2 = pd.merge(
+            df_ei,
+            df_cumCO2.reindex(["scenario", "year", "value"], axis=1),
+            on=["scenario", "year"],
+            how="left",
+        ).rename(columns={"value": "cumCO2"})
+        log.info("...EI_ac_m2 and cumCO2 data combined.")
 
-    log.info("Saving pre-regress data...")
+        log.info("Saving pre-regress data...")
 
-    ei_cumCO2.to_csv(
-        os.path.join(out_path, "region_EI_cumCO2_pre-regress.csv"),
-        index=False,
-    )
-    log.info("Saved: " + os.path.join(out_path, "region_EI_cumCO2_pre-regress.csv"))
-    log.info("Saved: " + os.path.join(out_path, "region_EI_cumCO2_pre-regress.csv"))
-    log.info("Saved: " + os.path.join(out_path, "region_EI_cumCO2_pre-regress.csv"))
+        ei_cumCO2.to_csv(
+            os.path.join(out_path, "region_EI_cool_cumCO2_pre-regress.csv"),
+            index=False,
+        )
+        log.info(
+            "Saved: " + os.path.join(out_path, "region_EI_cool_cumCO2_pre-regress.csv")
+        )
+
+    if config.heat == 1:
+        log.info("HEATING: Create pre-regress data for heating")
+        log.info("Read in region_agg_EI_h_m2.csv...")
+        df_ei = pd.read_csv(os.path.join(out_path, "region_agg_EI_h_m2.csv"))
+        log.info("...region_agg_EI_h_m2.csv read.")
+
+        log.info("Combine EI_h_m2 and cumCO2 data...")
+        ei_cumCO2 = pd.merge(
+            df_ei,
+            df_cumCO2.reindex(["scenario", "year", "value"], axis=1),
+            on=["scenario", "year"],
+            how="left",
+        ).rename(columns={"value": "cumCO2"})
+        log.info("...EI_h_m2 and cumCO2 data combined.")
+
+        log.info("Saving pre-regress data...")
+
+        ei_cumCO2.to_csv(
+            os.path.join(out_path, "region_EI_heat_cumCO2_pre-regress.csv"),
+            index=False,
+        )
+        log.info(
+            "Saved: " + os.path.join(out_path, "region_EI_heat_cumCO2_pre-regress.csv")
+        )

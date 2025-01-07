@@ -51,6 +51,8 @@ def print_arguments(parsed_arguments):
 def create_config(parsed_arguments):
     cfg = Config(
         vstr=parsed_arguments.version,
+        cool=0,
+        heat=1,
     )
 
     return cfg

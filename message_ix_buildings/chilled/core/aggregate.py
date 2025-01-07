@@ -418,3 +418,4 @@ def create_prereg_data(config: "Config"):
     log.info("Saved: " + os.path.join(out_path, "region_EI_cumCO2_pre-regress.csv"))
     log.info("Saved: " + os.path.join(out_path, "region_EI_cumCO2_pre-regress.csv"))
     log.info("Saved: " + os.path.join(out_path, "region_EI_cumCO2_pre-regress.csv"))
+    log.info("Saved: " + os.path.join(out_path, "region_EI_cumCO2_pre-regress.csv"))

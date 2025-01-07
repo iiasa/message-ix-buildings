@@ -25,10 +25,13 @@ def calculate_cumulative_carbon_emissions(config: "Config"):
     Adapted from `y7_process_results_to_CumCarb_table.py`
 
     """
-
+    snapshot_file = get_paths(config, "ar6_snapshot_file")
     project_path = get_paths(config, "project_path")
     out_path = os.path.join(project_path, "out", "version", config.vstr, "output")
-    snapshot_file = get_paths(config, "ar6_snapshot_file")
+
+    # if out_path does not exist, create it
+    if not os.path.exists(out_path):
+        os.makedirs(out_path)
 
     log.info("Calculating cumulative carbon emissions...")
 
@@ -187,6 +190,10 @@ def aggregate_ISO_tables_to_regions(config: "Config"):
     project_path = get_paths(config, "project_path")
     version_path = os.path.join(project_path, "out", "version", config.vstr)
     out_path = os.path.join(version_path, "output")
+
+    # if out_path does not exist, create it
+    if not os.path.exists(out_path):
+        os.makedirs(out_path)
 
     model = "MESS-CHILL-URM"
 
@@ -402,6 +409,10 @@ def create_prereg_data(config: "Config"):
     version_path = os.path.join(project_path, "out", "version", config.vstr)
     out_path = os.path.join(version_path, "output")
 
+    # if out_path does not exist, create it
+    if not os.path.exists(out_path):
+        os.makedirs(out_path)
+
     log.info("Read in isimip3b_cumCO2.csv...")
     df_cumCO2 = pd.read_csv(os.path.join(out_path, "isimip3b_cumCO2.csv"))
     log.info("...isimip3b_cumCO2.csv read.")
@@ -427,6 +438,11 @@ def create_prereg_data(config: "Config"):
         os.path.join(out_path, "region_EI_cumCO2_pre-regress.csv"),
         index=False,
     )
+    log.info("Saved: " + os.path.join(out_path, "region_EI_cumCO2_pre-regress.csv"))
+    log.info("Saved: " + os.path.join(out_path, "region_EI_cumCO2_pre-regress.csv"))
+    log.info("Saved: " + os.path.join(out_path, "region_EI_cumCO2_pre-regress.csv"))
+    log.info("Saved: " + os.path.join(out_path, "region_EI_cumCO2_pre-regress.csv"))
+    log.info("Saved: " + os.path.join(out_path, "region_EI_cumCO2_pre-regress.csv"))
     log.info("Saved: " + os.path.join(out_path, "region_EI_cumCO2_pre-regress.csv"))
     log.info("Saved: " + os.path.join(out_path, "region_EI_cumCO2_pre-regress.csv"))
     log.info("Saved: " + os.path.join(out_path, "region_EI_cumCO2_pre-regress.csv"))

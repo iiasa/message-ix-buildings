@@ -230,151 +230,291 @@ def aggregate_ISO_tables_to_regions(config: "Config"):
         .drop_duplicates()
     )
 
-    # drop population from data and get unique combinations of data
-    # NOTE: there are some countries in LAC ssp126 that have multiple E_c_ac_popwei values
-    # and one of them is 0. so I've decided to choose the maximum value for E_c_ac_popwei
-    data_sub = (
-        data.drop(
-            columns=[
-                "E_c_ac_gap",
-                "E_c_ac_wAccess",
-                "E_c_fan_gap",
-                "E_c_fan_popwei",
-                "E_c_fan_wAccess",
-                "E_c_gap",
-                "E_c_perpix",
-                "E_c_popwei",
-                "E_c_wAccess",
-                "Nd",
-                "Nf",
-                "P_c_ac_gap",
-                "P_c_ac_potential",
-                "P_c_fanNoAC",
-                "P_c_fan_gap",
-                "vdd_c_popwei",
-                "vdd_c_avg",
-                "population_scenario",
-                "popsum",
+    if config.cool == 1:
+        log.info("COOLING: Calculating EI_ac_m2 assuming 10m2 per person...")
+        # drop population from data and get unique combinations of data
+        # NOTE: there are some countries in LAC ssp126 that have multiple E_c_ac_popwei values
+        # and one of them is 0. so I've decided to choose the maximum value for E_c_ac_popwei
+        data_sub = (
+            data[
+                [
+                    "id",
+                    "NAME",
+                    "ISO",
+                    "GLOBAL_SOUTH",
+                    "region",
+                    "gcm",
+                    "scenario",
+                    "scen",
+                    "year",
+                    "clim",
+                    "arch",
+                    "urt",
+                    "par_var",
+                    "name_run",
+                    "E_c_ac_popwei",
+                ]
             ]
+            .drop_duplicates()
+            .groupby(
+                [
+                    "id",
+                    "NAME",
+                    "ISO",
+                    "GLOBAL_SOUTH",
+                    "region",
+                    "gcm",
+                    "scenario",
+                    "scen",
+                    "year",
+                    "clim",
+                    "arch",
+                    "urt",
+                    "par_var",
+                    "name_run",
+                ]
+            )[["E_c_ac_popwei"]]
+            .max()
+            .reset_index()
         )
-        .drop_duplicates()
-        .groupby(
-            [
+
+        # merge with UKESM1-0-LL population data so that all gcms use the same population data
+        data_new_pop = pd.merge(
+            data_sub,
+            pop_uk,
+            on=[
                 "id",
                 "NAME",
                 "ISO",
-                "GLOBAL_SOUTH",
                 "region",
-                "gcm",
-                "scenario",
-                "scen",
-                "year",
                 "clim",
                 "arch",
                 "urt",
                 "par_var",
                 "name_run",
+                "year",
+            ],
+            how="left",
+        )
+
+        # aggregate popsum and E_c_ac_popwei to the region level
+        gb_region = (
+            data_new_pop.groupby(
+                [
+                    "gcm",
+                    "scenario",
+                    "scen",
+                    "year",
+                    "clim",
+                    "arch",
+                    "urt",
+                    "par_var",
+                    "name_run",
+                    "region",
+                ]
+            )[["popsum", "E_c_ac_popwei"]]
+            .sum()
+            .reset_index()
+        )
+
+        # aggregate popsum and E_c_ac_popwei to the global level and assign a new region == "World"
+        gb_world = (
+            data_new_pop.groupby(
+                [
+                    "gcm",
+                    "scenario",
+                    "scen",
+                    "year",
+                    "clim",
+                    "arch",
+                    "urt",
+                    "par_var",
+                    "name_run",
+                ]
+            )[["popsum", "E_c_ac_popwei"]]
+            .sum()
+            .reset_index()
+            .assign(region="World")
+        )
+
+        # concatenate region and world data
+        gb = pd.concat([gb_region, gb_world])
+
+        # calculate EI_ac_m2 assuming 10m2 per person
+        log.info("Calculating EI_ac_m2 assuming 10m2 per person...")
+        gb = gb.assign(
+            EI_ac_m2=lambda x: x.E_c_ac_popwei / (x.popsum * 10)
+        )  # 10 because 10m2 per person assumed
+        log.info("...EI_ac_m2 calculated.")
+
+        # gb = (
+        #     data_new_pop.groupby(
+        #         [
+        #             "gcm",
+        #             "scenario",
+        #             "scen",
+        #             "year",
+        #             "clim",
+        #             "arch",
+        #             "urt",
+        #             "par_var",
+        #             "name_run",
+        #             "region",
+        #         ]
+        #     )[["popsum", "E_c_ac_popwei"]]
+        #     .sum()
+        #     .reset_index()
+        #     .assign(
+        #         EI_ac_m2=lambda x: x.E_c_ac_popwei / (x.popsum * 10)
+        #     )  # 10 because 10m2 per person assumed
+        # )
+
+        gb.to_csv(os.path.join(out_path, "region_agg_EI_ac_m2.csv"), index=False)
+
+        log.info("Saved: " + os.path.join(out_path, "region_agg_EI_ac_m2.csv"))
+
+    if config.heat == 1:
+        log.info("HEATING: Calculating EI_h_m2 assuming 10m2 per person...")
+        # drop population from data and get unique combinations of data
+        data_sub = (
+            data[
+                [
+                    "id",
+                    "NAME",
+                    "ISO",
+                    "GLOBAL_SOUTH",
+                    "region",
+                    "gcm",
+                    "scenario",
+                    "scen",
+                    "year",
+                    "clim",
+                    "arch",
+                    "urt",
+                    "par_var",
+                    "name_run",
+                    "E_c_ac_popwei",
+                ]
             ]
-        )[["E_c_ac_popwei"]]
-        .max()
-        .reset_index()
-    )
+            .drop_duplicates()
+            .groupby(
+                [
+                    "id",
+                    "NAME",
+                    "ISO",
+                    "GLOBAL_SOUTH",
+                    "region",
+                    "gcm",
+                    "scenario",
+                    "scen",
+                    "year",
+                    "clim",
+                    "arch",
+                    "urt",
+                    "par_var",
+                    "name_run",
+                ]
+            )[["E_h_popwei"]]
+            .max()
+            .reset_index()
+        )
 
-    # merge with UKESM1-0-LL population data so that all gcms use the same population data
-    data_new_pop = pd.merge(
-        data_sub,
-        pop_uk,
-        on=[
-            "id",
-            "NAME",
-            "ISO",
-            "region",
-            "clim",
-            "arch",
-            "urt",
-            "par_var",
-            "name_run",
-            "year",
-        ],
-        how="left",
-    )
-
-    # aggregate popsum and E_c_ac_popwei to the region level
-    gb_region = (
-        data_new_pop.groupby(
-            [
-                "gcm",
-                "scenario",
-                "scen",
-                "year",
-                "clim",
-                "arch",
-                "urt",
-                "par_var",
-                "name_run",
+        # merge with UKESM1-0-LL population data so that all gcms use the same population data
+        data_new_pop = pd.merge(
+            data_sub,
+            pop_uk,
+            on=[
+                "id",
+                "NAME",
+                "ISO",
                 "region",
-            ]
-        )[["popsum", "E_c_ac_popwei"]]
-        .sum()
-        .reset_index()
-    )
-
-    # aggregate popsum and E_c_ac_popwei to the global level and assign a new region == "World"
-    gb_world = (
-        data_new_pop.groupby(
-            [
-                "gcm",
-                "scenario",
-                "scen",
-                "year",
                 "clim",
                 "arch",
                 "urt",
                 "par_var",
                 "name_run",
-            ]
-        )[["popsum", "E_c_ac_popwei"]]
-        .sum()
-        .reset_index()
-        .assign(region="World")
-    )
+                "year",
+            ],
+            how="left",
+        )
 
-    # concatenate region and world data
-    gb = pd.concat([gb_region, gb_world])
+        # aggregate popsum and E_h_popwei to the region level
+        gb_region = (
+            data_new_pop.groupby(
+                [
+                    "gcm",
+                    "scenario",
+                    "scen",
+                    "year",
+                    "clim",
+                    "arch",
+                    "urt",
+                    "par_var",
+                    "name_run",
+                    "region",
+                ]
+            )[["popsum", "E_h_popwei"]]
+            .sum()
+            .reset_index()
+        )
 
-    # calculate EI_ac_m2 assuming 10m2 per person
-    log.info("Calculating EI_ac_m2 assuming 10m2 per person...")
-    gb = gb.assign(
-        EI_ac_m2=lambda x: x.E_c_ac_popwei / (x.popsum * 10)
-    )  # 10 because 10m2 per person assumed
-    log.info("...EI_ac_m2 calculated.")
+        # aggregate popsum and E_h_popwei to the global level and assign a new region == "World"
+        gb_world = (
+            data_new_pop.groupby(
+                [
+                    "gcm",
+                    "scenario",
+                    "scen",
+                    "year",
+                    "clim",
+                    "arch",
+                    "urt",
+                    "par_var",
+                    "name_run",
+                ]
+            )[["popsum", "E_h_popwei"]]
+            .sum()
+            .reset_index()
+            .assign(region="World")
+        )
 
-    # gb = (
-    #     data_new_pop.groupby(
-    #         [
-    #             "gcm",
-    #             "scenario",
-    #             "scen",
-    #             "year",
-    #             "clim",
-    #             "arch",
-    #             "urt",
-    #             "par_var",
-    #             "name_run",
-    #             "region",
-    #         ]
-    #     )[["popsum", "E_c_ac_popwei"]]
-    #     .sum()
-    #     .reset_index()
-    #     .assign(
-    #         EI_ac_m2=lambda x: x.E_c_ac_popwei / (x.popsum * 10)
-    #     )  # 10 because 10m2 per person assumed
-    # )
+        # concatenate region and world data
+        gb = pd.concat([gb_region, gb_world])
 
-    gb.to_csv(os.path.join(out_path, "region_agg_EI_ac_m2.csv"), index=False)
+        # calculate EI_h_m2 assuming 10m2 per person
+        log.info("Calculating EI_h_m2 assuming 10m2 per person...")
+        gb = gb.assign(
+            EI_h_m2=lambda x: x.E_h_popwei / (x.popsum * 10)
+        )  # 10 because 10m2 per person assumed
+        log.info("...EI_h_m2 calculated.")
 
-    log.info("Saved: " + os.path.join(out_path, "region_agg_EI_ac_m2.csv"))
+        # gb = (
+        #     data_new_pop.groupby(
+        #         [
+        #             "gcm",
+        #             "scenario",
+        #             "scen",
+        #             "year",
+        #             "clim",
+        #             "arch",
+        #             "urt",
+        #             "par_var",
+        #             "name_run",
+        #             "region",
+        #         ]
+        #     )[["popsum", "E_c_ac_popwei"]]
+        #     .sum()
+        #     .reset_index()
+        #     .assign(
+        #         EI_ac_m2=lambda x: x.E_c_ac_popwei / (x.popsum * 10)
+        #     )  # 10 because 10m2 per person assumed
+        # )
 
+        gb.to_csv(os.path.join(out_path, "region_agg_EI_h_m2.csv"), index=False)
+
+        log.info("Saved: " + os.path.join(out_path, "region_agg_EI_h_m2.csv"))
+
+    log.info("Calculating population by region...")
     pop_only = (
         gb.reindex(
             [
@@ -434,18 +574,10 @@ def create_prereg_data(config: "Config"):
     log.info("...EI_ac_m2 and cumCO2 data combined.")
 
     log.info("Saving pre-regress data...")
+
     ei_cumCO2.to_csv(
         os.path.join(out_path, "region_EI_cumCO2_pre-regress.csv"),
         index=False,
     )
-    log.info("Saved: " + os.path.join(out_path, "region_EI_cumCO2_pre-regress.csv"))
-    log.info("Saved: " + os.path.join(out_path, "region_EI_cumCO2_pre-regress.csv"))
-    log.info("Saved: " + os.path.join(out_path, "region_EI_cumCO2_pre-regress.csv"))
-    log.info("Saved: " + os.path.join(out_path, "region_EI_cumCO2_pre-regress.csv"))
-    log.info("Saved: " + os.path.join(out_path, "region_EI_cumCO2_pre-regress.csv"))
-    log.info("Saved: " + os.path.join(out_path, "region_EI_cumCO2_pre-regress.csv"))
-    log.info("Saved: " + os.path.join(out_path, "region_EI_cumCO2_pre-regress.csv"))
-    log.info("Saved: " + os.path.join(out_path, "region_EI_cumCO2_pre-regress.csv"))
-    log.info("Saved: " + os.path.join(out_path, "region_EI_cumCO2_pre-regress.csv"))
     log.info("Saved: " + os.path.join(out_path, "region_EI_cumCO2_pre-regress.csv"))
     log.info("Saved: " + os.path.join(out_path, "region_EI_cumCO2_pre-regress.csv"))

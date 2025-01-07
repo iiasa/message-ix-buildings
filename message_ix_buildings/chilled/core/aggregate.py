@@ -393,7 +393,7 @@ def aggregate_ISO_tables_to_regions(config: "Config"):
                     "urt",
                     "par_var",
                     "name_run",
-                    "E_c_ac_popwei",
+                    "E_h_popwei",
                 ]
             ]
             .drop_duplicates()
@@ -488,28 +488,6 @@ def aggregate_ISO_tables_to_regions(config: "Config"):
         )  # 10 because 10m2 per person assumed
         log.info("...EI_h_m2 calculated.")
 
-        # gb = (
-        #     data_new_pop.groupby(
-        #         [
-        #             "gcm",
-        #             "scenario",
-        #             "scen",
-        #             "year",
-        #             "clim",
-        #             "arch",
-        #             "urt",
-        #             "par_var",
-        #             "name_run",
-        #             "region",
-        #         ]
-        #     )[["popsum", "E_c_ac_popwei"]]
-        #     .sum()
-        #     .reset_index()
-        #     .assign(
-        #         EI_ac_m2=lambda x: x.E_c_ac_popwei / (x.popsum * 10)
-        #     )  # 10 because 10m2 per person assumed
-        # )
-
         gb.to_csv(os.path.join(out_path, "region_agg_EI_h_m2.csv"), index=False)
 
         log.info("Saved: " + os.path.join(out_path, "region_agg_EI_h_m2.csv"))
@@ -579,5 +557,6 @@ def create_prereg_data(config: "Config"):
         os.path.join(out_path, "region_EI_cumCO2_pre-regress.csv"),
         index=False,
     )
+    log.info("Saved: " + os.path.join(out_path, "region_EI_cumCO2_pre-regress.csv"))
     log.info("Saved: " + os.path.join(out_path, "region_EI_cumCO2_pre-regress.csv"))
     log.info("Saved: " + os.path.join(out_path, "region_EI_cumCO2_pre-regress.csv"))

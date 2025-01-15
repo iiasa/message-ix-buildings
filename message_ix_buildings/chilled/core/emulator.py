@@ -240,29 +240,31 @@ def produce_regression_files(
 
     log.info("Saving files... ")
     regr_params.to_csv(
-        os.path.join(save_path, "regression_results_{file_str}.csv"), index=False
+        os.path.join(save_path, "regression_results_" + file_str + ".csv"), index=False
     )
 
-    log.info("Saved: " + os.path.join(save_path, "regression_results_{file_str}.csv"))
+    log.info(
+        "Saved: " + os.path.join(save_path, "regression_results_" + file_str + ".csv")
+    )
 
     df_cc.to_csv(
-        os.path.join(save_path, "REGIONAL_EI_PATHWAYS_cc_long_{file_str}.csv"),
+        os.path.join(save_path, "REGIONAL_EI_PATHWAYS_cc_long_" + file_str + ".csv"),
         index=False,
     )
 
     log.info(
         "Saved: "
-        + os.path.join(save_path, "REGIONAL_EI_PATHWAYS_cc_long_{file_str}.csv")
+        + os.path.join(save_path, "REGIONAL_EI_PATHWAYS_cc_long_" + file_str + ".csv")
     )
 
     df_nocc.to_csv(
-        os.path.join(save_path, "REGIONAL_EI_PATHWAYS_nocc_long_{file_str}.csv"),
+        os.path.join(save_path, "REGIONAL_EI_PATHWAYS_nocc_long_" + file_str + ".csv"),
         index=False,
     )
 
     log.info(
         "Saved: "
-        + os.path.join(save_path, "REGIONAL_EI_PATHWAYS_nocc_long_{file_str}.csv")
+        + os.path.join(save_path, "REGIONAL_EI_PATHWAYS_nocc_long_" + file_str + ".csv")
     )
 
 

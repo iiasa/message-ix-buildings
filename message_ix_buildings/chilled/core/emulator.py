@@ -151,7 +151,7 @@ def produce_regression_files(
     df_cc = (
         pd.merge(
             regr_params.assign(key="z"),
-            engage_cumCO2.assign(key="z").drop(columns=["exclude", "region"]),
+            engage_cumCO2.assign(key="z").drop(columns=["region"]),
             on="key",
         )
         .drop(columns="key")

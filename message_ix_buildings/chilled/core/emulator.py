@@ -15,10 +15,10 @@ def apply_ols_and_quantile_reg(df, var: str):
     quantiles = [0.05, 0.25, 0.5, 0.75, 0.95]
     df = df.query("cumCO2.notnull()")
 
-    log.info("Create quantile regression model... ")
+    # log.info("Create quantile regression model... ")
     mod = smf.quantreg(f"{var} ~ cumCO2", df)
     # res = mod.fit(q=0.5)
-    log.info("...Finished creating quantile regression model")
+    # log.info("...Finished creating quantile regression model")
 
     def fit_model(q):
         res = mod.fit(q=q)
@@ -28,23 +28,23 @@ def apply_ols_and_quantile_reg(df, var: str):
             res.params["cumCO2"],
         ] + res.conf_int().loc["cumCO2"].tolist()
 
-    log.info("Fitting quantile regression model... ")
+    # log.info("Fitting quantile regression model... ")
     models = [fit_model(x) for x in quantiles]
-    log.info("...Finished fitting quantile regression model")
+    # log.info("...Finished fitting quantile regression model")
 
-    log.info("Creating DataFrame from quantile regression model... ")
+    # log.info("Creating DataFrame from quantile regression model... ")
     models = pd.DataFrame(models, columns=["q", "a", "b", "lb", "ub"])
-    log.info("...Finished creating DataFrame from quantile regression model")
+    # log.info("...Finished creating DataFrame from quantile regression model")
 
-    log.info("Create OLS model... ")
+    # log.info("Create OLS model... ")
     ols = smf.ols(f"{var} ~ cumCO2", df).fit()
-    log.info("...Finished creating OLS model")
+    # log.info("...Finished creating OLS model")
 
-    log.info("Calculating OLS confidence interval... ")
+    # log.info("Calculating OLS confidence interval... ")
     ols_ci = ols.conf_int().loc["cumCO2"].tolist()
-    log.info("...Finished calculating OLS confidence interval")
+    # log.info("...Finished calculating OLS confidence interval")
 
-    log.info("Creating OLS DataFrame... ")
+    # log.info("Creating OLS DataFrame... ")
     ols = dict(
         q="ols",
         a=ols.params["Intercept"],
@@ -53,12 +53,12 @@ def apply_ols_and_quantile_reg(df, var: str):
         ub=ols_ci[1],
     )
     ols = pd.DataFrame(ols, index=[0])
-    log.info("...Finished creating OLS DataFrame")
+    # log.info("...Finished creating OLS DataFrame")
 
     # concat quantile regression and ols
-    log.info("Concatenating quantile regression and OLS DataFrames... ")
+    # log.info("Concatenating quantile regression and OLS DataFrames... ")
     models_ols = pd.concat([models, ols]).reset_index(drop=True)
-    log.info("...Finished concatenating quantile regression and OLS DataFrames")
+    # log.info("...Finished concatenating quantile regression and OLS DataFrames")
 
     # keep unique columns of df: region, name_run, urt, arch
     un_df = df.reindex(["region", "name_run", "urt", "arch"], axis=1).drop_duplicates()

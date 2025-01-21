@@ -15,9 +15,12 @@ sel_var = "tas"
 list_gcm = ["GFDL-ESM4", "IPSL-CM6A-LR"]
 list_rcp = ["ssp126", "ssp370", "ssp585"]
 
+# path to the data
+var_path = "/Volumes/mengm.pdrv/watxene/ISIMIP/ISIMIP3b/InputData/climate_updated/bias-adjusted"
+
 
 @delayed
-def process_raster_data(var, gcm, rcp):
+def process_raster_data(data_path, var, gcm, rcp):
     # selections
     var = var
     gcm = gcm
@@ -25,12 +28,11 @@ def process_raster_data(var, gcm, rcp):
 
     # Load example temperature data
     # temp_file = "/Users/meas/Library/CloudStorage/OneDrive-IIASA/Documents/chilled/ISIMIP3b/gfdl-esm4_r1i1p1f1_w5e5_ssp126_tas_global_daily_2015_2020.nc"
-    var_path = "/Volumes/mengm.pdrv/watxene/ISIMIP/ISIMIP3b/InputData/climate_updated/bias-adjusted"
 
-    log.info(f"Searching for files in {var_path} that match the string: ")
+    log.info(f"Searching for files in {data_path} that match the string: ")
     log.info(f"{gcm}_r1i1p1f1_w5e5_{rcp}_{var}_global_daily_")
     l_files = []
-    for root, dirs, files in os.walk(var_path):
+    for root, dirs, files in os.walk(data_path):
         for file in files:
             # change gcm to lower case
             gcm_l = gcm.lower()
@@ -85,7 +87,9 @@ def process_raster_data(var, gcm, rcp):
 
 # apply process_raster_data to all combinations of gcm and rcp
 delayed_results = [
-    process_raster_data(sel_var, gcm, rcp) for gcm in list_gcm for rcp in list_rcp
+    process_raster_data(var_path, sel_var, gcm, rcp)
+    for gcm in list_gcm
+    for rcp in list_rcp
 ]
 
 # Compute the results in parallel

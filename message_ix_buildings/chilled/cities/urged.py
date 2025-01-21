@@ -1,7 +1,9 @@
 import os
 
+import dask
 import pandas as pd
 import xarray as xr
+from dask import delayed
 
 from message_ix_buildings.chilled.functions.extract_cities import select_nearest_points
 from message_ix_buildings.chilled.util.common import get_logger, get_project_root
@@ -43,6 +45,7 @@ city_df = pd.read_csv(os.path.join(green_path, "outer.csv"))[
 
 # create function to read in raster file, apply select_nearest_points,
 # and convert to pandas.DataFrame
+@delayed
 def extract_raster_file(file):
     log.info(f"Extracting raster data from file: {file}")
     ras = xr.open_dataarray(file)
@@ -56,9 +59,20 @@ def extract_raster_file(file):
     return df
 
 
-# apply function to all files in l_files
-df_con = pd.concat([extract_raster_file(file) for file in l_files])
+# NOTE: this uses dask to parallelize the computation
+log.info("Define applying function to all files in l_files")
+delayed_results = [extract_raster_file(file) for file in l_files]
 
+# Compute the results in parallel
+log.info("Compute the results in parallel using dask")
+results = dask.compute(*delayed_results)
+
+# Concatenate the results
+df_results = pd.concat(results)
+
+# NOTE: if not using dask, remove the @delayed decorator from extract_raster_file
+# and run this instead:
+df_con = pd.concat([extract_raster_file(file) for file in l_files])
 
 # NOTE: could also read in all files at once using xr.open_mfdataset
 # and apply select_nearest_points to the resulting xr.Dataset

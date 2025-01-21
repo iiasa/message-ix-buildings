@@ -4,24 +4,74 @@ import pandas as pd
 import xarray as xr
 
 from message_ix_buildings.chilled.functions.extract_cities import select_nearest_points
-from message_ix_buildings.chilled.util.common import get_project_root
+from message_ix_buildings.chilled.util.common import get_logger, get_project_root
+
+log = get_logger(__name__)
+
+# selections
+gcm = "GFDL-ESM4"
+var = "tas"
+rcp = "ssp126"
 
 # Load example temperature data
 temp_file = "/Users/meas/Library/CloudStorage/OneDrive-IIASA/Documents/chilled/ISIMIP3b/gfdl-esm4_r1i1p1f1_w5e5_ssp126_tas_global_daily_2015_2020.nc"
+var_path = "/Volumes/mengm.pdrv/watxene/ISIMIP/ISIMIP3b/InputData/climate_updated/bias-adjusted"
+
+# list all files in var_path that matches string:
+# f"{gcm}_r1i1p1f2_w5e5_{rcp}_{var}_global_daily_"
+# search recursively
+l_files = []
+for root, dirs, files in os.walk(var_path):
+    for file in files:
+        # change gcm to lower case
+        gcm_l = gcm.lower()
+        if f"{gcm_l}_r1i1p1f1_w5e5_{rcp}_{var}_global_daily_" in file:
+            l_files.append(os.path.join(root, file))
+
+# sort l_files
+l_files.sort()
 
 # green space file location, relative to the root directory
 root_path = get_project_root()
 green_path = os.path.join(root_path, "data", "green-space", "ALPS2024")
-
-# Read the temperature data
-temp = xr.open_dataarray(temp_file)
 
 # Example: List of city coordinates (lat, lon)
 city_df = pd.read_csv(os.path.join(green_path, "outer.csv"))[
     ["UC_NM_MN", "CTR_MN_ISO", "x", "y"]
 ].drop_duplicates()
 
-# Example usage
-selected_vector = select_nearest_points(temp, city_df, "UC_NM_MN", "y", "x")
-df = selected_vector.to_dataframe().reset_index()
-print(df)
+
+# create function to read in raster file, apply select_nearest_points,
+# and convert to pandas.DataFrame
+def extract_raster_file(file):
+    log.info(f"Extracting raster data from file: {file}")
+    ras = xr.open_dataarray(file)
+
+    log.info("...Selecting nearest points from raster data")
+    selected_vector = select_nearest_points(ras, city_df, "UC_NM_MN", "y", "x")
+
+    log.info("...Converting selected points to pandas DataFrame")
+    df = selected_vector.to_dataframe().reset_index()
+
+    return df
+
+
+# apply function to all files in l_files
+df_con = pd.concat([extract_raster_file(file) for file in l_files])
+
+
+# NOTE: could also read in all files at once using xr.open_mfdataset
+# and apply select_nearest_points to the resulting xr.Dataset
+# but the problem is that converting the resulting xr.Dataset to a pandas.DataFrame
+# is increeeeeddibllyyyyy slow
+ras_all = xr.open_mfdataset(l_files, combine="by_coords")
+sel_points_all = select_nearest_points(ras_all, city_df, "UC_NM_MN", "y", "x")
+
+
+def extract_raster_dataset(l_files):
+    ras_all = xr.open_mfdataset(l_files, combine="by_coords")
+    sel_points_all = select_nearest_points(ras_all, city_df, "UC_NM_MN", "y", "x")
+    sel_points_all = sel_points_all.compute()
+    df = sel_points_all.to_dataframe().reset_index()
+
+    return df

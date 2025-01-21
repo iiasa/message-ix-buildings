@@ -93,6 +93,6 @@ def select_nearest_points(
 
     # Step 3: Concatenate the selected points into a single 1D xarray
     log.info("Concatenating the selected points into a single 1D xarray")
-    selected_vector = xr.concat(selected_points, dim="locations")
+    selected_vector = xr.concat(selected_points, dim="locations")  # type: ignore
 
     return selected_vector

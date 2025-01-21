@@ -8,8 +8,12 @@ log = get_logger(__name__)
 
 
 def select_nearest_points(
-    ras: xr.DataArray, city_df: pd.DataFrame, name_col: str, lat_col: str, lon_col: str
-) -> xr.DataArray:
+    ras: xr.DataArray | xr.Dataset,
+    city_df: pd.DataFrame,
+    name_col: str,
+    lat_col: str,
+    lon_col: str,
+) -> xr.DataArray | xr.Dataset:
     """Find nearest points in raster data for each city provided
 
     This function does a more manual process of finding the nearest points in the

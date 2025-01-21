@@ -96,3 +96,16 @@ def select_nearest_points(
     selected_vector = xr.concat(selected_points, dim="locations")  # type: ignore
 
     return selected_vector
+
+
+def extract_raster_file(file, cities_df, name_col, lat_col, lon_col):
+    log.info(f"Extracting raster data from file: {file}")
+    ras = xr.open_dataarray(file)
+
+    log.info("...Selecting nearest points from raster data")
+    sel_ras = select_nearest_points(ras, cities_df, name_col, lat_col, lon_col)
+
+    log.info("...Converting selected points to pandas DataFrame")
+    df = sel_ras.to_dataframe().reset_index()
+
+    return df

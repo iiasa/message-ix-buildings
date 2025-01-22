@@ -1,8 +1,12 @@
+import os
+
+import dask
 import numpy as np
 import pandas as pd
 import xarray as xr
+from dask import delayed
 
-from message_ix_buildings.chilled.util.common import get_logger
+from message_ix_buildings.chilled.util.common import get_logger, get_project_root
 
 log = get_logger(__name__)
 
@@ -98,14 +102,64 @@ def select_nearest_points(
     return selected_vector
 
 
-def extract_raster_file(file, cities_df, name_col, lat_col, lon_col):
-    log.info(f"Extracting raster data from file: {file}")
-    ras = xr.open_dataarray(file)
+@delayed
+def process_raster_data(data_path, var, gcm, rcp):
+    # selections
+    var = var
+    gcm = gcm
+    rcp = rcp
 
-    log.info("...Selecting nearest points from raster data")
-    sel_ras = select_nearest_points(ras, cities_df, name_col, lat_col, lon_col)
+    log.info(f"Searching for files in {data_path} that match the string: ")
+    log.info(f"{gcm}_r1i1p1f1_w5e5_{rcp}_{var}_global_daily_")
+    l_files = []
+    for root, dirs, files in os.walk(data_path):
+        for file in files:
+            # change gcm to lower case
+            gcm_l = gcm.lower()
+            if f"{gcm_l}_r1i1p1f1_w5e5_{rcp}_{var}_global_daily_" in file:
+                l_files.append(os.path.join(root, file))
 
-    log.info("...Converting selected points to pandas DataFrame")
-    df = sel_ras.to_dataframe().reset_index()
+    # sort l_files
+    l_files.sort()
 
-    return df
+    # green space file location, relative to the root directory
+    root_path = get_project_root()
+    green_path = os.path.join(root_path, "data", "green-space", "ALPS2024")
+
+    # Example: List of city coordinates (lat, lon)
+    city_df = pd.read_csv(os.path.join(green_path, "outer.csv"))[
+        ["UC_NM_MN", "CTR_MN_ISO", "x", "y"]
+    ].drop_duplicates()
+
+    # create function to read in raster file, apply select_nearest_points,
+    # and convert to pandas.DataFrame
+    @delayed
+    def extract_raster_file(file):
+        log.info(f"Extracting raster data from file: {file}")
+        ras = xr.open_dataarray(file)
+
+        log.info("...Selecting nearest points from raster data")
+        selected_vector = select_nearest_points(ras, city_df, "UC_NM_MN", "y", "x")
+
+        log.info("...Converting selected points to pandas DataFrame")
+        df = selected_vector.to_dataframe().reset_index()
+
+        return df
+
+    # NOTE: this uses dask to parallelize the computation
+    log.info("Define applying function to all files in l_files")
+    delayed_extract = [extract_raster_file(file) for file in l_files]
+
+    # Compute the results in parallel
+    log.info("Compute the results in parallel using dask")
+    extract = dask.compute(*delayed_extract)
+
+    # Concatenate the results
+    df_extract = pd.concat(extract)
+
+    # add gcm, rcp, and var columns
+    df_extract["gcm"] = gcm
+    df_extract["rcp"] = rcp
+    df_extract["var"] = var
+
+    return df_extract

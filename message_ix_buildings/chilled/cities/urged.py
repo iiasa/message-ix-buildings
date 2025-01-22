@@ -6,17 +6,20 @@ import xarray as xr
 from dask import delayed
 
 from message_ix_buildings.chilled.functions.extract_cities import select_nearest_points
+from message_ix_buildings.chilled.util.base import get_paths
 from message_ix_buildings.chilled.util.common import get_logger, get_project_root
+from message_ix_buildings.chilled.util.config import Config  # type: ignore
 
 log = get_logger(__name__)
 
 # list of GCMs and RCPs
 sel_var = "tas"
 list_gcm = ["GFDL-ESM4", "IPSL-CM6A-LR"]
-list_rcp = ["ssp126", "ssp370", "ssp585"]
+list_rcp = ["ssp126", "ssp370"]
 
-# path to the data
-var_path = "/Volumes/mengm.pdrv/watxene/ISIMIP/ISIMIP3b/InputData/climate_updated/bias-adjusted"
+# specify config
+cfg = Config(user="MEAS")
+isimip_bias_adj_path = get_paths(cfg, "isimip_bias_adj_path")
 
 
 @delayed
@@ -25,9 +28,6 @@ def process_raster_data(data_path, var, gcm, rcp):
     var = var
     gcm = gcm
     rcp = rcp
-
-    # Load example temperature data
-    # temp_file = "/Users/meas/Library/CloudStorage/OneDrive-IIASA/Documents/chilled/ISIMIP3b/gfdl-esm4_r1i1p1f1_w5e5_ssp126_tas_global_daily_2015_2020.nc"
 
     log.info(f"Searching for files in {data_path} that match the string: ")
     log.info(f"{gcm}_r1i1p1f1_w5e5_{rcp}_{var}_global_daily_")
@@ -87,7 +87,7 @@ def process_raster_data(data_path, var, gcm, rcp):
 
 # apply process_raster_data to all combinations of gcm and rcp
 delayed_results = [
-    process_raster_data(var_path, sel_var, gcm, rcp)
+    process_raster_data(isimip_bias_adj_path, sel_var, gcm, rcp)
     for gcm in list_gcm
     for rcp in list_rcp
 ]
@@ -95,6 +95,10 @@ delayed_results = [
 # Compute the results in parallel
 log.info("Compute the results in parallel using dask")
 results = dask.compute(*delayed_results)
+
+# Concatenate results
+log.info("Concatenate the results into single dataframe")
+df_results = pd.concat(results).reset_index(drop=True)
 
 
 # # Example usage:

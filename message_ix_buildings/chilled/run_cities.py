@@ -4,7 +4,6 @@ import sys
 from argparse import ArgumentParser
 
 import pandas as pd
-from dask import delayed
 from rich.progress import track  # type: ignore
 
 from message_ix_buildings.chilled.core.climate import (
@@ -113,29 +112,50 @@ def main(args=None):
     # Example: List of city coordinates (lat, lon)
     city_df = city_lcz[["UC_NM_MN", "CTR_MN_ISO", "x", "y"]].drop_duplicates()
 
-    # Wrap functions in dask.delayed
-    tasks = [
-        delayed(create_climate_variables_maps)(
-            config=cfg,
-            start_time=start,
-            extract_cities=True,
-            city_df=city_df,
-            name_col="UC_NM_MN",
-            lat_col="y",
-            lon_col="x",
-        ),
-        delayed(aggregate_urban_rural_files)(cfg),
-        delayed(make_vdd_total_maps)(cfg),
-        delayed(process_construction_shares)(cfg),
-        delayed(process_floor_area_maps)(cfg),
-        delayed(process_country_maps)(cfg),
-        delayed(process_final_maps)(cfg),
-        delayed(process_iso_tables)(cfg),
-    ]
+    # # Wrap functions in dask.delayed
+    # tasks = [
+    #     delayed(create_climate_variables_maps)(
+    #         config=cfg,
+    #         start_time=start,
+    #         extract_cities=True,
+    #         city_df=city_df,
+    #         name_col="UC_NM_MN",
+    #         lat_col="y",
+    #         lon_col="x",
+    #     ),
+    #     delayed(aggregate_urban_rural_files)(cfg),
+    #     delayed(make_vdd_total_maps)(cfg),
+    #     delayed(process_construction_shares)(cfg),
+    #     delayed(process_floor_area_maps)(cfg),
+    #     delayed(process_country_maps)(cfg),
+    #     delayed(process_final_maps)(cfg),
+    #     delayed(process_iso_tables)(cfg),
+    # ]
 
-    # Compute tasks in sequential order
-    for task in track(tasks, description="Running core functions..."):
-        task.compute()
+    # # Compute tasks in sequential order
+    # for task in track(tasks, description="Running core functions..."):
+    #     task.compute()
+
+    for step in track([cfg], description="Running core functions..."):
+        # Functions are in /message_ix_buildings/chilled/core/climate.py
+        (
+            create_climate_variables_maps(
+                config=step,
+                start_time=start,
+                extract_cities=True,
+                city_df=city_df,
+                name_col="UC_NM_MN",
+                lat_col="y",
+                lon_col="x",
+            ),
+        )
+        (aggregate_urban_rural_files(step),)
+        (make_vdd_total_maps(step),)
+        (process_construction_shares(step),)
+        (process_floor_area_maps(step),)
+        (process_country_maps(step),)
+        (process_final_maps(step),)
+        (process_iso_tables(step),)
 
 
 if __name__ == "__main__":

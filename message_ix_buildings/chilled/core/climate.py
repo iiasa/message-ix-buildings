@@ -5,10 +5,12 @@ from itertools import product
 import cartopy  # type: ignore
 import cartopy.crs as ccrs  # type: ignore
 import cartopy.feature as cfeature  # type: ignore
+import dask
 import matplotlib.pyplot as plt  # type: ignore
 import numpy as np
 import pandas as pd
 import xarray as xr
+from dask import delayed
 from dask.diagnostics import ProgressBar
 
 from message_ix_buildings.chilled.functions.buildings_funcs_grid import (
@@ -815,7 +817,9 @@ def create_climate_variables_maps(
 
     s_runs = load_all_scenarios_data(config).clim
     inputs = product(s_runs, vers_archs, par_var.itertuples(), config.urts)
-    list(map(map_calculated_variables, inputs))
+    delayed_results = [delayed(map_calculated_variables)(args) for args in inputs]
+    with ProgressBar():
+        dask.compute(*delayed_results)
 
     # mypool = Pool(4)
     # return list(mypool.map(map_calculated_variables, inputs))

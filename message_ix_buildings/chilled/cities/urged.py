@@ -7,7 +7,7 @@ import xarray as xr
 from message_ix_buildings.chilled.functions.buildings_funcs_grid import calc_SCDD_m
 from message_ix_buildings.chilled.functions.extract_cities import (
     combine_rasters,
-    process_raster_data,
+    rasters_to_df_cities,
     select_nearest_points,
 )
 from message_ix_buildings.chilled.util.base import get_paths
@@ -38,11 +38,31 @@ city_df = pd.read_csv(os.path.join(green_path, "outer.csv"))[
 # Run combine_rasters for just one GCM and RCP
 ras_scen = combine_rasters(isimip_bias_adj_path, sel_var, "GFDL-ESM4", "ssp126")
 
-# Apply select_nearest_points to the resulting xr.Dataset
-nearest_points = select_nearest_points(ras_scen, city_df, "UC_NM_MN", "y", "x")
+
+# wrap combine_rasters in delayed, and apply to all combinations of gcm and rcp
+delayed_combine_rasters = [
+    dask.delayed(combine_rasters)(isimip_bias_adj_path, sel_var, gcm, rcp)
+    for gcm in list_gcm
+    for rcp in list_rcp
+]
+
+# Compute the results in parallel
+log.info("Compute the results in parallel using dask")
+ras_all = dask.compute(*delayed_combine_rasters)
+
+# Apply select_nearest_points to the each xr.Dataset in ras_all
+delayed_points_all = [
+    dask.delayed(select_nearest_points)(ras, city_df, "UC_NM_MN", "y", "x")
+    for ras in ras_all
+]
+
+# Compute the results in parallel
+points_all = dask.compute(*delayed_points_all)
+
+points_scen = select_nearest_points(ras_scen, city_df, "UC_NM_MN", "y", "x")
 
 # calculate average temperature
-t_out_ave = nearest_points[cfg.davar].astype("float32") - 273.16
+t_out_ave = points_scen[cfg.davar].astype("float32") - 273.16
 t_out_ave = t_out_ave.transpose("locations", "time")
 t_oa_gbm = t_out_ave.groupby("time.month")
 
@@ -74,23 +94,14 @@ sdd_c = calc_SCDD_m(t_out_ave, bal_temp)
 
 # NOTE: following is for parallelizing the process_raster_data function
 
-# wrap combine_rasters in delayed, and apply to all combinations of gcm and rcp
-delayed_combine_rasters = [
-    dask.delayed(combine_rasters)(isimip_bias_adj_path, sel_var, gcm, rcp)
-    for gcm in list_gcm
-    for rcp in list_rcp
-]
-
-# Compute the results in parallel
-log.info("Compute the results in parallel using dask")
-results_rasters = dask.compute(*delayed_combine_rasters)
-
 
 # NOTE: following is doing everything in dataframes instead
 
 # apply process_raster_data to all combinations of gcm and rcp
 delayed_results = [
-    process_raster_data(isimip_bias_adj_path, sel_var, gcm, rcp)
+    rasters_to_df_cities(
+        isimip_bias_adj_path, sel_var, gcm, rcp, city_df, "UC_NM_MN", "y", "x"
+    )
     for gcm in list_gcm
     for rcp in list_rcp
 ]

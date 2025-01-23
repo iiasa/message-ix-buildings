@@ -38,7 +38,7 @@ class Config:
     #: Set what data to use for the RCP scenario.
     #: If rcp is "baseline", then use "ssp126" data.
     #: Otherwise, use the data corresponding to the RCP scenario selected.
-    rcpdata = "ssp126" if rcp == "baseline" else rcp
+    # rcpdata = "ssp126" if rcp == "baseline" else rcp
 
     #: Select the version of the country data and floor surface.
     vstrcntry = "v4"  # version string for country data and floor surface

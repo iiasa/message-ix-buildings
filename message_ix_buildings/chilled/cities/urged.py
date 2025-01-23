@@ -9,12 +9,12 @@ from message_ix_buildings.chilled.util.config import Config  # type: ignore
 log = get_logger(__name__)
 
 # list of GCMs and RCPs
-sel_var = "tas"
 list_gcm = ["GFDL-ESM4", "IPSL-CM6A-LR"]
 list_rcp = ["ssp126", "ssp370"]
 
 # specify config
 cfg = Config(user="MEAS")
+sel_var = cfg.var
 isimip_bias_adj_path = get_paths(cfg, "isimip_bias_adj_path")
 
 # apply process_raster_data to all combinations of gcm and rcp

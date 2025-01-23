@@ -99,6 +99,7 @@ def main(args=None):
     cfg = create_config(parsed_arguments=parsed_args)
 
     for step in track([cfg], description="Running core functions..."):
+        # Functions are in /message_ix_buildings/chilled/core/climate.py
         (create_climate_variables_maps(step, start),)
         (aggregate_urban_rural_files(step),)
         (make_vdd_total_maps(step),)

@@ -34,6 +34,7 @@ from message_ix_buildings.chilled.functions.buildings_funcs_grid import (
     calc_vdd_h,
     calc_vdd_tmax_c,
 )
+from message_ix_buildings.chilled.functions.extract_cities import select_nearest_points
 from message_ix_buildings.chilled.functions.variable_dicts import (
     VARDICT_COOL,
     VARDICT_HEAT,
@@ -56,7 +57,15 @@ from message_ix_buildings.chilled.util.config import Config  # type: ignore
 log = get_logger(__name__)
 
 
-def create_climate_variables_maps(config: "Config", start_time: datetime.datetime):
+def create_climate_variables_maps(
+    config: "Config",
+    start_time: datetime.datetime,
+    extract_cities: bool = False,
+    city_df: pd.DataFrame | None = None,
+    name_col: str | None = None,
+    lat_col: str | None = None,
+    lon_col: str | None = None,
+):
     project_path = get_paths(config, "project_path")
     dle_path = get_paths(config, "dle_path")
     isimip_bias_adj_path = get_paths(config, "isimip_bias_adj_path")
@@ -168,19 +177,35 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
                 chunks={"lon": get_paths(config, "chunk_size")},
             )  # , concat_dim='time' )  # Setting for RCP6.0
 
+        if extract_cities:
+            dst = select_nearest_points(dst, city_df, name_col, lat_col, lon_col)
+            dst = dst.drop_vars("locations")
+
         dst_crop = dst.sel(time=slice(years_clim[0], years_clim[1]))
         t_out_ave = dst_crop[config.davar].astype("float32") - 273.16
-        t_out_ave = t_out_ave.transpose("lat", "lon", "time")
+        t_out_ave = t_out_ave.transpose("locations", "time")
         t_oa_gbm = t_out_ave.groupby("time.month")
 
         i_sol_v = xr.open_dataarray(
             os.path.join(dle_path, "EWEMBI_vert_irrad_1980-2009_avg.nc")
         )  # Values  in daily Wh/m2
 
+        if extract_cities:
+            i_sol_v = select_nearest_points(
+                i_sol_v, city_df, name_col, lat_col, lon_col
+            )
+            i_sol_v = i_sol_v.drop_vars("locations")
+
         # Horizontal irradiation
         i_sol_h = xr.open_dataarray(
             os.path.join(dle_path, "EWEMBI_horiz_irrad_1980-2009_avg.nc")
         )  # Values in daily Wh/m2
+
+        if extract_cities:
+            i_sol_h = select_nearest_points(
+                i_sol_h, city_df, name_col, lat_col, lon_col
+            )
+            i_sol_h = i_sol_h.drop_vars("locations")
 
         if config.arch_setting == "regional":
             xr.open_dataset(

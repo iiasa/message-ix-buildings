@@ -179,11 +179,14 @@ def create_climate_variables_maps(
 
         if extract_cities:
             dst = select_nearest_points(dst, city_df, name_col, lat_col, lon_col)
-            dst = dst.drop_vars("locations")
 
         dst_crop = dst.sel(time=slice(years_clim[0], years_clim[1]))
         t_out_ave = dst_crop[config.davar].astype("float32") - 273.16
         t_out_ave = t_out_ave.transpose("locations", "time")
+
+        if extract_cities:
+            t_out_ave = t_out_ave.drop_vars("locations")
+
         t_oa_gbm = t_out_ave.groupby("time.month")
 
         i_sol_v = xr.open_dataarray(

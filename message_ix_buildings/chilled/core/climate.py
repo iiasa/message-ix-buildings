@@ -72,6 +72,8 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
         config.rcp,
     )
 
+    rcpdata = "ssp126" if config.rcp == "baseline" else config.rcp
+
     if not os.path.exists(output_path_vdd):
         os.makedirs(output_path_vdd)
 
@@ -100,13 +102,17 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
 
         # Climate input variable format
         climate_filestr_hist = (
-            f"tas_day_{config.gcm}_{config.rcpdata}_r1i1p1_EWEMBI_landonly_"  # ISIMIP2
+            f"tas_day_{config.gcm}_{rcpdata}_r1i1p1_EWEMBI_landonly_"  # ISIMIP2
         )
 
         if config.gcm == "UKESM1-0-LL":
-            climate_filestr_future = f"{config.gcm}_r1i1p1f2_w5e5_{config.rcpdata}_{config.var}_global_daily_"
+            climate_filestr_future = (
+                f"{config.gcm}_r1i1p1f2_w5e5_{rcpdata}_{config.var}_global_daily_"
+            )
         else:
-            climate_filestr_future = f"{config.gcm}_r1i1p1f1_w5e5_{config.rcpdata}_{config.var}_global_daily_"
+            climate_filestr_future = (
+                f"{config.gcm}_r1i1p1f1_w5e5_{rcpdata}_{config.var}_global_daily_"
+            )
 
         endstr = ".nc"
 
@@ -118,7 +124,7 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
             filestr = climate_filestr_future
 
         filepath = os.path.join(
-            isi_folder, config.rcpdata, config.gcm, f"{filestr.lower()}*{endstr}"
+            isi_folder, rcpdata, config.gcm, f"{filestr.lower()}*{endstr}"
         )
 
         log.info("Reading: " + filepath)
@@ -2194,6 +2200,8 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
     vers_archs = get_archs(config)
     par_var = load_parametric_analysis_data(config)
 
+    rcpdata = "ssp126" if config.rcp == "baseline" else config.rcp
+
     for clim in config.clims:
         log.info(f"Starting {clim} ######################")
 
@@ -2225,7 +2233,7 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
             filestr = config.climate_filestr_future
 
         filepath = os.path.join(
-            isi_folder, config.rcpdata, config.gcm, f"{filestr.lower()}*{config.endstr}"
+            isi_folder, rcpdata, config.gcm, f"{filestr.lower()}*{config.endstr}"
         )
         if config.rcp == "rcp26":
             dst = xr.open_mfdataset(

@@ -8,9 +8,13 @@ from itertools import product
 
 import numpy as np
 import xarray as xr
-from functions.variable_dicts import VARS_ARCHETYPES  # type: ignore
-from preprocess.message_raster import create_message_raster  # type: ignore
 
+from message_ix_buildings.chilled.functions.variable_dicts import (
+    VARS_ARCHETYPES,  # type: ignore
+)
+from message_ix_buildings.chilled.preprocess.message_raster import (
+    create_message_raster,  # type: ignore
+)
 from message_ix_buildings.chilled.util.base import (
     get_archs,
     get_paths,

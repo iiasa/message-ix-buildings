@@ -99,6 +99,13 @@ def select_nearest_points(
     log.info("Concatenating the selected points into a single 1D xarray")
     selected_vector = xr.concat(selected_points, dim="locations")  # type: ignore
 
+    # Step 4: Add city_lat and city_lon as dimensions
+    log.info("Adding city_lat and city_lon as dimensions")
+    selected_vector = selected_vector.assign_coords(
+        city_lat=("locations", [point.city_lat for point in selected_points]),
+        city_lon=("locations", [point.city_lon for point in selected_points]),
+    )
+
     return selected_vector
 
 
@@ -163,3 +170,22 @@ def process_raster_data(data_path, var, gcm, rcp):
     df_extract["var"] = var
 
     return df_extract
+
+
+def combine_rasters(data_path, var, gcm, rcp):
+    """Combine all raster files in the data_path that match the filestr"""
+
+    gcm_l = gcm.lower()
+    l_files = []
+    for root, dirs, files in os.walk(data_path):
+        for file in files:
+            if f"{gcm_l}_r1i1p1f1_w5e5_{rcp}_{var}_global_daily_" in file:
+                l_files.append(os.path.join(root, file))
+
+    # sort l_files
+    l_files.sort()
+
+    # open all files
+    ras_all = xr.open_mfdataset(l_files, combine="by_coords")
+
+    return ras_all

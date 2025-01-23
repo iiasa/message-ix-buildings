@@ -17,8 +17,8 @@ from message_ix_buildings.chilled.util.config import Config  # type: ignore
 log = get_logger(__name__)
 
 # list of GCMs and RCPs
-list_gcm = ["GFDL-ESM4", "IPSL-CM6A-LR"]
-list_rcp = ["ssp126", "ssp370"]
+list_gcm = ["MRI-ESM2-0"]
+list_rcp = ["baseline", "ssp126", "ssp370"]
 
 # specify config
 cfg = Config(user="MEAS")
@@ -30,14 +30,25 @@ dle_path = get_paths(cfg, "dle_path")
 root_path = get_project_root()
 green_path = os.path.join(root_path, "data", "green-space", "ALPS2024")
 
+# read in all files in green_path
+city_lcz = pd.read_csv(os.path.join(green_path, "outer.csv")).drop(
+    columns=["Unnamed: 0"]
+)
+city_coef = pd.read_csv(os.path.join(green_path, "outer_2.csv")).drop(
+    columns=["Unnamed: 0"]
+)
+city_gvi = pd.read_csv(os.path.join(green_path, "outer_3.csv")).drop(
+    columns=["Unnamed: 0"]
+)
+hist_gvi = pd.read_csv(os.path.join(green_path, "outer_4.csv")).drop(
+    columns=["Unnamed: 0"]
+)
+
 # Example: List of city coordinates (lat, lon)
-city_df = pd.read_csv(os.path.join(green_path, "outer.csv"))[
-    ["UC_NM_MN", "CTR_MN_ISO", "x", "y"]
-].drop_duplicates()
+city_df = city_lcz[["UC_NM_MN", "CTR_MN_ISO", "x", "y"]].drop_duplicates()
 
 # Run combine_rasters for just one GCM and RCP
-ras_scen = combine_rasters(isimip_bias_adj_path, sel_var, "GFDL-ESM4", "ssp126")
-
+ras_scen = combine_rasters(isimip_bias_adj_path, sel_var, "MRI-ESM2-0", "ssp126")
 
 # wrap combine_rasters in delayed, and apply to all combinations of gcm and rcp
 delayed_combine_rasters = [

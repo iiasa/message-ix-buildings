@@ -6,7 +6,7 @@ import pandas as pd
 import xarray as xr
 from dask import delayed
 
-from message_ix_buildings.chilled.util.common import get_logger, get_project_root
+from message_ix_buildings.chilled.util.common import get_logger
 
 log = get_logger(__name__)
 
@@ -110,7 +110,7 @@ def select_nearest_points(
 
 
 @delayed
-def process_raster_data(data_path, var, gcm, rcp):
+def rasters_to_df_cities(data_path, var, gcm, rcp, city_df, name_col, lat_col, lon_col):
     # selections
     var = var
     gcm = gcm
@@ -129,15 +129,6 @@ def process_raster_data(data_path, var, gcm, rcp):
     # sort l_files
     l_files.sort()
 
-    # green space file location, relative to the root directory
-    root_path = get_project_root()
-    green_path = os.path.join(root_path, "data", "green-space", "ALPS2024")
-
-    # Example: List of city coordinates (lat, lon)
-    city_df = pd.read_csv(os.path.join(green_path, "outer.csv"))[
-        ["UC_NM_MN", "CTR_MN_ISO", "x", "y"]
-    ].drop_duplicates()
-
     # create function to read in raster file, apply select_nearest_points,
     # and convert to pandas.DataFrame
     @delayed
@@ -146,7 +137,9 @@ def process_raster_data(data_path, var, gcm, rcp):
         ras = xr.open_dataarray(file)
 
         log.info("...Selecting nearest points from raster data")
-        selected_vector = select_nearest_points(ras, city_df, "UC_NM_MN", "y", "x")
+        selected_vector = select_nearest_points(
+            ras, city_df, name_col, lat_col, lon_col
+        )
 
         log.info("...Converting selected points to pandas DataFrame")
         df = selected_vector.to_dataframe().reset_index()

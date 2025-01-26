@@ -74,6 +74,33 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
 
     rcpdata = "ssp126" if config.rcp == "baseline" else config.rcp
 
+    if config.rcp == "baseline":
+        yeardic = {
+            "2015": ("2015", "2020"),
+            "2020": ("2015", "2020"),
+            "2030": ("2015", "2020"),
+            "2040": ("2015", "2020"),
+            "2050": ("2015", "2020"),
+            "2060": ("2015", "2020"),
+            "2070": ("2015", "2020"),
+            "2080": ("2015", "2020"),
+            "2090": ("2015", "2020"),
+            "2100": ("2015", "2020"),
+        }
+    else:
+        yeardic = {
+            "2015": ("2015", "2020"),
+            "2020": ("2015", "2025"),
+            "2030": ("2015", "2045"),
+            "2040": ("2025", "2055"),
+            "2050": ("2035", "2065"),
+            "2060": ("2045", "2075"),
+            "2070": ("2055", "2085"),
+            "2080": ("2065", "2095"),
+            "2090": ("2080", "2100"),
+            "2100": ("2095", "2100"),
+        }
+
     if not os.path.exists(output_path_vdd):
         os.makedirs(output_path_vdd)
 
@@ -85,7 +112,7 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
 
         log.info(str(clim) + " + " + arch + " + " + parset.name_run + " + " + urt)
 
-        years_clim = config.yeardic[str(clim)]
+        years_clim = yeardic[str(clim)]
         # << this selects the correct years.
         # But when testing you’ll want to use just say 3 years data,
         # so set years manually, e.g.
@@ -2202,6 +2229,33 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
 
     rcpdata = "ssp126" if config.rcp == "baseline" else config.rcp
 
+    if config.rcp == "baseline":
+        yeardic = {
+            "2015": ("2015", "2020"),
+            "2020": ("2015", "2020"),
+            "2030": ("2015", "2020"),
+            "2040": ("2015", "2020"),
+            "2050": ("2015", "2020"),
+            "2060": ("2015", "2020"),
+            "2070": ("2015", "2020"),
+            "2080": ("2015", "2020"),
+            "2090": ("2015", "2020"),
+            "2100": ("2015", "2020"),
+        }
+    else:
+        yeardic = {
+            "2015": ("2015", "2020"),
+            "2020": ("2015", "2025"),
+            "2030": ("2015", "2045"),
+            "2040": ("2025", "2055"),
+            "2050": ("2035", "2065"),
+            "2060": ("2045", "2075"),
+            "2070": ("2055", "2085"),
+            "2080": ("2065", "2095"),
+            "2090": ("2080", "2100"),
+            "2100": ("2095", "2100"),
+        }
+
     for clim in config.clims:
         log.info(f"Starting {clim} ######################")
 
@@ -2210,7 +2264,7 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
         ## =============================================================================
 
         # output_folder_scen = output_folder+scen+'\\'
-        years_clim = config.yeardic[clim]
+        years_clim = yeardic[clim]
         # << this selects the correct years.
         # But when testing you’ll want to use just say 3 years data,
         # so set years manually, e.g.

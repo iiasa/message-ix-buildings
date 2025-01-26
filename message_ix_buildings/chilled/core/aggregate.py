@@ -29,6 +29,33 @@ def calculate_cumulative_carbon_emissions(config: "Config"):
     project_path = get_paths(config, "project_path")
     out_path = os.path.join(project_path, "out", "version", config.vstr, "output")
 
+    if config.rcp == "baseline":
+        yeardic = {
+            "2015": ("2015", "2020"),
+            "2020": ("2015", "2020"),
+            "2030": ("2015", "2020"),
+            "2040": ("2015", "2020"),
+            "2050": ("2015", "2020"),
+            "2060": ("2015", "2020"),
+            "2070": ("2015", "2020"),
+            "2080": ("2015", "2020"),
+            "2090": ("2015", "2020"),
+            "2100": ("2015", "2020"),
+        }
+    else:
+        yeardic = {
+            "2015": ("2015", "2020"),
+            "2020": ("2015", "2025"),
+            "2030": ("2015", "2045"),
+            "2040": ("2025", "2055"),
+            "2050": ("2035", "2065"),
+            "2060": ("2045", "2075"),
+            "2070": ("2055", "2085"),
+            "2080": ("2065", "2095"),
+            "2090": ("2080", "2100"),
+            "2100": ("2095", "2100"),
+        }
+
     # if out_path does not exist, create it
     if not os.path.exists(out_path):
         os.makedirs(out_path)
@@ -104,7 +131,7 @@ def calculate_cumulative_carbon_emissions(config: "Config"):
     )
 
     engage_cumCO2 = pd.DataFrame()
-    for year in config.yeardic.keys():
+    for year in yeardic.keys():
         int_year = int(year)
 
         df = (
@@ -127,7 +154,7 @@ def calculate_cumulative_carbon_emissions(config: "Config"):
     engage.append(engage_cumCO2, inplace=True)
 
     df_cumCO2 = pd.DataFrame()
-    for year in config.yeardic.keys():
+    for year in yeardic.keys():
         int_year = int(year)
 
         df = (

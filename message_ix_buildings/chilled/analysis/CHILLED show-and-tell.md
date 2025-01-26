@@ -139,6 +139,14 @@ Similarly, I also have a file for running the aggregation steps, when all GCM-RC
 python run_agg.py -version "ALPS2024"
 ```
 
+## Run emulation
+
+The emulation part is run similarly to the aggregation part and can only be run after the aggregation part above is complete.
+
+```bash
+python run_emulator.py -version "ALPS2024"
+```
+
 ## Setting up job scripts for the SLURM workload manager
 
 The nice thing about running jobs on a cluster is that you can send out multiple jobs/runs at once and wait for them to run. The downside though is that you could end up waiting in a queue for some time if other users are using the resources.

@@ -225,11 +225,11 @@ def aggregate_ISO_tables_to_regions(config: "Config"):
     model = "MESS-CHILL-URM"
 
     print(config.vstr)
-    path = os.path.join(version_path, "**/*/" + "ISO_agg_data_" + config.vstr + ".csv")
+    path = os.path.join(version_path, "**/*/" + "ISO_agg_data_*" + ".csv")
     print(path)
 
     files = glob.glob(
-        os.path.join(version_path, "**/*/" + "ISO_agg_data_" + config.vstr + ".csv"),
+        os.path.join(version_path, "**/*/" + "ISO_agg_data_*" + ".csv"),
         recursive=True,
     )
 

@@ -109,7 +109,6 @@ def select_nearest_points(
     return selected_vector
 
 
-@delayed
 def rasters_to_df_cities(data_path, var, gcm, rcp, city_df, name_col, lat_col, lon_col):
     # selections
     var = var
@@ -134,7 +133,8 @@ def rasters_to_df_cities(data_path, var, gcm, rcp, city_df, name_col, lat_col, l
     @delayed
     def extract_raster_file(file):
         log.info(f"Extracting raster data from file: {file}")
-        ras = xr.open_dataarray(file)
+        with xr.open_dataarray(file) as ds:
+            ras = ds.load()
 
         log.info("...Selecting nearest points from raster data")
         selected_vector = select_nearest_points(

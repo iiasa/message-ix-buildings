@@ -129,7 +129,7 @@ hist_gvi = pd.read_csv(os.path.join(green_path, "outer_4.csv")).drop(
 city_df = city_lcz[["UC_NM_MN", "CTR_MN_ISO", "x", "y"]].drop_duplicates()
 
 # use rasters_to_df_cities to extract data from rasters
-t_city = rasters_to_df_cities(
+tas_city = rasters_to_df_cities(
     isimip_bias_adj_path,
     config.var,
     config.gcm,
@@ -140,13 +140,16 @@ t_city = rasters_to_df_cities(
     "x",
 )
 
-# calculate t_out_ave column
-t_city["t_out_ave"] = t_city[config.var] - 273.16
+
+# change time column to datetime
+tas_city["time"] = pd.to_datetime(tas_city["time"])
 
 # add year and month columns
-t_city["year"] = t_city["time"].dt.year
-t_city["month"] = t_city["time"].dt.month
+tas_city["year"] = tas_city["time"].dt.year
+tas_city["month"] = tas_city["time"].dt.month
 
+# calculate t_out_ave column
+tas_city["t_out_ave"] = tas_city[config.var] - 273.16
 
 # read in i_sol_v and i_sol_h
 with xr.open_dataarray(
@@ -379,7 +382,7 @@ def map_city_climate_variables(t_city, args):
 # apply process_climate_data function to all combinations of scenarios and runs
 s_runs = load_all_scenarios_data(config).clim
 inputs = product(s_runs, vers_archs, par_var.itertuples(), ["urban"])
-list(map(lambda args: map_city_climate_variables(t_city, args), inputs))
+list(map(lambda args: map_city_climate_variables(tas_city, args), inputs))
 
 # NOTE: next step: floor area calculations
 

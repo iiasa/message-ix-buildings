@@ -34,6 +34,12 @@ def read_and_concat_excel_sheets(file_path):
         df["ssp"] = ssp
         df["year"] = year
 
+        # Convert year to integer
+        df["year"] = df["year"].astype(int)
+
+        # Capitalize the ssp column
+        df["ssp"] = df["ssp"].str.upper()
+
         # Prettify column names
         df = prettify_column_names(df)
 

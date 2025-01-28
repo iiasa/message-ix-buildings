@@ -1,10 +1,4 @@
-import os
-
 import pandas as pd
-
-from message_ix_buildings.chilled.util.base import get_paths
-from message_ix_buildings.chilled.util.common import get_project_root
-from message_ix_buildings.chilled.util.config import Config  # type: ignore
 
 
 def prettify_column_names(df):
@@ -50,18 +44,3 @@ def read_and_concat_excel_sheets(file_path):
     concatenated_df = pd.concat(df_list, ignore_index=True)
 
     return concatenated_df
-
-
-# Specify config and data path
-config = Config(user="MEAS")
-dle_path = get_paths(config, "dle_path")
-data_file = "country_data_v4.xlsx"
-root_path = get_project_root()
-save_path = os.path.join(root_path, "data", "country", "country_ac_penetration.csv")
-
-# Apply function to read and concatenate Excel sheets
-combined_df = read_and_concat_excel_sheets(os.path.join(dle_path, data_file))
-print(combined_df)
-
-# Save to CSV
-combined_df.to_csv(save_path, index=False)

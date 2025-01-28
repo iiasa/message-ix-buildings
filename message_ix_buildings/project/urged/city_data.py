@@ -5,7 +5,7 @@ import pandas as pd
 from message_ix_buildings.chilled.util.base import get_paths
 from message_ix_buildings.chilled.util.common import get_project_root
 from message_ix_buildings.chilled.util.config import Config  # type: ignore
-from message_ix_buildings.projects.alps.util.data import (
+from message_ix_buildings.project.urged.util.data import (
     prettify_column_names,
     read_and_concat_excel_sheets,
 )

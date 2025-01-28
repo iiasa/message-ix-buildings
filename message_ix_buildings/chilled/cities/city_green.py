@@ -143,6 +143,12 @@ tas_city = rasters_to_df_cities(
 # tas_city as csv
 tas_city.to_csv(os.path.join('/Users/meas/Desktop', "tas_city.csv"), index=False)
 
+# read in tas_city
+tas_city = pd.read_csv(os.path.join('/Users/meas/Desktop', "tas_city.csv"))
+
+# change time column to datetime
+tas_city["time"] = pd.to_datetime(tas_city["time"])
+
 # add year and month columns
 tas_city["year"] = tas_city["time"].dt.year
 tas_city["month"] = tas_city["time"].dt.month

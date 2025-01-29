@@ -50,6 +50,7 @@ list_rcp = ["baseline", "ssp126", "ssp370"]
 
 # specify config
 config = Config(vstr="ALPS2024_cities", user="MEAS", gcm="MRI-ESM2-0", rcp="ssp126")
+climate_zones = False
 
 # set paths
 project_path = get_paths(config, "project_path")
@@ -61,11 +62,20 @@ out_path = os.path.join(project_path, "out", "version", config.vstr)
 archetype_path = os.path.join(out_path, "rasters")
 floorarea_path = os.path.join(out_path, "floorarea_country")
 save_path = os.path.join(out_path, "VDD_ene_calcs")
-output_path_vdd = os.path.join(
-    save_path,
-    config.gcm,
-    config.rcp,
-)
+if climate_zones:
+    output_path_vdd = os.path.join(
+        save_path,
+        "climate_zones",
+        config.gcm,
+        config.rcp,
+    )
+else:
+    output_path_vdd = os.path.join(
+        "cities",
+        save_path,
+        config.gcm,
+        config.rcp,
+    )
 
 # settings
 sel_var = config.var
@@ -191,7 +201,7 @@ def read_netcdf_files(input_args):
     return var
 
 
-def map_city_climate_variables(t_city, args):
+def map_city_climate_variables(t_city, climate_zones, args):
     clim, arch, parset, urt = args
     log.info(str(clim) + " + " + arch + " + " + parset.name_run + " + " + urt)
 
@@ -326,12 +336,14 @@ def map_city_climate_variables(t_city, args):
     if config.cool == 1:
         t_bal_c = calc_t_bal_c(t_sp_c, dict_netcdf["gn_int"], gn_sol, H_tr, H_v_cl)
         t_max_c = calc_t_max_c(t_sp_c_max, dict_netcdf["gn_int"], gn_sol, H_tr, H_v_op)
-        Nd = calc_Nd(t_city_filtered, "t_out_ave", t_max_c, nyrs_clim, False)
-        Nf = calc_Nf(t_city_filtered, "t_out_ave", t_bal_c, nyrs_clim, False)
+        Nd = calc_Nd(t_city_filtered, "t_out_ave", t_max_c, nyrs_clim, climate_zones)
+        Nf = calc_Nf(t_city_filtered, "t_out_ave", t_bal_c, nyrs_clim, climate_zones)
         vdd_tmax_c = calc_vdd_tmax_c(
-            t_city_month, "t_out_ave", t_max_c, nyrs_clim, False
+            t_city_month, "t_out_ave", t_max_c, nyrs_clim, climate_zones
         )
-        qctmax = Q_c_tmax(H_tr, H_v_cl, vdd_tmax_c, t_max_c, t_bal_c, Nd, f_c, False)
+        qctmax = Q_c_tmax(
+            H_tr, H_v_cl, vdd_tmax_c, t_max_c, t_bal_c, Nd, f_c, climate_zones
+        )
         E_c_ac = calc_E_c_ac(qctmax, cop)
         E_c_fan = calc_E_c_fan(f_f, P_f, Nf, config.area_fan)
 
@@ -408,7 +420,9 @@ def map_city_climate_variables(t_city, args):
 s_runs = load_all_scenarios_data(config).clim
 par_var_sel = par_var.iloc[1].to_frame().T
 inputs = product(s_runs[3:5], vers_archs, par_var_sel.itertuples(), ["urban"])
-output = list(map(lambda args: map_city_climate_variables(tas_city, args), inputs))
+output = list(
+    map(lambda args: map_city_climate_variables(tas_city, climate_zones, args), inputs)
+)
 
 # concat all dataframes for each variable in output into a single dataframe
 output_data = {}

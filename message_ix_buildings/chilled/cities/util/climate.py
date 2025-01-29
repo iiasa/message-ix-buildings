@@ -45,8 +45,8 @@ from message_ix_buildings.chilled.util.config import Config  # type: ignore
 log = get_logger(__name__)
 
 
-def process_climate_data(config: Config, climate_zones: bool):
-    log.info("Running climate_zones = " + str(climate_zones))
+def process_climate_data(config: Config, green: bool):
+    log.info("Running green space = " + str(green))
     # set paths
     project_path = get_paths(config, "project_path")
     dle_path = get_paths(config, "dle_path")
@@ -57,10 +57,10 @@ def process_climate_data(config: Config, climate_zones: bool):
     archetype_path = os.path.join(out_path, "rasters")
     floorarea_path = os.path.join(out_path, "floorarea_country")
     vdd_path = os.path.join(out_path, "VDD_ene_calcs")
-    if climate_zones:
+    if green:
         output_path_vdd = os.path.join(
             vdd_path,
-            "climate_zones",
+            "green_space",
             config.gcm,
             config.rcp,
         )
@@ -161,7 +161,7 @@ def process_climate_data(config: Config, climate_zones: bool):
     tas_city["year"] = tas_city["time"].dt.year
     tas_city["month"] = tas_city["time"].dt.month
 
-    if climate_zones is True:
+    if green is True:
         log.info("Modifying tas_city to include lcz and gvi data")
         tas_city = pd.merge(
             tas_city,
@@ -223,7 +223,7 @@ def process_climate_data(config: Config, climate_zones: bool):
 
         return var
 
-    def map_city_climate_variables(t_city, climate_zones, args):
+    def map_city_climate_variables(t_city, green, args):
         clim, arch, parset, urt = args
         log.info(str(clim) + " + " + arch + " + " + parset.name_run + " + " + urt)
 
@@ -258,7 +258,7 @@ def process_climate_data(config: Config, climate_zones: bool):
             "year",
             "month",
         ]
-        if climate_zones is True:
+        if green is True:
             groupby_cols += ["lcz"]
 
         t_city_month = (
@@ -359,18 +359,14 @@ def process_climate_data(config: Config, climate_zones: bool):
             t_max_c = calc_t_max_c(
                 t_sp_c_max, dict_netcdf["gn_int"], gn_sol, H_tr, H_v_op
             )
-            Nd = calc_Nd(
-                t_city_filtered, "t_out_ave", t_max_c, nyrs_clim, climate_zones
-            )
-            Nf = calc_Nf(
-                t_city_filtered, "t_out_ave", t_bal_c, nyrs_clim, climate_zones
-            )
+            Nd = calc_Nd(t_city_filtered, "t_out_ave", t_max_c, nyrs_clim, green)
+            Nf = calc_Nf(t_city_filtered, "t_out_ave", t_bal_c, nyrs_clim, green)
             vdd_tmax_c = calc_vdd_tmax_c(
-                t_city_month, "t_out_ave", t_max_c, nyrs_clim, climate_zones
+                t_city_month, "t_out_ave", t_max_c, nyrs_clim, green
             )
 
             qctmax = Q_c_tmax(
-                H_tr, H_v_cl, vdd_tmax_c, t_max_c, t_bal_c, Nd, f_c, climate_zones
+                H_tr, H_v_cl, vdd_tmax_c, t_max_c, t_bal_c, Nd, f_c, green
             )
             E_c_ac = calc_E_c_ac(qctmax, cop)
             E_c_fan = calc_E_c_fan(f_f, P_f, Nf, config.area_fan)
@@ -451,7 +447,7 @@ def process_climate_data(config: Config, climate_zones: bool):
     inputs = product(s_runs, vers_archs, par_var.itertuples(), ["urban"])
     output = list(
         map(
-            lambda args: map_city_climate_variables(tas_city, climate_zones, args),
+            lambda args: map_city_climate_variables(tas_city, green, args),
             inputs,
         )
     )
@@ -467,15 +463,15 @@ def process_climate_data(config: Config, climate_zones: bool):
         value.to_csv(os.path.join(output_path_vdd, key + ".csv"), index=False)
 
 
-def calculate_energy(config: Config, climate_zones: bool = True):
+def calculate_energy(config: Config, green: bool = True):
     # set paths
     project_path = get_paths(config, "project_path")
     out_path = os.path.join(project_path, "out", "version", config.vstr)
     vdd_path = os.path.join(out_path, "VDD_ene_calcs")
-    if climate_zones is True:
+    if green is True:
         output_path_vdd = os.path.join(
             vdd_path,
-            "climate_zones",
+            "green",
             config.gcm,
         )
     else:
@@ -608,7 +604,7 @@ def calculate_energy(config: Config, climate_zones: bool = True):
         "clim",
         "month",
     ]
-    if climate_zones is True:
+    if green is True:
         merge_cols += ["lcz"]
 
     df_e_inten = pd.merge(
@@ -639,10 +635,10 @@ def calculate_energy(config: Config, climate_zones: bool = True):
     df_energy = calculate_energy(df_e_inten, "E_c_ac", "energy_cooling_ac")
 
     # Save to CSV:
-    if climate_zones is True:
-        log.info(f"Saving energy_cooling_ac_climate_zones.csv in {output_path}")
+    if green is True:
+        log.info(f"Saving energy_cooling_ac_green.csv in {output_path}")
         df_energy.to_csv(
-            os.path.join(output_path, "energy_cooling_ac_climate_zones.csv"),
+            os.path.join(output_path, "energy_cooling_ac_green.csv"),
             index=False,
         )
     else:

@@ -471,7 +471,7 @@ def calc_t_max_c(t_sp_c_max, gn_int_df, gn_sol_df, H_tr_df, H_v_op_df):
     return merged_df[["city", "city_lat", "city_lon", "lat", "lon", "month", "t_max_c"]]
 
 
-def calc_vdd_tmax_c(t_out_ave_df, t_out_ave_col, t_max_c_df, nyrs, climate_zones):
+def calc_vdd_tmax_c(t_out_ave_df, t_out_ave_col, t_max_c_df, nyrs, green: bool):
     "This returns the variable cooling degree days based on Tmax"
     # DEGREE DAYS should be calculated month by month
 
@@ -480,7 +480,7 @@ def calc_vdd_tmax_c(t_out_ave_df, t_out_ave_col, t_max_c_df, nyrs, climate_zones
 
     df_cols = base_cols + ["year", t_out_ave_col]
 
-    if climate_zones is True:
+    if green is True:
         df_cols += ["lcz"]
 
     tmax_cols = base_cols + ["t_max_c"]
@@ -499,7 +499,7 @@ def calc_vdd_tmax_c(t_out_ave_df, t_out_ave_col, t_max_c_df, nyrs, climate_zones
 
     groupby_cols = base_cols
 
-    if climate_zones is True:
+    if green is True:
         groupby_cols += ["lcz"]
 
     # Divide by years
@@ -509,11 +509,11 @@ def calc_vdd_tmax_c(t_out_ave_df, t_out_ave_col, t_max_c_df, nyrs, climate_zones
     return vdd_tmax_c.drop(columns=["t_max_c", t_out_ave_col])
 
 
-def calc_Nd(df, t_out_ave_col: str, t_max_c_df, nyrs, climate_zones=False):
+def calc_Nd(df, t_out_ave_col: str, t_max_c_df, nyrs, green: bool):
     base_cols = ["city", "city_lat", "city_lon", "lat", "lon", "month"]
 
     df_columns = base_cols + [t_out_ave_col]
-    if climate_zones is True:
+    if green is True:
         df_columns += ["lcz"]
 
     ras_scen_reduced = df[df_columns].drop_duplicates().reset_index()
@@ -535,7 +535,7 @@ def calc_Nd(df, t_out_ave_col: str, t_max_c_df, nyrs, climate_zones=False):
 
     # Calculate number of days per month (averaged across nyrs) where t_out_ave > t_max_c
     group_by_columns = ["city", "city_lat", "city_lon", "lat", "lon", "month"]
-    if climate_zones is True:
+    if green is True:
         group_by_columns += ["lcz"]
 
     Nd = (
@@ -555,11 +555,11 @@ def calc_Ndyr(t_out_ave, t_max_c):
     return Ndyr
 
 
-def calc_Nf(df, t_out_ave_col, t_bal_c_df, nyrs, climate_zones=False):
+def calc_Nf(df, t_out_ave_col, t_bal_c_df, nyrs, green: bool):
     base_cols = ["city", "city_lat", "city_lon", "lat", "lon", "month"]
 
     df_columns = base_cols + [t_out_ave_col]
-    if climate_zones is True:
+    if green is True:
         df_columns += ["lcz"]
 
     ras_scen_reduced = df[df_columns].drop_duplicates().reset_index()
@@ -580,7 +580,7 @@ def calc_Nf(df, t_out_ave_col, t_bal_c_df, nyrs, climate_zones=False):
 
     # Calculate number of days per month where t_out_ave > t_bal_c
     group_by_columns = ["city", "city_lat", "city_lon", "lat", "lon", "month"]
-    if climate_zones is True:
+    if green is True:
         group_by_columns += ["lcz"]
 
     Nf = (
@@ -716,7 +716,7 @@ def Q_h(H_tr_df, H_v_cl_df, f_h, vdd_h_df):
 
 
 def Q_c_tmax(
-    H_tr_df, H_v_cl_df, vdd_tmax_c_df, t_max_c_df, t_bal_c_df, Nd_df, f_c, climate_zones
+    H_tr_df, H_v_cl_df, vdd_tmax_c_df, t_max_c_df, t_bal_c_df, Nd_df, f_c, green: bool
 ):  #
     "This returns the monthly cooling energy (MJ) based on variable degree days"
 
@@ -731,7 +731,7 @@ def Q_c_tmax(
     t_bal_c_cols = base_cols + ["month", "t_bal_c"]
     Nd_cols = base_cols + ["month", "Nd"]
 
-    if climate_zones is True:
+    if green is True:
         vdd_tmax_cols += ["lcz"]
         Nd_cols += ["lcz"]
 
@@ -756,7 +756,7 @@ def Q_c_tmax(
         on=month_cols,
         how="outer",
     )
-    if climate_zones is True:
+    if green is True:
         merged_df = merged_df.merge(
             Nd_df[Nd_cols],
             on=month_cols + ["lcz"],

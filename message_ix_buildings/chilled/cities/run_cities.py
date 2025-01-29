@@ -35,7 +35,7 @@ def parse_arguments(arguments):
         help="RCP to run. Options: ssp126, ssp370, ssp585, baseline. \
             Default: baseline.",
     )
-    parser.add_argument("-lcz", "--lcz", action="store_true", default=False)
+    parser.add_argument("-green", "--green", action="store_true", default=False)
 
     # Parse arguments
     parsed_arguments = parser.parse_known_args(args=arguments)[0]
@@ -64,7 +64,7 @@ def print_arguments(parsed_arguments):
         + parsed_arguments.rcp
         + "\n"
         + "Run with local climate zones: "
-        + str(parsed_arguments.lcz)
+        + str(parsed_arguments.green)
     )
 
 
@@ -84,7 +84,7 @@ def main(args=None):
         args = sys.argv[1:]
 
     parsed_args = parse_arguments(arguments=args)
-    climate_zones = parsed_args.lcz
+    climate_zones = parsed_args.green
     cfg = create_config(parsed_arguments=parsed_args)
 
     # Run the core functions

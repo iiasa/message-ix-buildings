@@ -71,8 +71,11 @@ def process_climate_data(config: Config, climate_zones: bool):
             config.gcm,
             config.rcp,
         )
+    else:
+        raise ValueError("Invalid value for climate_zones: must be True or False")
 
     log.info("Output path: " + output_path_vdd)
+
     # create output_path_vdd if it does not exist
     if not os.path.exists(output_path_vdd):
         os.makedirs(output_path_vdd)

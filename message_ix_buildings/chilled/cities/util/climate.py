@@ -455,7 +455,7 @@ def process_climate_data(config: Config, climate_zones: bool = True):
     # save each dataframe in output_data to a csv file
     for key, value in output_data.items():
         log.info(f"Saving {key} to csv in {output_path_vdd}")
-        value.to_csv(os.path.join(output_path_vdd, key + ".csv"))
+        value.to_csv(os.path.join(output_path_vdd, key + ".csv"), index=False)
 
     # # read in city level parameters data
     # df_cities_par = pd.read_csv(
@@ -632,17 +632,189 @@ def process_climate_data(config: Config, climate_zones: bool = True):
 def calculate_energy(config: Config, climate_zones: bool = True):
     # set paths
     project_path = get_paths(config, "project_path")
-    dle_path = get_paths(config, "dle_path")
-    input_path = dle_path
-    isimip_bias_adj_path = get_paths(config, "isimip_bias_adj_path")
-    isimip_ewembi_path = get_paths(config, "isimip_ewembi_path")
     out_path = os.path.join(project_path, "out", "version", config.vstr)
-    archetype_path = os.path.join(out_path, "rasters")
-    floorarea_path = os.path.join(out_path, "floorarea_country")
     vdd_path = os.path.join(out_path, "VDD_ene_calcs")
+    if climate_zones:
+        output_path_vdd = os.path.join(
+            vdd_path,
+            "climate_zones",
+            config.gcm,
+        )
+    else:
+        output_path_vdd = os.path.join(
+            "cities",
+            vdd_path,
+            config.gcm,
+        )
+    output_path = os.path.join(out_path, "output")
 
-    # search for "E_c_ac.csv" in vdd_path (search recursively)
-    for root, dirs, files in os.walk(vdd_path):
+    # create output_path if it does not exist
+    if not os.path.exists(output_path):
+        os.makedirs(output_path)
+
+    # search for "E_c_ac.csv" in output_path_vdd (search recursively)
+    df_e_ac_list = []
+    for root, dirs, files in os.walk(output_path_vdd):
         for file in files:
             if file == "E_c_ac.csv":
-                df_energy = pd.read_csv(os.path.join(root, file))
+                log.info(f"Reading {os.path.join(root, file)}")
+                df_e_ac_list.append(pd.read_csv(os.path.join(root, file)))
+    df_e_ac = pd.concat(df_e_ac_list, ignore_index=True)
+
+    root_path = get_project_root()
+
+    # read in city level parameters data
+    df_cities_par = pd.read_csv(
+        os.path.join(root_path, "data", "alps", "cities_population_buildings.csv")
+    )
+
+    df_cities_par_exist = (
+        df_cities_par.query("vintage == 'exist'")
+        .rename(columns={"shr_floor": "shr_floor_exist"})
+        .filter(
+            items=[
+                "city",
+                "citycode",
+                "country",
+                "iso-alpha3_code",
+                "global_south",
+                "region_gea",
+                "sector",
+                "year",
+                "popscen",
+                "shr_floor_exist",
+            ]
+        )
+    )
+    df_cities_par_new = (
+        df_cities_par.query("vintage == 'new'")
+        .rename(columns={"shr_floor": "shr_floor_new"})
+        .filter(
+            items=[
+                "city",
+                "citycode",
+                "country",
+                "iso-alpha3_code",
+                "global_south",
+                "region_gea",
+                "sector",
+                "year",
+                "popscen",
+                "shr_floor_new",
+            ]
+        )
+    )
+
+    df_cities_vintage = pd.merge(
+        df_cities_par_exist,
+        df_cities_par_new,
+        on=[
+            "city",
+            "citycode",
+            "country",
+            "iso-alpha3_code",
+            "global_south",
+            "region_gea",
+            "sector",
+            "year",
+            "popscen",
+        ],
+        how="inner",
+    )
+
+    df_cities_par_wide = pd.merge(
+        df_cities_par.drop(columns=["vintage", "shr_floor"]),
+        df_cities_vintage,
+        on=[
+            "city",
+            "citycode",
+            "country",
+            "iso-alpha3_code",
+            "global_south",
+            "region_gea",
+            "sector",
+            "year",
+            "popscen",
+        ],
+        how="inner",
+    )
+
+    # Convert df_cities_par to wide format on vintage, with shr_floor as values
+    # df_cities_par_wide = df_cities_par.pivot_table(
+    #     index=[col for col in df_cities_par.columns if col not in ["vintage", "shr_floor"]],
+    #     columns="vintage",
+    #     values="shr_floor",
+    #     aggfunc="first",
+    # ).reset_index()
+
+    # pivot the E_c_ac column on arch
+    df_e_ac_wide = df_e_ac.pivot_table(
+        index=[col for col in df_e_ac.columns if col not in ["E_c_ac", "arch"]],
+        columns="arch",
+        values="E_c_ac",
+        aggfunc="first",
+    ).reset_index()
+
+    # rename columns
+    df_e_ac_wide.columns = pd.Index(
+        [
+            f"E_c_ac_{col}" if col in ["exist", "new"] else col
+            for col in df_e_ac_wide.columns
+        ]
+    )
+
+    merge_cols = [
+        "gcm",
+        "rcp",
+        "name_run",
+        "urt",
+        "city",
+        "city_lat",
+        "city_lon",
+        "lat",
+        "lon",
+        "clim",
+        "month",
+    ]
+    if climate_zones:
+        merge_cols += ["lcz"]
+
+    df_e_inten = pd.merge(
+        df_e_ac_wide,
+        df_cities_par_wide,
+        left_on=["city", "clim"],
+        right_on=["city", "year"],
+        how="inner",
+    )
+
+    def calculate_energy(df, intensity_col, energy_col):
+        out = df.copy()
+        out[energy_col] = (
+            out["population"]
+            * out["floor_cap"]
+            * out["ac_penetr_u"]
+            * (
+                out["shr_floor_exist"] * out[f"{intensity_col}_exist"]
+                + out["shr_floor_new"] * out[f"{intensity_col}_new"]
+            )
+            * out["f_c_scl"]
+            * out["fl_cnd_c"]
+            / out["eff_ac"]
+        )
+        return out
+
+    # Calculate energy needed for AC
+    df_energy = calculate_energy(df_e_inten, "E_c_ac", "energy_cooling_ac")
+
+    # Save to CSV:
+    if climate_zones:
+        log.info(f"Saving energy_cooling_ac_climate_zones.csv in {output_path}")
+        df_energy.to_csv(
+            os.path.join(output_path, "energy_cooling_ac_climate_zones.csv"),
+            index=False,
+        )
+    else:
+        log.info(f"Saving energy_cooling_ac.csv in {output_path}")
+        df_energy.to_csv(
+            os.path.join(output_path, "energy_cooling_ac.csv"), index=False
+        )

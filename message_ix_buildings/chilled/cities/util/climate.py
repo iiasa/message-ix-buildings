@@ -57,7 +57,7 @@ def process_climate_data(config: Config, climate_zones):
     archetype_path = os.path.join(out_path, "rasters")
     floorarea_path = os.path.join(out_path, "floorarea_country")
     vdd_path = os.path.join(out_path, "VDD_ene_calcs")
-    if climate_zones:
+    if climate_zones is True:
         output_path_vdd = os.path.join(
             vdd_path,
             "climate_zones",

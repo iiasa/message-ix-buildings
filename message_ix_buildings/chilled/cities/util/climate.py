@@ -774,6 +774,7 @@ def calculate_energy(config: Config, green: bool, mitigation: bool):
 
     # Calculate energy needed for AC
     df_energy = calculate_energy(df_e_inten, "E_c_ac", "energy_cooling_ac_MJ")
+    df_energy["energy_cooling_ac_PJ"] = df_energy["energy_cooling_ac_MJ"] / 1e9
     df_energy["energy_cooling_ac_EJ"] = df_energy["energy_cooling_ac_MJ"] / 1e12
 
     # Save to CSV:

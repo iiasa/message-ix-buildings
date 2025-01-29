@@ -607,7 +607,7 @@ def calculate_energy(config: Config, climate_zones: bool = True):
         "clim",
         "month",
     ]
-    if climate_zones:
+    if climate_zones is True:
         merge_cols += ["lcz"]
 
     df_e_inten = pd.merge(
@@ -638,7 +638,7 @@ def calculate_energy(config: Config, climate_zones: bool = True):
     df_energy = calculate_energy(df_e_inten, "E_c_ac", "energy_cooling_ac")
 
     # Save to CSV:
-    if climate_zones:
+    if climate_zones is True:
         log.info(f"Saving energy_cooling_ac_climate_zones.csv in {output_path}")
         df_energy.to_csv(
             os.path.join(output_path, "energy_cooling_ac_climate_zones.csv"),

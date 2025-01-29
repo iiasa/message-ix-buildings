@@ -309,14 +309,6 @@ def process_climate_data(config: Config, climate_zones: bool = True):
                 value, city_df, "UC_NM_MN", "y", "x"
             ).to_dataframe()
 
-        gn_sol = calc_gn_sol(
-            i_sol_v_points,
-            "irrad",
-            dict_netcdf["gl_perc"],
-            dict_netcdf["gl_g"],
-            dict_netcdf["gl_sh"],
-        )
-
         if config.solar_gains == "VERT":
             gn_sol = calc_gn_sol(
                 i_sol_v_points,

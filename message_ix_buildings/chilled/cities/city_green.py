@@ -94,7 +94,7 @@ def main(args=None):
     tasks = []
     for rcp in rcps:
         log.info("Running core functions...")
-        config = Config(vstr=version, user="MEAS_UNICC", gcm=gcm, rcp=rcp)
+        config = Config(vstr=version, user="MEAS_UNICC", gcm=gcm, rcp=rcp, heat=0)
         task = delayed(process_climate_data)(config, climate_zones)
         tasks.append(task)
 

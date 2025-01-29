@@ -45,7 +45,7 @@ from message_ix_buildings.chilled.util.config import Config  # type: ignore
 log = get_logger(__name__)
 
 
-def process_climate_data(config: Config, climate_zones):
+def process_climate_data(config: Config, climate_zones: bool):
     log.info("Running climate_zones = " + str(climate_zones))
     # set paths
     project_path = get_paths(config, "project_path")
@@ -76,10 +76,6 @@ def process_climate_data(config: Config, climate_zones):
     # create output_path_vdd if it does not exist
     if not os.path.exists(output_path_vdd):
         os.makedirs(output_path_vdd)
-
-    # break code here
-
-    raise ValueError("Breaking code here.")
 
     # settings
     rcpdata = "ssp126" if config.rcp == "baseline" else config.rcp
@@ -164,7 +160,7 @@ def process_climate_data(config: Config, climate_zones):
     tas_city["year"] = tas_city["time"].dt.year
     tas_city["month"] = tas_city["time"].dt.month
 
-    if climate_zones:
+    if climate_zones is True:
         log.info("Modifying tas_city to include lcz and gvi data")
         tas_city = pd.merge(
             tas_city,
@@ -261,7 +257,7 @@ def process_climate_data(config: Config, climate_zones):
             "year",
             "month",
         ]
-        if climate_zones:
+        if climate_zones is True:
             groupby_cols += ["lcz"]
 
         t_city_month = (
@@ -475,7 +471,7 @@ def calculate_energy(config: Config, climate_zones: bool = True):
     project_path = get_paths(config, "project_path")
     out_path = os.path.join(project_path, "out", "version", config.vstr)
     vdd_path = os.path.join(out_path, "VDD_ene_calcs")
-    if climate_zones:
+    if climate_zones is True:
         output_path_vdd = os.path.join(
             vdd_path,
             "climate_zones",

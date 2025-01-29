@@ -1,6 +1,9 @@
 import sys
 from argparse import ArgumentParser
 
+import dask
+from dask import delayed
+
 from message_ix_buildings.chilled.cities.util.climate import process_climate_data
 from message_ix_buildings.chilled.util.common import get_logger
 from message_ix_buildings.chilled.util.config import Config  # type: ignore
@@ -27,13 +30,6 @@ def parse_arguments(arguments):
         default="GFDL-ESM4",
         help="GCM to run. Options: GFDL-ESM4, IPSL-CM6A-LR, MPI-ESM1-2-HR, MRI-ESM2-0, \
             UKESM1-0-LL. Default: GFDL-ESM4.",
-    )
-    parser.add_argument(
-        "-rcp",
-        "--rcp",
-        default="baseline",
-        help="RCP to run. Options: ssp126, ssp370, ssp585, baseline. \
-            Default: baseline.",
     )
     parser.add_argument(
         "-lcz",
@@ -91,12 +87,24 @@ def main(args=None):
 
     parsed_args = parse_arguments(arguments=args)
 
+    rcps = ["ssp126", "ssp370", "ssp585", "baseline"]
+    climate_zones = parsed_args.lcz
+    version = parsed_args.version
+    gcm = parsed_args.gcm
+
     # Run the core functions
     print_arguments(parsed_arguments=parsed_args)
-    cfg = create_config(parsed_arguments=parsed_args)
+    tasks = []
+    for rcp in rcps:
+        log.info("Running core functions...")
+        config = Config(vstr=version, user="MEAS_UNICC", gcm=gcm, rcp=rcp)
+        task = delayed(process_climate_data)(config, climate_zones)
+        tasks.append(task)
 
-    log.info("Running core functions...")
-    process_climate_data(cfg, parsed_args.lcz)
+    dask.compute(*tasks)
+
+    # log.info("Running core functions...")
+    # process_climate_data(cfg, parsed_args.lcz)
 
 
 if __name__ == "__main__":

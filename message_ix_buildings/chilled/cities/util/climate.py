@@ -45,7 +45,8 @@ from message_ix_buildings.chilled.util.config import Config  # type: ignore
 log = get_logger(__name__)
 
 
-def process_climate_data(config: Config, climate_zones: bool = True):
+def process_climate_data(config: Config, climate_zones):
+    log.info("Running climate_zones = " + str(climate_zones))
     # set paths
     project_path = get_paths(config, "project_path")
     dle_path = get_paths(config, "dle_path")
@@ -158,6 +159,7 @@ def process_climate_data(config: Config, climate_zones: bool = True):
     tas_city["month"] = tas_city["time"].dt.month
 
     if climate_zones:
+        log.info("Modifying tas_city to include lcz and gvi data")
         tas_city = pd.merge(
             tas_city,
             hist_gvi,
@@ -176,6 +178,7 @@ def process_climate_data(config: Config, climate_zones: bool = True):
         tas_city = tas_city.dropna(subset=["tas_adj", "lcz"]).reset_index(drop=True)
 
     else:
+        log.info("No climate zones selected. Using tas data as is.")
         tas_city["t_out_ave"] = tas_city["tas"] - 273.16
 
     # read in i_sol_v and i_sol_h

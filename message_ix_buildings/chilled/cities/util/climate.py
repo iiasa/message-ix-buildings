@@ -444,7 +444,7 @@ def process_climate_data(config: Config, climate_zones: bool = True):
     # par_var_sel = par_var.iloc[1].to_frame().T
     inputs = product(s_runs, vers_archs, par_var.itertuples(), ["urban"])
     output = list(
-        map(lambda args: map_city_climate_variables(tas_delta, True, args), inputs)
+        map(lambda args: map_city_climate_variables(tas_city, True, args), inputs)
     )
 
     # concat all dataframes for each variable in output into a single dataframe

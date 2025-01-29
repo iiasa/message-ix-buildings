@@ -1,4 +1,3 @@
-import argparse
 import sys
 from argparse import ArgumentParser
 
@@ -36,14 +35,7 @@ def parse_arguments(arguments):
         help="RCP to run. Options: ssp126, ssp370, ssp585, baseline. \
             Default: baseline.",
     )
-    parser.add_argument(
-        "-lcz",
-        "--lcz",
-        action=argparse.BooleanOptionalAction,
-        default=True,
-        help="Run with local climate zones. \
-            Default: True.",
-    )
+    parser.add_argument("-lcz", "--lcz", action="store_true", default=False)
 
     # Parse arguments
     parsed_arguments = parser.parse_known_args(args=arguments)[0]

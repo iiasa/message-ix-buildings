@@ -12,7 +12,7 @@ list_gcm = ["MRI-ESM2-0"]
 list_rcp = ["baseline", "ssp126", "ssp370"]
 
 # specify config
-config = Config(vstr="ALPS2024_cities", user="MEAS", gcm="MRI-ESM2-0", rcp="ssp585")
+# config = Config(vstr="ALPS2024_cities", user="MEAS", gcm="MRI-ESM2-0", rcp="ssp585")
 climate_zones = True
 
 tasks = []

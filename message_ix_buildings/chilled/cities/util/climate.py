@@ -796,3 +796,5 @@ def calculate_energy(config: Config, green: bool, mitigation: bool):
         df_energy.to_csv(
             os.path.join(output_path, "energy_cooling_ac.csv"), index=False
         )
+
+    log.info("Finished calculating energy totals and saving output file")

@@ -471,10 +471,11 @@ def calc_t_max_c(t_sp_c_max, gn_int_df, gn_sol_df, H_tr_df, H_v_op_df):
     return merged_df[["city", "city_lat", "city_lon", "lat", "lon", "month", "t_max_c"]]
 
 
-def calc_vdd_tmax_c(t_out_ave_df, t_out_ave_col, t_max_c_df, climate_zones):
+def calc_vdd_tmax_c(t_out_ave_df, t_out_ave_col, t_max_c_df, nyrs, climate_zones):
     "This returns the variable cooling degree days based on Tmax"
-    # Merge dataframes by city, city_lat, city_lon, lat, lon, month, and year
+    # DEGREE DAYS should be calculated month by month
 
+    # Merge dataframes by city, city_lat, city_lon, lat, lon, month, and year
     base_cols = ["city", "city_lat", "city_lon", "lat", "lon", "month"]
 
     df_cols = base_cols + ["year", t_out_ave_col]
@@ -494,7 +495,11 @@ def calc_vdd_tmax_c(t_out_ave_df, t_out_ave_col, t_max_c_df, climate_zones):
     )
     merged_df["vdd_tmax_c"] = merged_df["vdd_tmax_c"].fillna(0)
 
-    return merged_df.drop(columns=["t_max_c", t_out_ave_col])
+    # Divide by years
+    vdd_tmax_c = merged_df.groupby(base_cols).sum("time") / nyrs
+    vdd_tmax_c = vdd_tmax_c.reset_index()
+
+    return vdd_tmax_c.drop(columns=["t_max_c", t_out_ave_col])
 
 
 def calc_Nd(df, t_out_ave_col: str, t_max_c_df, nyrs, climate_zones=False):
@@ -521,15 +526,16 @@ def calc_Nd(df, t_out_ave_col: str, t_max_c_df, nyrs, climate_zones=False):
     # Calculate anomalies
     merged_df["anoms"] = merged_df[t_out_ave_col] - merged_df["t_max_c"]
 
-    # Calculate number of days per month where t_out_ave > t_max_c
+    # Calculate number of days per month (averaged across nyrs) where t_out_ave > t_max_c
     group_by_columns = ["city", "city_lat", "city_lon", "lat", "lon", "month"]
     if climate_zones:
         group_by_columns += ["lcz"]
 
     Nd = (
-        merged_df[merged_df["anoms"] > 0].groupby(group_by_columns).size().div(nyrs)
+        merged_df.groupby(group_by_columns)["anoms"]
+        .apply(lambda x: (x > 0).sum())
+        .div(nyrs)
     ).reset_index(name="Nd")
-
     return Nd
 
 
@@ -571,7 +577,9 @@ def calc_Nf(df, t_out_ave_col, t_bal_c_df, nyrs, climate_zones=False):
         group_by_columns += ["lcz"]
 
     Nf = (
-        merged_df[merged_df["anoms"] > 0].groupby(group_by_columns).size().div(nyrs)
+        merged_df.groupby(group_by_columns)["anoms"]
+        .apply(lambda x: (x > 0).sum())
+        .div(nyrs)
     ).reset_index(name="Nf")
 
     return Nf
@@ -728,7 +736,7 @@ def Q_c_tmax(
     )
     merged_df = merged_df.merge(
         vdd_tmax_c_df[vdd_tmax_cols],
-        on=month_cols,
+        on=base_cols,
         how="outer",
     )
     merged_df = merged_df.merge(
@@ -757,10 +765,10 @@ def Q_c_tmax(
         )
         * 86400.0
         / np.power(10.0, 6.0)
-    )  # Nd = number of days when (t_out_ave >= t_max_c)
+    )
 
     return merged_df[
-        ["city", "city_lat", "city_lon", "lat", "lon", "year", "month", "Q_c_tmax"]
+        ["city", "city_lat", "city_lon", "lat", "lon", "month", "Q_c_tmax"]
     ]
 
 
@@ -820,10 +828,11 @@ def Q_c_tmax(
 
 def calc_E_c_ac(Q_c_tmax_df, cop):  #
     "This returns the monthly electricity requirement for air conditioning (sensible cooling only)"
-    Q_c_tmax_df["E_c_ac"] = Q_c_tmax_df["Q_c_tmax"] / cop
-    return Q_c_tmax_df[
-        ["city", "city_lat", "city_lon", "lat", "lon", "year", "month", "E_c_ac"]
-    ]
+
+    E_c_ac = Q_c_tmax_df.copy(deep=True)
+
+    E_c_ac["E_c_ac"] = E_c_ac["Q_c_tmax"] / cop
+    return E_c_ac[["city", "city_lat", "city_lon", "lat", "lon", "month", "E_c_ac"]]
 
 
 # def calc_E_c_tot(Q_c_tmax, Q_lat_month, cop): #
@@ -833,12 +842,12 @@ def calc_E_c_ac(Q_c_tmax_df, cop):  #
 
 def calc_E_c_fan(f_f, P_f, Nf_df, area_fan):  #
     "This returns the monthly electricity requirement for fans"
-    Nf_df["E_c_fan"] = (
-        f_f * P_f * Nf_df["Nf"] * 86400.0 / (np.power(10.0, 6.0) * area_fan)
+
+    E_c_fan = Nf_df.copy(deep=True)
+    E_c_fan["E_c_fan"] = (
+        f_f * P_f * E_c_fan["Nf"] * 86400.0 / (np.power(10.0, 6.0) * area_fan)
     )  # Nf = number of days when (t_bal_c <= t_out_ave < t_max_c)
-    return Nf_df[
-        ["city", "city_lat", "city_lon", "lat", "lon", "year", "month", "E_c_fan"]
-    ]
+    return E_c_fan[["city", "city_lat", "city_lon", "lat", "lon", "month", "E_c_fan"]]
 
 
 # ==============================================================================

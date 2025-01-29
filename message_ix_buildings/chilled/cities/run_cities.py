@@ -1,3 +1,4 @@
+import argparse
 import sys
 from argparse import ArgumentParser
 
@@ -38,6 +39,7 @@ def parse_arguments(arguments):
     parser.add_argument(
         "-lcz",
         "--lcz",
+        action=argparse.BooleanOptionalAction,
         default=True,
         help="Run with local climate zones. \
             Default: True.",

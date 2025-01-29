@@ -29,6 +29,9 @@ def parse_arguments(arguments):
             UKESM1-0-LL. Default: GFDL-ESM4.",
     )
     parser.add_argument("-green", "--green", action="store_true", default=False)
+    parser.add_argument(
+        "-mitigation", "--mitigation", action="store_true", default=False
+    )
 
     # Parse arguments
     parsed_arguments = parser.parse_known_args(args=arguments)[0]
@@ -75,12 +78,13 @@ def main(args=None):
     parsed_args = parse_arguments(arguments=args)
 
     green = parsed_args.green
+    mitigation = parsed_args.mitigation
 
     # Run the core functions
     print_arguments(parsed_arguments=parsed_args)
     cfg = create_config(parsed_arguments=parsed_args)
     log.info("Running core functions...")
-    calculate_energy(cfg, green)
+    calculate_energy(cfg, green, mitigation)
 
     # log.info("Running core functions...")
     # process_climate_data(cfg, parsed_args.lcz)

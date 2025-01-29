@@ -36,6 +36,9 @@ def parse_arguments(arguments):
             Default: baseline.",
     )
     parser.add_argument("-green", "--green", action="store_true", default=False)
+    parser.add_argument(
+        "-mitigation", "--mitigation", action="store_true", default=False
+    )
 
     # Parse arguments
     parsed_arguments = parser.parse_known_args(args=arguments)[0]
@@ -63,8 +66,11 @@ def print_arguments(parsed_arguments):
         + "Selected RCP scenario: "
         + parsed_arguments.rcp
         + "\n"
-        + "Run with local climate zones: "
+        + "Run with green space: "
         + str(parsed_arguments.green)
+        + "\n"
+        + "Run with mitigation: "
+        + str(parsed_arguments.mitigation)
     )
 
 
@@ -84,13 +90,14 @@ def main(args=None):
         args = sys.argv[1:]
 
     parsed_args = parse_arguments(arguments=args)
-    climate_zones = parsed_args.green
+    green = parsed_args.green
+    mitigation = parsed_args.mitigation
     cfg = create_config(parsed_arguments=parsed_args)
 
     # Run the core functions
     print_arguments(parsed_arguments=parsed_args)
     log.info("Running core functions...")
-    process_climate_data(cfg, climate_zones)
+    process_climate_data(cfg, green, mitigation)
 
 
 if __name__ == "__main__":

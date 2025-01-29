@@ -13,21 +13,23 @@ from message_ix_buildings.project.urged.util.data import (
 # Specify config and data paths
 config = Config(user="MEAS")
 dle_path = get_paths(config, "dle_path")
+root_path = get_project_root()
+
 population_path = os.path.join(dle_path, "population", "cities")
 buildings_path = "/Users/meas/Library/CloudStorage/OneDrive-SharedLibraries-IIASA/DLE - Analysis/Climate impacts and space conditioning/Analysis/ALPS2022_data_processing/output"
+floor_path = save_path = os.path.join(root_path, "data", "floor-projections")
 
 # Specify input files
 shr_file = "building_stock_SSP2_v19_ALPS_ssps.csv"
 ac_file = "country_data_v4.xlsx"
 pop_file = "SSP_Population_Extrapolation.csv"
+floor_file = "floor_proj_country_logis_rev2024_02_ssp.csv"
 
 # Specify output file
-root_path = get_project_root()
 save_path = os.path.join(root_path, "data", "alps", "cities_population_buildings.csv")
 
 # Apply function to read and concatenate Excel sheets for AC data across SSPs
 df_ac = read_and_concat_excel_sheets(os.path.join(dle_path, ac_file))
-print(df_ac)
 
 # Read in shr_file
 df_shr = pd.read_csv(os.path.join(buildings_path, shr_file)).rename(
@@ -62,6 +64,13 @@ df_pop = (
     )
 )
 
+# Read in floor data
+df_floor = (
+    pd.read_csv(os.path.join(floor_path, floor_file))
+    .drop(columns=["region_gea", "global_south", "pop"])
+    .rename(columns={"country": "iso-alpha3_code", "scenario": "popscen"})
+)
+
 # Merge df_pop and df_ac:
 # - iso-alpha3_code = iso
 # - year = year
@@ -85,6 +94,16 @@ df_all = pd.merge(
     right_on=["region_gea", "year"],
     how="inner",
 )
+
+# Merge df_all and df_floor, on "popscen"="scenario" and "iso-alpha3_code"="country" and "year"="year"
+df_all = pd.merge(
+    df_all,
+    df_floor,
+    left_on=["popscen", "iso-alpha3_code", "year"],
+    right_on=["popscen", "iso-alpha3_code", "year"],
+    how="inner",
+)
+
 
 # Reorganize columns in df_all
 df_all = df_all[
@@ -113,6 +132,7 @@ df_all = df_all[
         "f_c_scl",
         "fl_cnd_c",
         "eff_ac",
+        "floor_cap",
     ]
 ]
 

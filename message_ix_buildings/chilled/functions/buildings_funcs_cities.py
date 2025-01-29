@@ -471,7 +471,9 @@ def calc_t_max_c(t_sp_c_max, gn_int_df, gn_sol_df, H_tr_df, H_v_op_df):
     return merged_df[["city", "city_lat", "city_lon", "lat", "lon", "month", "t_max_c"]]
 
 
-def calc_vdd_tmax_c(t_out_ave_df, t_out_ave_col, t_max_c_df, nyrs, green: bool):
+def calc_vdd_tmax_c(
+    t_out_ave_df, t_out_ave_col, t_max_c_df, nyrs, green: bool, mitigation: bool
+):
     "This returns the variable cooling degree days based on Tmax"
     # DEGREE DAYS should be calculated month by month
 
@@ -482,6 +484,9 @@ def calc_vdd_tmax_c(t_out_ave_df, t_out_ave_col, t_max_c_df, nyrs, green: bool):
 
     if green is True:
         df_cols += ["lcz"]
+
+    if mitigation is True:
+        df_cols += ["scen_SGS"]
 
     tmax_cols = base_cols + ["t_max_c"]
 
@@ -501,6 +506,8 @@ def calc_vdd_tmax_c(t_out_ave_df, t_out_ave_col, t_max_c_df, nyrs, green: bool):
 
     if green is True:
         groupby_cols += ["lcz"]
+    if mitigation is True:
+        groupby_cols += ["scen_SGS"]
 
     # Divide by years
     vdd_tmax_c = merged_df.groupby(groupby_cols).sum("time") / nyrs
@@ -509,12 +516,14 @@ def calc_vdd_tmax_c(t_out_ave_df, t_out_ave_col, t_max_c_df, nyrs, green: bool):
     return vdd_tmax_c.drop(columns=["t_max_c", t_out_ave_col])
 
 
-def calc_Nd(df, t_out_ave_col: str, t_max_c_df, nyrs, green: bool):
+def calc_Nd(df, t_out_ave_col: str, t_max_c_df, nyrs, green: bool, mitigation: bool):
     base_cols = ["city", "city_lat", "city_lon", "lat", "lon", "month"]
 
     df_columns = base_cols + [t_out_ave_col]
     if green is True:
         df_columns += ["lcz"]
+    if mitigation is True:
+        df_columns += ["scen_SGS"]
 
     ras_scen_reduced = df[df_columns].drop_duplicates().reset_index()
 
@@ -537,6 +546,8 @@ def calc_Nd(df, t_out_ave_col: str, t_max_c_df, nyrs, green: bool):
     group_by_columns = ["city", "city_lat", "city_lon", "lat", "lon", "month"]
     if green is True:
         group_by_columns += ["lcz"]
+    if mitigation is True:
+        group_by_columns += ["scen_SGS"]
 
     Nd = (
         merged_df.groupby(group_by_columns)["anoms"]
@@ -555,12 +566,14 @@ def calc_Ndyr(t_out_ave, t_max_c):
     return Ndyr
 
 
-def calc_Nf(df, t_out_ave_col, t_bal_c_df, nyrs, green: bool):
+def calc_Nf(df, t_out_ave_col, t_bal_c_df, nyrs, green: bool, mitigation: bool):
     base_cols = ["city", "city_lat", "city_lon", "lat", "lon", "month"]
 
     df_columns = base_cols + [t_out_ave_col]
     if green is True:
         df_columns += ["lcz"]
+    if mitigation is True:
+        df_columns += ["scen_SGS"]
 
     ras_scen_reduced = df[df_columns].drop_duplicates().reset_index()
 
@@ -582,6 +595,8 @@ def calc_Nf(df, t_out_ave_col, t_bal_c_df, nyrs, green: bool):
     group_by_columns = ["city", "city_lat", "city_lon", "lat", "lon", "month"]
     if green is True:
         group_by_columns += ["lcz"]
+    if mitigation is True:
+        group_by_columns += ["scen_SGS"]
 
     Nf = (
         merged_df.groupby(group_by_columns)["anoms"]
@@ -716,7 +731,15 @@ def Q_h(H_tr_df, H_v_cl_df, f_h, vdd_h_df):
 
 
 def Q_c_tmax(
-    H_tr_df, H_v_cl_df, vdd_tmax_c_df, t_max_c_df, t_bal_c_df, Nd_df, f_c, green: bool
+    H_tr_df,
+    H_v_cl_df,
+    vdd_tmax_c_df,
+    t_max_c_df,
+    t_bal_c_df,
+    Nd_df,
+    f_c,
+    green: bool,
+    mitigation: bool,
 ):  #
     "This returns the monthly cooling energy (MJ) based on variable degree days"
 
@@ -734,6 +757,9 @@ def Q_c_tmax(
     if green is True:
         vdd_tmax_cols += ["lcz"]
         Nd_cols += ["lcz"]
+    if mitigation is True:
+        vdd_tmax_cols += ["scen_SGS"]
+        Nd_cols += ["scen_SGS"]
 
     # Merge dataframes by city, city_lat, city_lon, and month
     merged_df = H_tr_df[H_tr_cols].merge(
@@ -757,11 +783,18 @@ def Q_c_tmax(
         how="outer",
     )
     if green is True:
-        merged_df = merged_df.merge(
-            Nd_df[Nd_cols],
-            on=month_cols + ["lcz"],
-            how="outer",
-        )
+        if mitigation is True:
+            merged_df = merged_df.merge(
+                Nd_df[Nd_cols],
+                on=month_cols + ["lcz", "scen_SGS"],
+                how="outer",
+            )
+        else:
+            merged_df = merged_df.merge(
+                Nd_df[Nd_cols],
+                on=month_cols + ["lcz"],
+                how="outer",
+            )
     else:
         merged_df = merged_df.merge(
             Nd_df[Nd_cols],

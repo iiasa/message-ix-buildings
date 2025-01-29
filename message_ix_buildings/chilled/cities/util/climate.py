@@ -157,23 +157,26 @@ def process_climate_data(config: Config, climate_zones: bool = True):
     tas_city["year"] = tas_city["time"].dt.year
     tas_city["month"] = tas_city["time"].dt.month
 
-    # Merge hist_gvi with t_city
-    tas_delta = pd.merge(
-        tas_city,
-        hist_gvi,
-        how="outer",
-        left_on=["city", "month"],
-        right_on=["UC_NM_MN", "month"],
-    )
+    if climate_zones:
+        tas_city = pd.merge(
+            tas_city,
+            hist_gvi,
+            how="outer",
+            left_on=["city", "month"],
+            right_on=["UC_NM_MN", "month"],
+        )
 
-    # Calculate adjusted tas column
-    tas_delta["tas_adj"] = tas_delta["tas"] * (1 + tas_delta["delta"] / 100)
+        # Calculate adjusted tas column
+        tas_city["tas_adj"] = tas_city["tas"] * (1 + tas_city["delta"] / 100)
 
-    # calculate t_out_ave column using adjusted tas
-    tas_delta["t_out_ave"] = tas_delta["tas_adj"] - 273.16
+        # calculate t_out_ave column using adjusted tas
+        tas_city["t_out_ave"] = tas_city["tas_adj"] - 273.16
 
-    # drop rows where tas_adj is NaN
-    tas_delta = tas_delta.dropna(subset=["tas_adj", "lcz"]).reset_index(drop=True)
+        # drop rows where tas_adj is NaN
+        tas_city = tas_city.dropna(subset=["tas_adj", "lcz"]).reset_index(drop=True)
+
+    else:
+        tas_city["t_out_ave"] = tas_city["tas"] - 273.16
 
     # read in i_sol_v and i_sol_h
     with xr.open_dataarray(
@@ -632,3 +635,22 @@ def process_climate_data(config: Config, climate_zones: bool = True):
     # # Save to CSV
 
     # return df_energy
+
+
+def calculate_energy(config: Config, climate_zones: bool = True):
+    # set paths
+    project_path = get_paths(config, "project_path")
+    dle_path = get_paths(config, "dle_path")
+    input_path = dle_path
+    isimip_bias_adj_path = get_paths(config, "isimip_bias_adj_path")
+    isimip_ewembi_path = get_paths(config, "isimip_ewembi_path")
+    out_path = os.path.join(project_path, "out", "version", config.vstr)
+    archetype_path = os.path.join(out_path, "rasters")
+    floorarea_path = os.path.join(out_path, "floorarea_country")
+    vdd_path = os.path.join(out_path, "VDD_ene_calcs")
+
+    # search for "E_c_ac.csv" in vdd_path (search recursively)
+    for root, dirs, files in os.walk(vdd_path):
+        for file in files:
+            if file == "E_c_ac.csv":
+                df_energy = pd.read_csv(os.path.join(root, file))

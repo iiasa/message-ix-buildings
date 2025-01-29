@@ -1,8 +1,10 @@
 import os
 
+import dask
 import numpy as np
 import pandas as pd
 import xarray as xr
+from dask import delayed
 
 from message_ix_buildings.chilled.util.common import get_logger
 
@@ -128,6 +130,7 @@ def rasters_to_df_cities(data_path, var, gcm, rcp, city_df, name_col, lat_col, l
 
     # create function to read in raster file, apply select_nearest_points,
     # and convert to pandas.DataFrame
+    @delayed
     def extract_raster_file(file):
         log.info(f"Extracting raster data from file: {file}")
         with xr.open_dataarray(file) as ds:
@@ -143,9 +146,13 @@ def rasters_to_df_cities(data_path, var, gcm, rcp, city_df, name_col, lat_col, l
 
         return df
 
-    # Apply the function to all files in l_files
-    log.info("Applying function to all files in l_files")
-    extract = [extract_raster_file(file) for file in l_files]
+    # NOTE: this uses dask to parallelize the computation
+    log.info("Define applying function to all files in l_files")
+    delayed_extract = [extract_raster_file(file) for file in l_files]
+
+    # Compute the results in parallel
+    log.info("Compute the results in parallel using dask")
+    extract = dask.compute(*delayed_extract, scheduler="processes")
 
     # Concatenate the results
     log.info("Concatenating the results")

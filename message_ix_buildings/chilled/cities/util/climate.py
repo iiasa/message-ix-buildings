@@ -77,6 +77,10 @@ def process_climate_data(config: Config, climate_zones):
     if not os.path.exists(output_path_vdd):
         os.makedirs(output_path_vdd)
 
+    # break code here
+
+    raise ValueError("Breaking code here.")
+
     # settings
     rcpdata = "ssp126" if config.rcp == "baseline" else config.rcp
     if config.rcp == "baseline":

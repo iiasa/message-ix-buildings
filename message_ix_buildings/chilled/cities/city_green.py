@@ -62,23 +62,20 @@ def print_arguments(parsed_arguments):
         + "Selected GCM: "
         + parsed_arguments.gcm
         + "\n"
-        + "Selected RCP scenario: "
-        + parsed_arguments.rcp
-        + "\n"
         + "Run with local climate zones: "
         + str(parsed_arguments.lcz)
     )
 
 
 # create climate outputs
-def create_config(parsed_arguments):
-    cfg = Config(
-        vstr=parsed_arguments.version,
-        gcm=parsed_arguments.gcm,
-        rcp=parsed_arguments.rcp,
-    )
+# def create_config(parsed_arguments):
+#     cfg = Config(
+#         vstr=parsed_arguments.version,
+#         gcm=parsed_arguments.gcm,
+#         rcp=parsed_arguments.rcp,
+#     )
 
-    return cfg
+#     return cfg
 
 
 def main(args=None):

@@ -479,8 +479,10 @@ def calc_vdd_tmax_c(t_out_ave_df, t_out_ave_col, t_max_c_df, nyrs, climate_zones
     base_cols = ["city", "city_lat", "city_lon", "lat", "lon", "month"]
 
     df_cols = base_cols + ["year", t_out_ave_col]
+
     if climate_zones:
         df_cols += ["lcz"]
+
     tmax_cols = base_cols + ["t_max_c"]
 
     merged_df = t_out_ave_df[df_cols].merge(
@@ -495,8 +497,13 @@ def calc_vdd_tmax_c(t_out_ave_df, t_out_ave_col, t_max_c_df, nyrs, climate_zones
     )
     merged_df["vdd_tmax_c"] = merged_df["vdd_tmax_c"].fillna(0)
 
+    groupby_cols = base_cols
+
+    if climate_zones:
+        groupby_cols += ["lcz"]
+
     # Divide by years
-    vdd_tmax_c = merged_df.groupby(base_cols).sum("time") / nyrs
+    vdd_tmax_c = merged_df.groupby(groupby_cols).sum("time") / nyrs
     vdd_tmax_c = vdd_tmax_c.reset_index()
 
     return vdd_tmax_c.drop(columns=["t_max_c", t_out_ave_col])
@@ -746,14 +753,21 @@ def Q_c_tmax(
     )
     merged_df = merged_df.merge(
         t_bal_c_df[t_bal_c_cols],
-        on=["city", "city_lat", "city_lon", "month"],
+        on=month_cols,
         how="outer",
     )
-    merged_df = merged_df.merge(
-        Nd_df[Nd_cols],
-        on=["city", "city_lat", "city_lon", "month"],
-        how="outer",
-    )
+    if climate_zones:
+        merged_df = merged_df.merge(
+            Nd_df[Nd_cols],
+            on=month_cols + ["lcz"],
+            how="outer",
+        )
+    else:
+        merged_df = merged_df.merge(
+            Nd_df[Nd_cols],
+            on=month_cols,
+            how="outer",
+        )
 
     # Calculate cooling energy
     merged_df["Q_c_tmax"] = (
@@ -767,9 +781,9 @@ def Q_c_tmax(
         / np.power(10.0, 6.0)
     )
 
-    return merged_df[
-        ["city", "city_lat", "city_lon", "lat", "lon", "month", "Q_c_tmax"]
-    ]
+    return merged_df.drop(
+        columns=["H_tr", "H_v_cl", "vdd_tmax_c", "t_max_c", "t_bal_c", "Nd"]
+    )
 
 
 ##==============================================================================
@@ -832,7 +846,11 @@ def calc_E_c_ac(Q_c_tmax_df, cop):  #
     E_c_ac = Q_c_tmax_df.copy(deep=True)
 
     E_c_ac["E_c_ac"] = E_c_ac["Q_c_tmax"] / cop
-    return E_c_ac[["city", "city_lat", "city_lon", "lat", "lon", "month", "E_c_ac"]]
+
+    # Drop rows with E_c_ac NaN
+    E_c_ac = E_c_ac.dropna(subset=["E_c_ac"])
+
+    return E_c_ac.drop(columns=["Q_c_tmax"])
 
 
 # def calc_E_c_tot(Q_c_tmax, Q_lat_month, cop): #
@@ -847,7 +865,11 @@ def calc_E_c_fan(f_f, P_f, Nf_df, area_fan):  #
     E_c_fan["E_c_fan"] = (
         f_f * P_f * E_c_fan["Nf"] * 86400.0 / (np.power(10.0, 6.0) * area_fan)
     )  # Nf = number of days when (t_bal_c <= t_out_ave < t_max_c)
-    return E_c_fan[["city", "city_lat", "city_lon", "lat", "lon", "month", "E_c_fan"]]
+
+    # Drop rows with E_c_ac NaN
+    E_c_fan = E_c_fan.dropna(subset=["E_c_ac"])
+
+    return E_c_fan.drop(columns=["Nf"])
 
 
 # ==============================================================================

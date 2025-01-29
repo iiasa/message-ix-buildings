@@ -57,22 +57,20 @@ def process_climate_data(config: Config, climate_zones: bool):
     archetype_path = os.path.join(out_path, "rasters")
     floorarea_path = os.path.join(out_path, "floorarea_country")
     vdd_path = os.path.join(out_path, "VDD_ene_calcs")
-    if climate_zones is True:
+    if climate_zones:
         output_path_vdd = os.path.join(
             vdd_path,
             "climate_zones",
             config.gcm,
             config.rcp,
         )
-    elif climate_zones is False:
+    else:
         output_path_vdd = os.path.join(
             vdd_path,
             "chilled_only",
             config.gcm,
             config.rcp,
         )
-    else:
-        raise ValueError("Invalid value for climate_zones: must be True or False")
 
     log.info("Output path: " + output_path_vdd)
 

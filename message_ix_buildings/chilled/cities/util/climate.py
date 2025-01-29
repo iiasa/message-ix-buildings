@@ -45,7 +45,7 @@ from message_ix_buildings.chilled.util.config import Config  # type: ignore
 log = get_logger(__name__)
 
 
-def process_climate_data(config: Config, green: bool):
+def process_climate_data(config: Config, green: bool, mitigation: bool):
     log.info("Running green space = " + str(green))
     # set paths
     project_path = get_paths(config, "project_path")
@@ -58,12 +58,21 @@ def process_climate_data(config: Config, green: bool):
     floorarea_path = os.path.join(out_path, "floorarea_country")
     vdd_path = os.path.join(out_path, "VDD_ene_calcs")
     if green:
-        output_path_vdd = os.path.join(
-            vdd_path,
-            "green_space",
-            config.gcm,
-            config.rcp,
-        )
+        if mitigation:
+            output_path_vdd = os.path.join(
+                vdd_path,
+                "mitigation",
+                config.gcm,
+                config.rcp,
+            )
+        else:
+            output_path_vdd = os.path.join(
+                vdd_path,
+                "green_space",
+                config.gcm,
+                config.rcp,
+            )
+
     else:
         output_path_vdd = os.path.join(
             vdd_path,
@@ -161,27 +170,142 @@ def process_climate_data(config: Config, green: bool):
     tas_city["year"] = tas_city["time"].dt.year
     tas_city["month"] = tas_city["time"].dt.month
 
-    if green is True:
-        log.info("Modifying tas_city to include lcz and gvi data")
-        tas_city = pd.merge(
-            tas_city,
-            hist_gvi,
-            how="outer",
-            left_on=["city", "month"],
-            right_on=["UC_NM_MN", "month"],
-        )
+    if green:
+        if mitigation:
+            log.info("Modifying tas to include green space and mitigation scenarios...")
+            # filter for historic years 2016-2023 and calculate the average
+            # this value is the base_SGS
 
-        # Calculate adjusted tas column
-        tas_city["tas_adj"] = tas_city["tas"] * (1 + tas_city["delta"] / 100)
+            scen_gvi_base = (
+                scen_gvi.assign(year=lambda x: x["year"].astype(int))
+                .query("scen_SGS == 'out_b_mean_s' and (year <= 2016 or year >= 2023)")
+                .drop(columns=["year"])
+                .groupby(["UC_NM_MN", "CTR_MN_ISO", "GRGN_L2", "lcz"])
+                .mean(numeric_only=True)
+                .reset_index()
+                .rename(columns={"SGS": "base_SGS"})
+            )
 
-        # calculate t_out_ave column using adjusted tas
-        tas_city["t_out_ave"] = tas_city["tas_adj"] - 273.16
+            # for projections, use all scenarios that are not out_b_mean_s and all years >= 2020
+            scen_gvi_proj = scen_gvi.query(
+                "scen_SGS != 'out_b_mean_s' and year >= 2020"
+            )
 
-        # drop rows where tas_adj is NaN
-        tas_city = tas_city.dropna(subset=["tas_adj", "lcz"]).reset_index(drop=True)
+            # merge scen_gvi_base and scen_gvi_proj on UC_NM_MN, CTR_MN_ISO, GRGN_L2, and lcz
+            scen_gvi_delta = pd.merge(
+                scen_gvi_base,
+                scen_gvi_proj,
+                how="outer",
+                on=["UC_NM_MN", "CTR_MN_ISO", "GRGN_L2", "lcz"],
+            ).assign(delta_SGS=lambda x: x["SGS"] - x["base_SGS"])
+
+            lcz_dict = {
+                1: "Compact highrise",
+                2: "Compact midrise",
+                3: "Compact lowrise",
+                4: "Open highrise",
+                5: "Open midrise",
+                6: "Open lowrise",
+                7: "Lightweight low-rise",
+                8: "Large lowrise",
+                9: "Sparsely built",
+                10: "Heavy Industry",
+                11: "Dense trees",
+                12: "Scattered trees",
+                13: "Bush, scrub",
+                14: "Low plants",
+                15: "Bare rock or paved",
+                16: "Bare soil or sand",
+                17: "Water",
+            }
+
+            # add lcz_name to scen_gvi_delta
+            scen_gvi_delta["lcz_name"] = scen_gvi_delta["lcz"].map(lcz_dict)
+
+            # merge secn_gvi_delta with lcz_coef on lcz_name = lcz
+            scen_gvi_coef = (
+                pd.merge(
+                    scen_gvi_delta,
+                    lcz_coef.rename(columns={"lcz": "lcz_name"}),
+                    how="outer",
+                    left_on=["UC_NM_MN", "CTR_MN_ISO", "GRGN_L2", "lcz_name"],
+                    right_on=["UC_NM_MN", "CTR_MN_ISO", "GRGN_L2", "lcz_name"],
+                )
+                .dropna(subset=["delta_SGS"])
+                .rename(columns={"lcz": "lcz_number"})
+                .rename(columns={"lcz_name": "lcz"})
+                .assign(
+                    lcz_number=lambda x: x["lcz_number"].astype(int),
+                    year=lambda x: x["year"].astype(int),
+                )
+                .filter(
+                    [
+                        "UC_NM_MN",
+                        "CTR_MN_ISO",
+                        "GRGN_L2",
+                        "lcz_num",
+                        "lcz",
+                        "year",
+                        "month",
+                        "base_SGS",
+                        "scen_SGS",
+                        "SGS",
+                        "delta_SGS",
+                        "coef",
+                        "coef_abs",
+                    ]
+                )
+                .assign(delta_temp=lambda x: x["delta_SGS"] * x["coef"] / 100)
+            )
+
+            # merge tas_city with scen_gvi_coef on UC_NM_MN, year, and month
+            tas_city = (
+                pd.merge(
+                    tas_city,
+                    scen_gvi_coef,
+                    how="inner",
+                    left_on=["city", "year", "month"],
+                    right_on=["UC_NM_MN", "year", "month"],
+                )
+                .drop(
+                    columns=[
+                        "UC_NM_MN",
+                        "CTR_MN_ISO",
+                        "GRGN_L2",
+                        "base_SGS",
+                        "SGS",
+                        "delta_SGS",
+                        "coef",
+                        "coef_abs",
+                    ]
+                )
+                .assign(t_out_ave=lambda x: x["tas"] - 273.16)
+                .assign(t_out_ave=lambda x: x["t_out_ave"] * (1 + x["delta_temp"]))
+            ).drop(columns=["delta_temp"])
+
+        else:
+            log.info(
+                "Modifying tas_city to include green space corrections (no mitigation)...."
+            )
+            tas_city = pd.merge(
+                tas_city,
+                hist_gvi,
+                how="outer",
+                left_on=["city", "month"],
+                right_on=["UC_NM_MN", "month"],
+            )
+
+            # Calculate adjusted tas column
+            tas_city["tas_adj"] = tas_city["tas"] * (1 + tas_city["delta"] / 100)
+
+            # calculate t_out_ave column using adjusted tas
+            tas_city["t_out_ave"] = tas_city["tas_adj"] - 273.16
+
+            # drop rows where tas_adj is NaN
+            tas_city = tas_city.dropna(subset=["tas_adj", "lcz"]).reset_index(drop=True)
 
     else:
-        log.info("No climate zones selected. Using tas data as is.")
+        log.info("No green space considerations. Using tas data as is.")
         tas_city["t_out_ave"] = tas_city["tas"] - 273.16
 
     # read in i_sol_v and i_sol_h
@@ -223,7 +347,7 @@ def process_climate_data(config: Config, green: bool):
 
         return var
 
-    def map_city_climate_variables(t_city, green, args):
+    def map_city_climate_variables(t_city, green, mitigation, args):
         clim, arch, parset, urt = args
         log.info(str(clim) + " + " + arch + " + " + parset.name_run + " + " + urt)
 
@@ -260,6 +384,8 @@ def process_climate_data(config: Config, green: bool):
         ]
         if green is True:
             groupby_cols += ["lcz"]
+        if mitigation is True:
+            groupby_cols += ["scen_SGS"]
 
         t_city_month = (
             t_city_filtered.groupby(groupby_cols)["t_out_ave"].mean().reset_index()
@@ -359,14 +485,18 @@ def process_climate_data(config: Config, green: bool):
             t_max_c = calc_t_max_c(
                 t_sp_c_max, dict_netcdf["gn_int"], gn_sol, H_tr, H_v_op
             )
-            Nd = calc_Nd(t_city_filtered, "t_out_ave", t_max_c, nyrs_clim, green)
-            Nf = calc_Nf(t_city_filtered, "t_out_ave", t_bal_c, nyrs_clim, green)
+            Nd = calc_Nd(
+                t_city_filtered, "t_out_ave", t_max_c, nyrs_clim, green, mitigation
+            )
+            Nf = calc_Nf(
+                t_city_filtered, "t_out_ave", t_bal_c, nyrs_clim, green, mitigation
+            )
             vdd_tmax_c = calc_vdd_tmax_c(
-                t_city_month, "t_out_ave", t_max_c, nyrs_clim, green
+                t_city_month, "t_out_ave", t_max_c, nyrs_clim, green, mitigation
             )
 
             qctmax = Q_c_tmax(
-                H_tr, H_v_cl, vdd_tmax_c, t_max_c, t_bal_c, Nd, f_c, green
+                H_tr, H_v_cl, vdd_tmax_c, t_max_c, t_bal_c, Nd, f_c, green, mitigation
             )
             E_c_ac = calc_E_c_ac(qctmax, cop)
             E_c_fan = calc_E_c_fan(f_f, P_f, Nf, config.area_fan)
@@ -447,7 +577,7 @@ def process_climate_data(config: Config, green: bool):
     inputs = product(s_runs, vers_archs, par_var.itertuples(), ["urban"])
     output = list(
         map(
-            lambda args: map_city_climate_variables(tas_city, green, args),
+            lambda args: map_city_climate_variables(tas_city, green, mitigation, args),
             inputs,
         )
     )
@@ -463,17 +593,24 @@ def process_climate_data(config: Config, green: bool):
         value.to_csv(os.path.join(output_path_vdd, key + ".csv"), index=False)
 
 
-def calculate_energy(config: Config, green: bool = True):
+def calculate_energy(config: Config, green: bool, mitigation: bool):
     # set paths
     project_path = get_paths(config, "project_path")
     out_path = os.path.join(project_path, "out", "version", config.vstr)
     vdd_path = os.path.join(out_path, "VDD_ene_calcs")
     if green is True:
-        output_path_vdd = os.path.join(
-            vdd_path,
-            "green_space",
-            config.gcm,
-        )
+        if mitigation is True:
+            output_path_vdd = os.path.join(
+                vdd_path,
+                "mitigation",
+                config.gcm,
+            )
+        else:
+            output_path_vdd = os.path.join(
+                vdd_path,
+                "green_space",
+                config.gcm,
+            )
     else:
         output_path_vdd = os.path.join(
             vdd_path,
@@ -606,6 +743,8 @@ def calculate_energy(config: Config, green: bool = True):
     ]
     if green is True:
         merge_cols += ["lcz"]
+    if mitigation is True:
+        merge_cols += ["scen_SGS"]
 
     df_e_inten = pd.merge(
         df_e_ac_wide,
@@ -636,11 +775,18 @@ def calculate_energy(config: Config, green: bool = True):
 
     # Save to CSV:
     if green is True:
-        log.info(f"Saving energy_cooling_ac_green.csv in {output_path}")
-        df_energy.to_csv(
-            os.path.join(output_path, "energy_cooling_ac_green.csv"),
-            index=False,
-        )
+        if mitigation is True:
+            log.info(f"Saving energy_cooling_ac_mitigation.csv in {output_path}")
+            df_energy.to_csv(
+                os.path.join(output_path, "energy_cooling_ac_mitigation.csv"),
+                index=False,
+            )
+        else:
+            log.info(f"Saving energy_cooling_ac_green.csv in {output_path}")
+            df_energy.to_csv(
+                os.path.join(output_path, "energy_cooling_ac_green.csv"),
+                index=False,
+            )
     else:
         log.info(f"Saving energy_cooling_ac.csv in {output_path}")
         df_energy.to_csv(

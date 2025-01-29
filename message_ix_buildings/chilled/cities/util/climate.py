@@ -47,6 +47,7 @@ log = get_logger(__name__)
 
 def process_climate_data(config: Config, green: bool, mitigation: bool):
     log.info("Running green space = " + str(green))
+    log.info("Running mitigation = " + str(mitigation))
     # set paths
     project_path = get_paths(config, "project_path")
     dle_path = get_paths(config, "dle_path")

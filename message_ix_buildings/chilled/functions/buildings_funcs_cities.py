@@ -867,7 +867,7 @@ def calc_E_c_fan(f_f, P_f, Nf_df, area_fan):  #
     )  # Nf = number of days when (t_bal_c <= t_out_ave < t_max_c)
 
     # Drop rows with E_c_ac NaN
-    E_c_fan = E_c_fan.dropna(subset=["E_c_ac"])
+    E_c_fan = E_c_fan.dropna(subset=["E_c_fan"])
 
     return E_c_fan.drop(columns=["Nf"])
 

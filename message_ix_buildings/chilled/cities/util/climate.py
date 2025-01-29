@@ -759,6 +759,7 @@ def calculate_energy(config: Config, green: bool, mitigation: bool):
         out = df.copy()
         out[energy_col] = (
             out["population"]
+            * 1e6  # convert millions of people to people
             * out["floor_cap"]
             * out["ac_penetr_u"]
             * (
@@ -772,7 +773,8 @@ def calculate_energy(config: Config, green: bool, mitigation: bool):
         return out
 
     # Calculate energy needed for AC
-    df_energy = calculate_energy(df_e_inten, "E_c_ac", "energy_cooling_ac")
+    df_energy = calculate_energy(df_e_inten, "E_c_ac", "energy_cooling_ac_MJ")
+    df_energy["energy_cooling_ac_EJ"] = df_energy["energy_cooling_ac_MJ"] / 1e12
 
     # Save to CSV:
     if green is True:

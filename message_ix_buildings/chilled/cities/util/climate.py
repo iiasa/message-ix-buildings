@@ -501,7 +501,7 @@ def calculate_energy(config: Config, climate_zones: bool = True):
     # read in city level parameters data
     df_cities_par = pd.read_csv(
         os.path.join(root_path, "data", "alps", "cities_population_buildings.csv")
-    )
+    ).drop(columns="floor_Mm2")
 
     df_cities_par_exist = (
         df_cities_par.query("vintage == 'exist'")
@@ -520,6 +520,7 @@ def calculate_energy(config: Config, climate_zones: bool = True):
                 "shr_floor_exist",
             ]
         )
+        .drop_duplicates()
     )
     df_cities_par_new = (
         df_cities_par.query("vintage == 'new'")
@@ -538,6 +539,7 @@ def calculate_energy(config: Config, climate_zones: bool = True):
                 "shr_floor_new",
             ]
         )
+        .drop_duplicates()
     )
 
     df_cities_vintage = pd.merge(
@@ -572,15 +574,7 @@ def calculate_energy(config: Config, climate_zones: bool = True):
             "popscen",
         ],
         how="inner",
-    )
-
-    # Convert df_cities_par to wide format on vintage, with shr_floor as values
-    # df_cities_par_wide = df_cities_par.pivot_table(
-    #     index=[col for col in df_cities_par.columns if col not in ["vintage", "shr_floor"]],
-    #     columns="vintage",
-    #     values="shr_floor",
-    #     aggfunc="first",
-    # ).reset_index()
+    ).drop_duplicates()
 
     # pivot the E_c_ac column on arch
     df_e_ac_wide = df_e_ac.pivot_table(

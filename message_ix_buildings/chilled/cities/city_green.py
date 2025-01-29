@@ -50,6 +50,7 @@ list_rcp = ["baseline", "ssp126", "ssp370"]
 
 # specify config
 config = Config(vstr="ALPS2024_cities", user="MEAS", gcm="MRI-ESM2-0", rcp="ssp585")
+climate_zones = True
 
 # set paths
 project_path = get_paths(config, "project_path")
@@ -61,11 +62,23 @@ out_path = os.path.join(project_path, "out", "version", config.vstr)
 archetype_path = os.path.join(out_path, "rasters")
 floorarea_path = os.path.join(out_path, "floorarea_country")
 save_path = os.path.join(out_path, "VDD_ene_calcs")
-output_path_vdd = os.path.join(
-    save_path,
-    config.gcm,
-    config.rcp,
-)
+if climate_zones:
+    output_path_vdd = os.path.join(
+        save_path,
+        "climate_zones",
+        config.gcm,
+        config.rcp,
+    )
+else:
+    output_path_vdd = os.path.join(
+        "cities",
+        save_path,
+        config.gcm,
+        config.rcp,
+    )
+# create output_path_vdd if it does not exist
+if not os.path.exists(output_path_vdd):
+    os.makedirs(output_path_vdd)
 
 # settings
 sel_var = config.var
@@ -141,10 +154,10 @@ tas_city = rasters_to_df_cities(
 )
 
 # tas_city as csv
-tas_city.to_csv(os.path.join('/Users/meas/Desktop', "tas_city.csv"), index=False)
+tas_city.to_csv(os.path.join("/Users/meas/Desktop", "tas_city.csv"), index=False)
 
 # read in tas_city
-tas_city = pd.read_csv(os.path.join('/Users/meas/Desktop', "tas_city.csv"))
+tas_city = pd.read_csv(os.path.join("/Users/meas/Desktop", "tas_city.csv"))
 
 # change time column to datetime
 tas_city["time"] = pd.to_datetime(tas_city["time"])
@@ -162,16 +175,14 @@ tas_delta = pd.merge(
     right_on=["UC_NM_MN", "month"],
 )
 
-# Calculate tas_adj column
+# Calculate adjusted tas column
 tas_delta["tas_adj"] = tas_delta["tas"] * (1 + tas_delta["delta"] / 100)
 
-# calculate t_out_ave column
+# calculate t_out_ave column using adjusted tas
 tas_delta["t_out_ave"] = tas_delta["tas_adj"] - 273.16
 
 # drop rows where tas_adj is NaN
 tas_delta = tas_delta.dropna(subset=["tas_adj", "lcz"]).reset_index(drop=True)
-
-tas_delta[["city", "lcz", "year", "month", "delta", "tas", "tas_adj"]]
 
 # read in i_sol_v and i_sol_h
 with xr.open_dataarray(
@@ -213,7 +224,8 @@ def read_netcdf_files(input_args):
 
     return var
 
-def map_city_climate_variables(t_city, climate_zones: Bool = False, args):
+
+def map_city_climate_variables(t_city, climate_zones, args):
     clim, arch, parset, urt = args
     log.info(str(clim) + " + " + arch + " + " + parset.name_run + " + " + urt)
 
@@ -236,25 +248,22 @@ def map_city_climate_variables(t_city, climate_zones: Bool = False, args):
     # create t_city_month dataframe, with t_out_ave grouped by locations,
     # lat, lon, city, city_lat, city_lon, gcm, rcp, and month
     groupby_cols = [
-                "gcm",
-                "rcp",
-                "locations",
-                "lat",
-                "lon",
-                "city",
-                "city_lat",
-                "city_lon",
-                "year",
-                "month",
-            ]
+        "gcm",
+        "rcp",
+        "locations",
+        "lat",
+        "lon",
+        "city",
+        "city_lat",
+        "city_lon",
+        "year",
+        "month",
+    ]
     if climate_zones:
         groupby_cols += ["lcz"]
+
     t_city_month = (
-        t_city_filtered.groupby(
-            groupby_cols
-        )["t_out_ave"]
-        .mean()
-        .reset_index()
+        t_city_filtered.groupby(groupby_cols)["t_out_ave"].mean().reset_index()
     )
 
     # dfa = pd.DataFrame(columns=["H_v_cl", "H_v_op", "H_tr"], index=par_var.index)
@@ -351,10 +360,15 @@ def map_city_climate_variables(t_city, climate_zones: Bool = False, args):
     if config.cool == 1:
         t_bal_c = calc_t_bal_c(t_sp_c, dict_netcdf["gn_int"], gn_sol, H_tr, H_v_cl)
         t_max_c = calc_t_max_c(t_sp_c_max, dict_netcdf["gn_int"], gn_sol, H_tr, H_v_op)
-        Nd = calc_Nd(t_city_filtered, "t_out_ave", t_max_c, nyrs_clim, True)
-        Nf = calc_Nf(t_city_filtered, "t_out_ave", t_bal_c, nyrs_clim, True)
-        vdd_tmax_c = calc_vdd_tmax_c(t_city_month, "t_out_ave", t_max_c, True)
-        qctmax = Q_c_tmax(H_tr, H_v_cl, vdd_tmax_c, t_max_c, t_bal_c, Nd, f_c)
+        Nd = calc_Nd(t_city_filtered, "t_out_ave", t_max_c, nyrs_clim, climate_zones)
+        Nf = calc_Nf(t_city_filtered, "t_out_ave", t_bal_c, nyrs_clim, climate_zones)
+        vdd_tmax_c = calc_vdd_tmax_c(
+            t_city_month, "t_out_ave", t_max_c, nyrs_clim, climate_zones
+        )
+
+        qctmax = Q_c_tmax(
+            H_tr, H_v_cl, vdd_tmax_c, t_max_c, t_bal_c, Nd, f_c, climate_zones
+        )
         E_c_ac = calc_E_c_ac(qctmax, cop)
         E_c_fan = calc_E_c_fan(f_f, P_f, Nf, config.area_fan)
 
@@ -364,7 +378,36 @@ def map_city_climate_variables(t_city, climate_zones: Bool = False, args):
         qh = Q_h(H_tr, H_v_cl, f_h, vdd_h)
         E_h = calc_E_h(qh, eff)
 
-    # Save each calculated variable as an individual CSV file
+    # Function to add metadata columns to a dataframe
+    def add_metadata(df, clim, arch, parset, urt):
+        df["clim"] = clim
+        df["arch"] = arch
+        df["name_run"] = parset.name_run
+        df["urt"] = urt
+        return df
+
+    # Add metadata to each dataframe
+    H_v_cl = add_metadata(H_v_cl, clim, arch, parset, urt)
+    H_v_op = add_metadata(H_v_op, clim, arch, parset, urt)
+    H_tr = add_metadata(H_tr, clim, arch, parset, urt)
+
+    if config.cool == 1:
+        t_bal_c = add_metadata(t_bal_c, clim, arch, parset, urt)
+        t_max_c = add_metadata(t_max_c, clim, arch, parset, urt)
+        Nd = add_metadata(Nd, clim, arch, parset, urt)
+        Nf = add_metadata(Nf, clim, arch, parset, urt)
+        vdd_tmax_c = add_metadata(vdd_tmax_c, clim, arch, parset, urt)
+        qctmax = add_metadata(qctmax, clim, arch, parset, urt)
+        E_c_ac = add_metadata(E_c_ac, clim, arch, parset, urt)
+        E_c_fan = add_metadata(E_c_fan, clim, arch, parset, urt)
+
+    if config.heat == 1:
+        t_bal_h = add_metadata(t_bal_h, clim, arch, parset, urt)
+        vdd_h = add_metadata(vdd_h, clim, arch, parset, urt)
+        qh = add_metadata(qh, clim, arch, parset, urt)
+        E_h = add_metadata(E_h, clim, arch, parset, urt)
+
+    # Collect all dataframes into a dictionary
     output_data = {
         "H_v_cl": H_v_cl,
         "H_v_op": H_v_op,
@@ -395,18 +438,31 @@ def map_city_climate_variables(t_city, climate_zones: Bool = False, args):
             }
         )
 
-    # Save each variable as an individual CSV file
-    for var_name, var_value in output_data.items():
-        fname = f"{suff}_{parset.Index}_{var_name}_{urt}.csv"
-        print(fname)
-        filestr = os.path.join(output_path_vdd, fname)
-        var_value.to_csv(filestr, index=False)
+    return output_data
 
 
 # apply process_climate_data function to all combinations of scenarios and runs
 s_runs = load_all_scenarios_data(config).clim
-inputs = product(s_runs, vers_archs, par_var.itertuples(), ["urban"])
-list(map(lambda args: map_city_climate_variables(tas_city, args), inputs))
+par_var_sel = par_var.iloc[1].to_frame().T
+inputs = product(s_runs[3:5], vers_archs, par_var_sel.itertuples(), ["urban"])
+output = list(
+    map(lambda args: map_city_climate_variables(tas_delta, True, args), inputs)
+)
+
+# concat all dataframes for each variable in output into a single dataframe
+output_data = {}
+for key in output[0].keys():
+    output_data[key] = pd.concat([df[key] for df in output])
+
+# print E_c_ac dataframe in output_data
+print(output_data["E_c_ac"])
+
+
+# save each dataframe in output_data to a csv file
+for key, value in output_data.items():
+    log.info(f"Saving {key} to csv in {output_path_vdd}")
+    value.to_csv(os.path.join(output_path_vdd, key + ".csv"))
+
 
 # NOTE: next step: floor area calculations
 

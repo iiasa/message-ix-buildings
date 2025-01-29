@@ -18,7 +18,7 @@ climate_zones = True
 tasks = []
 for gcm in list_gcm:
     for rcp in list_rcp:
-        config = Config(vstr="ALPS2024_cities", user="MEAS", gcm=gcm, rcp=rcp)
+        config = Config(vstr="ALPS2024_cities", user="MEAS_UNICC", gcm=gcm, rcp=rcp)
         task = delayed(process_climate_data)(config, climate_zones)
         tasks.append(task)
 

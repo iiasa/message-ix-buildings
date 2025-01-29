@@ -65,8 +65,8 @@ def process_climate_data(config: Config, climate_zones: bool = True):
         )
     else:
         output_path_vdd = os.path.join(
-            "cities",
             vdd_path,
+            "chilled_only",
             config.gcm,
             config.rcp,
         )
@@ -642,8 +642,8 @@ def calculate_energy(config: Config, climate_zones: bool = True):
         )
     else:
         output_path_vdd = os.path.join(
-            "cities",
             vdd_path,
+            "chilled_only",
             config.gcm,
         )
     output_path = os.path.join(out_path, "output", config.gcm)

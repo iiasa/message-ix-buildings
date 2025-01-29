@@ -471,7 +471,7 @@ def calculate_energy(config: Config, green: bool = True):
     if green is True:
         output_path_vdd = os.path.join(
             vdd_path,
-            "green",
+            "green_space",
             config.gcm,
         )
     else:

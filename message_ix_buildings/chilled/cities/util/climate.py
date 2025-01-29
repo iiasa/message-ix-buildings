@@ -646,7 +646,7 @@ def calculate_energy(config: Config, climate_zones: bool = True):
             vdd_path,
             config.gcm,
         )
-    output_path = os.path.join(out_path, "output")
+    output_path = os.path.join(out_path, "output", config.gcm)
 
     # create output_path if it does not exist
     if not os.path.exists(output_path):

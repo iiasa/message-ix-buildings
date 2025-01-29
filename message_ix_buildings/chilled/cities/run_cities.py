@@ -1,9 +1,6 @@
 import sys
 from argparse import ArgumentParser
 
-import dask
-from dask import delayed
-
 from message_ix_buildings.chilled.cities.util.climate import process_climate_data
 from message_ix_buildings.chilled.util.common import get_logger
 from message_ix_buildings.chilled.util.config import Config  # type: ignore
@@ -99,8 +96,7 @@ def main(args=None):
     # Run the core functions
     print_arguments(parsed_arguments=parsed_args)
     log.info("Running core functions...")
-    task = delayed(process_climate_data)(cfg, climate_zones)
-    dask.compute(*task, scheduler="processes")
+    process_climate_data(cfg, climate_zones)
 
 
 if __name__ == "__main__":

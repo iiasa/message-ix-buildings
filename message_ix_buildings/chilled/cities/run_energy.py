@@ -28,13 +28,7 @@ def parse_arguments(arguments):
         help="GCM to run. Options: GFDL-ESM4, IPSL-CM6A-LR, MPI-ESM1-2-HR, MRI-ESM2-0, \
             UKESM1-0-LL. Default: GFDL-ESM4.",
     )
-    parser.add_argument(
-        "-lcz",
-        "--lcz",
-        default=True,
-        help="Run with local climate zones. \
-            Default: True.",
-    )
+    parser.add_argument("-green", "--green", action="store_true", default=False)
 
     # Parse arguments
     parsed_arguments = parser.parse_known_args(args=arguments)[0]
@@ -59,8 +53,8 @@ def print_arguments(parsed_arguments):
         + "Selected GCM: "
         + parsed_arguments.gcm
         + "\n"
-        + "Run with local climate zones: "
-        + str(parsed_arguments.lcz)
+        + "Run with green space: "
+        + str(parsed_arguments.green)
     )
 
 
@@ -80,13 +74,13 @@ def main(args=None):
 
     parsed_args = parse_arguments(arguments=args)
 
-    climate_zones = parsed_args.lcz
+    green = parsed_args.green
 
     # Run the core functions
     print_arguments(parsed_arguments=parsed_args)
     cfg = create_config(parsed_arguments=parsed_args)
     log.info("Running core functions...")
-    calculate_energy(cfg, climate_zones)
+    calculate_energy(cfg, green)
 
     # log.info("Running core functions...")
     # process_climate_data(cfg, parsed_args.lcz)

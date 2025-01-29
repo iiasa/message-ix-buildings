@@ -98,7 +98,7 @@ def main(args=None):
         task = delayed(process_climate_data)(config, climate_zones)
         tasks.append(task)
 
-    dask.compute(*tasks)
+    dask.compute(*tasks, scheduler="processes")
 
     # log.info("Running core functions...")
     # process_climate_data(cfg, parsed_args.lcz)

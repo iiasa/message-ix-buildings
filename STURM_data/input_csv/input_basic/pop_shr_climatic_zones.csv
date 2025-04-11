@@ -1,0 +1,447 @@
+region_bld,urt,clim,value
+C-EEU-BGR,rur,Zone_4A Mixed Humid,0.671389833
+C-EEU-BGR,rur,Zone_5A Cool Humid,0.328610167
+C-EEU-BGR,urb,Zone_4A Mixed Humid,0.713795844
+C-EEU-BGR,urb,Zone_5A Cool Humid,0.286204156
+C-EEU-CZE,rur,Zone_5A Cool Humid,1
+C-EEU-CZE,urb,Zone_5A Cool Humid,1
+C-EEU-EST,rur,Zone_6A Cold Humid,1
+C-EEU-EST,urb,Zone_6A Cold Humid,1
+C-EEU-HUN,rur,Zone_4A Mixed Humid,0.515033164
+C-EEU-HUN,rur,Zone_5A Cool Humid,0.484966836
+C-EEU-HUN,urb,Zone_4A Mixed Humid,0.476299894
+C-EEU-HUN,urb,Zone_5A Cool Humid,0.523700106
+C-EEU-LTU,rur,Zone_6A Cold Humid,1
+C-EEU-LTU,urb,Zone_6A Cold Humid,1
+C-EEU-LVA,rur,Zone_6A Cold Humid,1
+C-EEU-LVA,urb,Zone_6A Cold Humid,1
+C-EEU-POL,rur,Zone_5A Cool Humid,1
+C-EEU-POL,urb,Zone_5A Cool Humid,1
+C-EEU-ROU,rur,Zone_4A Mixed Humid,0.347809548
+C-EEU-ROU,rur,Zone_5A Cool Humid,0.495090866
+C-EEU-ROU,rur,Zone_6A Cold Humid,0.157099586
+C-EEU-ROU,urb,Zone_4A Mixed Humid,0.40331551
+C-EEU-ROU,urb,Zone_5A Cool Humid,0.517051096
+C-EEU-ROU,urb,Zone_6A Cold Humid,0.079633393
+C-EEU-SVK,rur,Zone_5A Cool Humid,0.540799211
+C-EEU-SVK,rur,Zone_6A Cold Humid,0.459200789
+C-EEU-SVK,urb,Zone_5A Cool Humid,0.585684745
+C-EEU-SVK,urb,Zone_6A Cold Humid,0.414315255
+C-EEU-SVN,rur,Zone_5A Cool Humid,1
+C-EEU-SVN,urb,Zone_5A Cool Humid,1
+C-WEU-AUT,rur,Zone_4A Mixed Humid,0.003053919
+C-WEU-AUT,rur,Zone_5A Cool Humid,0.717325824
+C-WEU-AUT,rur,Zone_6A Cold Humid,0.279620257
+C-WEU-AUT,urb,Zone_4A Mixed Humid,0.349595149
+C-WEU-AUT,urb,Zone_5A Cool Humid,0.446220016
+C-WEU-AUT,urb,Zone_6A Cold Humid,0.204184835
+C-WEU-BEL,rur,Zone_4A Mixed Humid,1
+C-WEU-BEL,urb,Zone_4A Mixed Humid,1
+C-WEU-CHE,rur,Zone_5A Cool Humid,1
+C-WEU-CHE,urb,Zone_5A Cool Humid,1
+C-WEU-CYP,rur,Zone_3A Warm Humid,1
+C-WEU-CYP,urb,Zone_3A Warm Humid,1
+C-WEU-DEU,rur,Zone_4A Mixed Humid,0.030878627
+C-WEU-DEU,rur,Zone_5A Cool Humid,0.969121373
+C-WEU-DEU,urb,Zone_4A Mixed Humid,0.247805196
+C-WEU-DEU,urb,Zone_5A Cool Humid,0.752194804
+C-WEU-DNK,rur,Zone_5A Cool Humid,1
+C-WEU-DNK,urb,Zone_5A Cool Humid,1
+C-WEU-ESP,rur,Zone_3A Warm Humid,0.5026459
+C-WEU-ESP,rur,Zone_3B Warm Dry,0.129637842
+C-WEU-ESP,rur,Zone_3C Warm Marine,0.046262641
+C-WEU-ESP,rur,Zone_4A Mixed Humid,0.171227634
+C-WEU-ESP,rur,Zone_4C Mixed Marine,0.150225983
+C-WEU-ESP,urb,Zone_3A Warm Humid,0.438624561
+C-WEU-ESP,urb,Zone_3B Warm Dry,0.242221895
+C-WEU-ESP,urb,Zone_3C Warm Marine,0.055879555
+C-WEU-ESP,urb,Zone_4A Mixed Humid,0.188974438
+C-WEU-ESP,urb,Zone_4C Mixed Marine,0.074299552
+C-WEU-FIN,rur,Zone_6A Cold Humid,0.176179313
+C-WEU-FIN,rur,Zone_7A Very cold Humid,0.823820687
+C-WEU-FIN,urb,Zone_6A Cold Humid,0.636939824
+C-WEU-FIN,urb,Zone_7A Very cold Humid,0.363060176
+C-WEU-FRA,rur,Zone_3A Warm Humid,0.102099305
+C-WEU-FRA,rur,Zone_4A Mixed Humid,0.758755556
+C-WEU-FRA,rur,Zone_5A Cool Humid,0.139145139
+C-WEU-FRA,urb,Zone_3A Warm Humid,0.145668629
+C-WEU-FRA,urb,Zone_4A Mixed Humid,0.760844359
+C-WEU-FRA,urb,Zone_5A Cool Humid,0.093487012
+C-WEU-GBR,rur,Zone_4A Mixed Humid,0.483145304
+C-WEU-GBR,rur,Zone_5A Cool Humid,0.516854696
+C-WEU-GBR,urb,Zone_4A Mixed Humid,0.429166781
+C-WEU-GBR,urb,Zone_5A Cool Humid,0.570833219
+C-WEU-GRC,rur,Zone_3A Warm Humid,0.654018413
+C-WEU-GRC,rur,Zone_4A Mixed Humid,0.345981587
+C-WEU-GRC,urb,Zone_3A Warm Humid,0.881303962
+C-WEU-GRC,urb,Zone_4A Mixed Humid,0.118696038
+C-WEU-IRL,rur,Zone_5A Cool Humid,1
+C-WEU-IRL,urb,Zone_5A Cool Humid,1
+C-WEU-ISL,rur,Zone_7A Very cold Humid,1
+C-WEU-ISL,urb,Zone_7A Very cold Humid,1
+C-WEU-ITA,rur,Zone_3A Warm Humid,0.434394058
+C-WEU-ITA,rur,Zone_4A Mixed Humid,0.434407913
+C-WEU-ITA,rur,Zone_4C Mixed Marine,0.056494449
+C-WEU-ITA,rur,Zone_5A Cool Humid,0.07470358
+C-WEU-ITA,urb,Zone_3A Warm Humid,0.487702124
+C-WEU-ITA,urb,Zone_4A Mixed Humid,0.434572454
+C-WEU-ITA,urb,Zone_4C Mixed Marine,0.04767564
+C-WEU-ITA,urb,Zone_5A Cool Humid,0.030049782
+C-WEU-LUX,rur,Zone_5A Cool Humid,1
+C-WEU-LUX,urb,Zone_5A Cool Humid,1
+C-WEU-MLT,rur,Zone_3A Warm Humid,1
+C-WEU-MLT,urb,Zone_3A Warm Humid,1
+C-WEU-NLD,rur,Zone_4A Mixed Humid,0.440225952
+C-WEU-NLD,rur,Zone_5A Cool Humid,0.559774048
+C-WEU-NLD,urb,Zone_4A Mixed Humid,0.880220527
+C-WEU-NLD,urb,Zone_5A Cool Humid,0.119779473
+C-WEU-NOR,rur,Zone_6A Cold Humid,1
+C-WEU-NOR,urb,Zone_6A Cold Humid,1
+C-WEU-PRT,rur,Zone_3A Warm Humid,0.553903127
+C-WEU-PRT,rur,Zone_3C Warm Marine,0.446096873
+C-WEU-PRT,urb,Zone_3A Warm Humid,0.504624283
+C-WEU-PRT,urb,Zone_3C Warm Marine,0.495375717
+C-WEU-SWE,rur,Zone_5A Cool Humid,0.136218621
+C-WEU-SWE,rur,Zone_6A Cold Humid,0.863781379
+C-WEU-SWE,urb,Zone_5A Cool Humid,0.418739046
+C-WEU-SWE,urb,Zone_6A Cold Humid,0.581260954
+R32ANUZ,rur,Zone_2A Hot Humid,0.147343596
+R32ANUZ,rur,Zone_3A Warm Humid,0.852656404
+R32ANUZ,urb,Zone_2A Hot Humid,0.156102366
+R32ANUZ,urb,Zone_3A Warm Humid,0.843897634
+R32BRA,rur,Zone_0A Extremely hot Humid,0.280910412
+R32BRA,rur,Zone_1A Very hot Humid,0.347570529
+R32BRA,rur,Zone_1B Very hot Dry,0.052654618
+R32BRA,rur,Zone_2A Hot Humid,0.246836352
+R32BRA,rur,Zone_3A Warm Humid,0.072028089
+R32BRA,urb,Zone_0A Extremely hot Humid,0.114520259
+R32BRA,urb,Zone_1A Very hot Humid,0.202315529
+R32BRA,urb,Zone_1B Very hot Dry,0.008001272
+R32BRA,urb,Zone_2A Hot Humid,0.604343442
+R32BRA,urb,Zone_3A Warm Humid,0.070819498
+R32CAN,rur,Zone_5A Cool Humid,0.077852991
+R32CAN,rur,Zone_6A Cold Humid,0.417280286
+R32CAN,rur,Zone_7A Very cold Humid,0.504866723
+R32CAN,urb,Zone_5A Cool Humid,0.346588603
+R32CAN,urb,Zone_6A Cold Humid,0.376214443
+R32CAN,urb,Zone_7A Very cold Humid,0.277196953
+R32CAS-CAU,rur,Zone_4A Mixed Humid,0.369663582
+R32CAS-CAU,rur,Zone_4B Mixed Dry,0.227876358
+R32CAS-CAU,rur,Zone_5A Cool Humid,0.260280241
+R32CAS-CAU,rur,Zone_6A Cold Humid,0.142179819
+R32CAS-CAU,urb,Zone_4A Mixed Humid,0.246624812
+R32CAS-CAU,urb,Zone_4B Mixed Dry,0.302257191
+R32CAS-CAU,urb,Zone_5A Cool Humid,0.242206041
+R32CAS-CAU,urb,Zone_6A Cold Humid,0.208911956
+R32CAS-OTH,rur,Zone_3B Warm Dry,0.033509948
+R32CAS-OTH,rur,Zone_4A Mixed Humid,0.182381846
+R32CAS-OTH,rur,Zone_4B Mixed Dry,0.345503657
+R32CAS-OTH,rur,Zone_5A Cool Humid,0.22609272
+R32CAS-OTH,rur,Zone_6A Cold Humid,0.029808206
+R32CAS-OTH,rur,Zone_7A Very cold Humid,0.182703623
+R32CAS-OTH,urb,Zone_3B Warm Dry,0.063828243
+R32CAS-OTH,urb,Zone_4A Mixed Humid,0.242721783
+R32CAS-OTH,urb,Zone_4B Mixed Dry,0.180293402
+R32CAS-OTH,urb,Zone_5A Cool Humid,0.123186553
+R32CAS-OTH,urb,Zone_6A Cold Humid,0.027167773
+R32CAS-OTH,urb,Zone_7A Very cold Humid,0.362802245
+R32CHN,rur,Zone_1A Very hot Humid,0.011590732
+R32CHN,rur,Zone_2A Hot Humid,0.09714242
+R32CHN,rur,Zone_3A Warm Humid,0.39720157
+R32CHN,rur,Zone_3C Warm Marine,0.033854364
+R32CHN,rur,Zone_4A Mixed Humid,0.145453289
+R32CHN,rur,Zone_4B Mixed Dry,0.039861555
+R32CHN,rur,Zone_4C Mixed Marine,0.019592245
+R32CHN,rur,Zone_5A Cool Humid,0.049078275
+R32CHN,rur,Zone_5B Cool Dry,0.028881633
+R32CHN,rur,Zone_5C Cool Marine,0.005960709
+R32CHN,rur,Zone_6A Cold Humid,0.059445739
+R32CHN,rur,Zone_6B Cold Dry,0.026240562
+R32CHN,rur,Zone_7A Very cold Humid,0.072011324
+R32CHN,rur,Zone_7B Very cold Dry,0.006223449
+R32CHN,rur,Zone_8A Subarctic/arctic Humid,0.007462135
+R32CHN,urb,Zone_1A Very hot Humid,0.005551286
+R32CHN,urb,Zone_2A Hot Humid,0.146872585
+R32CHN,urb,Zone_3A Warm Humid,0.370670587
+R32CHN,urb,Zone_3C Warm Marine,0.008238229
+R32CHN,urb,Zone_4A Mixed Humid,0.262805612
+R32CHN,urb,Zone_4B Mixed Dry,0.085531542
+R32CHN,urb,Zone_4C Mixed Marine,0.001886451
+R32CHN,urb,Zone_5A Cool Humid,0.034132483
+R32CHN,urb,Zone_5B Cool Dry,0.014238249
+R32CHN,urb,Zone_5C Cool Marine,0.001646988
+R32CHN,urb,Zone_6A Cold Humid,0.038814746
+R32CHN,urb,Zone_6B Cold Dry,0.008190497
+R32CHN,urb,Zone_7A Very cold Humid,0.02128964
+R32CHN,urb,Zone_7B Very cold Dry,1.11E-04
+R32CHN,urb,Zone_8A Subarctic/arctic Humid,2.04E-05
+R32EEU,rur,Zone_3A Warm Humid,0.143387272
+R32EEU,rur,Zone_4A Mixed Humid,0.436405296
+R32EEU,rur,Zone_5A Cool Humid,0.420207432
+R32EEU,urb,Zone_3A Warm Humid,0.130260071
+R32EEU,urb,Zone_4A Mixed Humid,0.346308354
+R32EEU,urb,Zone_5A Cool Humid,0.523431575
+R32EEU-FSU,rur,Zone_5A Cool Humid,0.914343652
+R32EEU-FSU,rur,Zone_6A Cold Humid,0.085656348
+R32EEU-FSU,urb,Zone_5A Cool Humid,0.861551797
+R32EEU-FSU,urb,Zone_6A Cold Humid,0.138448203
+R32IDN,rur,Zone_0A Extremely hot Humid,0.568250603
+R32IDN,rur,Zone_1A Very hot Humid,0.409322894
+R32IDN,rur,Zone_2A Hot Humid,0.022426502
+R32IDN,urb,Zone_0A Extremely hot Humid,0.681858295
+R32IDN,urb,Zone_1A Very hot Humid,0.318141705
+R32IDN,urb,Zone_2A Hot Humid,0
+R32IND,rur,Zone_0A Extremely hot Humid,0.245963709
+R32IND,rur,Zone_0B Extremely hot Dry,0.104799119
+R32IND,rur,Zone_1A Very hot Humid,0.400728721
+R32IND,rur,Zone_1B Very hot Dry,0.178459165
+R32IND,rur,Zone_2A Hot Humid,0.047540693
+R32IND,rur,Zone_2B Hot Dry,0.002565579
+R32IND,rur,Zone_3A Warm Humid,0.007257835
+R32IND,rur,Zone_3C Warm Marine,0.003575881
+R32IND,rur,Zone_4C Mixed Marine,0.007432079
+R32IND,rur,Zone_5C Cool Marine,0.001677218
+R32IND,urb,Zone_0A Extremely hot Humid,0.399691659
+R32IND,urb,Zone_0B Extremely hot Dry,0.051303197
+R32IND,urb,Zone_1A Very hot Humid,0.34349145
+R32IND,urb,Zone_1B Very hot Dry,0.15904787
+R32IND,urb,Zone_2A Hot Humid,0.035143369
+R32IND,urb,Zone_2B Hot Dry,0.004738873
+R32IND,urb,Zone_3A Warm Humid,0.002918726
+R32IND,urb,Zone_3C Warm Marine,8.35E-04
+R32IND,urb,Zone_4C Mixed Marine,4.63E-04
+R32IND,urb,Zone_5C Cool Marine,0.002367654
+R32JPN,rur,Zone_3A Warm Humid,0.323978253
+R32JPN,rur,Zone_4A Mixed Humid,0.374127758
+R32JPN,rur,Zone_5A Cool Humid,0.237031741
+R32JPN,rur,Zone_6A Cold Humid,0.064862249
+R32JPN,urb,Zone_3A Warm Humid,0.668478081
+R32JPN,urb,Zone_4A Mixed Humid,0.239647497
+R32JPN,urb,Zone_5A Cool Humid,0.059567069
+R32JPN,urb,Zone_6A Cold Humid,0.032307353
+R32KOR,rur,Zone_4A Mixed Humid,0.508489285
+R32KOR,rur,Zone_5A Cool Humid,0.491510715
+R32KOR,urb,Zone_4A Mixed Humid,0.683891436
+R32KOR,urb,Zone_5A Cool Humid,0.316108564
+R32LAM-L,rur,Zone_0A Extremely hot Humid,0.052584113
+R32LAM-L,rur,Zone_1A Very hot Humid,0.388930192
+R32LAM-L,rur,Zone_2A Hot Humid,0.360321043
+R32LAM-L,rur,Zone_3C Warm Marine,0.198164652
+R32LAM-L,urb,Zone_0A Extremely hot Humid,0.104416589
+R32LAM-L,urb,Zone_1A Very hot Humid,0.40385427
+R32LAM-L,urb,Zone_2A Hot Humid,0.258535332
+R32LAM-L,urb,Zone_3C Warm Marine,0.233193809
+R32LAM-M,rur,Zone_0A Extremely hot Humid,0.131029369
+R32LAM-M,rur,Zone_1A Very hot Humid,0.428756951
+R32LAM-M,rur,Zone_2A Hot Humid,0.143056023
+R32LAM-M,rur,Zone_2B Hot Dry,0.033140562
+R32LAM-M,rur,Zone_3A Warm Humid,0.057539099
+R32LAM-M,rur,Zone_3B Warm Dry,0.017830446
+R32LAM-M,rur,Zone_3C Warm Marine,0.146810283
+R32LAM-M,rur,Zone_4C Mixed Marine,0.041837266
+R32LAM-M,urb,Zone_0A Extremely hot Humid,0.085385979
+R32LAM-M,urb,Zone_1A Very hot Humid,0.275395016
+R32LAM-M,urb,Zone_2A Hot Humid,0.138552993
+R32LAM-M,urb,Zone_2B Hot Dry,0.024291015
+R32LAM-M,urb,Zone_3A Warm Humid,0.224656968
+R32LAM-M,urb,Zone_3B Warm Dry,0.060486227
+R32LAM-M,urb,Zone_3C Warm Marine,0.150843897
+R32LAM-M,urb,Zone_4C Mixed Marine,0.040387905
+R32MEA-H,rur,Zone_0B Extremely hot Dry,0.472828196
+R32MEA-H,rur,Zone_1B Very hot Dry,0.292935759
+R32MEA-H,rur,Zone_2B Hot Dry,0.153749268
+R32MEA-H,rur,Zone_3A Warm Humid,0.080486777
+R32MEA-H,urb,Zone_0B Extremely hot Dry,0.384057087
+R32MEA-H,urb,Zone_1B Very hot Dry,0.390065815
+R32MEA-H,urb,Zone_2B Hot Dry,0.076068403
+R32MEA-H,urb,Zone_3A Warm Humid,0.149808695
+R32MEA-M,rur,Zone_0A Extremely hot Humid,0.046443324
+R32MEA-M,rur,Zone_0B Extremely hot Dry,0.263349812
+R32MEA-M,rur,Zone_1B Very hot Dry,0.115066351
+R32MEA-M,rur,Zone_2A Hot Humid,0.018317207
+R32MEA-M,rur,Zone_2B Hot Dry,0.214529761
+R32MEA-M,rur,Zone_3A Warm Humid,0.043013581
+R32MEA-M,rur,Zone_3B Warm Dry,0.137726777
+R32MEA-M,rur,Zone_3C Warm Marine,0.05462378
+R32MEA-M,rur,Zone_4A Mixed Humid,0.026579449
+R32MEA-M,rur,Zone_4B Mixed Dry,0.038283312
+R32MEA-M,rur,Zone_5A Cool Humid,0.030371923
+R32MEA-M,rur,Zone_5B Cool Dry,0.011694722
+R32MEA-M,urb,Zone_0A Extremely hot Humid,0.007833072
+R32MEA-M,urb,Zone_0B Extremely hot Dry,0.154581651
+R32MEA-M,urb,Zone_1B Very hot Dry,0.133881857
+R32MEA-M,urb,Zone_2A Hot Humid,0.055214703
+R32MEA-M,urb,Zone_2B Hot Dry,0.125586341
+R32MEA-M,urb,Zone_3A Warm Humid,0.135055344
+R32MEA-M,urb,Zone_3B Warm Dry,0.096710405
+R32MEA-M,urb,Zone_3C Warm Marine,0.022984295
+R32MEA-M,urb,Zone_4A Mixed Humid,0.153540286
+R32MEA-M,urb,Zone_4B Mixed Dry,0.064759021
+R32MEA-M,urb,Zone_5A Cool Humid,0.034972837
+R32MEA-M,urb,Zone_5B Cool Dry,0.014880189
+R32MEX,rur,Zone_0A Extremely hot Humid,0.070663864
+R32MEX,rur,Zone_1A Very hot Humid,0.252114072
+R32MEX,rur,Zone_1B Very hot Dry,0.077829073
+R32MEX,rur,Zone_2A Hot Humid,0.136865514
+R32MEX,rur,Zone_2B Hot Dry,0.109956514
+R32MEX,rur,Zone_3A Warm Humid,0.058390717
+R32MEX,rur,Zone_3B Warm Dry,0.101878279
+R32MEX,rur,Zone_3C Warm Marine,0.192301966
+R32MEX,urb,Zone_0A Extremely hot Humid,0.03555311
+R32MEX,urb,Zone_1A Very hot Humid,0.111415255
+R32MEX,urb,Zone_1B Very hot Dry,0.032367892
+R32MEX,urb,Zone_2A Hot Humid,0.134313921
+R32MEX,urb,Zone_2B Hot Dry,0.073641822
+R32MEX,urb,Zone_3A Warm Humid,0.057497596
+R32MEX,urb,Zone_3B Warm Dry,0.064822968
+R32MEX,urb,Zone_3C Warm Marine,0.490387437
+R32NAF,rur,Zone_1B Very hot Dry,0.004223883
+R32NAF,rur,Zone_2B Hot Dry,0.700956293
+R32NAF,rur,Zone_3A Warm Humid,0.127381561
+R32NAF,rur,Zone_3B Warm Dry,0.167438263
+R32NAF,urb,Zone_1B Very hot Dry,0.025245408
+R32NAF,urb,Zone_2B Hot Dry,0.461382812
+R32NAF,urb,Zone_3A Warm Humid,0.404524432
+R32NAF,urb,Zone_3B Warm Dry,0.108847348
+R32OAS-CPA,rur,Zone_0A Extremely hot Humid,0.435403838
+R32OAS-CPA,rur,Zone_1A Very hot Humid,0.421723016
+R32OAS-CPA,rur,Zone_2A Hot Humid,0.12959758
+R32OAS-CPA,rur,Zone_8A Subarctic/arctic Humid,0.013275566
+R32OAS-CPA,urb,Zone_0A Extremely hot Humid,0.411702719
+R32OAS-CPA,urb,Zone_1A Very hot Humid,0.510870577
+R32OAS-CPA,urb,Zone_2A Hot Humid,0.027650282
+R32OAS-CPA,urb,Zone_8A Subarctic/arctic Humid,0.049776422
+R32OAS-L-PAS,rur,Zone_0A Extremely hot Humid,0.484691763
+R32OAS-L-PAS,rur,Zone_0B Extremely hot Dry,0.015486018
+R32OAS-L-PAS,rur,Zone_1A Very hot Humid,0.336682136
+R32OAS-L-PAS,rur,Zone_2A Hot Humid,0.163140083
+R32OAS-L-PAS,urb,Zone_0A Extremely hot Humid,0.639397555
+R32OAS-L-PAS,urb,Zone_0B Extremely hot Dry,0.018440576
+R32OAS-L-PAS,urb,Zone_1A Very hot Humid,0.302248858
+R32OAS-L-PAS,urb,Zone_2A Hot Humid,0.039913011
+R32OAS-L-SAS,rur,Zone_0A Extremely hot Humid,0.079908757
+R32OAS-L-SAS,rur,Zone_1A Very hot Humid,0.722661435
+R32OAS-L-SAS,rur,Zone_2A Hot Humid,0.124767303
+R32OAS-L-SAS,rur,Zone_3A Warm Humid,0.027288352
+R32OAS-L-SAS,rur,Zone_3C Warm Marine,0.045374154
+R32OAS-L-SAS,urb,Zone_0A Extremely hot Humid,0.103870899
+R32OAS-L-SAS,urb,Zone_1A Very hot Humid,0.769902965
+R32OAS-L-SAS,urb,Zone_2A Hot Humid,0.057000709
+R32OAS-L-SAS,urb,Zone_3A Warm Humid,0.062602959
+R32OAS-L-SAS,urb,Zone_3C Warm Marine,0.006622468
+R32OAS-M-PAS,rur,Zone_0A Extremely hot Humid,0.731545229
+R32OAS-M-PAS,rur,Zone_1A Very hot Humid,0.268454771
+R32OAS-M-PAS,urb,Zone_0A Extremely hot Humid,0.787167372
+R32OAS-M-PAS,urb,Zone_1A Very hot Humid,0.212832628
+R32OAS-M-SAS,rur,Zone_0A Extremely hot Humid,0.608920051
+R32OAS-M-SAS,rur,Zone_1A Very hot Humid,0.218053171
+R32OAS-M-SAS,rur,Zone_2A Hot Humid,0.147146096
+R32OAS-M-SAS,rur,Zone_4C Mixed Marine,0.025880681
+R32OAS-M-SAS,urb,Zone_0A Extremely hot Humid,0.737321701
+R32OAS-M-SAS,urb,Zone_1A Very hot Humid,0.089875636
+R32OAS-M-SAS,urb,Zone_2A Hot Humid,0.095325872
+R32OAS-M-SAS,urb,Zone_4C Mixed Marine,0.077476791
+R32PAK,rur,Zone_0B Extremely hot Dry,0.168778819
+R32PAK,rur,Zone_1A Very hot Humid,0.01896701
+R32PAK,rur,Zone_1B Very hot Dry,0.378494473
+R32PAK,rur,Zone_2A Hot Humid,0.065222605
+R32PAK,rur,Zone_2B Hot Dry,0.105853758
+R32PAK,rur,Zone_3A Warm Humid,0.035639551
+R32PAK,rur,Zone_3B Warm Dry,0.106351019
+R32PAK,rur,Zone_4A Mixed Humid,0.035053361
+R32PAK,rur,Zone_5A Cool Humid,0.039508534
+R32PAK,rur,Zone_6A Cold Humid,0.023754371
+R32PAK,rur,Zone_7A Very cold Humid,0.022376499
+R32PAK,urb,Zone_0B Extremely hot Dry,0.20608844
+R32PAK,urb,Zone_1A Very hot Humid,0.073594435
+R32PAK,urb,Zone_1B Very hot Dry,0.395243887
+R32PAK,urb,Zone_2A Hot Humid,0.185932861
+R32PAK,urb,Zone_2B Hot Dry,0.021766584
+R32PAK,urb,Zone_3A Warm Humid,0.005673996
+R32PAK,urb,Zone_3B Warm Dry,0.030525479
+R32PAK,urb,Zone_4A Mixed Humid,0.010675222
+R32PAK,urb,Zone_5A Cool Humid,0.068560484
+R32PAK,urb,Zone_6A Cold Humid,0.001938613
+R32PAK,urb,Zone_7A Very cold Humid,0
+R32RUS,rur,Zone_4A Mixed Humid,0.045672089
+R32RUS,rur,Zone_5A Cool Humid,0.100190823
+R32RUS,rur,Zone_6A Cold Humid,0.33303044
+R32RUS,rur,Zone_7A Very cold Humid,0.4382516
+R32RUS,rur,Zone_8A Subarctic/arctic Humid,0.082855048
+R32RUS,urb,Zone_4A Mixed Humid,0.030439275
+R32RUS,urb,Zone_5A Cool Humid,0.090017693
+R32RUS,urb,Zone_6A Cold Humid,0.459316897
+R32RUS,urb,Zone_7A Very cold Humid,0.381473783
+R32RUS,urb,Zone_8A Subarctic/arctic Humid,0.038752352
+R32SAF,rur,Zone_2A Hot Humid,0.148558958
+R32SAF,rur,Zone_2B Hot Dry,0.166259188
+R32SAF,rur,Zone_3A Warm Humid,0.242315737
+R32SAF,rur,Zone_3B Warm Dry,0.166518755
+R32SAF,rur,Zone_3C Warm Marine,0.276347362
+R32SAF,urb,Zone_2A Hot Humid,0.153448045
+R32SAF,urb,Zone_2B Hot Dry,0.07374796
+R32SAF,urb,Zone_3A Warm Humid,0.263433461
+R32SAF,urb,Zone_3B Warm Dry,0.126337713
+R32SAF,urb,Zone_3C Warm Marine,0.383032821
+R32SSA-L,rur,Zone_0A Extremely hot Humid,0.185708978
+R32SSA-L,rur,Zone_0B Extremely hot Dry,0.152389797
+R32SSA-L,rur,Zone_1A Very hot Humid,0.22596208
+R32SSA-L,rur,Zone_1B Very hot Dry,0.003169966
+R32SSA-L,rur,Zone_2A Hot Humid,0.273784213
+R32SSA-L,rur,Zone_2B Hot Dry,0.019949714
+R32SSA-L,rur,Zone_3A Warm Humid,0.01984024
+R32SSA-L,rur,Zone_3C Warm Marine,0.119195012
+R32SSA-L,urb,Zone_0A Extremely hot Humid,0.384940205
+R32SSA-L,urb,Zone_0B Extremely hot Dry,0.107721743
+R32SSA-L,urb,Zone_1A Very hot Humid,0.212971389
+R32SSA-L,urb,Zone_1B Very hot Dry,0.012483519
+R32SSA-L,urb,Zone_2A Hot Humid,0.159773996
+R32SSA-L,urb,Zone_2B Hot Dry,0.017347424
+R32SSA-L,urb,Zone_3A Warm Humid,0.006532111
+R32SSA-L,urb,Zone_3C Warm Marine,0.098229613
+R32SSA-M,rur,Zone_1A Very hot Humid,0.199645074
+R32SSA-M,rur,Zone_1B Very hot Dry,0.017572157
+R32SSA-M,rur,Zone_2A Hot Humid,0.513702588
+R32SSA-M,rur,Zone_2B Hot Dry,0.186087569
+R32SSA-M,rur,Zone_3C Warm Marine,0.082992612
+R32SSA-M,urb,Zone_1A Very hot Humid,0.204687074
+R32SSA-M,urb,Zone_1B Very hot Dry,0.207879161
+R32SSA-M,urb,Zone_2A Hot Humid,0.24573836
+R32SSA-M,urb,Zone_2B Hot Dry,0.129060992
+R32SSA-M,urb,Zone_3C Warm Marine,0.212634412
+R32TUR,rur,Zone_3A Warm Humid,0.068817735
+R32TUR,rur,Zone_4A Mixed Humid,0.236797105
+R32TUR,rur,Zone_4C Mixed Marine,0.180304578
+R32TUR,rur,Zone_5A Cool Humid,0.251074622
+R32TUR,rur,Zone_5C Cool Marine,0.150323537
+R32TUR,rur,Zone_6A Cold Humid,0.112682423
+R32TUR,urb,Zone_3A Warm Humid,0.445570886
+R32TUR,urb,Zone_4A Mixed Humid,0.341948598
+R32TUR,urb,Zone_4C Mixed Marine,0.059528927
+R32TUR,urb,Zone_5A Cool Humid,0.068837852
+R32TUR,urb,Zone_5C Cool Marine,0.074911676
+R32TUR,urb,Zone_6A Cold Humid,0.009202061
+R32USA,rur,Zone_1A Very hot Humid,0.002678944
+R32USA,rur,Zone_2A Hot Humid,0.092088585
+R32USA,rur,Zone_2B Hot Dry,0.006805987
+R32USA,rur,Zone_3A Warm Humid,0.239763189
+R32USA,rur,Zone_3B Warm Dry,0.017183519
+R32USA,rur,Zone_3C Warm Marine,0.008023279
+R32USA,rur,Zone_4A Mixed Humid,0.226680732
+R32USA,rur,Zone_4C Mixed Marine,0.019533209
+R32USA,rur,Zone_5A Cool Humid,0.229387282
+R32USA,rur,Zone_5C Cool Marine,0.018277811
+R32USA,rur,Zone_6A Cold Humid,0.118411888
+R32USA,rur,Zone_7A Very cold Humid,0.021165573
+R32USA,urb,Zone_1A Very hot Humid,0.039962705
+R32USA,urb,Zone_2A Hot Humid,0.115569285
+R32USA,urb,Zone_2B Hot Dry,0.017759496
+R32USA,urb,Zone_3A Warm Humid,0.14747475
+R32USA,urb,Zone_3B Warm Dry,0.026813117
+R32USA,urb,Zone_3C Warm Marine,0.07954591
+R32USA,urb,Zone_4A Mixed Humid,0.237534439
+R32USA,urb,Zone_4C Mixed Marine,0.03282534
+R32USA,urb,Zone_5A Cool Humid,0.229232177
+R32USA,urb,Zone_5C Cool Marine,0.016290545
+R32USA,urb,Zone_6A Cold Humid,0.053079422
+R32USA,urb,Zone_7A Very cold Humid,0.003912815

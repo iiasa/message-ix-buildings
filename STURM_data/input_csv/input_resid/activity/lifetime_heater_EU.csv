@@ -1,0 +1,8 @@
+fuel_heat,bld_age_min,value
+biomass_solid,0,20
+coal,0,20
+district_heat,0,20
+electricity,0,20
+heat_pump,0,20
+gas,0,20
+oil,0,20

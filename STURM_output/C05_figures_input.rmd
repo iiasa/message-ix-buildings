@@ -1,0 +1,273 @@
+---
+output: reprex::reprex_document
+knit: reprex::reprex_render
+---
+
+Notebook to run STURM Ouput.
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(stringr)
+library(tidyr)
+library(readr)
+
+print(paste("Working directory is:", getwd()))
+
+# Loding figures setttings and functions
+source("STURM_output/C00_plots.R")
+
+save_figs <- paste("STURM_output", "figures", "input", sep = "/")
+if (!dir.exists(save_figs)) {
+  dir.create(save_figs)
+}
+
+folder_input <- "STURM_data/input_csv/input_resid"
+geo_data <- read_csv("STURM_data/input_csv/input_basic_geo/regions.csv", show_col_types = FALSE)
+
+```
+## Emisison factors
+```{r}
+source("STURM_output/C01_inputs.R")
+
+read_emission_factors(emission_factors,
+                      emission_ini,
+                      geo_data,
+                      2015)
+
+file <- c(paste0(folder_input, "/emission/emission_ini.csv"))
+emission_ini <- read_csv(file, show_col_types = FALSE) %>%
+  rename(emission_ini = value)
+
+files <- c(
+  "emission_factors_NPi.csv" = "NPi",
+  "emission_factors_NPi_2020_400.csv" = "NPi_2020_400",
+  "emission_factors_NPi_EUETS.csv" = "EUETS"
+  )
+
+emission_factors <- data.frame()
+for (file in names(files)) {
+  name <- files[file]
+  file <- c(paste0(folder_input, "/emission/", file))
+  temp <- read_csv(file, show_col_types = FALSE) %>%
+    rename(emission_factors = value)
+
+  temp <- read_emission_factors(temp,
+                                  emission_ini,
+                                  geo_data,
+                                  2015)
+  temp <- temp %>%
+    mutate(scenario = name) %>%
+    filter(year <= 2050)
+  
+  emission_factors <- bind_rows(emission_factors, temp)
+}
+emission_factors <- emission_factors %>%
+  filter(scenario == "EUETS") %>%
+  select(-scenario)
+
+```
+## Energy prices
+```{r}
+source("STURM_model/F01_inputs.R")
+
+file <- c(paste0(folder_input, "/macro/input_prices_ini_resid_EU.csv"))
+price_base_year <- read_csv(file, show_col_types = FALSE) %>%
+  rename(energy_prices_ini = value)
+geo_data <- geo_data %>%
+  filter(region_bld %in% unique(price_base_year$region_bld))
+
+files <- c(
+  "input_prices_NPi.csv" = "NPi",
+  "input_prices_NPi_2020_600.csv" = "NPi_2020_600",
+  "input_prices_NPi_constant.csv" = "Constant")
+
+price_en <- data.frame()
+for (file in names(files)) {
+  name <- files[file]
+  file <- c(paste0(folder_input, "/macro/", file))
+  temp <- read_csv(file, show_col_types = FALSE) %>%
+    rename(energy_prices_projections = value)
+  temp <- read_energy_prices(price_base_year,
+                                temp,
+                                geo_data,
+                                2015,
+                                2050,
+                               linear = TRUE)
+  temp <- temp %>%
+    mutate(scenario = name) %>%
+    filter(year <= 2050)
+  
+  price_en <- bind_rows(price_en, temp)
+}
+
+price_carbon_tax <- price_en %>%
+  filter(scenario == "NPi") %>%
+  mutate(scenario = "NPi EUETS-II")
+price_en <- bind_rows(price_en, price_carbon_tax)
+
+price_advanced_carbon_tax <- price_en %>%
+  filter(scenario == "NPi") %>%
+  mutate(scenario = "NPi EUETS-II Advanced")
+price_en <- bind_rows(price_en, price_advanced_carbon_tax)
+
+
+
+```
+
+```{r}
+# Read carbon market
+
+if (TRUE) {
+  carbon_market <- read.csv(paste0(folder_input, "/emission/carbon_market_EUETS.csv")) %>%
+    rename(carbon_market = value)
+
+  carbon_market  <- carbon_market  %>%
+    rowwise() %>%
+    mutate(fuel = list(c("electricity", "district_heat"))) %>%
+    unnest(fuel) %>%
+    left_join(emission_factors, relationship =
+      "many-to-many") %>%
+    mutate(carbon_market = 3.6 * carbon_market * emission_factors / 1e6) %>%
+    select(-c(emission_factors, region_gea))
+
+  price_en <- price_en %>%
+    left_join(carbon_market) %>%
+    mutate(carbon_market = ifelse(is.na(carbon_market), 0, carbon_market)) %>%
+    mutate(price_en = price_en + carbon_market) %>%
+    select(-carbon_market)
+}
+```
+
+```{r}
+
+# Read carbon tax
+if (TRUE) {
+  print("Carbon tax")
+  carbon_tax <- read.csv(paste0(folder_input, "/policies/carbon_tax_EU_EUETSII.csv")) %>%
+    rename(carbon_tax = value)
+
+  carbon_tax <- carbon_tax  %>%
+    rowwise() %>%
+    mutate(fuel = list(c("oil", "gas", "coal"))) %>%
+    unnest(fuel)
+
+  carbon_tax <- carbon_tax %>%
+    left_join(emission_factors, relationship =
+      "many-to-many") %>%
+    mutate(carbon_tax = 3.6 * carbon_tax * emission_factors / 1e6) %>%
+    select(-c(emission_factors, region_gea)) %>%
+    mutate(scenario = "NPi EUETS-II")
+
+  price_en <- price_en %>%
+    left_join(carbon_tax) %>%
+    mutate(carbon_tax = ifelse(is.na(carbon_tax), 0, carbon_tax)) %>%
+    mutate(price_en = price_en + carbon_tax) %>%
+    select(-carbon_tax)
+
+  carbon_tax <- read.csv(paste0(folder_input, "/policies/carbon_tax_EU_EUETS.csv")) %>%
+    rename(carbon_tax = value)
+
+  carbon_tax <- carbon_tax  %>%
+    rowwise() %>%
+    mutate(fuel = list(c("oil", "gas", "coal"))) %>%
+    unnest(fuel)
+
+  carbon_tax <- carbon_tax %>%
+    left_join(emission_factors, relationship =
+      "many-to-many") %>%
+    mutate(carbon_tax = 3.6 * carbon_tax * emission_factors / 1e6) %>%
+    select(-c(emission_factors, region_gea)) %>%
+    mutate(scenario = "NPi EUETS-II Advanced")
+
+  price_en <- price_en %>%
+    left_join(carbon_tax) %>%
+    mutate(carbon_tax = ifelse(is.na(carbon_tax), 0, carbon_tax)) %>%
+    mutate(price_en = price_en + carbon_tax) %>%
+    select(-carbon_tax)
+}
+```
+#### Figures of the energy prices
+```{r}
+source("STURM_output/C00_plots.R")
+
+df <- filter(price_en,
+  scenario %in% c("NPi", "NPi EUETS-II", "NPi EUETS-II Advanced")) %>%
+  filter(!is.na(region_bld)) %>%
+  filter(region_bld %in% c("C-WEU-DEU")) # "C-WEU-DEU", "C-WEU-GBR"
+
+line_types <- c("solid", "aa", "dotted")
+
+plot_multiple_lines(df,
+    x_column = "year",
+    y_column = "price_en",
+    line_column = "fuel",
+    type_column = "scenario",
+    group_column = "region_bld",
+    line_types = line_types,
+    ncol = 4,
+    y_label = "Residential energy price (€/kWh)",
+    y_label_suffix = "€/kWh",
+    free_y = FALSE,
+    colors_lines = plot_settings[["colors"]],
+    legend_title = TRUE,
+    save_path = paste(save_figs,
+      paste0("prices_energy_countries.png"), sep = "/"))
+```
+```{r}
+temp <- filter(result, scenario == "NPi_2020_600") %>%
+  filter(!is.na(region_bld))
+
+plot_multiple_lines(temp,
+    x_column = "year",
+    y_column = "price_en",
+    line_column = "fuel",
+    group_column = "region_bld",
+    ncol = 4,
+    y_label = "Household price NPi_2020_600\nEUR per kWh",
+    free_y = FALSE,
+    save_path = paste(save_figs,
+      paste0("prices_NPi_2020_600_eur_kWh_countries.png"), sep = "/"))
+
+```
+
+### Emission factors
+
+
+#### Figures of the emission factors
+```{r}
+source("STURM_output/C00_plots.R")
+
+# tCO2 per TJ to gCO2 per kWh
+result <- mutate(emission_factors = emission_factors * 3.6) %>%
+  filter(region_gea %in% c("EEU", "WEU"))
+
+temp <- filter(result, scenario == "NPi") %>%
+  filter(!is.na(region_bld))
+
+plot_multiple_lines(temp,
+    x_column = "year",
+    y_column = "emission_factors",
+    line_column = "fuel",
+    group_column = "region_bld",
+    ncol = 4,
+    y_label = "Emission factors NPi\ngCO2 per kWh",
+    free_y = FALSE,
+    save_path = paste(save_figs,
+      paste0("emission_factors_NPi_gCO2_kWh_countries.png"), sep = "/"))
+
+temp <- filter(result, scenario == "NPi_2020_400") %>%
+  filter(!is.na(region_bld))
+
+plot_multiple_lines(temp,
+    x_column = "year",
+    y_column = "emission_factors",
+    line_column = "fuel",
+    group_column = "region_bld",
+    ncol = 4,
+    y_label = "Emission factors NPi_2020_400\ngCO2 per kWh",
+    free_y = FALSE,
+    save_path = paste(save_figs,
+      paste0("emission_factors_NPi_2020_400_gCO2_kWh_countries.png"), sep = "/"))
+
+```

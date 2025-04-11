@@ -1,0 +1,7 @@
+mat,bld_age,arch,fuel_heat_new,value
+perm,p5,sfh,biomass_solid,1
+perm,p5,sfh,heat_pump,1
+perm,p5,sfh,gas,1
+perm,p5,mfh,district_heat,1
+perm,p5,mfh,gas,1
+perm,p5,mfh,heat_pump,1

@@ -1,0 +1,50 @@
+---
+output: reprex::reprex_document
+knit: reprex::reprex_render
+---
+
+Notebook to run STURM Ouput.
+
+```{r}
+library(tidyverse)
+
+print(paste("Working directory is:", getwd()))
+
+```
+
+### Generate scenarios
+```{r}
+# first variable is reference scenario
+variables <- list(
+  "carbon_tax" = as.character(c("", "EUETS", "social")), # "EUETSII", 
+  "_objective_renovation" = as.character(c("", "renovation", "deep_renovation")),
+  "sub_heat" = as.character(c("", "half_carbon", "carbon")),
+  "learning_rate_heat" = as.character(c("constant", "")),
+  "_success_objective_renovation" = as.character(c(1, 0.75)),
+  "_realization_rate_renovation" = as.character(c(0.75, 1)),
+  "_remove_barriers_renovation" = as.character(c(FALSE, TRUE))
+  #"_remove_barriers_heater" = as.character(c(FALSE, TRUE))
+)
+
+```
+
+```{r}
+# Generate all combinations
+combinations <- expand.grid(variables, stringsAsFactors = FALSE)
+
+# Remove impossible combination
+combinations <- combinations %>%
+  filter(!(`_success_objective_renovation` == "0.75" & `_objective_renovation` == ""))
+
+# Add scenario_id and scenario_name columns
+combinations <- combinations %>%
+  mutate(scenario_id = as.character(row_number())) %>%
+  mutate(scenario_name = paste0("S", scenario_id))
+
+# Reorder columns to have scenario_id and scenario_name first
+combinations <- combinations %>%
+  select(scenario_id, scenario_name, everything())
+# Write to CSV
+write.csv(combinations, "STURM_data/all_scenarios.csv", row.names = FALSE)
+
+```

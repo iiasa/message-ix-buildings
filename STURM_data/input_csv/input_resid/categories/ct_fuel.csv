@@ -1,0 +1,9 @@
+mat,fuel_heat,fuel,fuel_cool
+perm,biomass_solid,biomass_solid,electricity
+perm,coal,coal,electricity
+perm,district_heat,district_heat,electricity
+perm,electricity,electricity,electricity
+perm,heat_pump,electricity,electricity
+perm,gas,gas,electricity
+perm,oil,oil,electricity
+sub,electricity,electricity,electricity

@@ -1,0 +1,14 @@
+﻿fuel_heat_f,year,value
+heat_pump,2020,0
+heat_pump,2025,0
+heat_pump,2030,103.5
+heat_pump,2035,112.5
+heat_pump,2040,121.5
+heat_pump,2045,130.5
+heat_pump,2050,139.5
+heat_pump,2055,148.5
+heat_pump,2060,157.5
+heat_pump,2065,164.25
+heat_pump,2070,171
+heat_pump,2075,177.75
+heat_pump,2080,184.5

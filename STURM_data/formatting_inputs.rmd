@@ -1,0 +1,93 @@
+---
+output: reprex::reprex_document
+knit: reprex::reprex_render
+---
+
+Notebook to run STURM Ouput.
+
+```{r}
+library(tidyverse)
+
+print(paste("Working directory is:", getwd()))
+
+```
+
+### Floor space per capita
+```{r}
+folder <- "STURM_data/input_csv/input_resid/activity"
+name_file <- "floor_navigate_rev2_v1.0_scen_rev2023_01_24.csv"
+data <- read.csv(file.path(folder, name_file))
+
+temp <- data %>%
+  filter(mat == "perm") %>%
+  mutate(bld_age = case_when(
+    eneff %in% c("s1", "sr11_std", "sr12_low") ~ "p1",
+    eneff %in% c("s2", "sr21_std", "sr22_low") ~ "p2",
+    eneff %in% c("s3", "sr31_std", "sr32_low") ~ "p3",
+    eneff %in% c("s51_std", "s52_low") ~ "p5",
+    TRUE ~ NA_character_  # Default value if none of the conditions are met
+  )) %>%
+  select(-c("ssp"))
+
+temp <- temp %>%
+    pivot_longer(cols = starts_with("y"),
+      names_to = "year", values_to = "value") %>%
+    mutate(year = as.integer(stringr::str_extract(year, "\\d{4}"))) %>%
+    select(c("scenario", "region_bld", "urt",
+      "arch", "mat", "bld_age", "year", "value")) %>%
+    distinct()
+    
+
+for (s in unique(temp$scenario)) {
+  t <- temp %>%
+    filter(scenario == s) %>%
+    select(-scenario)
+  write.csv(t, paste(folder, "/floor_capita_", s, ".csv", sep = ""),
+    row.names = FALSE)
+}
+
+```
+
+### Heating Degree Days
+```{r}
+folder <- "STURM_data/input_csv/input_resid/climate"
+countries <- read.csv(file.path(folder, "mapping_countries.csv"))
+data <- read.csv(file.path(folder,
+  "ISO_agg_data_SDD_H_v2023_08_ssp2_2010_hist_czones.csv"))
+
+countries <- countries %>%
+  left_join(data, by = c("ISO")) %>%
+  select(c("region_bld", "CLIMATE_ZONE", "sdd_h_avg")) %>%
+  rename(clim = CLIMATE_ZONE, value = sdd_h_avg)
+
+write.csv(countries,
+  file.path(folder, "hdd_eu.csv"),
+  row.names = FALSE)
+
+```
+### Energy prices from MESSAGE
+```{r}
+
+folder <- "STURM_data/input_csv/input_resid/macro"
+paths <- c("price_en_message_engage_NPi.csv" = "input_prices_NPi.csv",
+  "price_en_message_engage_NPi2020_600.csv" = "input_prices_NPi2020_600.csv")
+
+
+for (path in names(paths)){
+  print(path)
+  data <- read.csv(file.path(folder, path))
+
+  # Reshape the data to long format and extract the year from column names
+  data_long <- data %>%
+    pivot_longer(cols = starts_with("y"),
+      names_to = "year", values_to = "value") %>%
+    mutate(year = as.integer(stringr::str_extract(year, "\\d{4}"))) %>%
+    filter(ssp == "SSP2") %>%
+    select(-ssp)
+
+  write.csv(data_long,
+    file.path(folder, paths[path]),
+    row.names = FALSE)
+  }
+
+```

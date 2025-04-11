@@ -1,29 +1,76 @@
-# Python runtime files
-__pycache__
-.benchmarks
-.pytest_cache
 
-# Python packaging
-*.egg-info
-dist/
+STURM_output/figures/
+STURM_output/tables/
+STURM_output/results/
+STURM_output/results.zip
+STURM_output/results_240124.zip
+STURM_output/ressources/
+STURM_data/input_csv/_input_price
+STURM_data/input_csv/_input_emissions
+STURM_data/input_csv/_input_comm
 
-# R runtime files
+STURM_model/test.R
+
+# History files
+.Rhistory
+.Rapp.history
+.Rproj.user
 .Rhistory
 
-# Sphinx build outputs
-doc/_build
+# Session Data files
+.RData
+.RDataTmp
 
-# Editors and IDEs
-.vscode
+# User-specific files
+.Ruserdata
 
-# DS_Store files
+# Example code in package build process
+*-Ex.R
+
+# Output files from R CMD build
+/*.tar.gz
+
+# Output files from R CMD check
+/*.Rcheck/
+
+# RStudio files
+.Rproj.user/
+
+# produced vignettes
+vignettes/*.html
+vignettes/*.pdf
+
+# OAuth2 token, see https://github.com/hadley/httr/releases/tag/v0.3
+.httr-oauth
+
+# knitr and R markdown default cache directories
+*_cache/
+/cache/
+
+# Temporary files created by R markdown
+*.utf8.md
+*.knit.md
+
+# R Environment Variables
+.Renviron
+
+# pkgdown site
+docs/
+
+# translation temp files
+po/*~
+
+# RStudio Connect folder
+rsconnect/
+
+# DS Store
 .DS_Store
 
-# Scratch code
-scratch*
-
-# CHILLED user settings
-user_settings.py
-
-# log files
+# VS Code 
+.vscode/
+.vscode-server/
+*.code-workspace
+.vs/
+.history/
 *.log
+

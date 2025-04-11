@@ -1,0 +1,16 @@
+mat,eneff,bld_age,fuel_heat_f,fuel_cool,value
+perm,std,p1,coal,electricity,1
+perm,std,p1,biomass_solid,electricity,1
+perm,adv,p1,coal,electricity,1
+perm,adv,p1,oil,electricity,1
+perm,adv,p1,biomass_solid,electricity,1
+perm,std,p2,coal,electricity,1
+perm,std,p2,biomass_solid,electricity,1
+perm,adv,p2,coal,electricity,1
+perm,adv,p2,oil,electricity,1
+perm,adv,p2,biomass_solid,electricity,1
+perm,std,p3,coal,electricity,1
+perm,std,p3,biomass_solid,electricity,1
+perm,adv,p3,coal,electricity,1
+perm,adv,p3,oil,electricity,1
+perm,adv,p3,biomass_solid,electricity,1

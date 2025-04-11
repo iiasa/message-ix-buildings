@@ -1,0 +1,13 @@
+eneff,mat,bld_age
+avg,perm,p1
+avg,perm,p2
+avg,perm,p3
+std,perm,p1
+adv,perm,p1
+std,perm,p2
+adv,perm,p2
+std,perm,p3
+adv,perm,p3
+std,perm,p5
+adv,perm,p5
+ns,sub,ns

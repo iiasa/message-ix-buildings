@@ -1,0 +1,967 @@
+
+library(dplyr)
+library(ggplot2)
+library(stringr)
+library(tidyr)
+
+print(paste("Working directory is:", getwd()))
+
+# Loding figures setttings and functions
+source("STURM_output/C00_plots.R")
+
+scenario <- "S1"
+file <- paste0("report_agg_", scenario, ".csv")
+file <- paste("STURM_output/results", file, sep = "/")
+
+if (!file.exists(file)) {
+  print("Check file name or directory!")
+}
+
+save_dir <- paste("STURM_output", "figures", scenario, sep = "/")
+if (!dir.exists(save_dir)) {
+  dir.create(save_dir, recursive = TRUE)
+}
+
+# Read output files
+data <- read.csv(file, row.names = NULL)[, -1]
+
+# Reconstuction flows
+flows <- c("cost_renovation_EUR", "n_renovation", "n_out",
+  "n_dem", "n_empty")
+stp <- 5
+data <- data %>%
+  mutate(year = ifelse(variable %in% flows, year - stp, year),
+         value = ifelse(variable %in% flows, value / stp, value))
+
+make_maps_plot <- function(df, var, ref, yr, limits,
+                          save_dir, figure_title = "",
+                          legend_title = "", title = "",
+                          limits_relative = c(0, 1)) {
+  temp_ini <- df %>%
+    filter(variable %in% c(var, ref)) %>%
+    filter(resolution == "all") %>%
+    pivot_wider(id_cols = c(region_bld, year, resolution),
+      names_from = variable,
+      values_from = value) %>%
+    filter(!is.na(.data[[var]])) %>%
+    filter(!is.na(.data[[ref]])) %>%
+    mutate(value = .data[[var]] / .data[[ref]]) %>%
+    select(-c(var, ref, "resolution")) %>%
+    filter(year == yr)
+
+  # csv file with the data
+  write.csv(temp_ini, paste(save_dir,
+    paste0(scenario, "_map_", title, "_ini.csv"), sep = "/"),
+    row.names = FALSE)
+
+  plot_map(temp_ini,
+    limits,
+    figure_title = figure_title,
+    legend_title = legend_title,
+    save_path = paste(save_dir,
+      paste0(scenario, "_map_", title, "_ini.png"), sep = "/"))
+
+  temp <- df %>%
+    filter(variable %in% c(var, ref)) %>%
+    filter(resolution == "all") %>%
+    pivot_wider(id_cols = c(region_bld, year, resolution),
+      names_from = variable,
+      values_from = value) %>%
+    filter(!is.na(.data[[var]])) %>%
+    filter(!is.na(.data[[ref]])) %>%
+    mutate(value = .data[[var]] / .data[[ref]]) %>%
+    select(-c(var, ref, "resolution")) %>%
+    filter(year == 2050)
+  
+  # csv file with the data
+  write.csv(temp, paste(save_dir,
+    paste0(scenario, "_map_", title, "_2050.csv"), sep = "/"),
+    row.names = FALSE)
+
+  plot_map(temp,
+    limits,
+    figure_title = figure_title,
+    legend_title = legend_title,
+    save_path = paste(save_dir,
+      paste0(scenario, "_map_", title, "_2050.png"), sep = "/"))
+
+  # variation in relative terms
+  variation <- temp_ini %>%
+    select(region_bld, value) %>%
+    rename(value_ini = value) %>%
+    left_join(temp %>% select(region_bld, value) %>%
+      rename(value_2050 = value), by = "region_bld") %>%
+    mutate(value = (value_ini - value_2050) / value_ini) %>%
+    select(-c(value_ini, value_2050))
+
+  plot_map(variation,
+    limits_relative,
+    figure_title = figure_title,
+    legend_title = legend_title,
+    save_path = paste(save_dir,
+      paste0(scenario, "_map_", title, "_variation.png"), sep = "/"))
+}
+
+#--------------------------------------------------------------------------
+var <- "heat_tCO2"
+ref <- "population"
+years <- c(2015, 2030, 2050)
+limits <- c(0, 1.5)
+figure_title <- "Space heating emission (scope 2)\ntCO2/capita.year"
+legend_title <- "tCO2/capita.year"
+title <- "heat_tCO2_capita"
+
+df <- data %>%
+    filter(variable %in% c(var, ref)) %>%
+    filter(resolution == "all") %>%
+    pivot_wider(id_cols = c(region_bld, year, resolution),
+      names_from = variable,
+      values_from = value) %>%
+    filter(!is.na(.data[[var]])) %>%
+    filter(!is.na(.data[[ref]])) %>%
+    mutate(value = .data[[var]] / .data[[ref]]) %>%
+    filter(year %in% years) %>%
+    select(-c(var, ref, "resolution"))
+
+plot_map(df,
+  limits,
+  figure_title = figure_title,
+  legend_title = legend_title,
+  subplot_column = "year",
+  ncol = 3,
+  save_path = paste(save_dir,
+    paste0(scenario, "_map_", title, "_2050.png"), sep = "/"))
+
+#--------------------------------------------------------------------------
+var <- "heat_kWh"
+ref <- "floor_m2"
+years <- c(2015, 2030, 2050)
+limits <- c(0, 200)
+figure_title <- "Space heating consumption"
+legend_title <- "kWh/m2.year"
+title <- "consumption"
+
+df <- data %>%
+    filter(variable %in% c(var, ref)) %>%
+    filter(resolution == "all") %>%
+    pivot_wider(id_cols = c(region_bld, year, resolution),
+      names_from = variable,
+      values_from = value) %>%
+    filter(!is.na(.data[[var]])) %>%
+    filter(!is.na(.data[[ref]])) %>%
+    mutate(value = .data[[var]] / .data[[ref]]) %>%
+    filter(year %in% years) %>%
+    select(-c(var, ref, "resolution"))
+
+plot_map(df,
+  limits,
+  figure_title = figure_title,
+  legend_title = legend_title,
+  subplot_column = "year",
+  ncol = 3,
+  save_path = paste(save_dir,
+    paste0(scenario, "_map_", title, "_2050.png"), sep = "/"))
+
+#--------------------------------------------------------------------------
+# var <- "energy_poverty_thres"
+# ref <- "stock_building"
+# yr <- 2015
+# limits <- c(0, 0.4)
+# figure_title <- "Energy poverty rate"
+# legend_title <- "Energy poverty rate"
+# title <- "energy_poverty_rate"
+# make_maps_plot(data, var, ref, yr, limits,
+#               save_dir, figure_title = figure_title,
+#               legend_title = legend_title, title = title,
+#               limits_relative = c(-1, 0))
+#--------------------------------------------------------------------------           
+var <- "heat_kWh"
+ref <- "floor_m2"
+yr <- 2015
+limits <- c(0, 200)
+figure_title <- "Space heating consumption\nkWh/m2.year"
+legend_title <- "kWh/m2.year"
+title <- "consumption"
+
+
+make_maps_plot(data, var, ref, yr, limits,
+              save_dir, figure_title = figure_title,
+              legend_title = legend_title, title = title,
+              limits_relative = c(0, 1))
+
+#--------------------------------------------------------------------------
+# Share of low-carbon energy
+fossil <- c("gas", "oil", "coal")
+
+temp <- data %>%
+  filter(variable == "stock_building") %>%
+  filter(resolution %in% fossil) %>%
+  group_by_at(c("region_bld", "year")) %>%
+  summarize(value = sum(value)) %>%
+  ungroup() %>%
+  mutate(variable = "fossil_building",
+    resolution = "all")
+
+temp <- bind_rows(data, temp)
+
+var <- "fossil_building"
+ref <- "stock_building"
+yr <- 2015
+limits <- c(-0, 1)
+figure_title <- "Share of building heated by fossil-fuel (%)"
+legend_title <- "share of fossil"
+title <- "fossil_building_share"
+
+make_maps_plot(temp, var, ref, yr, limits,
+              save_dir, figure_title = figure_title,
+              legend_title = legend_title, title = title,
+              limits_relative = c(-1, 0))
+
+#--------------------------------------------------------------------------
+yrs <- c(2015, 2030, 2050)
+var <- "heat_tCO2"
+title <- "tCO2"
+legend_title <- "tCO2"
+figure_title <- "Space heating emission (tCO2)"
+limits <- c(0, 100)
+
+temp <- data %>%
+  filter(variable == var) %>%
+  filter(resolution == "all") %>%
+  select(-c(variable, "resolution")) %>%
+  filter(year %in% yrs) %>%
+  mutate(value = value / 1e6)
+
+plot_map(temp,
+  limits,
+  figure_title = figure_title,
+  legend_title = legend_title,
+  subplot_column = "year",
+  ncol = 3,
+  save_path = paste(save_dir,
+    paste0(scenario, "_map_", title, "_2050.png"), sep = "/"))
+
+var <- "sub_heater_EUR"
+ref <- "stock_building"
+yr <- 2015
+limits <- c(0, 1e9/10)
+figure_title <- "Subsidies for heater (EUR/households)"
+legend_title <- "EUR/households"
+title <- "subsidies_heater"
+
+make_maps_plot(data, var, ref, yr, limits,
+              save_dir, figure_title = figure_title,
+              legend_title = legend_title, title = title,
+              limits_relative = c(-1, 0))
+
+yr <- 2015
+var <- "heat_tCO2"
+title <- "tCO2"
+legend_title <- "tCO2"
+figure_title <- "Space heating emission (tCO2)"
+limits <- c(0, 100)
+
+temp <- data %>%
+  filter(variable == var) %>%
+  filter(resolution == "all") %>%
+  select(-c(variable, "resolution")) %>%
+  filter(year == yr) %>%
+  mutate(value = value / 1e6)
+
+plot_map(temp,
+  limits,
+  figure_title = figure_title,
+  legend_title = legend_title,
+  save_path = paste(save_dir,
+    paste0(scenario, "_map_", title, "_2050.png"), sep = "/"))
+
+#--------------------------------------------------------------------------
+### Stacked bar plot for all EU countries
+#--------------------------------------------------------------------------
+# By fuel type
+x_column <- "region_bld"
+
+temp <- data %>%
+  filter(variable == "stock_building") %>%
+  filter(resolution %in% names(rename_fuels)) %>%
+  filter(year == 2015) %>%
+  group_by(region_bld) %>%
+  mutate(value = value / sum(value)) %>%
+  ungroup() %>%
+  mutate(region_bld = ifelse(region_bld %in% names(rename_countries), rename_countries[region_bld], region_bld))    # this reorders samples
+
+
+region_grouping <- temp %>%
+  filter(resolution %in% c("coal", "oil", "gas")) %>%
+  group_by_at(x_column) %>% 
+  summarise(order_by = sum(value)) %>%
+  ungroup()
+
+my_data_reordered <- temp %>%
+  left_join(region_grouping, by = "region_bld") %>% 
+  mutate(order_by = ifelse(is.na(order_by), 0, order_by)) %>%
+  mutate(region_bld = reorder(region_bld, -order_by))    # this reorders samples
+
+save_path <- paste(save_dir, paste0(scenario, "_share_fuels_stock_countries_ini.png"), sep = "/")
+
+plot_stacked_bars(my_data_reordered,
+                  fill_column = "resolution",
+                  x_column = "region_bld",
+                  y_column = "value",
+                  save_path = save_path,
+                  orientation = "horizontal")
+
+temp <- data %>%
+  filter(variable == "stock_building") %>%
+  filter(resolution %in% names(rename_fuels)) %>%
+  filter(year == 2050) %>%
+  group_by(region_bld) %>%
+  mutate(value = value / sum(value)) %>%
+  ungroup() %>%
+  mutate(region_bld = ifelse(region_bld %in% names(rename_countries), rename_countries[region_bld], region_bld))    # this reorders samples
+
+
+region_grouping <- temp %>%
+  filter(resolution %in% c("coal", "oil", "gas")) %>%
+  group_by_at(x_column) %>% 
+  summarise(order_by = sum(value)) %>%
+  ungroup()
+
+my_data_reordered <- temp %>%
+  left_join(region_grouping, by = "region_bld") %>% 
+  mutate(order_by = ifelse(is.na(order_by), 0, order_by)) %>%
+  mutate(region_bld = reorder(region_bld, -order_by))    # this reorders samples
+
+save_path <- paste(save_dir, paste0(scenario, "_share_fuels_stock_countries_2050.png"), sep = "/")
+
+plot_stacked_bars(my_data_reordered,
+                  fill_column = "resolution",
+                  x_column = "region_bld",
+                  y_column = "value",
+                  save_path = save_path,
+                  orientation = "horizontal")
+
+#--------------------------------------------------------------------------
+# By U-value and country
+x_column <- "region_bld"
+temp <- data %>%
+  filter(variable == "stock_building") %>%
+  filter(resolution %in% names(rename_insulation)) %>%
+  filter(resolution != "no_heating") %>%
+  filter(year == 2015) %>%
+  group_by(region_bld) %>%
+  mutate(value = value / sum(value)) %>%
+  ungroup() %>%
+  mutate(region_bld = ifelse(region_bld %in% names(rename_countries), rename_countries[region_bld], region_bld))    # this reorders samples
+
+
+region_grouping <- temp %>%
+  filter(resolution %in% c("1.5-2", "1-1.5", ">2")) %>%
+  group_by_at(x_column) %>%
+  summarise(order_by = sum(value)) %>%
+  ungroup()
+
+my_data_reordered <- temp %>%
+  left_join(region_grouping, by = "region_bld") %>%
+  mutate(order_by = ifelse(is.na(order_by), 0, order_by)) %>%
+  mutate(region_bld = reorder(region_bld, -order_by))
+
+save_path <- paste(save_dir, paste0(scenario, "_share_insulation_stock_countries_ini.png"), sep = "/")
+
+plot_stacked_bars(my_data_reordered,
+                  fill_column = "resolution",
+                  x_column = "region_bld",
+                  y_column = "value",
+                  save_path = save_path,
+                  orientation = "horizontal"
+                  )
+
+x_column <- "region_bld"
+temp <- data %>%
+  filter(variable == "stock_building") %>%
+  filter(resolution %in% names(rename_insulation)) %>%
+  filter(resolution != "no_heating") %>%
+  filter(year == 2050) %>%
+  group_by(region_bld) %>%
+  mutate(value = value / sum(value)) %>%
+  ungroup() %>%
+  mutate(region_bld = ifelse(region_bld %in% names(rename_countries), rename_countries[region_bld], region_bld))    # this reorders samples
+
+region_grouping <- temp %>%
+  filter(resolution %in% c("1.5-2", "1-1.5", ">2")) %>%
+  group_by_at(x_column) %>%
+  summarise(order_by = sum(value)) %>%
+  ungroup()
+
+my_data_reordered <- temp %>%
+  left_join(region_grouping, by = "region_bld") %>%
+  mutate(order_by = ifelse(is.na(order_by), 0, order_by)) %>%
+  mutate(region_bld = reorder(region_bld, -order_by))
+
+save_path <- paste(save_dir, paste0(scenario, "_share_insulation_stock_countries_2050.png"), sep = "/")
+
+plot_stacked_bars(my_data_reordered,
+                  fill_column = "resolution",
+                  x_column = "region_bld",
+                  y_column = "value",
+                  save_path = save_path,
+                  orientation = "horizontal"
+                  )
+#--------------------------------------------------------------------------
+x_column <- "region_bld"
+temp <- data %>%
+  filter(variable == "stock_building") %>%
+  filter(resolution %in% names(rename_primary)) %>%
+  filter(year == 2015) %>%
+  group_by(region_bld) %>%
+  mutate(value = value / sum(value)) %>%
+  ungroup() %>%
+  mutate(region_bld = ifelse(region_bld %in% names(rename_countries), rename_countries[region_bld], region_bld))    # this reorders samples
+
+region_grouping <- temp %>%
+  filter(resolution %in% c(">200")) %>%
+  group_by_at(x_column) %>%
+  summarise(order_by = sum(value)) %>%
+  ungroup()
+
+my_data_reordered <- temp %>%
+  left_join(region_grouping, by = "region_bld") %>%
+  mutate(order_by = ifelse(is.na(order_by), 0, order_by)) %>%
+  mutate(region_bld = reorder(region_bld, -order_by))    # this reorders samples
+
+plot_stacked_bars(my_data_reordered,
+                  fill_column = "resolution",
+                  x_column = "region_bld",
+                  y_column = "value",
+                  save_path = paste(save_dir, paste0(scenario, "_share_energy_performance_countries_ini.png"), sep = "/"),
+                  orientation = "horizontal"
+                  )
+#--------------------------------------------------------------------------
+temp <- data %>%
+  filter(variable == "stock_building") %>%
+  filter(resolution %in% names(rename_primary)) %>%
+  filter(year == 2050) %>%
+  group_by(region_bld) %>%
+  mutate(value = value / sum(value)) %>%
+  ungroup() %>%
+  mutate(region_bld = ifelse(region_bld %in% names(rename_countries), rename_countries[region_bld], region_bld))    # this reorders samples
+
+my_data_reordered <- temp %>%
+  left_join(region_grouping, by = "region_bld") %>%
+  mutate(order_by = ifelse(is.na(order_by), 0, order_by)) %>%
+  mutate(region_bld = reorder(region_bld, -order_by))    # this reorders samples
+
+plot_stacked_bars(my_data_reordered,
+                  fill_column = "resolution",
+                  x_column = "region_bld",
+                  y_column = "value",
+                  save_path = paste(save_dir, paste0(scenario, "_share_energy_performance_countries_2050.png"), sep = "/"),
+                  orientation = "horizontal"
+                  )
+
+#--------------------------------------------------------------------------
+### By construction period
+temp <- data %>%
+  filter(variable == "stock_building") %>%
+  filter(resolution %in% names(rename_eneff)) %>%
+  filter(year == 2015) %>%
+  group_by(region_bld) %>%
+  mutate(value = value / sum(value)) %>%
+  ungroup() %>%
+  mutate(region_bld = ifelse(region_bld %in% names(rename_countries), rename_countries[region_bld], region_bld))    # this reorders samples
+
+region_grouping <- temp %>%
+  filter(resolution %in% c("p1")) %>%
+  group_by_at(x_column) %>% 
+  summarise(order_by = sum(value)) %>%
+  ungroup()
+
+my_data_reordered <- temp %>%
+  left_join(region_grouping, by = "region_bld") %>% 
+  mutate(order_by = ifelse(is.na(order_by), 1, order_by)) %>%
+  mutate(region_bld = reorder(region_bld, -order_by))    # this reorders samples
+
+save_path <- paste(save_dir, paste0(scenario, "_share_eneff_stock_countries_ini.png"), sep = "/")
+
+plot_stacked_bars(my_data_reordered,
+                  fill_column = "resolution",
+                  x_column = "region_bld",
+                  y_column = "value",
+                  save_path = save_path,
+                  orientation = "horizontal")
+
+#--------------------------------------------------------------------------
+temp <- data %>%
+  filter(variable == "stock_building") %>%
+  filter(resolution %in% names(rename_eneff)) %>%
+  filter(year == 2050) %>%
+  group_by(region_bld) %>%
+  mutate(value = value / sum(value)) %>%
+  ungroup() %>%
+  mutate(region_bld = ifelse(region_bld %in% names(rename_countries), rename_countries[region_bld], region_bld))    # this reorders samples
+
+region_grouping <- temp %>%
+  filter(resolution %in% c("p1")) %>%
+  group_by_at(x_column) %>% 
+  summarise(order_by = sum(value)) %>%
+  ungroup()
+
+my_data_reordered <- temp %>%
+  left_join(region_grouping, by = "region_bld") %>% 
+  mutate(order_by = ifelse(is.na(order_by), 1, order_by)) %>%
+  mutate(region_bld = reorder(region_bld, -order_by))    # this reorders samples
+
+save_path <- paste(save_dir, paste0(scenario, "_share_eneff_stock_countries_2050.png"), sep = "/")
+
+plot_stacked_bars(my_data_reordered,
+                  fill_column = "resolution",
+                  x_column = "region_bld",
+                  y_column = "value",
+                  save_path = save_path,
+                  orientation = "horizontal")
+
+
+#--------------------------------------------------------------------------
+### Breakdown stock units
+#--------------------------------------------------------------------------
+# By fuel types
+
+# Plot the share of fuels for the historic stock and the stock under the scenario
+
+# Read the historic stock data
+data_stock_historic <- read.csv(
+  "STURM_output/ressources/stock_historic_data_jrcidees_2021.csv")
+
+data_stock_historic <- data_stock_historic %>%
+  filter(region_bld %in% unique(data$region_bld)) %>%
+  filter(fuel_heat %in% names(rename_fuels)) %>%
+  rename(resolution = fuel_heat)
+
+t <- data_stock_historic %>%
+  filter(year < 2015)
+
+# Add a row for the EU
+t_eu <- t %>%
+  group_by_at(c("year", "resolution")) %>%
+  summarise(value = sum(value)) %>%
+  ungroup() %>%
+  mutate(region_bld = "EU")
+
+data_stock_historic <- bind_rows(data_stock_historic, t_eu)
+
+
+
+# Select the stock of housing units
+simulation <- data %>%
+  filter(variable == "stock_building") %>%
+  filter(resolution %in% names(rename_fuels)) %>%
+  select(-c("variable"))
+
+# Add the historic stock data to the data
+temp <- bind_rows(t, simulation)
+
+# Plot the share of fuels for the countries
+legend <- TRUE
+temp <- temp %>%
+  mutate(value = value / 1e6) %>%
+  # If for one region or year one fuel is missing, add it with a value of 0
+  complete(region_bld, year, resolution, fill = list(value = 0))
+
+test <- temp %>%
+  group_by(region_bld, year) %>%
+  summarise(value = sum(value)) %>%
+  ungroup() %>%
+  filter(region_bld == "EU")
+
+plot_stacked_areas(temp, "year", "value", "resolution", "region_bld",
+                    y_label = "Stock housing units",
+                    save_path = paste(save_dir, paste0(scenario, "_share_fuels_stock_countries.png"),
+                    sep = "/"), vertical = 2015, percent = FALSE, , legend = legend,
+                    y_label_suffix = "M")
+#--------------------------------------------------------------------------
+# Plot validation
+
+# Check years that are in simulation and historic data  
+years <- unique(data_stock_historic$year)
+years <- years[years %in% unique(simulation$year)]
+
+# Combine in one data frame
+temp <- data_stock_historic %>%
+  mutate(type = "historic") %>%
+  bind_rows(simulation %>% mutate(type = "simulation")) %>%
+  filter(year == 2020)
+
+# Make one file per group of 5 regions
+regions <- unique(temp$region_bld)
+regions <- regions[regions != "EU"]
+regions <- split(regions, ceiling(seq_along(regions) / 14))
+
+
+for (region in regions) {
+
+  temp_region <- temp %>%
+    filter(region_bld %in% region) %>%
+    mutate(region_bld = ifelse(region_bld %in% names(rename_countries_code), rename_countries_code[region_bld], region_bld))
+  
+  if (TRUE) {
+    temp_region <- temp_region %>%
+        group_by_at(c("region_bld", "year", "type")) %>%
+        mutate(value = value / sum(value, na.rm = FALSE) * 100) %>%
+        ungroup()
+  }
+
+  name_file <- paste0("_share_fuels_stock_", paste(region, collapse = "_"), ".png")
+
+  plot_clustered_barplot(temp_region,
+    "type",
+    "resolution",
+    subplot_column = "region_bld",
+    y_label = "Dwelling units by fuel type",
+    y_label_suffix = "%",
+    display_total = FALSE,
+    x_order = c("historic", "simulation"),
+    angle_x_label = 90,
+    save_path = paste(save_dir, paste0(scenario, name_file), sep = "/"))
+}
+
+#--------------------------------------------------------------------------
+# Plot the share of fuels for the EU
+temp <- temp %>%
+  filter(region_bld == "EU")
+
+presentation <- FALSE
+legend <- TRUE
+plot_stacked_areas(temp, "year", "value", "resolution", "region_bld",
+                    y_label = "Stock housing units",
+                    save_path = paste(save_dir, paste0(scenario, "_share_fuels_stock_eu.png"),
+                    sep = "/"), vertical = 2015, percent = FALSE, y_label_suffix = "M",
+                    presentation = presentation, legend = legend)
+#--------------------------------------------------------------------------
+temp <- data %>%
+  filter(variable == "stock_building") %>%
+  filter(resolution %in% names(rename_eneff)) %>%
+  select(-c("variable"))
+
+plot_stacked_areas(temp, "year", "value", "resolution", "region_bld",
+                    y_label = "Stock housing units",
+                    save_path = paste(save_dir, paste0(scenario, "_share_eff_stock_countries.png"),
+                    sep = "/"))
+#--------------------------------------------------------------------------
+temp <- temp %>%
+  filter(region_bld == "EU") %>%
+  mutate(value = value / 1e6)
+
+presentation <- FALSE
+legend <- TRUE
+plot_stacked_areas(temp, "year", "value", "resolution", "region_bld",
+                    y_label = "Stock housing units",
+                    save_path = paste(save_dir, paste0(scenario, "_share_eff_stock_eu.png"),
+                    sep = "/"), percent = FALSE, y_label_suffix = "M",
+                    presentation = presentation, legend = legend)
+#--------------------------------------------------------------------------
+#### By insulation levels
+temp <- data %>%
+  filter(variable == "stock_building") %>%
+  filter(resolution %in% names(rename_insulation)) %>%
+  select(-c("variable"))
+
+plot_stacked_areas(temp, "year", "value", "resolution", "region_bld",
+                    y_label = "Stock housing units",
+                    save_path = paste(save_dir, paste0(scenario, "_share_insulation_stock_countries.png"),
+                    sep = "/"))
+
+temp <- temp %>%
+  filter(region_bld == "EU") %>%
+  mutate(value = value / 1e6)
+
+presentation <- FALSE
+legend <- TRUE
+plot_stacked_areas(temp, "year", "value", "resolution", "region_bld",
+                    y_label = "Stock housing units",
+                    save_path = paste(save_dir, paste0(scenario, "_share_insulation_stock_eu.png"),
+                    sep = "/"), percent = FALSE, y_label_suffix = "M",
+                    presentation = presentation, legend = legend)
+
+### Breakdown energy demand
+#### By fuel types
+
+data_consumption_historic <- read.csv(
+  "STURM_output/ressources/final_energy_consumption_historic_data_ktoe_jrcidees.csv")
+
+t <- data_consumption_historic %>%
+  rename(resolution = fuel_heat) %>%
+  # ktoe to TWh
+  mutate(value = value * 0.01163) %>%
+  filter(year < 2015)
+t_eu <- t %>%
+  group_by_at(c("year", "resolution")) %>%
+  summarise(value = sum(value)) %>%
+  ungroup() %>%
+  mutate(region_bld = "EU")
+t <- bind_rows(t, t_eu)
+
+temp <- data %>%
+  filter(variable == "heat_kWh") %>%
+  filter(resolution %in% names(rename_fuels)) %>%
+  select(-c("variable")) %>%
+  # kwh to TWh
+  mutate(value = value / 1e9)
+temp <- bind_rows(t, temp)
+
+plot_stacked_areas(temp, "year", "value", "resolution", "region_bld",
+                    y_label = "Space heating consumption (TWh)",
+                    save_path = paste(save_dir, paste0(scenario, "_share_fuels_consumption_countries.png"),
+                    sep = "/"), vertical = 2015, percent = FALSE)
+
+presentation <- FALSE
+legend <- TRUE
+plot_stacked_areas(filter(temp, region_bld == "EU"), "year", "value", "resolution", "region_bld",
+                    y_label = "Space heating consumption (TWh)",
+                    save_path = paste(save_dir, paste0(scenario, "_share_fuels_consumption_eu.png"),
+                    sep = "/"), vertical = 2015, percent = FALSE, y_label_suffix = "TWh",
+                    presentation = presentation, legend = legend)
+
+
+temp <- data %>%
+  filter(variable == "heat_kWh") %>%
+  filter(resolution %in% names(rename_eneff)) %>%
+  select(-c("variable")) %>%
+  mutate(value = value / 1e9)
+
+
+plot_stacked_areas(temp, "year", "value", "resolution", "region_bld",
+                    y_label = "Space heating consumption (TWh)",
+                    save_path = paste(save_dir, paste0(scenario, "_share_eff_consumption_countries.png"),
+                    sep = "/"), percent = FALSE)
+  
+presentation <- FALSE
+legend <- TRUE
+plot_stacked_areas(filter(temp, region_bld == "EU"), "year", "value", "resolution", "region_bld",
+                    y_label = "Space heating consumption",
+                    save_path = paste(save_dir, paste0(scenario, "_share_eff_consumption_eu.png"),
+                    sep = "/"), percent = FALSE, y_label_suffix = "TWh",
+                    presentation = presentation, legend = legend)
+
+
+make_plot_lines <- function(data, var, ref, path, y_label = "",
+  percent = FALSE, y_label_suffix = NULL) {
+  temp <- data %>%
+    filter(variable %in% c(var, ref)) %>%
+    filter(resolution == "all") %>%
+    pivot_wider(id_cols = c(region_bld, year, resolution),
+      names_from = variable,
+      values_from = value) %>%
+    filter(!is.na(.data[[var]])) %>%
+    filter(!is.na(.data[[ref]])) %>%
+    mutate(value = .data[[var]] / .data[[ref]]) %>%
+    select(-c(var, ref, "resolution"))
+
+  if (percent) {
+    temp <- temp %>%
+      mutate(value = value * 100)
+    y_label_suffix <- "%"
+  }
+
+  plot_multiple_lines(temp,
+          x_column = "year",
+          y_column = "value",
+          group_column = "region_bld",
+          ncol = 4,
+          save_path = paste(save_dir, paste0(scenario, path), sep = "/"),
+          y_label_suffix = y_label_suffix,
+          )
+  }
+
+var <- "n_out"
+ref <- "stock_building"
+path <- "_demolition_rate_countries.png"
+make_plot_lines(data, var, ref, path, percent = TRUE)
+
+var <- "n_renovation"
+ref <- "stock_building"
+path <- "_renovation_rate_countries.png"
+make_plot_lines(data, var, ref, path, percent = TRUE)
+
+var <- "heat_kWh"
+ref <- "stock_building"
+path <- "_kwh_dwelling_countries.png"
+make_plot_lines(data, var, ref, path, y_label_suffix = "kWh/dw")
+
+var <- "heat_kWh"
+ref <- "floor_m2"
+path <- "_kwh_m2_countries.png"
+make_plot_lines(data, var, ref, path, y_label_suffix = "kWh/m2")
+
+var <- "heat_std_kWh"
+ref <- "floor_m2"
+path <- "_kwh_std_m2_countries.png"
+make_plot_lines(data, var, ref, path, y_label_suffix = "kWh/m2")
+
+var <- "heat_tCO2"
+ref <- "floor_m2"
+path <- "_tCO2_m2_countries.png"
+make_plot_lines(data, var, ref, path, y_label_suffix = "tCO2/m2")
+
+temp <- data %>%
+  mutate(value = ifelse(variable == "heat_tCO2", value * 1e6, value))
+
+var <- "heat_tCO2"
+ref <- "heat_kWh"
+path <- "_gCO2_kWh_countries.png"
+make_plot_lines(temp, var, ref, path, y_label_suffix = "gCO2/kWh")
+
+#--------------------------------------------------------------------------
+# Absolute values charts
+#--------------------------------------------------------------------------
+#### Stock
+temp <- data %>%
+  filter(variable == "stock_building") %>%
+  filter(resolution %in% "all") %>%
+  select(-c("variable", "resolution")) %>%
+  mutate(value = value / 1e6)
+
+plot_multiple_lines(temp,
+          x_column = "year",
+          y_column = "value",
+          group_column = "region_bld",
+          ncol = 4,
+          y_label = "Stock housing units\nMillion",
+          free_y = TRUE,
+          save_path = paste(save_dir, paste0(scenario, "_stock_countries.png"), sep = "/"),
+          y_label_suffix = "M")
+
+#--------------------------------------------------------------------------
+#### Space heating consumption
+temp <- data %>%
+  filter(variable == "heat_kWh") %>%
+  filter(resolution %in% "all") %>%
+  select(-c("variable", "resolution")) %>%
+  mutate(value = value / 1e9)
+
+plot_multiple_lines(temp,
+          x_column = "year",
+          y_column = "value",
+          group_column = "region_bld",
+          ncol = 4,
+          y_label = "Space heating consumption\nTWh",
+          free_y = TRUE,
+          save_path = paste(save_dir, paste0(scenario, "_twh_countries.png"), sep = "/"),
+          y_label_suffix = "TWh")
+#--------------------------------------------------------------------------
+temp <- data %>%
+  filter(variable == "heat_std_kWh") %>%
+  filter(resolution %in% "all") %>%
+  select(-c("variable", "resolution")) %>%
+  mutate(value = value / 1e9)
+
+plot_multiple_lines(temp,
+          x_column = "year",
+          y_column = "value",
+          group_column = "region_bld",
+          ncol = 4,
+          y_label = "Standard space heating consumption\nTWh",
+          free_y = TRUE,
+          save_path = paste(save_dir, paste0(scenario, "_twh_std_countries.png"), sep = "/"),
+          y_label_suffix = "TWh")
+
+#--------------------------------------------------------------------------
+temp <- data %>%
+  filter(variable == "heat_kWh") %>%
+  filter(resolution %in% "all") %>%
+  select(-c("variable", "resolution")) %>%
+  mutate(value = value * 3.6 * 1e-6 / 1e3)
+
+plot_multiple_lines(temp,
+          x_column = "year",
+          y_column = "value",
+          group_column = "region_bld",
+          ncol = 4,
+          y_label = "Space heating consumption (kTJ)",
+          free_y = TRUE,
+          save_path = paste(save_dir, paste0(scenario, "_tj_countries.png"), sep = "/"),
+          y_label_suffix = "")
+
+#--------------------------------------------------------------------------
+temp <- data %>%
+  filter(variable == "heat_kWh") %>%
+  filter(resolution %in% "all") %>%
+  select(-c("variable", "resolution")) %>%
+  mutate(value = value / (11630 * 1e6))
+
+plot_multiple_lines(temp,
+          x_column = "year",
+          y_column = "value",
+          group_column = "region_bld",
+          ncol = 4,
+          y_label = "Space heating consumption\nMtoe",
+          free_y = TRUE,
+          save_path = paste(save_dir, paste0(scenario, "_mtoe_countries.png"), sep = "/"),
+          y_label_suffix = "Mtoe")
+#--------------------------------------------------------------------------
+#### Emission 
+temp <- data %>%
+  filter(variable == "heat_tCO2") %>%
+  filter(resolution %in% "all") %>%
+  select(-c("variable", "resolution")) %>%
+  mutate(value = value / 1e6)
+
+plot_multiple_lines(temp,
+          x_column = "year",
+          y_column = "value",
+          group_column = "region_bld",
+          ncol = 4,
+          y_label = "Space heating emission\nMtCO2",
+          free_y = TRUE,
+          save_path = paste(save_dir, paste0(scenario, "_mtco2_countries.png"), sep = "/"),
+          y_label_suffix = "MtCO2")
+
+#--------------------------------------------------------------------------
+#### Number of renovations, cost renovation and cost heat
+temp <- data %>%
+  filter(variable == "n_renovation") %>%
+  filter(resolution %in% "all") %>%
+  select(-c("variable", "resolution")) %>%
+  mutate(value = value / 1e3)
+
+plot_multiple_lines(temp,
+          x_column = "year",
+          y_column = "value",
+          group_column = "region_bld",
+          ncol = 4,
+          y_label = "Number of renovations\nThousands",
+          free_y = TRUE,
+          save_path = paste(save_dir, paste0(scenario, "_renovation_countries.png"), sep = "/"),
+          y_label_suffix = "k")
+#--------------------------------------------------------------------------
+temp <- data %>%
+  filter(variable == "cost_renovation_EUR") %>%
+  filter(resolution %in% "all") %>%
+  select(-c("variable", "resolution")) %>%
+  mutate(value = value / 1e9)
+
+plot_multiple_lines(temp,
+          x_column = "year",
+          y_column = "value",
+          group_column = "region_bld",
+          ncol = 4,
+          y_label = "Cost shell energy renovation\nBillion EUR",
+          free_y = TRUE,
+          save_path = paste(save_dir, paste0(scenario, "_cost_renovation_countries.png"), sep = "/"),
+          y_label_suffix = "B")
+#--------------------------------------------------------------------------
+temp <- data %>%
+  filter(variable == "cost_heat_EUR") %>%
+  filter(resolution %in% "all") %>%
+  select(-c("variable", "resolution")) %>%
+  mutate(value = value / 1e9)
+
+plot_multiple_lines(temp,
+          x_column = "year",
+          y_column = "value",
+          group_column = "region_bld",
+          ncol = 4,
+          y_label = "Cost heat\nBillion EUR",
+          free_y = TRUE,
+          save_path = paste(save_dir, paste0(scenario, "_cost_heat_countries.png"), sep = "/"),
+          y_label_suffix = "B")
+#--------------------------------------------------------------------------

@@ -1,0 +1,8 @@
+fuel_heat,value
+biomass_solid,0.7
+coal,0.75
+district_heat,0.98
+electricity,1
+gas,0.75
+oil,0.75
+heat_pump,2.5

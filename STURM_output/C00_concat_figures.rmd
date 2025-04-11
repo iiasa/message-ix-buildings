@@ -1,0 +1,70 @@
+---
+output: reprex::reprex_document
+knit: reprex::reprex_render
+---
+
+Notebook to run STURM Ouput.
+
+```{r}
+library("magick")
+library("pdftools")
+```
+
+```{r}
+concatenate_png_to_pdf <- function(file_names, pdf_output_path) {
+  pdf_list <- list()
+  
+  for (file_name in file_names) {
+    if (file.exists(file_name)) {
+      pdf_list <- c(pdf_list, image_read(file_name))
+    } else {
+      warning(paste("File", file_name, "does not exist or is not a PNG file. Skipping..."))
+    }
+  }
+  
+  if (length(pdf_list) > 0) {
+    output_pdf <- do.call(image_append, pdf_list)
+    
+    if (!file.exists(pdf_output_path)) {
+      invisible(pdf_output_path <- image_write(output_pdf, path = pdf_output_path))
+      cat("PDF file created:", pdf_output_path, "\n")
+    } else {
+      warning("Output PDF file already exists. Please choose a different name.")
+    }
+  } else {
+    warning("No valid PNG files found. PDF creation skipped.")
+  }
+}
+```
+```{r}
+library(ggplot2)
+library(gridExtra)
+
+```
+```{r}
+pdf_output_path <- "STURM_output/figures/summary.pdf"
+folder_name <- "STURM_output/figures"
+file_names <- c("_renovation_rate_countries.png",
+                "_kwh_dwelling_countries.png",
+                "_kwh_m2_countries.png",
+                "_stock_countries.png",
+                "_twh_countries.png",
+                "_tj_countries.png",
+                "_mtoe_countries.png",
+                "_renovation_countries.png",
+                "_cost_renovation_countries.png",
+                "_cost_heat_countries.png",
+                "_share_fuels_stock_countries.png",
+                "_share_eff_stock_countries.png",
+                "_share_fuels_consumption_countries.png",
+                "_share_eff_consumption_countries.png")
+
+scenario <- "EU_endogenous"
+temp <- c()
+for (file_name in file_names) {
+  file_name <- paste(folder_name, paste0(scenario, file_name), sep = "/")
+  temp <- c(temp, file_name)
+}
+
+concatenate_png_to_pdf(temp, pdf_output_path)
+```

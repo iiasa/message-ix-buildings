@@ -188,7 +188,7 @@ fun_stock_init_fut <- function(sector, run,
                                  round(n_units_eneff * (1 - shr_distr_heat) * shr_fuel_heat_base,rnd))) %>% # other fuels (decentralized)
     mutate(n_units_fuel = round(n_units_fuel, rnd)) %>%
     mutate_cond(mat == "sub", n_units_fuel = n_units_eneff) %>% # sub-standard buildings - one fuel type only
-    select(-c(stock_arch_base,shr_fuel_heat_base, shr_distr_heat, n_units_eneff, mod_decision)) %>%
+    select(-c(stock_arch_base,n_units_aggr, shr_fuel_heat_base, shr_distr_heat, n_units_eneff,  mod_decision)) %>%
     filter(!is.na(yr_con))
 
     # ## other option: start from bld cases

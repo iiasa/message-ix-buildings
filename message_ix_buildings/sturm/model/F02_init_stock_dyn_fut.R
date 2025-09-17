@@ -157,27 +157,40 @@ fun_stock_init_fut <- function(sector, run,
 
   try(if(nrow(stock_aggr) != nrow(distinct(stock_aggr %>% select(-c(n_units_aggr,var_aggr))))) stop("Error in aggregated stock dataset! multiple records for same combinations in stock_aggr"))
   
+  # # calculate share of eneff in the base year based on the base stock data
+  # shr_eneff <- bld_cases_eneff %>%
+  #   mutate(year = yrs[1]) %>%
+  #   left_join(stock_arch_base) %>%
+  #   group_by_at(setdiff(names(stock_arch_base),c("yr_con","stock_arch_base"))) %>%
+  #   summarise(shr_eneff = sum(stock_arch_base)) %>%
+  #   ungroup() %>%
+  #   mutate(shr_eneff = ifelse(is.na(shr_eneff), 0, shr_eneff)) 
+  
+  # process base stock data
+  stock_arch_base <- bld_cases_eneff %>%
+    mutate(year = yrs[1]) %>%
+    left_join(stock_arch_base) %>%
+    mutate(stock_arch_base = ifelse(is.na(stock_arch_base), 0, stock_arch_base)) 
+  
   # initialize DF stock by vintage (baseyear) - detailed fuel level
   bld_det_age_i <- stock_aggr %>%
       select(-var_aggr) %>%
       filter(year == yrs[1]) %>%  # baseyear results
     left_join(ct_eneff) %>% 
     left_join(ct_fuel_comb) %>% 
-    left_join(stock_arch_base %>% 
-              group_by_at(setdiff(names(stock_arch_base),c("yr_con","stock_arch_base"))) %>%
-              summarise(shr_eneff = sum(stock_arch_base)) %>%
-              ungroup()) %>%
+    left_join(stock_arch_base) %>%
     left_join(shr_fuel_heat_base) %>%
     left_join(shr_distr_heat) %>%
     #left_join(shr_acc_cool) %>%
-    mutate(n_units_eneff = n_units_aggr * shr_eneff) %>% 
+    mutate(n_units_eneff = n_units_aggr * stock_arch_base) %>% 
     mutate(n_units_fuel = ifelse(fuel_heat == "district_heat", 
                                  round(n_units_eneff * shr_distr_heat,rnd), # district heating 
                                  round(n_units_eneff * (1 - shr_distr_heat) * shr_fuel_heat_base,rnd))) %>% # other fuels (decentralized)
     mutate(n_units_fuel = round(n_units_fuel, rnd)) %>%
     mutate_cond(mat == "sub", n_units_fuel = n_units_eneff) %>% # sub-standard buildings - one fuel type only
-    select(-c(stock_arch_base, shr_fuel_heat_base, shr_distr_heat, n_units_eneff, mod_decision, shr_eneff))
-    
+    select(-c(stock_arch_base,shr_fuel_heat_base, shr_distr_heat, n_units_eneff, mod_decision)) %>%
+    filter(!is.na(yr_con))
+
     # ## other option: start from bld cases
     # bld_fuel_age <- bld_cases_fuel %>% 
     #   mutate(year = yrs[1]) %>%

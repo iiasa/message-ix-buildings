@@ -308,6 +308,7 @@ run_scenario <- function(run,
                                    en_m2_hw_scen, d$en_int_others, # used only in commercial
                                    #en_stock,
                                    d$mat_int,
+                                   d$shr_mat_eol,
                                    #mat_stock,
                                    report_var,
                                    report
@@ -465,6 +466,7 @@ run_scenario <- function(run,
                                    en_hh_hw_scen, en_m2_hw_scen, d$en_int_others,
                                    #en_stock,
                                    d$mat_int,
+                                   d$shr_mat_eol,
                                    #mat_stock,
                                    report_var,
                                    report)

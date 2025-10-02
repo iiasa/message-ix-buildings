@@ -50,7 +50,12 @@ fun_report_basic <- function(report, report_var, geo_data, geo_level, geo_level_
                     floor_dem_Mm2 = sum(floor_dem_Mm2), 
                     mat_stock_Mt = sum(mat_stock_Mt),   
                     mat_demand_Mt = sum(mat_demand_Mt),
-                    mat_scrap_Mt = sum(mat_scrap_Mt))%>%
+                    mat_primary_Mt = sum(mat_primary_Mt),
+                    mat_scrap_Mt = sum(mat_scrap_Mt),
+                    mat_reuse_Mt = sum(mat_reuse_Mt),
+                    mat_recyc_Mt = sum(mat_recyc_Mt),
+                    mat_downcyc_Mt = sum(mat_downcyc_Mt),
+                    mat_other_treat_Mt = sum(mat_other_treat_Mt))%>%
           ungroup()
       }
     

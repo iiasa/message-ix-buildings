@@ -31,6 +31,7 @@ fun_stock_dyn <- function(sector,
                           en_hh_hw_scen, en_m2_hw_scen, en_int_others,
                           #en_stock,
                           mat_int,
+                          shr_mat_eol,
                           #mat_stock,
                           report_var,
                           report
@@ -645,6 +646,7 @@ if("material" %in% report_var){
     mutate(mat_stock_Mt = n_units * hh_size * floor_cap * mat_int / 1e3 / 1e6) %>% #Mt/y
     mutate(mat_demand_Mt = n_new * hh_size * floor_cap * mat_int / stp / 1e3 / 1e6) %>% #Mt/y
     mutate(mat_scrap_Mt = n_dem * hh_size * floor_cap * mat_int / stp / 1e3 / 1e6) %>% #Mt/y
+      
     # select_at(c(geo_levels, paste(c("urt", "clim", "inc_cl", "arch", "mat", "eneff", "material", ##### CHECK yr_con
     #                                 "scenario", "ssp", "year",
     #                                 "floor_tot_Mm2",
@@ -663,6 +665,30 @@ if("material" %in% report_var){
               mat_stock_Mt = sum(mat_stock_Mt),
               mat_demand_Mt = sum(mat_demand_Mt),
               mat_scrap_Mt = sum(mat_scrap_Mt)) %>%  
+      
+    ## add material end-of-life treatments
+    left_join(
+      shr_mat_eol %>%
+        pivot_wider(
+          names_from = eol_treat,
+          values_from = shr_mat_eol
+        ),
+      by = c("region_gea", "material", "year")
+    ) %>%
+    # material reuse - reuse rate is treated as a potential
+    mutate(mat_reuse_Mt = pmin(mat_demand_Mt, mat_scrap_Mt * reuse)) %>%
+    # material recycling - recycling rate is treated as a potential
+    mutate(mat_recyc_Mt = pmin((mat_demand_Mt - mat_reuse_Mt), mat_scrap_Mt * recycling)) %>%
+    # material downcycling
+    mutate(mat_downcyc_Mt = mat_scrap_Mt * downcycling) %>%
+    # other material treatments
+    mutate(mat_other_treat_Mt = mat_scrap_Mt - mat_reuse_Mt - mat_recyc_Mt - mat_downcyc_Mt) %>%
+    # material demand split into primary, secondary production from recycling or reuse
+    mutate(mat_primary_Mt = mat_demand_Mt - mat_reuse_Mt - mat_recyc_Mt) %>%
+    # select relevant cols
+    select(-c(reuse, recycling, downcycling, others)) %>%
+    
+      
     ungroup %>%
     mutate(mat_int = 1e3*mat_stock_Mt/floor_tot_Mm2) # Recalculate average material intensity
   
@@ -688,6 +714,7 @@ if("material" %in% report_var){
     mutate(mat_stock_Mt = n_units * mat_int / 1e3 / 1e6) %>% #Mt
     mutate(mat_demand_Mt = n_new * mat_int / stp / 1e3 / 1e6) %>% #Mt/y
     mutate(mat_scrap_Mt = n_dem * mat_int / stp / 1e3 / 1e6) %>% #Mt/y
+    
     # select_at(c(geo_levels, paste(c("urt", "clim", "inc_cl", "arch", "mat", "eneff", "material",
     #                                 "scenario", "ssp", "year",
     #                                 "floor_tot_Mm2",
@@ -705,6 +732,29 @@ if("material" %in% report_var){
                 mat_stock_Mt = sum(mat_stock_Mt),
                 mat_demand_Mt = sum(mat_demand_Mt),
                 mat_scrap_Mt = sum(mat_scrap_Mt)) %>%  
+    
+      ## add material end-of-life treatments
+      left_join(
+        shr_mat_eol %>%
+          pivot_wider(
+            names_from = eol_treat,
+            values_from = shr_mat_eol
+          ),
+        by = c("region_gea", "material", "year")
+      ) %>%
+      # material reuse - reuse rate is treated as a potential
+      mutate(mat_reuse_Mt = pmin(mat_demand_Mt, mat_scrap_Mt * reuse)) %>%
+      # material recycling - recycling rate is treated as a potential
+      mutate(mat_recyc_Mt = pmin((mat_demand_Mt - mat_reuse_Mt), mat_scrap_Mt * recycling)) %>%
+      # material downcycling
+      mutate(mat_downcyc_Mt = mat_scrap_Mt * downcycling) %>%
+      # other material treatments
+      mutate(mat_other_treat_Mt = mat_scrap_Mt - mat_reuse_Mt - mat_recyc_Mt - mat_downcyc_Mt) %>%
+      # material demand split into primary, secondary production from recycling or reuse
+      mutate(mat_primary_Mt = mat_demand_Mt - mat_reuse_Mt - mat_recyc_Mt) %>%
+      # select relevant cols
+      select(-c(reuse, recycling, downcycling, others)) %>%
+      
       ungroup %>%
       mutate(mat_int = 1e3*mat_stock_Mt/floor_tot_Mm2) # Recalculate average material intensity
 }
@@ -718,7 +768,12 @@ mat_stock_cem_i <- mat_stock_i %>%
   mutate(material = "cement") %>%
   mutate(mat_stock_Mt = mat_stock_Mt * cement_content,
          mat_demand_Mt = mat_demand_Mt * cement_content,
-         mat_scrap_Mt = mat_scrap_Mt * cement_content)
+         mat_scrap_Mt = mat_scrap_Mt * cement_content,
+         mat_reuse_Mt = mat_reuse_Mt * cement_content,
+         mat_recyc_Mt = mat_recyc_Mt * cement_content,
+         mat_downcyc_Mt = mat_downcyc_Mt * cement_content,
+         mat_other_treat_Mt = mat_other_treat_Mt * cement_content,
+         mat_primary_Mt = mat_primary_Mt * cement_content)
 
 mat_stock_i <- rbind(mat_stock_i, mat_stock_cem_i)
 }

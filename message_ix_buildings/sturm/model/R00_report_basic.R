@@ -53,8 +53,8 @@ fun_report_basic <- function(report, report_var, geo_data, geo_level, geo_level_
                     mat_primary_Mt = sum(mat_primary_Mt),
                     mat_scrap_Mt = sum(mat_scrap_Mt),
                     mat_reuse_Mt = sum(mat_reuse_Mt),
-                    mat_recyc_Mt = sum(mat_recyc_Mt),
-                    mat_downcyc_Mt = sum(mat_downcyc_Mt),
+                    mat_recycling_Mt = sum(mat_recycling_Mt),
+                    mat_downcycling_Mt = sum(mat_downcycling_Mt),
                     mat_other_treat_Mt = sum(mat_other_treat_Mt))%>%
           ungroup()
       }

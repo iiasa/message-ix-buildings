@@ -4,7 +4,7 @@ import pandas as pd
 import pyam  # type: ignore
 import statsmodels.formula.api as smf  # type: ignore
 
-from message_ix_buildings.chilled.util.util import get_logger
+from message_ix_buildings.chilled.util.common import get_logger
 
 log = get_logger(__name__)
 

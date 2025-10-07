@@ -44,19 +44,25 @@ from message_ix_buildings.chilled.functions.variable_dicts import (
 from message_ix_buildings.chilled.preprocess.message_raster import (
     create_message_raster,  # type: ignore
 )
-from message_ix_buildings.chilled.util.config import Config  # type: ignore
-from message_ix_buildings.chilled.util.util import (
+from message_ix_buildings.chilled.util.base import (
     get_archs,
-    get_logger,
+    get_paths,
     load_all_scenarios_data,
     load_parametric_analysis_data,
 )
+from message_ix_buildings.chilled.util.common import get_logger
+from message_ix_buildings.chilled.util.config import Config  # type: ignore
 
 log = get_logger(__name__)
 
 
 def create_climate_variables_maps(config: "Config", start_time: datetime.datetime):
-    out_path = os.path.join(config.project_path, "out", "version", config.vstr)
+    project_path = get_paths(config, "project_path")
+    dle_path = get_paths(config, "dle_path")
+    isimip_bias_adj_path = get_paths(config, "isimip_bias_adj_path")
+    isimip_ewembi_path = get_paths(config, "isimip_ewembi_path")
+
+    out_path = os.path.join(project_path, "out", "version", config.vstr)
     archetype_path = os.path.join(out_path, "rasters")
     save_path = os.path.join(out_path, "VDD_ene_calcs")
 
@@ -65,6 +71,35 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
         config.gcm,
         config.rcp,
     )
+
+    rcpdata = "ssp126" if config.rcp == "baseline" else config.rcp
+
+    if config.rcp == "baseline":
+        yeardic = {
+            "2015": ("2015", "2020"),
+            "2020": ("2015", "2020"),
+            "2030": ("2015", "2020"),
+            "2040": ("2015", "2020"),
+            "2050": ("2015", "2020"),
+            "2060": ("2015", "2020"),
+            "2070": ("2015", "2020"),
+            "2080": ("2015", "2020"),
+            "2090": ("2015", "2020"),
+            "2100": ("2015", "2020"),
+        }
+    else:
+        yeardic = {
+            "2015": ("2015", "2020"),
+            "2020": ("2015", "2025"),
+            "2030": ("2015", "2045"),
+            "2040": ("2025", "2055"),
+            "2050": ("2035", "2065"),
+            "2060": ("2045", "2075"),
+            "2070": ("2055", "2085"),
+            "2080": ("2065", "2095"),
+            "2090": ("2080", "2100"),
+            "2100": ("2095", "2100"),
+        }
 
     if not os.path.exists(output_path_vdd):
         os.makedirs(output_path_vdd)
@@ -77,7 +112,7 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
 
         log.info(str(clim) + " + " + arch + " + " + parset.name_run + " + " + urt)
 
-        years_clim = config.yeardic[str(clim)]
+        years_clim = yeardic[str(clim)]
         # << this selects the correct years.
         # But when testing you’ll want to use just say 3 years data,
         # so set years manually, e.g.
@@ -94,39 +129,43 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
 
         # Climate input variable format
         climate_filestr_hist = (
-            f"tas_day_{config.gcm}_{config.rcpdata}_r1i1p1_EWEMBI_landonly_"  # ISIMIP2
+            f"tas_day_{config.gcm}_{rcpdata}_r1i1p1_EWEMBI_landonly_"  # ISIMIP2
         )
 
         if config.gcm == "UKESM1-0-LL":
-            climate_filestr_future = f"{config.gcm}_r1i1p1f2_w5e5_{config.rcpdata}_{config.var}_global_daily_"
+            climate_filestr_future = (
+                f"{config.gcm}_r1i1p1f2_w5e5_{rcpdata}_{config.var}_global_daily_"
+            )
         else:
-            climate_filestr_future = f"{config.gcm}_r1i1p1f1_w5e5_{config.rcpdata}_{config.var}_global_daily_"
+            climate_filestr_future = (
+                f"{config.gcm}_r1i1p1f1_w5e5_{rcpdata}_{config.var}_global_daily_"
+            )
 
         endstr = ".nc"
 
         if str(clim) == "hist":
-            isi_folder = config.isimip_ewemib_path
+            isi_folder = isimip_ewembi_path
             filestr = climate_filestr_hist
         else:
-            isi_folder = config.isimip_bias_adj_path
+            isi_folder = isimip_bias_adj_path
             filestr = climate_filestr_future
 
         filepath = os.path.join(
-            isi_folder, config.rcpdata, config.gcm, f"{filestr.lower()}*{endstr}"
+            isi_folder, rcpdata, config.gcm, f"{filestr.lower()}*{endstr}"
         )
 
         log.info("Reading: " + filepath)
         if config.rcp == "rcp26":
             dst = xr.open_mfdataset(
                 filepath,
-                chunks={"lon": config.chunk_size},
+                chunks={"lon": get_paths(config, "chunk_size")},
                 concat_dim="time",
                 use_cftime=True,
             )  # Setting for RCP2.6
         else:
             dst = xr.open_mfdataset(
                 filepath,
-                chunks={"lon": config.chunk_size},
+                chunks={"lon": get_paths(config, "chunk_size")},
             )  # , concat_dim='time' )  # Setting for RCP6.0
 
         dst_crop = dst.sel(time=slice(years_clim[0], years_clim[1]))
@@ -135,12 +174,12 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
         t_oa_gbm = t_out_ave.groupby("time.month")
 
         i_sol_v = xr.open_dataarray(
-            os.path.join(config.dle_path, "EWEMBI_vert_irrad_1980-2009_avg.nc")
+            os.path.join(dle_path, "EWEMBI_vert_irrad_1980-2009_avg.nc")
         )  # Values  in daily Wh/m2
 
         # Horizontal irradiation
         i_sol_h = xr.open_dataarray(
-            os.path.join(config.dle_path, "EWEMBI_horiz_irrad_1980-2009_avg.nc")
+            os.path.join(dle_path, "EWEMBI_horiz_irrad_1980-2009_avg.nc")
         )  # Values in daily Wh/m2
 
         if config.arch_setting == "regional":
@@ -196,7 +235,7 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
                     log.info("Stage 3 - Simple HDDCDD - cooling")
                     log.info("Balance temp " + str(bal_temp) + "C")
                     sdd_c = calc_SCDD_m(t_out_ave, bal_temp)
-                    sdd_c = sdd_c.chunk(chunks={"lon": config.chunk_size})
+                    sdd_c = sdd_c.chunk(chunks={"lon": get_paths(config, "chunk_size")})
                     log.info("chunked")
                     sdd_c.attrs = {
                         "name": "sdd_c",
@@ -229,7 +268,7 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
                     log.info("Stage 3 - Simple HDDCDD - heating")
                     log.info("Balance temp " + str(bal_temp) + "C")
                     sdd_h = calc_SHDD_m(t_out_ave, bal_temp)
-                    sdd_h = sdd_h.chunk(chunks={"lon": config.chunk_size})
+                    sdd_h = sdd_h.chunk(chunks={"lon": get_paths(config, "chunk_size")})
                     log.info("chunked")
                     sdd_h.attrs = {
                         "name": "sdd_h",
@@ -276,7 +315,7 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
                     dict_netcdf["gl_g"],
                     dict_netcdf["gl_sh"],
                 )
-                gn_sol = gn_sol.chunk(chunks={"lon": config.chunk_size})
+                gn_sol = gn_sol.chunk(chunks={"lon": get_paths(config, "chunk_size")})
                 log.info("chunked")
                 gn_sol.attrs = {
                     "name": "gn_sol",
@@ -311,7 +350,7 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
                     dict_netcdf["roof_abs"],
                     dict_netcdf["u_roof"],
                 )
-                gn_sol = gn_sol.chunk(chunks={"lon": config.chunk_size})
+                gn_sol = gn_sol.chunk(chunks={"lon": get_paths(config, "chunk_size")})
                 log.info("chunked")
                 gn_sol.attrs = {
                     "name": "gn_sol",
@@ -342,7 +381,7 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
                     dict_netcdf["roof_abs"],
                     dict_netcdf["u_roof"],
                 )
-                gn_sol = gn_sol.chunk(chunks={"lon": config.chunk_size})
+                gn_sol = gn_sol.chunk(chunks={"lon": get_paths(config, "chunk_size")})
                 log.info("chunked")
                 gn_sol.attrs = {
                     "name": "gn_sol",
@@ -397,7 +436,7 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
                 t_bal_c = calc_t_bal_c(
                     t_sp_c, dict_netcdf["gn_int"], gn_sol, H_tr, H_v_cl
                 ).astype("float32")  # , x_diff0
-                t_bal_c = t_bal_c.chunk(chunks={"lon": config.chunk_size})
+                t_bal_c = t_bal_c.chunk(chunks={"lon": get_paths(config, "chunk_size")})
                 log.info("chunked")
                 t_bal_c.attrs = {
                     "name": "t_bal_c",
@@ -505,7 +544,9 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
             with ProgressBar():
                 log.info("Calc_vdd_tmax_c")
                 vdd_tmax_c = calc_vdd_tmax_c(t_oa_gbm, t_max_c)
-                vdd_tmax_c = vdd_tmax_c.chunk(chunks={"lon": config.chunk_size})
+                vdd_tmax_c = vdd_tmax_c.chunk(
+                    chunks={"lon": get_paths(config, "chunk_size")}
+                )
                 vdd_tmax_c = (
                     vdd_tmax_c.groupby("time.month").sum("time") / nyrs_clim
                 )  # <<< divide by years
@@ -631,7 +672,7 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
                 t_bal_h = calc_t_bal_h(
                     t_sp_h, dict_netcdf["gn_int"], gn_sol, H_tr, H_v_cl
                 ).astype("float32")  # , x_diff0
-                t_bal_h = t_bal_h.chunk(chunks={"lon": config.chunk_size})
+                t_bal_h = t_bal_h.chunk(chunks={"lon": get_paths(config, "chunk_size")})
                 log.info("chunked")
                 t_bal_h.attrs = {
                     "name": "t_bal_h",
@@ -659,7 +700,7 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
             with ProgressBar():
                 log.info("calc_vdd_h")
                 vdd_h = calc_vdd_h(t_oa_gbm, t_bal_h)
-                vdd_h = vdd_h.chunk(chunks={"lon": config.chunk_size})
+                vdd_h = vdd_h.chunk(chunks={"lon": get_paths(config, "chunk_size")})
                 vdd_h = (
                     vdd_h.groupby("time.month").sum("time") / nyrs_clim
                 )  # <<< divide by years
@@ -756,7 +797,8 @@ def create_climate_variables_maps(config: "Config", start_time: datetime.datetim
 
 
 def aggregate_urban_rural_files(config: "Config"):
-    out_path = os.path.join(config.project_path, "out", "version", config.vstr)
+    project_path = get_paths(config, "project_path")
+    out_path = os.path.join(project_path, "out", "version", config.vstr)
     save_path = os.path.join(out_path, "VDD_ene_calcs")
 
     output_path_vdd = os.path.join(
@@ -834,7 +876,8 @@ def aggregate_urban_rural_files(config: "Config"):
 
 
 def make_vdd_total_maps(config: "Config"):
-    out_path = os.path.join(config.project_path, "out", "version", config.vstr)
+    project_path = get_paths(config, "project_path")
+    out_path = os.path.join(project_path, "out", "version", config.vstr)
     save_path = os.path.join(out_path, "VDD_ene_calcs")
 
     output_path_vdd = os.path.join(
@@ -949,7 +992,9 @@ def make_vdd_total_maps(config: "Config"):
                     E_c_ac_in = xr.open_dataarray(
                         os.path.join(output_path_vdd, suff + "_0_E_c_ac_" + urt + ".nc")
                     ).load()
-                    (E_c_ac_in.sum(dim="month") * 0.2777778)  # Yearly total in kWh/m2
+                    E_c_ac_year = (
+                        E_c_ac_in.sum(dim="month") * 0.2777778
+                    )  # Yearly total in kWh/m2
 
                 if config.heat == 1:
                     vdd_h_in = xr.open_dataarray(
@@ -959,7 +1004,9 @@ def make_vdd_total_maps(config: "Config"):
                     E_h_in = xr.open_dataarray(
                         os.path.join(output_path_vdd, suff + "_0_E_h_" + urt + ".nc")
                     ).load()
-                    (E_h_in.sum(dim="month") * 0.2777778)  # Yearly total in kWh/m2
+                    E_h_year = (
+                        E_h_in.sum(dim="month") * 0.2777778
+                    )  # Yearly total in kWh/m2
 
                 cbloc = [
                     0.86,
@@ -1133,7 +1180,9 @@ def make_vdd_total_maps(config: "Config"):
 
 
 def process_construction_shares(config: "Config"):
-    out_path = os.path.join(config.project_path, "out", "version", config.vstr)
+    project_path = get_paths(config, "project_path")
+    dle_path = get_paths(config, "dle_path")
+    out_path = os.path.join(project_path, "out", "version", config.vstr)
     floorarea_path = os.path.join(out_path, "floorarea_country")
 
     output_path = os.path.join(
@@ -1153,7 +1202,7 @@ def process_construction_shares(config: "Config"):
 
     # If constr_setting == 1, then process construction shares. Otherwise, skip
     if config.constr_setting == 1:
-        input_path = config.dle_path
+        input_path = dle_path
 
         dsc = xr.Dataset()
         for urt in config.urts:
@@ -1226,8 +1275,10 @@ def process_construction_shares(config: "Config"):
 
 
 def process_floor_area_maps(config: "Config"):
-    input_path = config.dle_path
-    out_path = os.path.join(config.project_path, "out", "version", config.vstr)
+    project_path = get_paths(config, "project_path")
+    dle_path = get_paths(config, "dle_path")
+    input_path = dle_path
+    out_path = os.path.join(project_path, "out", "version", config.vstr)
     save_path = os.path.join(out_path, "floorarea_country")
 
     output_path = os.path.join(
@@ -1354,8 +1405,11 @@ def process_floor_area_maps(config: "Config"):
 
 
 def process_country_maps(config: "Config"):
-    input_path = config.dle_path
-    out_path = os.path.join(config.project_path, "out", "version", config.vstr)
+    project_path = get_paths(config, "project_path")
+    dle_path = get_paths(config, "dle_path")
+
+    input_path = dle_path
+    out_path = os.path.join(project_path, "out", "version", config.vstr)
     save_path = os.path.join(out_path, "floorarea_country")
 
     output_path = os.path.join(
@@ -1436,8 +1490,11 @@ def process_country_maps(config: "Config"):
 
 
 def process_final_maps(config: "Config"):
-    input_path = config.dle_path
-    out_path = os.path.join(config.project_path, "out", "version", config.vstr)
+    project_path = get_paths(config, "project_path")
+    dle_path = get_paths(config, "dle_path")
+
+    input_path = dle_path
+    out_path = os.path.join(project_path, "out", "version", config.vstr)
     vdd_path = os.path.join(
         out_path,
         "VDD_ene_calcs",
@@ -1641,8 +1698,8 @@ def process_final_maps(config: "Config"):
                                 vdd_path,
                                 suff1 + "_" + str(parset.Index) + "_E_h" + "ALL.nc",
                             )
-                        ).where(Nd1 >= 0)
-                    ).load()  # ******************************
+                        )
+                    ).load()
                     vdd_h_in = xr.open_dataarray(
                         os.path.join(
                             vdd_path,
@@ -1835,8 +1892,11 @@ def process_final_maps(config: "Config"):
 def process_iso_tables(config: "Config"):
     start = datetime.datetime.now()
 
-    input_path = config.dle_path
-    out_path = os.path.join(config.project_path, "out", "version", config.vstr)
+    project_path = get_paths(config, "project_path")
+    dle_path = get_paths(config, "dle_path")
+
+    input_path = dle_path
+    out_path = os.path.join(project_path, "out", "version", config.vstr)
     vdd_path = os.path.join(out_path, "VDD_ene_calcs", config.gcm, config.rcp)
     floorarea_path = os.path.join(out_path, "floorarea_country", config.gcm, config.rcp)
     finalmaps_path = os.path.join(out_path, "final_maps", config.gcm, config.rcp)
@@ -2052,7 +2112,7 @@ def process_iso_tables(config: "Config"):
 
     if config.cool == 1:
         list_cool = list(map(aggregate_ncfile, inputs_cool))
-        df_agg = (
+        df_cool = (
             pd.concat(list_cool)
             .reset_index(drop=True)
             .merge(dfd, left_on="gaul_lvl0", right_on="ISONUM")
@@ -2064,8 +2124,15 @@ def process_iso_tables(config: "Config"):
             .reset_index(drop=True)
             .merge(dfd, left_on="gaul_lvl0", right_on="ISONUM")
         )
-        # Add df_heat to df_agg
-        df_agg = df_agg.append(df_heat, ignore_index=True)
+
+    # if only cool or only heat is selected, df_agg = df_cool or df_heat
+    # if both cool and heat are selected, df_agg = df_cool + df_heat (concatenated)
+    if (config.cool == 1) and (config.heat == 0):
+        df_agg = df_cool
+    elif (config.cool == 0) and (config.heat == 1):
+        df_agg = df_heat
+    elif (config.cool == 1) and (config.heat == 1):
+        df_agg = pd.concat([df_cool, df_heat], ignore_index=True)
 
     log.info("Completed aggregating raster data! Now processing and saving...")
 
@@ -2140,7 +2207,11 @@ def process_iso_tables(config: "Config"):
 
 
 def create_climate_outputs(config: "Config", start_time: datetime.datetime):
-    out_path = os.path.join(config.project_path, "out", "version", config.vstr)
+    project_path = get_paths(config, "project_path")
+    dle_path = get_paths(config, "dle_path")
+    isimip_bias_adj_path = get_paths(config, "isimip_bias_adj_path")
+    isimip_ewemib_path = get_paths(config, "isimip_ewemib_path")
+    out_path = os.path.join(project_path, "out", "version", config.vstr)
     archetype_path = os.path.join(out_path, "rasters")
     save_path = os.path.join(out_path, "VDD_ene_calcs")
 
@@ -2156,6 +2227,35 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
     vers_archs = get_archs(config)
     par_var = load_parametric_analysis_data(config)
 
+    rcpdata = "ssp126" if config.rcp == "baseline" else config.rcp
+
+    if config.rcp == "baseline":
+        yeardic = {
+            "2015": ("2015", "2020"),
+            "2020": ("2015", "2020"),
+            "2030": ("2015", "2020"),
+            "2040": ("2015", "2020"),
+            "2050": ("2015", "2020"),
+            "2060": ("2015", "2020"),
+            "2070": ("2015", "2020"),
+            "2080": ("2015", "2020"),
+            "2090": ("2015", "2020"),
+            "2100": ("2015", "2020"),
+        }
+    else:
+        yeardic = {
+            "2015": ("2015", "2020"),
+            "2020": ("2015", "2025"),
+            "2030": ("2015", "2045"),
+            "2040": ("2025", "2055"),
+            "2050": ("2035", "2065"),
+            "2060": ("2045", "2075"),
+            "2070": ("2055", "2085"),
+            "2080": ("2065", "2095"),
+            "2090": ("2080", "2100"),
+            "2100": ("2095", "2100"),
+        }
+
     for clim in config.clims:
         log.info(f"Starting {clim} ######################")
 
@@ -2164,7 +2264,7 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
         ## =============================================================================
 
         # output_folder_scen = output_folder+scen+'\\'
-        years_clim = config.yeardic[clim]
+        years_clim = yeardic[clim]
         # << this selects the correct years.
         # But when testing you’ll want to use just say 3 years data,
         # so set years manually, e.g.
@@ -2180,26 +2280,26 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
         nyrs_clim = int(years_clim[1]) - int(years_clim[0]) + 1
 
         if str(clim) == "hist":
-            isi_folder = config.isimip_ewemib_path
+            isi_folder = isimip_ewemib_path
             filestr = config.climate_filestr_hist
         else:
-            isi_folder = config.isimip_bias_adj_path
+            isi_folder = isimip_bias_adj_path
             filestr = config.climate_filestr_future
 
         filepath = os.path.join(
-            isi_folder, config.rcpdata, config.gcm, f"{filestr.lower()}*{config.endstr}"
+            isi_folder, rcpdata, config.gcm, f"{filestr.lower()}*{config.endstr}"
         )
         if config.rcp == "rcp26":
             dst = xr.open_mfdataset(
                 filepath,
-                chunks={"lon": config.chunk_size},
+                chunks={"lon": get_paths(config, "chunk_size")},
                 concat_dim="time",
                 use_cftime=True,
             )  # Setting for RCP2.6
         else:
             dst = xr.open_mfdataset(
                 filepath,
-                chunks={"lon": config.chunk_size},
+                chunks={"lon": get_paths(config, "chunk_size")},
             )  # , concat_dim='time' )  # Setting for RCP6.0
 
         dst_crop = dst.sel(time=slice(years_clim[0], years_clim[1]))
@@ -2226,12 +2326,12 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
         # Vertical irradiation
         # i_sol_v = xr.open_dataarray(input_folder+'CERES_vert_irrad_2001-13_avg.nc') #Values  in daily Wh/m2
         i_sol_v = xr.open_dataarray(
-            os.path.join(config.dle_path, "EWEMBI_vert_irrad_1980-2009_avg.nc")
+            os.path.join(dle_path, "EWEMBI_vert_irrad_1980-2009_avg.nc")
         )  # Values  in daily Wh/m2
 
         # Horizontal irradiation
         i_sol_h = xr.open_dataarray(
-            os.path.join(config.dle_path, "EWEMBI_horiz_irrad_1980-2009_avg.nc")
+            os.path.join(dle_path, "EWEMBI_horiz_irrad_1980-2009_avg.nc")
         )  # Values in daily Wh/m2
 
         # i_sol = i_sol.sel(time=slice(years_clim[0],years_clim[1]))
@@ -2306,7 +2406,9 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                             log.info("Stage 3 - Simple HDDCDD - cooling")
                             log.info("Balance temp " + str(bal_temp) + "C")
                             sdd_c = calc_SCDD_m(t_out_ave, bal_temp)
-                            sdd_c = sdd_c.chunk(chunks={"lon": config.chunk_size})
+                            sdd_c = sdd_c.chunk(
+                                chunks={"lon": get_paths(config, "chunk_size")}
+                            )
                             log.info("chunked")
                             sdd_c.attrs = {
                                 "name": "sdd_c",
@@ -2338,7 +2440,9 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                             log.info("Stage 3 - Simple HDDCDD - heating")
                             log.info("Balance temp " + str(bal_temp) + "C")
                             sdd_h = calc_SHDD_m(t_out_ave, bal_temp)
-                            sdd_h = sdd_h.chunk(chunks={"lon": config.chunk_size})
+                            sdd_h = sdd_h.chunk(
+                                chunks={"lon": get_paths(config, "chunk_size")}
+                            )
                             log.info("chunked")
                             sdd_h.attrs = {
                                 "name": "sdd_h",
@@ -2418,7 +2522,9 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                         with ProgressBar():
                             log.info("Stage 3 - calc gn_sol")
                             gn_sol = calc_gn_sol(i_sol_v, gl_perc, gl_g, gl_sh)
-                            gn_sol = gn_sol.chunk(chunks={"lon": config.chunk_size})
+                            gn_sol = gn_sol.chunk(
+                                chunks={"lon": get_paths(config, "chunk_size")}
+                            )
                             log.info("chunked")
                             gn_sol.attrs = {
                                 "name": "gn_sol",
@@ -2460,7 +2566,9 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                                 roof_abs,
                                 u_roof,
                             )
-                            gn_sol = gn_sol.chunk(chunks={"lon": config.chunk_size})
+                            gn_sol = gn_sol.chunk(
+                                chunks={"lon": get_paths(config, "chunk_size")}
+                            )
                             log.info("chunked")
                             gn_sol.attrs = {
                                 "name": "gn_sol",
@@ -2493,7 +2601,9 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                         with ProgressBar():
                             log.info("Stage 3 - calc gn_sol")
                             gn_sol = calc_gn_sol_h(i_sol_h, roof_area, roof_abs, u_roof)
-                            gn_sol = gn_sol.chunk(chunks={"lon": config.chunk_size})
+                            gn_sol = gn_sol.chunk(
+                                chunks={"lon": get_paths(config, "chunk_size")}
+                            )
                             log.info("chunked")
                             gn_sol.attrs = {
                                 "name": "gn_sol",
@@ -2608,7 +2718,9 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                             t_bal_c = calc_t_bal_c(
                                 t_sp_c, gn_int, gn_sol, H_tr, H_v_cl
                             ).astype("float32")  # , x_diff0
-                            t_bal_c = t_bal_c.chunk(chunks={"lon": config.chunk_size})
+                            t_bal_c = t_bal_c.chunk(
+                                chunks={"lon": get_paths(config, "chunk_size")}
+                            )
                             log.info("chunked")
                             t_bal_c.attrs = {
                                 "name": "t_bal_c",
@@ -2734,7 +2846,7 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                             log.info("Calc_vdd_tmax_c")
                             vdd_tmax_c = calc_vdd_tmax_c(t_oa_gbm, t_max_c)
                             vdd_tmax_c = vdd_tmax_c.chunk(
-                                chunks={"lon": config.chunk_size}
+                                chunks={"lon": get_paths(config, "chunk_size")}
                             )
                             vdd_tmax_c = (
                                 vdd_tmax_c.groupby("time.month").sum("time") / nyrs_clim
@@ -2894,7 +3006,9 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                             t_bal_h = calc_t_bal_h(
                                 t_sp_h, gn_int, gn_sol, H_tr, H_v_cl
                             ).astype("float32")  # , x_diff0
-                            t_bal_h = t_bal_h.chunk(chunks={"lon": config.chunk_size})
+                            t_bal_h = t_bal_h.chunk(
+                                chunks={"lon": get_paths(config, "chunk_size")}
+                            )
                             log.info("chunked")
                             t_bal_h.attrs = {
                                 "name": "t_bal_h",
@@ -2929,7 +3043,9 @@ def create_climate_outputs(config: "Config", start_time: datetime.datetime):
                         with ProgressBar():
                             log.info("calc_vdd_h")
                             vdd_h = calc_vdd_h(t_oa_gbm, t_bal_h)
-                            vdd_h = vdd_h.chunk(chunks={"lon": config.chunk_size})
+                            vdd_h = vdd_h.chunk(
+                                chunks={"lon": get_paths(config, "chunk_size")}
+                            )
                             vdd_h = (
                                 vdd_h.groupby("time.month").sum("time") / nyrs_clim
                             )  # <<< divide by years

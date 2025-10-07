@@ -36,7 +36,7 @@ days_cool,cool_days,,,,,,
 shr_need_cool,shr_need_cool_resid_rev,,,,,,
 shr_need_heat,shr_need_heat_resid_rev,,,,,,
 en_int_hotwater,en_int_resid_hotwater_SSP2_rev_2022-12-15,,,,,,
-stock_arch_base,stock_baseyear_resid_rev,,,,,,
+stock_arch_base,stock_baseyear_resid_rev_share,,,,,,
 rate_switch_fuel_heat,rate_switch_fuel_heat_ssp2,,,,,rate_switch_fuel_heat_ssp2_LED,rate_switch_fuel_heat_ssp2_LED
 cost_intang_new_heat,cost_int_new_heat_ssp2,cost_int_new_heat_ssp1,cost_int_new_heat_ssp3,cost_int_new_heat_ssp2,cost_int_new_heat_ssp2,cost_int_new_heat_ssp2_LED,cost_int_new_heat_ssp2_LED
 cost_intang_new_shell,cost_int_new_shell_ssp2,cost_int_new_shell_ssp1,cost_int_new_shell_ssp3,cost_int_new_shell_ssp2,cost_int_new_shell_ssp2,cost_int_new_shell_ssp2_LED,cost_int_new_shell_ssp2_LED

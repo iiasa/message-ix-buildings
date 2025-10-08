@@ -55,7 +55,7 @@ run_scenario <- function(run,
   # source(file.path(path_rcode, "F05_renov_decision.R"))
   source(file.path(path_rcode, "F05_renov_switch_decision.R"))
   source(file.path(path_rcode, "F02_init_stock_dyn_fut.R"))
-  source(file.path(path_rcode, "F06_stock_dyn_complete_rev_temp.R"))
+  source(file.path(path_rcode, "F06_stock_dyn_complete_rev.R"))
   # source(file.path(path_rcode, "R00_report_basic.R"))
   if ("STURM" %in% report_type) {source(file.path(path_rcode, "R00_report_basic.R"))}
   if ("MESSAGE" %in% report_type) {source(file.path(path_rcode, "R01_report_MESSAGE.R"))}

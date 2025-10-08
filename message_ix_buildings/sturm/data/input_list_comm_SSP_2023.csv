@@ -17,6 +17,7 @@ shr_acc_cool,bld_shr_access_cool_comm_rev,,,,,,
 shr_distr_heat,bld_shr_district_heat_comm,,,,,,
 shr_fuel_heat_base,bld_share_fuel_heat_comm,,,,,,
 mat_int,material_int_comm,,,,,,
+shr_mat_eol,shr_mat_eol_long,,,,,,
 eff_heat ,eff_heat_ssp2,eff_heat_ssp1,eff_heat_ssp3,eff_heat_ssp2,eff_heat_ssp2,eff_heat_ssp1,eff_heat_ssp1
 eff_cool,eff_cool_ssp2,eff_cool_ssp1,eff_cool_ssp3,eff_cool_ssp2,eff_cool_ssp2,eff_cool_ssp1,eff_cool_ssp1
 eff_hotwater,eff_hotwater_comm_ssp2,eff_hotwater_comm_ssp1,eff_hotwater_comm_ssp3,eff_hotwater_comm_ssp2,eff_hotwater_comm_ssp2,eff_hotwater_comm_ssp1,eff_hotwater_comm_ssp1

@@ -756,31 +756,57 @@ if("material" %in% report_var){
                 mat_stock_Mt = sum(mat_stock_Mt),
                 mat_demand_Mt = sum(mat_demand_Mt),
                 mat_scrap_Mt = sum(mat_scrap_Mt)) %>%  
-    
-      ## add material end-of-life treatments
-      left_join(
-        shr_mat_eol %>%
-          pivot_wider(
-            names_from = eol_treat,
-            values_from = shr_mat_eol
-          ),
-        by = c("region_gea", "material", "year")
-      ) %>%
-      # material reuse - reuse rate is treated as a potential
-      mutate(mat_reuse_Mt = pmin(mat_demand_Mt, mat_scrap_Mt * reuse)) %>%
-      # material recycling - recycling rate is treated as a potential
-      mutate(mat_recycling_Mt = pmin((mat_demand_Mt - mat_reuse_Mt), mat_scrap_Mt * recycling)) %>%
-      # material downcycling
-      mutate(mat_downcycling_Mt = mat_scrap_Mt * downcycling) %>%
-      # other material treatments
-      mutate(mat_other_treat_Mt = mat_scrap_Mt - mat_reuse_Mt - mat_recycling_Mt - mat_downcycling_Mt) %>%
-      # material demand split into primary, secondary production from recycling or reuse
-      mutate(mat_primary_Mt = mat_demand_Mt - mat_reuse_Mt - mat_recycling_Mt) %>%
-      # select relevant cols
-      select(-c(reuse, recycling, downcycling, others)) %>%
-      
+
       ungroup %>%
       mutate(mat_int = 1e3*mat_stock_Mt/floor_tot_Mm2) # Recalculate average material intensity
+  
+  ## add material end-of-life treatments
+  # find the user-defined treatments other than reuse, recycling, and others
+  other_treatments <- setdiff(unique(shr_mat_eol$eol_treat), c("reuse", "recycling", "others"))
+  #
+  mat_stock_i <- mat_stock_i %>%
+    left_join(
+      shr_mat_eol %>%
+        pivot_wider(
+          names_from = eol_treat,
+          values_from = shr_mat_eol
+        ),
+      by = c("region_gea", "material", "year")
+    ) %>%
+    
+    # reuse & recycling (only if present)
+    mutate(
+      mat_reuse_Mt = if ("reuse" %in% unique(shr_mat_eol$eol_treat)) pmin(mat_demand_Mt, mat_scrap_Mt * reuse) else 0,
+      mat_recycling_Mt = if ("recycling" %in% unique(shr_mat_eol$eol_treat)) pmin(mat_demand_Mt - mat_reuse_Mt, mat_scrap_Mt * recycling) else 0
+    ) %>%
+    
+    # other treatments
+    mutate(
+      across(
+        any_of(.env$other_treatments),
+        ~ mat_scrap_Mt * .,
+        .names = "mat_{.col}_Mt"
+      )
+    ) %>%
+    
+    # residual "others" as: scrap - (reuse + recycling + all other_treatments)
+    mutate(
+      .allocated_Mt = mat_reuse_Mt + mat_recycling_Mt +
+        rowSums(
+          pick(any_of(paste0("mat_", .env$other_treatments, "_Mt"))),
+          na.rm = TRUE
+        ),
+      mat_other_treat_Mt = if ("others" %in% names(pick(everything())))
+        pmax(0, mat_scrap_Mt - .allocated_Mt) else 0
+    ) %>%
+    select(-.allocated_Mt) %>%
+    
+    # Material demand split into primary, secondary production from recycling or reuse
+    mutate(mat_primary_Mt = mat_demand_Mt - mat_reuse_Mt - mat_recycling_Mt) %>%
+    
+    # select relevant cols
+    select(-any_of(unique(shr_mat_eol$eol_treat)))
+  
 }
 
 ## Stock results - Material - Add Cement

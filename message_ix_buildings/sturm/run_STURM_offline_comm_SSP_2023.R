@@ -44,7 +44,7 @@ for(s in scenarios){
                                   mod_arch = "stock",
                                   mod_new = "exogenous", 
                                   mod_ren = "exogenous", 
-                                  report_type = c("MESSAGE"), # ,"STURM","NAVIGATE" # Available reports: c("MESSAGE","STURM","IRP","NGFS","NAVIGATE")
+                                  report_type = c("STURM"), # ,"STURM","NAVIGATE" # Available reports: c("MESSAGE","STURM","IRP","NGFS","NAVIGATE")
                                   report_var = c("energy","material") # Available report variables: c("energy","material","vintage","dle")
                                   )
   

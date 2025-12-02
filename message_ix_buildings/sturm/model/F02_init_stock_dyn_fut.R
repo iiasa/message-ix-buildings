@@ -5,6 +5,7 @@
 
 fun_stock_init_fut <- function(sector, run,
                                mod_arch, # mod_arch = "new", mod_arch = "stock"
+                               mod_vacant, #V:
                                yrs,
                                geo_data, geo_levels, geo_level,
                                bld_cases_eneff, bld_cases_fuel,
@@ -17,6 +18,12 @@ fun_stock_init_fut <- function(sector, run,
                                shr_mat, shr_arch, 
                                shr_fuel_heat_base,
                                shr_distr_heat,
+                               stock_vacant_base, #V:
+                               shr_vacant_base_arch, #V:
+                               shr_vacant_base_period, #V:
+                               # rate_vacant_occ, #V:
+                               # shr_vacant_occ_eneff,#V:
+                               # shr_vacant_occ_fuel,#V:
                                en_int_heat,en_int_cool, # Energy demand calculation base year - should be updated for commercial!
                                days_cool,
                                eff_cool,
@@ -198,6 +205,62 @@ fun_stock_init_fut <- function(sector, run,
   # initialize bld_arch: stock data - arch level - NOT NEEDED!
   #bld_det <- as.data.frame(NULL)
   
+  ### Vacant buildings ### #V:
+  
+  if (mod_vacant == "vacant") {
+    
+    # TBD: data vacant buildings by arch/eneff
+    
+    # Initialize stock vacant buildings - base year
+    
+    # process base stock data
+    stock_vacant_i <- bld_cases_eneff %>%
+      mutate(year = yrs[1]) %>%
+      left_join(stock_vacant_base) %>%
+      left_join(shr_vacant_base_arch) %>%
+      left_join(shr_vacant_base_period) %>%
+      mutate(stock_vacant = ifelse(is.na(shr_vacant_base_period), 0, 
+                                      stock_vacant_base * shr_vacant_base_arch * shr_vacant_base_period)) %>%
+      mutate(stock_vacant = ifelse(is.na(stock_vacant),0,stock_vacant)) %>%
+      select(-c(shr_vacant_base_arch,shr_vacant_base_period,stock_vacant_base)) 
+    
+    # # aggregate at eneff level - not needed here
+    # stock_vacant_eneff_base <- stock_vacant_eneff_base %>%
+    #   group_by_at(setdiff(names(stock_vacant_eneff_base), c("bld_age","yr_con"))) %>%
+    #   summarise(stock_vacant = sum(stock_vacant)) %>%
+    #   ungroup()
+    
+    # In script F06:future projections of vacant building stock - based on number of re-occupied buildings
+    
+    ### Re-occupied Vacant stock by fuel to be added in script F06
+    # # initialize DF stock - vacant buildings - by vintage (baseyear) - detailed fuel level
+    # bld_det_age_i <- stock_aggr %>%
+    #   select(-var_aggr) %>%
+    #   filter(year == yrs[1]) %>%  # baseyear results
+    #   left_join(ct_eneff) %>% 
+    #   left_join(ct_fuel_comb) %>% 
+    #   left_join(stock_arch_base) %>%
+    #   left_join(shr_fuel_heat_base) %>%
+    #   left_join(shr_distr_heat) %>%
+    #   #left_join(shr_acc_cool) %>%
+    #   mutate(n_units_eneff = n_units_aggr * stock_arch_base) %>% 
+    #   mutate(n_units_fuel = ifelse(fuel_heat == "district_heat", 
+    #                                round(n_units_eneff * shr_distr_heat,rnd), # district heating 
+    #                                round(n_units_eneff * (1 - shr_distr_heat) * shr_fuel_heat_base,rnd))) %>% # other fuels (decentralized)
+    #   mutate(n_units_fuel = round(n_units_fuel, rnd)) %>%
+    #   mutate_cond(mat == "sub", n_units_fuel = n_units_eneff) %>% # sub-standard buildings - one fuel type only
+    #   select(-c(stock_arch_base,n_units_aggr, shr_fuel_heat_base, shr_distr_heat, n_units_eneff,  mod_decision)) %>%
+    #   filter(!is.na(yr_con))
+    
+    
+    # rate_vacant_occ, #V:
+    # shr_vacant_occ_eneff,#V:
+    # shr_vacant_occ_fuel,#V:
+    # shr_vacant_occ_fuel, #V:
+    
+  }
+  
+  
   # Report energy and material results 
 
   # en_stock <- as.data.frame(NULL) # COMMENT IF en_stock is updated for base year
@@ -216,6 +279,13 @@ fun_stock_init_fut <- function(sector, run,
     
     report = append(report, list(bld_eneff_age = bld_eneff_age))
   }
+  
+  if (mod_vacant == "vacant"){
+    report = append(report, list(vacant_stock = stock_vacant_i %>%
+                                   group_by_at(setdiff(names(stock_vacant_i), c("bld_age","yr_con","stock_vacant"))) %>%
+                                   summarise(stock_vacant_M = sum(stock_vacant)/1e6) %>%
+                                   ungroup() %>%
+                                   mutate(stock_reocc_M = 0)))} # V:
   
   # Initialize en_stock for the base year
   
@@ -372,6 +442,8 @@ fun_stock_init_fut <- function(sector, run,
                 # mat_stock = mat_stock
                 report = report
                 )
+  
+  if (mod_vacant == "vacant"){output = append(output, list(stock_vacant_i = stock_vacant_i))}
 
   
   }

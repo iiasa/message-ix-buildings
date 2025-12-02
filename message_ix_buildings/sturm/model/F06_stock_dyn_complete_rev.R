@@ -10,6 +10,7 @@
 
 fun_stock_dyn <- function(sector,
                           mod_arch, # mod_arch = "new", mod_arch = "stock"
+                          mod_vacant, #V:
                           yrs,i,
                           run, #ssp_r, # removed ssp dimension
                           geo_level, geo_level_aggr,geo_levels,
@@ -20,6 +21,8 @@ fun_stock_dyn <- function(sector,
                           stock_aggr, bld_det_age_i, #bld_det, 
                           #bld_eneff_age, # keep track of age
                           prob_dem,
+                          stock_vacant_i, # V:
+                          rate_vacant_occ, # V:
                           #rate_ren_low, rate_ren_high, #ren_rate,
                           rate_switch_fuel_heat,
                           #ms_new, ms_ren,
@@ -198,6 +201,64 @@ if(mod_arch == "new"){
   ## TEST: N. empty buildings
   print(paste("Empty buildings (det): ", round(sum(dem_det_age_i$n_empty),0)))
   print(paste("Empty buildings (aggr): ", round(sum(bld_aggr_i$n_empty),0)))
+  
+  
+  ## Vacant buildings accounting - V:
+  
+  if (mod_vacant == "vacant") {
+    
+  # Update vacant buildings for the current year
+  stock_vacant_i = stock_vacant_i %>%
+    filter(year == yrs[i-1]) %>%
+    left_join(dem_det_age_i %>%
+                group_by_at(setdiff(names(dem_det_age_i), c("fuel_heat", "fuel_cool","n_units_fuel_p", "n_dem", "n_empty"))) %>% # Select all variables, except the ones specified
+                summarise(n_empty = sum(n_empty)) %>%
+                ungroup()) %>%
+    left_join(rate_vacant_occ) %>%
+    mutate(n_empty = ifelse(is.na(n_empty),0,n_empty)) %>%
+    mutate(stock_vacant = (stock_vacant + n_empty)*(1-(stp*rate_vacant_occ))) %>%
+    mutate(stock_reocc = (stock_vacant + n_empty)*stp*rate_vacant_occ) %>%
+    select(-n_empty, -rate_vacant_occ) %>%
+    mutate(year=yrs[i])
+  
+  # Update aggregate new construction estimated to account for re-occupation - only allow re-occupation as substitution to new buildings
+  bld_aggr_i_reocc <-  bld_aggr_i %>% 
+    left_join(stock_vacant_i %>%
+                group_by_at(setdiff(names(stock_vacant_i), c("eneff","bld_age","yr_con","stock_vacant","stock_reocc"))) %>%
+                summarise(n_reocc = sum(stock_reocc)) %>%
+                ungroup()) %>%
+    mutate(n_reocc = ifelse(is.na(n_reocc),0,n_reocc)) %>% 
+    mutate(n_reocc_upd = pmin(n_reocc, n_new)) %>%
+    mutate(shr_reocc_upd = ifelse(n_reocc_upd == 0 & n_reocc == 0, 0, n_reocc_upd/n_reocc)) %>%
+    mutate(n_new = n_new - n_reocc_upd) %>%
+    select(-n_reocc)
+  
+  # update detailed reoccupied buildings numbers based on actual demand
+  stock_vacant_i <- stock_vacant_i %>%
+    left_join(bld_aggr_i_reocc %>% select(-c("n_units_aggr", "var_aggr", "n_dem", "n_new",  "n_empty",  "n_reocc_upd"))) %>%
+    mutate(stock_reocc = stock_reocc * shr_reocc_upd) %>%
+    mutate(stock_vacant = ifelse(is.na(stock_vacant),0,stock_vacant)) %>%
+    mutate(stock_reocc = ifelse(is.na(stock_reocc),0,stock_reocc)) %>%
+    select(-shr_reocc_upd) 
+  
+  # Updated aggregate stock dataframe
+  bld_aggr_i <- bld_aggr_i_reocc %>% select(-n_reocc_upd, shr_reocc_upd)  
+    
+  # Update detailed existing buildings - demolitions
+  dem_det_age_i <- dem_det_age_i %>%
+    group_by_at(setdiff(names(dem_det_age_i), c("fuel_heat", "fuel_cool", "n_units_fuel_p", "n_dem", "n_empty"))) %>%
+    mutate(n_units_aggr = sum(n_units_fuel_p)) %>%
+    ungroup() %>%
+    mutate(shr_units = ifelse(n_units_aggr == 0, 0, n_units_fuel_p/n_units_aggr)) %>%
+    left_join(stock_vacant_i %>% select(-stock_vacant,-year)) %>%
+    mutate(stock_reocc_det = ifelse(shr_units == 0 | stock_reocc == 0, 0, stock_reocc * shr_units)) %>%
+    mutate(stock_reocc_det = ifelse(is.na(stock_reocc_det), 0, stock_reocc_det)) %>%
+    mutate(n_units_fuel_p = n_units_fuel_p + stock_reocc_det) %>%
+    select(-c(n_units_aggr, shr_units, stock_reocc, stock_reocc_det))
+    
+    rm(bld_aggr_i_reocc)
+  }
+
   
   # Update stock results by age - disaggregated - current timestep
   
@@ -818,6 +879,14 @@ if ("vintage" %in% report_var){
 if ("energy" %in% report_var){report$en_stock <-  bind_rows(report$en_stock,en_stock_i)}
 if ("material" %in% report_var){report$mat_stock <- bind_rows(report$mat_stock,mat_stock_i)}
 
+if (mod_vacant == "vacant"){report$vacant_stock <- bind_rows(report$vacant_stock,
+                                                             stock_vacant_i %>%
+                                                               group_by_at(setdiff(names(stock_vacant_i), c("bld_age","yr_con","stock_vacant","stock_reocc"))) %>%
+                                                               summarise(stock_vacant_M = sum(stock_vacant)/1e6,
+                                                                         stock_reocc_M = sum(stock_reocc)/1e6) %>%
+                                                               ungroup())}# V:
+
+
 output = list(#en_stock = en_stock,
   #mat_stock = mat_stock,
   report = report,
@@ -830,6 +899,8 @@ output = list(#en_stock = en_stock,
   #ms_new = ms_new, 
   #ms_ren = ms_ren
 )
+
+if (mod_vacant == "vacant"){output = append(output, list(stock_vacant_i = stock_vacant_i))}
 
 }
 

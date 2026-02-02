@@ -9,7 +9,9 @@ ct_fuel_dhw,ct_fuel_dhw,,,,,,
 ct_ren_eneff,ct_ren_eneff,,,,,,
 ct_inc_cl,ct_inc_cl,,,,,,
 ct_tenr,ct_tenr,,,,,,
-pop,pop_clim_rev_SSP2,pop_clim_rev_SSP1,pop_clim_rev_SSP3,pop_clim_rev_SSP4,pop_clim_rev_SSP5,pop_clim_rev_SSP2,pop_clim_rev_SSP1
+pop,R61_pop_ssp2_2026-01-29,R61_pop_ssp1_2026-01-29,R61_pop_ssp3_2026-01-29,R61_pop_ssp4_2026-01-29,R61_pop_ssp5_2026-01-29,R61_pop_ssp2_2026-01-29,R61_pop_ssp1_2026-01-29
+pop_urt,R61_urt_ssp2_2026-01-29,R61_urt_ssp1_2026-01-29,R61_urt_ssp3_2026-01-29,R61_urt_ssp4_2026-01-29,R61_urt_ssp5_2026-01-29,R61_urt_ssp2_2026-01-29,R61_urt_ssp1_2026-01-29
+pop_clim,pop_shr_climatic_zones_R61_2026-01-29,,,,,,
 hh_size,hh_size_rev,,,,,,
 floor_cap,floor_resid_ssp2_rev,floor_resid_ssp1_rev,floor_resid_ssp3_rev,floor_resid_ssp3_rev,floor_resid_ssp2_rev,floor_resid_ssp1_rev,floor_resid_ssp1_rev
 hh_tenure,shr_hh_tenr,,,,,,
@@ -20,6 +22,7 @@ shr_acc_cool,bld_shr_access_cool_resid_ssp2_rev,bld_shr_access_cool_resid_ssp1_r
 shr_distr_heat,bld_shr_district_heat_resid,,,,,,
 shr_fuel_heat_base,bld_share_fuel_heat_resid,,,,,,
 mat_int,material_int_resid,,,,,,
+shr_mat_eol,shr_mat_eol_long_rev_2025-11-14,,,,,,
 eff_heat ,eff_heat_ssp2,eff_heat_ssp1,eff_heat_ssp3,eff_heat_ssp2,eff_heat_ssp2,eff_heat_ssp1,eff_heat_ssp1
 eff_cool,eff_cool_ssp2,eff_cool_ssp1,eff_cool_ssp3,eff_cool_ssp2,eff_cool_ssp2,eff_cool_ssp1,eff_cool_ssp1
 eff_hotwater,eff_hotwater_resid,,,,,,

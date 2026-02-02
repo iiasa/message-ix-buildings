@@ -137,6 +137,8 @@ run_scenario <- function(run,
                                          d$geo_data, geo_levels, geo_level,
                                          d$bld_cases_eneff, d$bld_cases_fuel,
                                          d$pop,
+                                         d$pop_urt,
+                                         d$pop_clim,
                                          d$hh_size, # used for residential
                                          d$floor_cap, # used for commercial
                                          d$ct_inc_cl,
@@ -308,6 +310,7 @@ run_scenario <- function(run,
                                    en_m2_hw_scen, d$en_int_others, # used only in commercial
                                    #en_stock,
                                    d$mat_int,
+                                   d$shr_mat_eol,
                                    #mat_stock,
                                    report_var,
                                    report
@@ -345,6 +348,8 @@ run_scenario <- function(run,
                                          d$geo_data, geo_levels, geo_level,
                                          d$bld_cases_eneff, d$bld_cases_fuel,
                                          d$pop,
+                                         d$pop_urt,
+                                         d$pop_clim,
                                          hh_size=NULL, #hh_size, # used for residential
                                          d$floor_cap, # used for commercial
                                          d$ct_inc_cl,
@@ -465,6 +470,7 @@ run_scenario <- function(run,
                                    en_hh_hw_scen, en_m2_hw_scen, d$en_int_others,
                                    #en_stock,
                                    d$mat_int,
+                                   d$shr_mat_eol,
                                    #mat_stock,
                                    report_var,
                                    report)

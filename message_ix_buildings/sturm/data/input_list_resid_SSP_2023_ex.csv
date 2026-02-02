@@ -20,6 +20,7 @@ shr_acc_cool,bld_shr_access_cool_resid_ssp2_rev,bld_shr_access_cool_resid_ssp1_r
 shr_distr_heat,bld_shr_district_heat_resid,,
 shr_fuel_heat_base,bld_share_fuel_heat_resid,,
 mat_int,material_int_resid,,
+shr_mat_eol,shr_mat_eol_long_rev_2025-11-14,,
 eff_heat ,eff_heat_ssp2,eff_heat_ssp1,eff_heat_ssp3
 eff_cool,eff_cool_ssp2,eff_cool_ssp1,eff_cool_ssp3
 eff_hotwater,eff_hotwater_resid,,

@@ -1,0 +1,781 @@
+country,clim,urt,value
+AFG,Zone_2B Hot Dry,urb,0.0473101376146223
+AFG,Zone_2B Hot Dry,rur,0.107269863383946
+AFG,Zone_3B Warm Dry,urb,0.200432757104664
+AFG,Zone_3B Warm Dry,rur,0.368893123815538
+AFG,Zone_4A Mixed Humid,urb,0.0989292165701917
+AFG,Zone_4A Mixed Humid,rur,0.186767141271123
+AFG,Zone_5A Cool Humid,urb,0.635362414212603
+AFG,Zone_5A Cool Humid,rur,0.210504663267794
+AFG,Zone_6A Cold Humid,urb,0.0179654744979192
+AFG,Zone_6A Cold Humid,rur,0.126565208261598
+AGO,Zone_1A Very hot Humid,urb,0.146294538510512
+AGO,Zone_1A Very hot Humid,rur,0.207077218408488
+AGO,Zone_1B Very hot Dry,urb,0.280043632463961
+AGO,Zone_1B Very hot Dry,rur,0.0252048643107831
+AGO,Zone_2A Hot Humid,urb,0.287212178545707
+AGO,Zone_2A Hot Humid,rur,0.648676328728005
+AGO,Zone_3C Warm Marine,urb,0.28644965047982
+AGO,Zone_3C Warm Marine,rur,0.119041588552724
+ALB,Zone_3A Warm Humid,urb,1
+ALB,Zone_3A Warm Humid,rur,1
+AND,Zone_5A Cool Humid,urb,1
+AND,Zone_5A Cool Humid,rur,1
+ARE,Zone_0B Extremely hot Dry,urb,1
+ARE,Zone_0B Extremely hot Dry,rur,1
+ARG,Zone_2A Hot Humid,urb,0.091499014100079
+ARG,Zone_2A Hot Humid,rur,0.432281093193396
+ARG,Zone_3A Warm Humid,urb,0.837856949118948
+ARG,Zone_3A Warm Humid,rur,0.404874251477892
+ARG,Zone_3B Warm Dry,urb,0.0706440367809732
+ARG,Zone_3B Warm Dry,rur,0.162844655328711
+ARM,Zone_6A Cold Humid,urb,1
+ARM,Zone_6A Cold Humid,rur,1
+ATG,Zone_0A Extremely hot Humid,urb,0
+ATG,Zone_0A Extremely hot Humid,rur,1
+AUS,Zone_2A Hot Humid,urb,0.185059486644897
+AUS,Zone_2A Hot Humid,rur,0.182762136489942
+AUS,Zone_3A Warm Humid,urb,0.814940513355103
+AUS,Zone_3A Warm Humid,rur,0.817237863510058
+AUT,Zone_4A Mixed Humid,urb,0.349595149050507
+AUT,Zone_4A Mixed Humid,rur,0.00305391920774295
+AUT,Zone_5A Cool Humid,urb,0.446220015778129
+AUT,Zone_5A Cool Humid,rur,0.71732582393945
+AUT,Zone_6A Cold Humid,urb,0.204184835171364
+AUT,Zone_6A Cold Humid,rur,0.279620256852808
+AZE,Zone_4A Mixed Humid,urb,0.449322096437375
+AZE,Zone_4A Mixed Humid,rur,0.618642465757879
+AZE,Zone_4B Mixed Dry,urb,0.550677903562625
+AZE,Zone_4B Mixed Dry,rur,0.381357534242121
+BDI,Zone_2A Hot Humid,urb,1
+BDI,Zone_2A Hot Humid,rur,1
+BEL,Zone_4A Mixed Humid,urb,1
+BEL,Zone_4A Mixed Humid,rur,1
+BEN,Zone_0A Extremely hot Humid,urb,1
+BEN,Zone_0A Extremely hot Humid,rur,1
+BFA,Zone_0A Extremely hot Humid,urb,0.20359249447494
+BFA,Zone_0A Extremely hot Humid,rur,0.280088469199704
+BFA,Zone_0B Extremely hot Dry,urb,0.79640750552506
+BFA,Zone_0B Extremely hot Dry,rur,0.719911530800296
+BGD,Zone_0A Extremely hot Humid,urb,0.1183037581342
+BGD,Zone_0A Extremely hot Humid,rur,0.0990853179616447
+BGD,Zone_1A Very hot Humid,urb,0.871212993346421
+BGD,Zone_1A Very hot Humid,rur,0.869377445121378
+BGD,Zone_2A Hot Humid,urb,0.0104832485193785
+BGD,Zone_2A Hot Humid,rur,0.0315372369169771
+BGR,Zone_4A Mixed Humid,urb,0.713795844498093
+BGR,Zone_4A Mixed Humid,rur,0.671389832591171
+BGR,Zone_5A Cool Humid,urb,0.286204155501907
+BGR,Zone_5A Cool Humid,rur,0.328610167408829
+BHR,Zone_0B Extremely hot Dry,urb,1
+BHR,Zone_0B Extremely hot Dry,rur,1
+BIH,Zone_5A Cool Humid,urb,1
+BIH,Zone_5A Cool Humid,rur,1
+BLR,Zone_5A Cool Humid,urb,0.231204495898613
+BLR,Zone_5A Cool Humid,rur,0.348097172066579
+BLR,Zone_6A Cold Humid,urb,0.768795504101387
+BLR,Zone_6A Cold Humid,rur,0.651902827933421
+BLZ,Zone_1A Very hot Humid,urb,1
+BLZ,Zone_1A Very hot Humid,rur,1
+BOL,Zone_1A Very hot Humid,urb,1
+BOL,Zone_1A Very hot Humid,rur,1
+BRA,Zone_0A Extremely hot Humid,urb,0.114520258964936
+BRA,Zone_0A Extremely hot Humid,rur,0.280910412401979
+BRA,Zone_1A Very hot Humid,urb,0.202315529148876
+BRA,Zone_1A Very hot Humid,rur,0.347570528987444
+BRA,Zone_1B Very hot Dry,urb,0.00800127201142942
+BRA,Zone_1B Very hot Dry,rur,0.0526546180276203
+BRA,Zone_2A Hot Humid,urb,0.604343441964899
+BRA,Zone_2A Hot Humid,rur,0.246836351733744
+BRA,Zone_3A Warm Humid,urb,0.0708194979098599
+BRA,Zone_3A Warm Humid,rur,0.0720280888492122
+BRB,Zone_0A Extremely hot Humid,urb,1
+BRB,Zone_0A Extremely hot Humid,rur,1
+BRN,Zone_0A Extremely hot Humid,urb,1
+BRN,Zone_0A Extremely hot Humid,rur,1
+BTN,Zone_4C Mixed Marine,urb,1
+BTN,Zone_4C Mixed Marine,rur,1
+BWA,Zone_2B Hot Dry,urb,1
+BWA,Zone_2B Hot Dry,rur,1
+CAF,Zone_1A Very hot Humid,urb,1
+CAF,Zone_1A Very hot Humid,rur,1
+CAN,Zone_5A Cool Humid,urb,0.346588603484062
+CAN,Zone_5A Cool Humid,rur,0.0778529910162951
+CAN,Zone_6A Cold Humid,urb,0.376214443417373
+CAN,Zone_6A Cold Humid,rur,0.417280285901324
+CAN,Zone_7A Very cold Humid,urb,0.277196953098565
+CAN,Zone_7A Very cold Humid,rur,0.504866723082381
+CHE,Zone_5A Cool Humid,urb,1
+CHE,Zone_5A Cool Humid,rur,1
+CHL,Zone_3C Warm Marine,urb,0.705929550976005
+CHL,Zone_3C Warm Marine,rur,0.39474694386396
+CHL,Zone_4C Mixed Marine,urb,0.294070449023995
+CHL,Zone_4C Mixed Marine,rur,0.60525305613604
+CHN,Zone_1A Very hot Humid,urb,0.00555128643340792
+CHN,Zone_1A Very hot Humid,rur,0.0115907323160167
+CHN,Zone_2A Hot Humid,urb,0.146872584553099
+CHN,Zone_2A Hot Humid,rur,0.0971424200329535
+CHN,Zone_3A Warm Humid,urb,0.370670586866915
+CHN,Zone_3A Warm Humid,rur,0.397201570138069
+CHN,Zone_3C Warm Marine,urb,0.00823822886262842
+CHN,Zone_3C Warm Marine,rur,0.0338543639835942
+CHN,Zone_4A Mixed Humid,urb,0.262805612182349
+CHN,Zone_4A Mixed Humid,rur,0.145453289477112
+CHN,Zone_4B Mixed Dry,urb,0.0855315419304909
+CHN,Zone_4B Mixed Dry,rur,0.0398615546541902
+CHN,Zone_4C Mixed Marine,urb,0.00188645120844752
+CHN,Zone_4C Mixed Marine,rur,0.0195922446190578
+CHN,Zone_5A Cool Humid,urb,0.0341324834140037
+CHN,Zone_5A Cool Humid,rur,0.0490782746204647
+CHN,Zone_5B Cool Dry,urb,0.0142382488264297
+CHN,Zone_5B Cool Dry,rur,0.0288816333978784
+CHN,Zone_5C Cool Marine,urb,0.00164698831991823
+CHN,Zone_5C Cool Marine,rur,0.00596070854927978
+CHN,Zone_6A Cold Humid,urb,0.0388147455139717
+CHN,Zone_6A Cold Humid,rur,0.0594457386668459
+CHN,Zone_6B Cold Dry,urb,0.0081904971711616
+CHN,Zone_6B Cold Dry,rur,0.0262405618859437
+CHN,Zone_7A Very cold Humid,urb,0.021289639816928
+CHN,Zone_7A Very cold Humid,rur,0.0720113236986755
+CHN,Zone_7B Very cold Dry,urb,1.10731771492712e-4
+CHN,Zone_7B Very cold Dry,rur,0.00622344887117304
+CHN,Zone_8A Subarctic/arctic Humid,urb,2.03731287563341e-5
+CHN,Zone_8A Subarctic/arctic Humid,rur,0.00746213508874483
+CIV,Zone_0A Extremely hot Humid,urb,0.734485137904278
+CIV,Zone_0A Extremely hot Humid,rur,0.528275008330781
+CIV,Zone_1A Very hot Humid,urb,0.265514862095722
+CIV,Zone_1A Very hot Humid,rur,0.471724991669219
+CMR,Zone_0A Extremely hot Humid,urb,0.393421305062719
+CMR,Zone_0A Extremely hot Humid,rur,0.218764223471116
+CMR,Zone_1A Very hot Humid,urb,0.265868529792931
+CMR,Zone_1A Very hot Humid,rur,0.597882662743733
+CMR,Zone_2A Hot Humid,urb,0.34071016514435
+CMR,Zone_2A Hot Humid,rur,0.183353113785151
+COD,Zone_1A Very hot Humid,urb,0.686687934093194
+COD,Zone_1A Very hot Humid,rur,0.82360221351521
+COD,Zone_2A Hot Humid,urb,0.211411507851083
+COD,Zone_2A Hot Humid,rur,0.166794809845312
+COD,Zone_3C Warm Marine,urb,0.101900558055723
+COD,Zone_3C Warm Marine,rur,0.00960297663947876
+COG,Zone_1A Very hot Humid,urb,1
+COG,Zone_1A Very hot Humid,rur,1
+COL,Zone_0A Extremely hot Humid,urb,0.180036059161923
+COL,Zone_0A Extremely hot Humid,rur,0.266183728999088
+COL,Zone_1A Very hot Humid,urb,0.0987192268276952
+COL,Zone_1A Very hot Humid,rur,0.309947391082621
+COL,Zone_2A Hot Humid,urb,0.313888092229629
+COL,Zone_2A Hot Humid,rur,0.182843755154667
+COL,Zone_3A Warm Humid,urb,0.244084432213769
+COL,Zone_3A Warm Humid,rur,0.1256957530505
+COL,Zone_3C Warm Marine,urb,0.163272189566984
+COL,Zone_3C Warm Marine,rur,0.115329371713124
+COM,Zone_1A Very hot Humid,urb,1
+COM,Zone_1A Very hot Humid,rur,1
+CPV,Zone_2B Hot Dry,urb,1
+CPV,Zone_2B Hot Dry,rur,1
+CRI,Zone_1A Very hot Humid,urb,1
+CRI,Zone_1A Very hot Humid,rur,1
+CUB,Zone_1A Very hot Humid,urb,1
+CUB,Zone_1A Very hot Humid,rur,1
+CYP,Zone_3A Warm Humid,urb,1
+CYP,Zone_3A Warm Humid,rur,1
+CZE,Zone_5A Cool Humid,urb,1
+CZE,Zone_5A Cool Humid,rur,1
+DEU,Zone_4A Mixed Humid,urb,0.247805195961634
+DEU,Zone_4A Mixed Humid,rur,0.0308786268544729
+DEU,Zone_5A Cool Humid,urb,0.752194804038366
+DEU,Zone_5A Cool Humid,rur,0.969121373145527
+DJI,Zone_0B Extremely hot Dry,urb,1
+DJI,Zone_0B Extremely hot Dry,rur,1
+DMA,Zone_1A Very hot Humid,urb,1
+DMA,Zone_1A Very hot Humid,rur,1
+DNK,Zone_5A Cool Humid,urb,1
+DNK,Zone_5A Cool Humid,rur,1
+DOM,Zone_1A Very hot Humid,urb,0.727321578241256
+DOM,Zone_1A Very hot Humid,rur,0.663655408655724
+DOM,Zone_2A Hot Humid,urb,0.272678421758744
+DOM,Zone_2A Hot Humid,rur,0.336344591344276
+DZA,Zone_2B Hot Dry,urb,0.00368995223570881
+DZA,Zone_2B Hot Dry,rur,0.27698642187526
+DZA,Zone_3A Warm Humid,urb,0.779167925437326
+DZA,Zone_3A Warm Humid,rur,0.188815866743699
+DZA,Zone_3B Warm Dry,urb,0.217142122326966
+DZA,Zone_3B Warm Dry,rur,0.534197711381041
+ECU,Zone_1A Very hot Humid,urb,0.370383472755702
+ECU,Zone_1A Very hot Humid,rur,0.66089099012016
+ECU,Zone_3C Warm Marine,urb,0.30917029805124
+ECU,Zone_3C Warm Marine,rur,0.136772078290915
+ECU,Zone_4C Mixed Marine,urb,0.320446229193058
+ECU,Zone_4C Mixed Marine,rur,0.202336931588926
+EGY,Zone_1B Very hot Dry,urb,0.0620241901589399
+EGY,Zone_1B Very hot Dry,rur,0.00687595047563455
+EGY,Zone_2B Hot Dry,urb,0.93797580984106
+EGY,Zone_2B Hot Dry,rur,0.993124049524365
+ERI,Zone_0B Extremely hot Dry,urb,1
+ERI,Zone_0B Extremely hot Dry,rur,1
+ESH,Zone_2B Hot Dry,urb,1
+ESH,Zone_2B Hot Dry,rur,1
+ESP,Zone_3A Warm Humid,urb,0.438624560979919
+ESP,Zone_3A Warm Humid,rur,0.502645899614982
+ESP,Zone_3B Warm Dry,urb,0.242221894732129
+ESP,Zone_3B Warm Dry,rur,0.129637842237071
+ESP,Zone_3C Warm Marine,urb,0.0558795546470806
+ESP,Zone_3C Warm Marine,rur,0.0462626414810072
+ESP,Zone_4A Mixed Humid,urb,0.188974438062717
+ESP,Zone_4A Mixed Humid,rur,0.17122763383552
+ESP,Zone_4C Mixed Marine,urb,0.0742995515781543
+ESP,Zone_4C Mixed Marine,rur,0.15022598283142
+EST,Zone_6A Cold Humid,urb,1
+EST,Zone_6A Cold Humid,rur,1
+ETH,Zone_0B Extremely hot Dry,urb,3.01734420343095e-4
+ETH,Zone_0B Extremely hot Dry,rur,0.0575591414000792
+ETH,Zone_1A Very hot Humid,urb,1.33635630021833e-4
+ETH,Zone_1A Very hot Humid,rur,0.0346818744516685
+ETH,Zone_2A Hot Humid,urb,0.183336015013141
+ETH,Zone_2A Hot Humid,rur,0.277127018228709
+ETH,Zone_2B Hot Dry,urb,0.0110544585550324
+ETH,Zone_2B Hot Dry,rur,0.0343152671452093
+ETH,Zone_3A Warm Humid,urb,0.0413516480552271
+ETH,Zone_3A Warm Humid,rur,0.0317164474476402
+ETH,Zone_3C Warm Marine,urb,0.763822508326234
+ETH,Zone_3C Warm Marine,rur,0.564600251326694
+FIN,Zone_6A Cold Humid,urb,0.636939823915893
+FIN,Zone_6A Cold Humid,rur,0.176179312546279
+FIN,Zone_7A Very cold Humid,urb,0.363060176084107
+FIN,Zone_7A Very cold Humid,rur,0.823820687453721
+FJI,Zone_2A Hot Humid,urb,1
+FJI,Zone_2A Hot Humid,rur,1
+FRA,Zone_3A Warm Humid,urb,0.145668628565058
+FRA,Zone_3A Warm Humid,rur,0.102099304606159
+FRA,Zone_4A Mixed Humid,urb,0.760844359063877
+FRA,Zone_4A Mixed Humid,rur,0.75875555626543
+FRA,Zone_5A Cool Humid,urb,0.0934870123710651
+FRA,Zone_5A Cool Humid,rur,0.139145139128412
+GAB,Zone_1A Very hot Humid,urb,1
+GAB,Zone_1A Very hot Humid,rur,1
+GBR,Zone_4A Mixed Humid,urb,0.429166781028547
+GBR,Zone_4A Mixed Humid,rur,0.483145303933445
+GBR,Zone_5A Cool Humid,urb,0.570833218971453
+GBR,Zone_5A Cool Humid,rur,0.516854696066555
+GEO,Zone_5A Cool Humid,urb,1
+GEO,Zone_5A Cool Humid,rur,1
+GHA,Zone_0A Extremely hot Humid,urb,1
+GHA,Zone_0A Extremely hot Humid,rur,1
+GIN,Zone_0A Extremely hot Humid,urb,0.105259162811851
+GIN,Zone_0A Extremely hot Humid,rur,0.33848457941914
+GIN,Zone_1A Very hot Humid,urb,0.894740837188149
+GIN,Zone_1A Very hot Humid,rur,0.66151542058086
+GMB,Zone_0B Extremely hot Dry,urb,1
+GMB,Zone_0B Extremely hot Dry,rur,1
+GNB,Zone_0A Extremely hot Humid,urb,1
+GNB,Zone_0A Extremely hot Humid,rur,1
+GNQ,Zone_1A Very hot Humid,urb,1
+GNQ,Zone_1A Very hot Humid,rur,1
+GRC,Zone_3A Warm Humid,urb,0.88130396182595
+GRC,Zone_3A Warm Humid,rur,0.65401841340507
+GRC,Zone_4A Mixed Humid,urb,0.11869603817405
+GRC,Zone_4A Mixed Humid,rur,0.34598158659493
+GRD,Zone_0A Extremely hot Humid,urb,1
+GRD,Zone_0A Extremely hot Humid,rur,1
+GTM,Zone_2A Hot Humid,urb,0.367942163694106
+GTM,Zone_2A Hot Humid,rur,0.517000220280321
+GTM,Zone_3C Warm Marine,urb,0.632057836305894
+GTM,Zone_3C Warm Marine,rur,0.482999779719679
+GUF,Zone_1A Very hot Humid,urb,1
+GUF,Zone_1A Very hot Humid,rur,1
+GUY,Zone_0A Extremely hot Humid,urb,1
+GUY,Zone_0A Extremely hot Humid,rur,1
+HND,Zone_1A Very hot Humid,urb,0.382578955194857
+HND,Zone_1A Very hot Humid,rur,0.269312268534337
+HND,Zone_2A Hot Humid,urb,0.617421044805143
+HND,Zone_2A Hot Humid,rur,0.730687731465663
+HRV,Zone_4A Mixed Humid,urb,1
+HRV,Zone_4A Mixed Humid,rur,1
+HTI,Zone_1A Very hot Humid,urb,1
+HTI,Zone_1A Very hot Humid,rur,1
+HUN,Zone_4A Mixed Humid,urb,0.476299894296351
+HUN,Zone_4A Mixed Humid,rur,0.515033163976912
+HUN,Zone_5A Cool Humid,urb,0.523700105703649
+HUN,Zone_5A Cool Humid,rur,0.484966836023088
+IDN,Zone_0A Extremely hot Humid,urb,0.681858295076556
+IDN,Zone_0A Extremely hot Humid,rur,0.568250603312405
+IDN,Zone_1A Very hot Humid,urb,0.318141704923444
+IDN,Zone_1A Very hot Humid,rur,0.409322894483399
+IDN,Zone_2A Hot Humid,urb,0
+IDN,Zone_2A Hot Humid,rur,0.022426502204196
+IND,Zone_0A Extremely hot Humid,urb,0.399691658583683
+IND,Zone_0A Extremely hot Humid,rur,0.245963708945281
+IND,Zone_0B Extremely hot Dry,urb,0.0513031970040407
+IND,Zone_0B Extremely hot Dry,rur,0.104799118520762
+IND,Zone_1A Very hot Humid,urb,0.343491450413997
+IND,Zone_1A Very hot Humid,rur,0.400728720769822
+IND,Zone_1B Very hot Dry,urb,0.159047870123956
+IND,Zone_1B Very hot Dry,rur,0.178459164678494
+IND,Zone_2A Hot Humid,urb,0.0351433692820536
+IND,Zone_2A Hot Humid,rur,0.0475406933948036
+IND,Zone_2B Hot Dry,urb,0.00473887253577818
+IND,Zone_2B Hot Dry,rur,0.00256557934970417
+IND,Zone_3A Warm Humid,urb,0.00291872581793359
+IND,Zone_3A Warm Humid,rur,0.00725783548127852
+IND,Zone_3C Warm Marine,urb,8.34504990174701e-4
+IND,Zone_3C Warm Marine,rur,0.00357588132006402
+IND,Zone_4C Mixed Marine,urb,4.62697654069811e-4
+IND,Zone_4C Mixed Marine,rur,0.00743207911251673
+IND,Zone_5C Cool Marine,urb,0.00236765359431265
+IND,Zone_5C Cool Marine,rur,0.00167721842727312
+IRL,Zone_5A Cool Humid,urb,1
+IRL,Zone_5A Cool Humid,rur,1
+IRN,Zone_1B Very hot Dry,urb,0.0713483937372449
+IRN,Zone_1B Very hot Dry,rur,0.10614256266142
+IRN,Zone_2A Hot Humid,urb,0.0747702860835471
+IRN,Zone_2A Hot Humid,rur,0.0275456205318403
+IRN,Zone_2B Hot Dry,urb,0.0559465204646672
+IRN,Zone_2B Hot Dry,rur,0.197560975052049
+IRN,Zone_3A Warm Humid,urb,0.0633118383025564
+IRN,Zone_3A Warm Humid,rur,0.0411313183050347
+IRN,Zone_3B Warm Dry,urb,0.0816093776074153
+IRN,Zone_3B Warm Dry,rur,0.172333875638676
+IRN,Zone_4A Mixed Humid,urb,0.373906470221816
+IRN,Zone_4A Mixed Humid,rur,0.113170382582509
+IRN,Zone_4B Mixed Dry,urb,0.157703347131695
+IRN,Zone_4B Mixed Dry,rur,0.163003266408357
+IRN,Zone_5A Cool Humid,urb,0.0851670284444754
+IRN,Zone_5A Cool Humid,rur,0.129318032929329
+IRN,Zone_5B Cool Dry,urb,0.0362367380065834
+IRN,Zone_5B Cool Dry,rur,0.0497939658907851
+IRQ,Zone_1B Very hot Dry,urb,0.558640032274725
+IRQ,Zone_1B Very hot Dry,rur,0.410540146376755
+IRQ,Zone_2B Hot Dry,urb,0.441359967725275
+IRQ,Zone_2B Hot Dry,rur,0.589459853623245
+ISL,Zone_7A Very cold Humid,urb,1
+ISL,Zone_7A Very cold Humid,rur,1
+ISR,Zone_3A Warm Humid,urb,1
+ISR,Zone_3A Warm Humid,rur,1
+ITA,Zone_3A Warm Humid,urb,0.487702124137456
+ITA,Zone_3A Warm Humid,rur,0.434394058044936
+ITA,Zone_4A Mixed Humid,urb,0.434572453749278
+ITA,Zone_4A Mixed Humid,rur,0.434407912876519
+ITA,Zone_4C Mixed Marine,urb,0.0476756399381235
+ITA,Zone_4C Mixed Marine,rur,0.0564944493185185
+ITA,Zone_5A Cool Humid,urb,0.0300497821751426
+ITA,Zone_5A Cool Humid,rur,0.074703579760026
+JAM,Zone_1A Very hot Humid,urb,1
+JAM,Zone_1A Very hot Humid,rur,1
+JOR,Zone_3A Warm Humid,urb,0.502810829575524
+JOR,Zone_3A Warm Humid,rur,0.337472227902821
+JOR,Zone_3B Warm Dry,urb,0.497189170424476
+JOR,Zone_3B Warm Dry,rur,0.662527772097179
+JPN,Zone_3A Warm Humid,urb,0.66847808070525
+JPN,Zone_3A Warm Humid,rur,0.323978252533645
+JPN,Zone_4A Mixed Humid,urb,0.239647496812346
+JPN,Zone_4A Mixed Humid,rur,0.374127758110012
+JPN,Zone_5A Cool Humid,urb,0.0595670690223635
+JPN,Zone_5A Cool Humid,rur,0.237031740693366
+JPN,Zone_6A Cold Humid,urb,0.0323073534600409
+JPN,Zone_6A Cold Humid,rur,0.0648622486629769
+KAZ,Zone_7A Very cold Humid,urb,1
+KAZ,Zone_7A Very cold Humid,rur,1
+KEN,Zone_1A Very hot Humid,urb,0.0238518238151179
+KEN,Zone_1A Very hot Humid,rur,0.0657022219297744
+KEN,Zone_2A Hot Humid,urb,0.476906246951964
+KEN,Zone_2A Hot Humid,rur,0.622057528662338
+KEN,Zone_3A Warm Humid,urb,0.0335757591712968
+KEN,Zone_3A Warm Humid,rur,0.146312209800694
+KEN,Zone_3C Warm Marine,urb,0.465666170061621
+KEN,Zone_3C Warm Marine,rur,0.165928039607194
+KGZ,Zone_4B Mixed Dry,urb,0.628309476202932
+KGZ,Zone_4B Mixed Dry,rur,0.701434850622452
+KGZ,Zone_6A Cold Humid,urb,0.371690523797068
+KGZ,Zone_6A Cold Humid,rur,0.298565149377548
+KHM,Zone_0A Extremely hot Humid,urb,1
+KHM,Zone_0A Extremely hot Humid,rur,1
+KNA,Zone_1A Very hot Humid,urb,1
+KNA,Zone_1A Very hot Humid,rur,1
+KOR,Zone_4A Mixed Humid,urb,0.683891436282194
+KOR,Zone_4A Mixed Humid,rur,0.508489284847552
+KOR,Zone_5A Cool Humid,urb,0.316108563717806
+KOR,Zone_5A Cool Humid,rur,0.491510715152448
+KWT,Zone_1B Very hot Dry,urb,1
+KWT,Zone_1B Very hot Dry,rur,1
+LAO,Zone_1A Very hot Humid,urb,0.915231685243865
+LAO,Zone_1A Very hot Humid,rur,0.409691338718823
+LAO,Zone_2A Hot Humid,urb,0.0847683147561348
+LAO,Zone_2A Hot Humid,rur,0.590308661281177
+LBN,Zone_3A Warm Humid,urb,1
+LBN,Zone_3A Warm Humid,rur,1
+LBR,Zone_1A Very hot Humid,urb,1
+LBR,Zone_1A Very hot Humid,rur,1
+LBY,Zone_2B Hot Dry,urb,1
+LBY,Zone_2B Hot Dry,rur,1
+LCA,Zone_0A Extremely hot Humid,urb,1
+LCA,Zone_0A Extremely hot Humid,rur,1
+LKA,Zone_0A Extremely hot Humid,urb,0.790688980243755
+LKA,Zone_0A Extremely hot Humid,rur,0.621206233418885
+LKA,Zone_1A Very hot Humid,urb,0.101575636429796
+LKA,Zone_1A Very hot Humid,rur,0.22617017478430201
+LKA,Zone_2A Hot Humid,urb,0.107735383326449
+LKA,Zone_2A Hot Humid,rur,0.152623591796813
+LSO,Zone_3C Warm Marine,urb,1
+LSO,Zone_3C Warm Marine,rur,1
+LTU,Zone_6A Cold Humid,urb,1
+LTU,Zone_6A Cold Humid,rur,1
+LUX,Zone_5A Cool Humid,urb,1
+LUX,Zone_5A Cool Humid,rur,1
+LVA,Zone_6A Cold Humid,urb,1
+LVA,Zone_6A Cold Humid,rur,1
+MAR,Zone_3A Warm Humid,urb,0.741748666959914
+MAR,Zone_3A Warm Humid,rur,0.496563099946482
+MAR,Zone_3B Warm Dry,urb,0.258251333040086
+MAR,Zone_3B Warm Dry,rur,0.503436900053518
+MDA,Zone_5A Cool Humid,urb,1
+MDA,Zone_5A Cool Humid,rur,1
+MDG,Zone_1A Very hot Humid,urb,0.0442636892513154
+MDG,Zone_1A Very hot Humid,rur,0.176738305324778
+MDG,Zone_2A Hot Humid,urb,0.1845112522758
+MDG,Zone_2A Hot Humid,rur,0.629459562686165
+MDG,Zone_3C Warm Marine,urb,0.771225058472885
+MDG,Zone_3C Warm Marine,rur,0.193802131989057
+MDV,Zone_0A Extremely hot Humid,urb,1
+MDV,Zone_0A Extremely hot Humid,rur,1
+MEX,Zone_0A Extremely hot Humid,urb,0.0355531099534938
+MEX,Zone_0A Extremely hot Humid,rur,0.0706638637175973
+MEX,Zone_1A Very hot Humid,urb,0.111415254959726
+MEX,Zone_1A Very hot Humid,rur,0.252114072083366
+MEX,Zone_1B Very hot Dry,urb,0.0323678921500617
+MEX,Zone_1B Very hot Dry,rur,0.077829072782682
+MEX,Zone_2A Hot Humid,urb,0.134313920763072
+MEX,Zone_2A Hot Humid,rur,0.136865514414537
+MEX,Zone_2B Hot Dry,urb,0.0736418217267357
+MEX,Zone_2B Hot Dry,rur,0.10995651448863
+MEX,Zone_3A Warm Humid,urb,0.057497595607547
+MEX,Zone_3A Warm Humid,rur,0.0583907174816201
+MEX,Zone_3B Warm Dry,urb,0.064822967934291
+MEX,Zone_3B Warm Dry,rur,0.10187827902951
+MEX,Zone_3C Warm Marine,urb,0.490387436905073
+MEX,Zone_3C Warm Marine,rur,0.192301966002058
+MKD,Zone_5A Cool Humid,urb,1
+MKD,Zone_5A Cool Humid,rur,1
+MLI,Zone_0A Extremely hot Humid,urb,0.4727889544838
+MLI,Zone_0A Extremely hot Humid,rur,0.344231958677076
+MLI,Zone_0B Extremely hot Dry,urb,0.5272110455162
+MLI,Zone_0B Extremely hot Dry,rur,0.655768041322924
+MLT,Zone_3A Warm Humid,urb,1
+MLT,Zone_3A Warm Humid,rur,1
+MMR,Zone_0A Extremely hot Humid,urb,0.75880902764753
+MMR,Zone_0A Extremely hot Humid,rur,0.391515353724438
+MMR,Zone_0B Extremely hot Dry,urb,0.074245752043265
+MMR,Zone_0B Extremely hot Dry,rur,0.0436332996314558
+MMR,Zone_1A Very hot Humid,urb,0.155205762575332
+MMR,Zone_1A Very hot Humid,rur,0.358791994993361
+MMR,Zone_2A Hot Humid,urb,0.0117394577338726
+MMR,Zone_2A Hot Humid,rur,0.206059351650745
+MNE,Zone_5A Cool Humid,urb,1
+MNE,Zone_5A Cool Humid,rur,1
+MNG,Zone_8A Subarctic/arctic Humid,urb,1
+MNG,Zone_8A Subarctic/arctic Humid,rur,1
+MOZ,Zone_1A Very hot Humid,urb,0.417557268399243
+MOZ,Zone_1A Very hot Humid,rur,0.604987022481833
+MOZ,Zone_2A Hot Humid,urb,0.582442731600757
+MOZ,Zone_2A Hot Humid,rur,0.395012977518167
+MRT,Zone_0B Extremely hot Dry,urb,1
+MRT,Zone_0B Extremely hot Dry,rur,1
+MUS,Zone_2A Hot Humid,urb,1
+MUS,Zone_2A Hot Humid,rur,1
+MWI,Zone_1A Very hot Humid,urb,0.162005500520937
+MWI,Zone_1A Very hot Humid,rur,0.17844437738566
+MWI,Zone_2A Hot Humid,urb,0.837994499479063
+MWI,Zone_2A Hot Humid,rur,0.82155562261434
+MYS,Zone_0A Extremely hot Humid,urb,0.557535698473005
+MYS,Zone_0A Extremely hot Humid,rur,0.464062276200644
+MYS,Zone_1A Very hot Humid,urb,0.442464301526995
+MYS,Zone_1A Very hot Humid,rur,0.535937723799356
+NAM,Zone_2B Hot Dry,urb,1
+NAM,Zone_2B Hot Dry,rur,1
+NER,Zone_0B Extremely hot Dry,urb,1
+NER,Zone_0B Extremely hot Dry,rur,1
+NGA,Zone_0A Extremely hot Humid,urb,0.757847739650562
+NGA,Zone_0A Extremely hot Humid,rur,0.591160285113025
+NGA,Zone_0B Extremely hot Dry,urb,0.112699840201767
+NGA,Zone_0B Extremely hot Dry,rur,0.23677376580498
+NGA,Zone_1A Very hot Humid,urb,0.129452420147671
+NGA,Zone_1A Very hot Humid,rur,0.172065949081995
+NIC,Zone_0A Extremely hot Humid,urb,0.64572984337712
+NIC,Zone_0A Extremely hot Humid,rur,0.40221227231098
+NIC,Zone_1A Very hot Humid,urb,0.35427015662288
+NIC,Zone_1A Very hot Humid,rur,0.59778772768902
+NLD,Zone_4A Mixed Humid,urb,0.880220526624323
+NLD,Zone_4A Mixed Humid,rur,0.440225952100713
+NLD,Zone_5A Cool Humid,urb,0.119779473375677
+NLD,Zone_5A Cool Humid,rur,0.559774047899287
+NOR,Zone_6A Cold Humid,urb,1
+NOR,Zone_6A Cold Humid,rur,1
+NPL,Zone_1A Very hot Humid,urb,0.040791458497983
+NPL,Zone_1A Very hot Humid,rur,0.111295623579498
+NPL,Zone_2A Hot Humid,urb,0.391779174296401
+NPL,Zone_2A Hot Humid,rur,0.513257110392413
+NPL,Zone_3A Warm Humid,urb,0.513146091200174
+NPL,Zone_3A Warm Humid,rur,0.140998949948524
+NPL,Zone_3C Warm Marine,urb,0.0542832760054419
+NPL,Zone_3C Warm Marine,rur,0.234448316079564
+NZL,Zone_3A Warm Humid,urb,1
+NZL,Zone_3A Warm Humid,rur,1
+OMN,Zone_1B Very hot Dry,urb,1
+OMN,Zone_1B Very hot Dry,rur,1
+PAK,Zone_0B Extremely hot Dry,urb,0.231016942581911
+PAK,Zone_0B Extremely hot Dry,rur,0.207775045359246
+PAK,Zone_1A Very hot Humid,urb,0.0824964334788858
+PAK,Zone_1A Very hot Humid,rur,0.0233493240783723
+PAK,Zone_1B Very hot Dry,urb,0.443052672542833
+PAK,Zone_1B Very hot Dry,rur,0.465945352404272
+PAK,Zone_2A Hot Humid,urb,0.208423340088813
+PAK,Zone_2A Hot Humid,rur,0.0802922419655756
+PAK,Zone_2B Hot Dry,urb,0.0186768297607033
+PAK,Zone_2B Hot Dry,rur,0.10552656746822
+PAK,Zone_3A Warm Humid,urb,0.00636032341354465
+PAK,Zone_3A Warm Humid,rur,0.0438740436245099
+PAK,Zone_3B Warm Dry,urb,0.00997345813330854
+PAK,Zone_3B Warm Dry,rur,0.0456908514333094
+PAK,Zone_7A Very cold Humid,urb,0
+PAK,Zone_7A Very cold Humid,rur,0.0275465736664953
+PAN,Zone_1A Very hot Humid,urb,1
+PAN,Zone_1A Very hot Humid,rur,1
+PER,Zone_2B Hot Dry,urb,0.205286986851416
+PER,Zone_2B Hot Dry,rur,0.247516861347022
+PER,Zone_3B Warm Dry,urb,0.395140484787915
+PER,Zone_3B Warm Dry,rur,0.0623160779733491
+PER,Zone_3C Warm Marine,urb,0.399572528360669
+PER,Zone_3C Warm Marine,rur,0.690167060679629
+PHL,Zone_0A Extremely hot Humid,urb,0.623298241464655
+PHL,Zone_0A Extremely hot Humid,rur,0.623373570871137
+PHL,Zone_1A Very hot Humid,urb,0.347946204597359
+PHL,Zone_1A Very hot Humid,rur,0.291194943014598
+PHL,Zone_2A Hot Humid,urb,0.0287555539379858
+PHL,Zone_2A Hot Humid,rur,0.0854314861142649
+PNG,Zone_1A Very hot Humid,urb,0.37370346063028
+PNG,Zone_1A Very hot Humid,rur,0.485292278474115
+PNG,Zone_2A Hot Humid,urb,0.62629653936972
+PNG,Zone_2A Hot Humid,rur,0.514707721525885
+POL,Zone_5A Cool Humid,urb,1
+POL,Zone_5A Cool Humid,rur,1
+PRI,Zone_1A Very hot Humid,urb,1
+PRI,Zone_1A Very hot Humid,rur,1
+PRK,Zone_5A Cool Humid,urb,0.907262948082454
+PRK,Zone_5A Cool Humid,rur,0.372853372940988
+PRK,Zone_6A Cold Humid,urb,0.0574675827197998
+PRK,Zone_6A Cold Humid,rur,0.259854308359457
+PRK,Zone_7A Very cold Humid,urb,0.0352694691977461
+PRK,Zone_7A Very cold Humid,rur,0.367292318699554
+PRT,Zone_3A Warm Humid,urb,0.504624282843882
+PRT,Zone_3A Warm Humid,rur,0.553903127135542
+PRT,Zone_3C Warm Marine,urb,0.495375717156118
+PRT,Zone_3C Warm Marine,rur,0.446096872864458
+PRY,Zone_2A Hot Humid,urb,1
+PRY,Zone_2A Hot Humid,rur,1
+PSE,Zone_2A Hot Humid,urb,1
+PSE,Zone_2A Hot Humid,rur,1
+QAT,Zone_0B Extremely hot Dry,urb,1
+QAT,Zone_0B Extremely hot Dry,rur,1
+ROU,Zone_4A Mixed Humid,urb,0.403315510376043
+ROU,Zone_4A Mixed Humid,rur,0.347809547790965
+ROU,Zone_5A Cool Humid,urb,0.517051096146899
+ROU,Zone_5A Cool Humid,rur,0.495090865858444
+ROU,Zone_6A Cold Humid,urb,0.0796333934770578
+ROU,Zone_6A Cold Humid,rur,0.157099586350591
+RUS,Zone_4A Mixed Humid,urb,0.0304392753854355
+RUS,Zone_4A Mixed Humid,rur,0.045672089269139
+RUS,Zone_5A Cool Humid,urb,0.0900176930602192
+RUS,Zone_5A Cool Humid,rur,0.100190823286236
+RUS,Zone_6A Cold Humid,urb,0.459316896960341
+RUS,Zone_6A Cold Humid,rur,0.333030439645556
+RUS,Zone_7A Very cold Humid,urb,0.381473782865921
+RUS,Zone_7A Very cold Humid,rur,0.438251599716723
+RUS,Zone_8A Subarctic/arctic Humid,urb,0.0387523517280842
+RUS,Zone_8A Subarctic/arctic Humid,rur,0.0828550480823461
+RWA,Zone_3A Warm Humid,urb,0.366921901661348
+RWA,Zone_3A Warm Humid,rur,0.300903641733655
+RWA,Zone_3C Warm Marine,urb,0.633078098338652
+RWA,Zone_3C Warm Marine,rur,0.699096358266345
+SAU,Zone_0B Extremely hot Dry,urb,0.293382078902655
+SAU,Zone_0B Extremely hot Dry,rur,0.434657210339169
+SAU,Zone_1B Very hot Dry,urb,0.556844825523013
+SAU,Zone_1B Very hot Dry,rur,0.31792302419539
+SAU,Zone_2B Hot Dry,urb,0.149773095574332
+SAU,Zone_2B Hot Dry,rur,0.247419765465441
+SDN,Zone_0A Extremely hot Humid,urb,0.051502197430842
+SDN,Zone_0A Extremely hot Humid,rur,0.15159122275191
+SDN,Zone_0B Extremely hot Dry,urb,0.918464132651494
+SDN,Zone_0B Extremely hot Dry,rur,0.721677356333129
+SDN,Zone_1B Very hot Dry,urb,0.0300336699176642
+SDN,Zone_1B Very hot Dry,rur,0.126731420914961
+SEN,Zone_0A Extremely hot Humid,urb,0.163163978506021
+SEN,Zone_0A Extremely hot Humid,rur,0.16963408805803
+SEN,Zone_0B Extremely hot Dry,urb,0.231880924148754
+SEN,Zone_0B Extremely hot Dry,rur,0.614601863567148
+SEN,Zone_1B Very hot Dry,urb,0.604955097345224
+SEN,Zone_1B Very hot Dry,rur,0.215764048374822
+SGP,Zone_0A Extremely hot Humid,urb,1
+SGP,Zone_0A Extremely hot Humid,rur,1
+SLE,Zone_0A Extremely hot Humid,urb,0.419923683486358
+SLE,Zone_0A Extremely hot Humid,rur,0.57375409259121
+SLE,Zone_1A Very hot Humid,urb,0.580076316513642
+SLE,Zone_1A Very hot Humid,rur,0.42624590740879
+SLV,Zone_1A Very hot Humid,urb,1
+SLV,Zone_1A Very hot Humid,rur,1
+SOM,Zone_0B Extremely hot Dry,urb,1
+SOM,Zone_0B Extremely hot Dry,rur,1
+SRB,Zone_4A Mixed Humid,urb,0.372618190254606
+SRB,Zone_4A Mixed Humid,rur,0.659972848042768
+SRB,Zone_5A Cool Humid,urb,0.627381809745394
+SRB,Zone_5A Cool Humid,rur,0.340027151957232
+STP,Zone_2A Hot Humid,urb,1
+STP,Zone_2A Hot Humid,rur,1
+SUR,Zone_0A Extremely hot Humid,urb,1
+SUR,Zone_0A Extremely hot Humid,rur,1
+SVK,Zone_5A Cool Humid,urb,0.585684745393675
+SVK,Zone_5A Cool Humid,rur,0.540799211191595
+SVK,Zone_6A Cold Humid,urb,0.414315254606325
+SVK,Zone_6A Cold Humid,rur,0.459200788808405
+SVN,Zone_5A Cool Humid,urb,1
+SVN,Zone_5A Cool Humid,rur,1
+SWE,Zone_5A Cool Humid,urb,0.418739045899235
+SWE,Zone_5A Cool Humid,rur,0.136218621007546
+SWE,Zone_6A Cold Humid,urb,0.581260954100765
+SWE,Zone_6A Cold Humid,rur,0.863781378992454
+SWZ,Zone_2A Hot Humid,urb,1
+SWZ,Zone_2A Hot Humid,rur,1
+SYC,Zone_0A Extremely hot Humid,urb,1
+SYC,Zone_0A Extremely hot Humid,rur,0
+SYR,Zone_2B Hot Dry,urb,0.0681007214070376
+SYR,Zone_2B Hot Dry,rur,0.182638654279012
+SYR,Zone_3A Warm Humid,urb,0.642897708520452
+SYR,Zone_3A Warm Humid,rur,0.222543250686198
+SYR,Zone_3B Warm Dry,urb,0.289001570072511
+SYR,Zone_3B Warm Dry,rur,0.594818095034789
+TCD,Zone_0A Extremely hot Humid,urb,0.911507581478233
+TCD,Zone_0A Extremely hot Humid,rur,0.463826795261648
+TCD,Zone_0B Extremely hot Dry,urb,0.0884924185217666
+TCD,Zone_0B Extremely hot Dry,rur,0.536173204738352
+TGO,Zone_0A Extremely hot Humid,urb,1
+TGO,Zone_0A Extremely hot Humid,rur,1
+THA,Zone_0A Extremely hot Humid,urb,0.938367425598153
+THA,Zone_0A Extremely hot Humid,rur,0.778517810033428
+THA,Zone_1A Very hot Humid,urb,0.061632574401847
+THA,Zone_1A Very hot Humid,rur,0.221482189966572
+TJK,Zone_5A Cool Humid,urb,1
+TJK,Zone_5A Cool Humid,rur,1
+TKM,Zone_3B Warm Dry,urb,0.654474010434973
+TKM,Zone_3B Warm Dry,rur,0.466900348686728
+TKM,Zone_4B Mixed Dry,urb,0.345525989565027
+TKM,Zone_4B Mixed Dry,rur,0.533099651313272
+TLS,Zone_1A Very hot Humid,urb,1
+TLS,Zone_1A Very hot Humid,rur,1
+TTO,Zone_0A Extremely hot Humid,urb,1
+TTO,Zone_0A Extremely hot Humid,rur,1
+TUN,Zone_2B Hot Dry,urb,0.314451690823674
+TUN,Zone_2B Hot Dry,rur,0.66495973277376
+TUN,Zone_3A Warm Humid,urb,0.685548309176326
+TUN,Zone_3A Warm Humid,rur,0.33504026722624
+TUR,Zone_3A Warm Humid,urb,0.445570885631115
+TUR,Zone_3A Warm Humid,rur,0.0688177346178226
+TUR,Zone_4A Mixed Humid,urb,0.341948597719817
+TUR,Zone_4A Mixed Humid,rur,0.236797104981618
+TUR,Zone_4C Mixed Marine,urb,0.0595289270702585
+TUR,Zone_4C Mixed Marine,rur,0.18030457809732
+TUR,Zone_5A Cool Humid,urb,0.0688378522479379
+TUR,Zone_5A Cool Humid,rur,0.251074622263257
+TUR,Zone_5C Cool Marine,urb,0.0749116761705539
+TUR,Zone_5C Cool Marine,rur,0.15032353676697
+TUR,Zone_6A Cold Humid,urb,0.0092020611603177
+TUR,Zone_6A Cold Humid,rur,0.112682423273012
+TWN,Zone_1A Very hot Humid,urb,0.219898111197072
+TWN,Zone_1A Very hot Humid,rur,0.131768716009537
+TWN,Zone_2A Hot Humid,urb,0.650638651705291
+TWN,Zone_2A Hot Humid,rur,0.339124941131582
+TWN,Zone_3A Warm Humid,urb,0.129463237097637
+TWN,Zone_3A Warm Humid,rur,0.529106342858881
+TZA,Zone_1A Very hot Humid,urb,0.457429450718143
+TZA,Zone_1A Very hot Humid,rur,0.178979104454625
+TZA,Zone_2A Hot Humid,urb,0.492774929490898
+TZA,Zone_2A Hot Humid,rur,0.691718585575813
+TZA,Zone_2B Hot Dry,urb,0.00131214383223728
+TZA,Zone_2B Hot Dry,rur,0.0778836395484255
+TZA,Zone_3C Warm Marine,urb,0.0484834759587217
+TZA,Zone_3C Warm Marine,rur,0.0514186704211367
+UGA,Zone_1A Very hot Humid,urb,0.275951243064759
+UGA,Zone_1A Very hot Humid,rur,0.48105350893339
+UGA,Zone_2A Hot Humid,urb,0.724048756935241
+UGA,Zone_2A Hot Humid,rur,0.51894649106661
+UKR,Zone_5A Cool Humid,urb,1
+UKR,Zone_5A Cool Humid,rur,1
+URY,Zone_3A Warm Humid,urb,1
+URY,Zone_3A Warm Humid,rur,1
+USA,Zone_1A Very hot Humid,urb,0.0268468177816228
+USA,Zone_1A Very hot Humid,rur,0.00247869453695938
+USA,Zone_2A Hot Humid,urb,0.117148175311632
+USA,Zone_2A Hot Humid,rur,0.0921070757446679
+USA,Zone_2B Hot Dry,urb,0.0180021240471774
+USA,Zone_2B Hot Dry,rur,0.00680735312282999
+USA,Zone_3A Warm Humid,urb,0.149489528513707
+USA,Zone_3A Warm Humid,rur,0.239811330578805
+USA,Zone_3B Warm Dry,urb,0.0271794337642503
+USA,Zone_3B Warm Dry,rur,0.0171869696715355
+USA,Zone_3C Warm Marine,urb,0.0806326540382918
+USA,Zone_3C Warm Marine,rur,0.00802489000866926
+USA,Zone_4A Mixed Humid,urb,0.2407795987979
+USA,Zone_4A Mixed Humid,rur,0.226726246963805
+USA,Zone_4C Mixed Marine,urb,0.0332737946111915
+USA,Zone_4C Mixed Marine,rur,0.0195371308179173
+USA,Zone_5A Cool Humid,urb,0.232363913228645
+USA,Zone_5A Cool Humid,rur,0.22943334056711
+USA,Zone_5C Cool Marine,urb,0.0165131035644802
+USA,Zone_5C Cool Marine,rur,0.0182814812125826
+USA,Zone_6A Cold Humid,urb,0.053804585326607
+USA,Zone_6A Cold Humid,rur,0.118435663982813
+USA,Zone_7A Very cold Humid,urb,0.0039662710144954
+USA,Zone_7A Very cold Humid,rur,0.0211698227923045
+UZB,Zone_4A Mixed Humid,urb,0.617065600764731
+UZB,Zone_4A Mixed Humid,rur,0.365073930606998
+UZB,Zone_4B Mixed Dry,urb,0.255933264742511
+UZB,Zone_4B Mixed Dry,rur,0.474828549508036
+UZB,Zone_5A Cool Humid,urb,0.127001134492758
+UZB,Zone_5A Cool Humid,rur,0.160097519884966
+VCT,Zone_0A Extremely hot Humid,urb,1
+VCT,Zone_0A Extremely hot Humid,rur,1
+VEN,Zone_0A Extremely hot Humid,urb,0.314487507200434
+VEN,Zone_0A Extremely hot Humid,rur,0.720860899422159
+VEN,Zone_1A Very hot Humid,urb,0.490661751857716
+VEN,Zone_1A Very hot Humid,rur,0.220469560926809
+VEN,Zone_2A Hot Humid,urb,0.194850740941851
+VEN,Zone_2A Hot Humid,rur,0.058669539651032
+VNM,Zone_0A Extremely hot Humid,urb,0.407351259941289
+VNM,Zone_0A Extremely hot Humid,rur,0.365831087944184
+VNM,Zone_1A Very hot Humid,urb,0.564883343507984
+VNM,Zone_1A Very hot Humid,rur,0.509217650845408
+VNM,Zone_2A Hot Humid,urb,0.0277653965507266
+VNM,Zone_2A Hot Humid,rur,0.124951261210408
+VUT,Zone_1A Very hot Humid,urb,1
+VUT,Zone_1A Very hot Humid,rur,1
+YEM,Zone_0B Extremely hot Dry,urb,0.210797001601454
+YEM,Zone_0B Extremely hot Dry,rur,0.211432475132685
+YEM,Zone_2B Hot Dry,urb,0.243082620224881
+YEM,Zone_2B Hot Dry,rur,0.380221256603611
+YEM,Zone_3B Warm Dry,urb,0.2207461911404
+YEM,Zone_3B Warm Dry,rur,0.134978441486586
+YEM,Zone_3C Warm Marine,urb,0.325374187033265
+YEM,Zone_3C Warm Marine,rur,0.273367826777118
+ZAF,Zone_2A Hot Humid,urb,0.153448044702664
+ZAF,Zone_2A Hot Humid,rur,0.148558957561516
+ZAF,Zone_2B Hot Dry,urb,0.0737479604766249
+ZAF,Zone_2B Hot Dry,rur,0.166259188369709
+ZAF,Zone_3A Warm Humid,urb,0.263433460957926
+ZAF,Zone_3A Warm Humid,rur,0.242315737362424
+ZAF,Zone_3B Warm Dry,urb,0.126337712629693
+ZAF,Zone_3B Warm Dry,rur,0.166518755036661
+ZAF,Zone_3C Warm Marine,urb,0.383032821233092
+ZAF,Zone_3C Warm Marine,rur,0.27634736166969
+ZMB,Zone_2A Hot Humid,urb,1
+ZMB,Zone_2A Hot Humid,rur,1
+ZWE,Zone_2A Hot Humid,urb,0.0796272757135483
+ZWE,Zone_2A Hot Humid,rur,0.365551233843624
+ZWE,Zone_2B Hot Dry,urb,0.920372724286452
+ZWE,Zone_2B Hot Dry,rur,0.634448766156376

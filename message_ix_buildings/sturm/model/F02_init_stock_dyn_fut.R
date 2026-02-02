@@ -9,6 +9,8 @@ fun_stock_init_fut <- function(sector, run,
                                geo_data, geo_levels, geo_level,
                                bld_cases_eneff, bld_cases_fuel,
                                pop,
+                               pop_urt,
+                               pop_clim,
                                hh_size, # used for residential
                                floor_cap, # used for commercial
                                ct_inc_cl,
@@ -66,12 +68,17 @@ fun_stock_init_fut <- function(sector, run,
     bld_units <- geo_data %>%
       select_at(geo_levels) %>%
       left_join(pop) %>%
-      filter(year %in% yrs) %>% 
-      left_join(hh_size) %>% 
+      left_join(pop_urt, by = c("region_bld", "year")) %>%
+      mutate(pop = pop * pop_urt) %>%
+      select(region_bld, region_gea, urt, year, pop) %>%
+      left_join(pop_clim) %>%
+      mutate(pop = pop * pop_clim) %>%
+      select(region_bld, region_gea, urt, clim, year, pop) %>%
+      arrange(region_bld, region_gea, urt, clim, year) %>%
+      filter(year %in% yrs) %>%
+      left_join(hh_size) %>%
       mutate(bld_units = round(1e6*pop/n_inc_cl/hh_size,rnd)) %>% # convert from million units to units
-      select(-c(pop,hh_size)) # %>%
-    #filter(year %in% yrs) # years already filtered
-    
+      select(-c(pop,hh_size))
     
     
     try(if(nrow(bld_units) != nrow(distinct(bld_units))) stop("Error in aggregated households calculations! duplicated records in hh"))
@@ -80,7 +87,14 @@ fun_stock_init_fut <- function(sector, run,
   if (sector == "comm") {
     bld_units <- geo_data %>%
       select_at(geo_levels) %>%
-      left_join(pop) %>% 
+      left_join(pop) %>%
+      left_join(pop_urt, by = c("region_bld", "year")) %>%
+      mutate(pop = pop * pop_urt) %>%
+      select(region_bld, region_gea, urt, year, pop) %>%
+      left_join(pop_clim) %>%
+      mutate(pop = pop * pop_clim) %>%
+      select(region_bld, region_gea, urt, clim, year, pop) %>%
+      arrange(region_bld, region_gea, urt, clim, year) %>%
       filter(year %in% yrs) %>% 
       left_join(floor_cap) %>% 
       mutate(bld_units = round(1e6*pop*floor_cap,rnd)) %>% # convert from million units to units

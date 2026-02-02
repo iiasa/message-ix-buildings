@@ -48,9 +48,15 @@ for(s in scenarios[1:7]){
                                   report_var = c("energy","material") # Available report variables: c("energy","material","vintage","dle")
                                   )
   
-  write_csv(sturm_scenarios %>% filter(!commodity %in% c("resid_heat_v_no_heat","resid_hotwater_v_no_heat")), 
-            paste0(rout_path,"report_MESSAGE_resid_",s,".csv"))
-
+  # Only generate the MESSAGE report if "MESSAGE" is included in report_type
+  if ("MESSAGE" %in% report_type) {
+    write_csv(
+      sturm_scenarios %>% 
+        filter(!commodity %in% c("resid_heat_v_no_heat", "resid_hotwater_v_no_heat")), 
+      paste0(rout_path, "report_MESSAGE_resid_", s, ".csv")
+    )
+  }
+  
 }
 
 

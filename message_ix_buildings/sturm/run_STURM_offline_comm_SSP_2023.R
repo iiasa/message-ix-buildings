@@ -44,12 +44,18 @@ for(s in scenarios){
                                   mod_arch = "stock",
                                   mod_new = "exogenous", 
                                   mod_ren = "exogenous", 
-                                  report_type = c("MESSAGE"), # ,"STURM","NAVIGATE" # Available reports: c("MESSAGE","STURM","IRP","NGFS","NAVIGATE")
+                                  report_type = c("STURM"), # ,"STURM","NAVIGATE" # Available reports: c("MESSAGE","STURM","IRP","NGFS","NAVIGATE")
                                   report_var = c("energy","material") # Available report variables: c("energy","material","vintage","dle")
                                   )
   
-  write_csv(sturm_scenarios %>% filter(!commodity %in% c("comm_heat_v_no_heat","comm_hotwater_v_no_heat")), 
-            paste0(rout_path,"report_MESSAGE_comm_",s,".csv"))
+  # Only generate the MESSAGE report if "MESSAGE" is included in report_type
+  if ("MESSAGE" %in% report_type) {
+    write_csv(
+      sturm_scenarios %>% 
+        filter(!commodity %in% c("comm_heat_v_no_heat", "comm_hotwater_v_no_heat")), 
+      paste0(rout_path, "report_MESSAGE_comm_", s, ".csv")
+    )
+  }
 
 }
 

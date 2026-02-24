@@ -2,6 +2,7 @@ import datetime
 import sys
 from argparse import ArgumentParser
 
+from dask import delayed
 from rich.progress import track  # type: ignore
 
 from message_ix_buildings.chilled.core.climate import (
@@ -82,6 +83,8 @@ def create_config(parsed_arguments):
         vstr=parsed_arguments.version,
         gcm=parsed_arguments.gcm,
         rcp=parsed_arguments.rcp,
+        cool=0,
+        heat=1,
     )
 
     return cfg
@@ -98,16 +101,24 @@ def main(args=None):
     print_arguments(parsed_arguments=parsed_args)
     cfg = create_config(parsed_arguments=parsed_args)
 
-    for step in track([cfg], description="Running core functions..."):
-        # Functions are in /message_ix_buildings/chilled/core/climate.py
-        (create_climate_variables_maps(step, start),)
-        (aggregate_urban_rural_files(step),)
-        (make_vdd_total_maps(step),)
-        (process_construction_shares(step),)
-        (process_floor_area_maps(step),)
-        (process_country_maps(step),)
-        (process_final_maps(step),)
-        (process_iso_tables(step),)
+    tasks = [
+        delayed(create_climate_variables_maps)(cfg, start),
+        delayed(aggregate_urban_rural_files)(cfg),
+        delayed(make_vdd_total_maps)(cfg),
+        delayed(process_construction_shares)(cfg),
+        delayed(process_floor_area_maps)(cfg),
+        delayed(process_country_maps)(cfg),
+        delayed(process_final_maps)(cfg),
+        delayed(process_iso_tables)(cfg),
+    ]
+
+    # Ensure tasks run in order
+    result = None
+    for task in tasks:
+        result = task.compute()
+
+    for _ in track(tasks, description="Running core functions..."):
+        pass
 
 
 if __name__ == "__main__":

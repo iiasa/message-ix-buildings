@@ -37,7 +37,7 @@ shr_need_cool,shr_need_cool_comm_rev,,,,,,
 shr_need_heat,shr_need_heat_comm_rev,,,,,,
 en_int_hotwater,en_int_comm_hotwater_SSP2_rev_2022-12-15,,,,,,
 en_int_others,en_int_comm_others_ssp2,,,,,,
-stock_arch_base,stock_baseyear_comm_rev,,,,,,
+stock_arch_base,stock_baseyear_comm_rev_share,,,,,,
 rate_switch_fuel_heat,rate_switch_fuel_heat_ssp2,rate_switch_fuel_heat_ssp1,rate_switch_fuel_heat_ssp3,rate_switch_fuel_heat_ssp3,rate_switch_fuel_heat_ssp3,rate_switch_fuel_heat_ssp2_LED,rate_switch_fuel_heat_ssp2_LED
 rate_ren,ren_rate_en_max_ssp2,ren_rate_en_max_ssp1,ren_rate_en_max_ssp3,ren_rate_en_max_ssp2,ren_rate_en_max_ssp2,ren_rate_en_max_ssp2_REN_H,ren_rate_en_max_ssp2_REN_H
 ct_fuel_excl_new,ct_fuel_excluded_new,,,,,,

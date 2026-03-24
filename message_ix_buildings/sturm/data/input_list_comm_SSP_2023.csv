@@ -16,17 +16,17 @@ shr_arch,bld_shr_arch_comm,,,,,,
 shr_mat,bld_share_mat_comm,,,,,,
 prob_dem,bld_demolition_distr_long_comm,,,,,,
 shr_acc_cool,bld_shr_access_cool_comm_rev,,,,,,
-shr_distr_heat,bld_shr_district_heat_comm,,,,,,
-shr_fuel_heat_base,bld_share_fuel_heat_comm,,,,,,
+shr_distr_heat,bld_shr_district_heat_comm_scl_2026-03-16,,,,,,
+shr_fuel_heat_base,bld_share_fuel_heat_comm_scl_2026-03-17,,,,,,
 mat_int,material_int_comm,,,,,,
 shr_mat_eol,shr_mat_eol_long_rev_2025-11-14,,,,,,
 eff_heat ,eff_heat_ssp2,eff_heat_ssp1,eff_heat_ssp3,eff_heat_ssp2,eff_heat_ssp2,eff_heat_ssp1,eff_heat_ssp1
 eff_cool,eff_cool_ssp2,eff_cool_ssp1,eff_cool_ssp3,eff_cool_ssp2,eff_cool_ssp2,eff_cool_ssp1,eff_cool_ssp1
 eff_hotwater,eff_hotwater_comm_ssp2,eff_hotwater_comm_ssp1,eff_hotwater_comm_ssp3,eff_hotwater_comm_ssp2,eff_hotwater_comm_ssp2,eff_hotwater_comm_ssp1,eff_hotwater_comm_ssp1
-shr_floor_heat,heat_floor_comm,,,,,,
+shr_floor_heat,heat_floor_comm_scl_ssp2_2026-03-16,heat_floor_comm_scl_ssp1_2026-03-16,heat_floor_comm_scl_ssp3_2026-03-16,heat_floor_comm_scl_ssp4_2026-03-16,heat_floor_comm_scl_ssp5_2026-03-16,heat_floor_comm_scl_ssp2_2026-03-16,heat_floor_comm_scl_ssp1_2026-03-16
 hours_heat,heat_operation_hours_ssp2,heat_operation_hours_ssp1,heat_operation_hours_ssp3,heat_operation_hours_ssp3,heat_operation_hours_ssp1,heat_operation_hours_ssp1,heat_operation_hours_ssp1
 en_sav_ren,ren_energy_savings_ssp2,ren_energy_savings_ssp1,ren_energy_savings_ssp3,ren_energy_savings_ssp2,ren_energy_savings_ssp2,ren_energy_savings_ssp1,ren_energy_savings_ssp1
-shr_floor_cool,cool_area_share,,,,,,
+shr_floor_cool,cool_floor_comm_scl_ssp2_2026-03-16,cool_floor_comm_scl_ssp1_2026-03-16,cool_floor_comm_scl_ssp3_2026-03-16,cool_floor_comm_scl_ssp4_2026-03-16,cool_floor_comm_scl_ssp5_2026-03-16,cool_floor_comm_scl_ssp2_2026-03-16,cool_floor_comm_scl_ssp1_2026-03-16
 hours_cool,cool_hours,,,,,,
 hours_fans,fans_hours,,,,,,
 power_fans,fans_power,,,,,,

@@ -1,0 +1,16 @@
+# Shared STURM scenario list
+# Be called in multiple runner scripts (e.g. run_STURM_Circular_comm_glo.R, run_STURM_Circular_resid_glo.R, run_MIXB_aligner.R)
+# MESSAGE linking uses this yaml to pass scenario keys
+
+scenarios:
+  - R
+
+# Examples (uncomment and replace scenarios above):
+#   - R
+#   - N_tp
+#   - S_tp
+#   - C_tp
+#   - A_tp
+#   - E_tp
+#   - LED
+# comm glo (NPi): NPi-Reference, NPi-Sufficiency, NPi-Circular, 15C-Reference, ...

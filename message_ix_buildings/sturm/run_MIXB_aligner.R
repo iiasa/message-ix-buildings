@@ -59,6 +59,10 @@ ALIGN_FADE_EXP_RATE <- 5 # exponential λ (higher = faster fade toward yr_end)
 #   "scale"    — multiply by 1 + fade * (scale_2020 - 1) (default)
 #   "additive" — add fade * delta_EJ from 2020 shares
 ALIGN_METHOD <- "scale"
+# How the 2020 vs IEA gap is split before STEP 6 (STEP 4 threshold is always global):
+#   "global"   — one gap per fuel (R12 sum); correction shared across all regions
+#   "regional" — if global threshold exceeded, correct each R12 node to its regional IEA 2020
+ALIGN_GAP_ALLOCATION <- "regional"
 ALIGN_VALUE_EPS <- 1e-9  # GWa; below this at 2020 → additive fallback for that row
 u_EJ_GWa <- 31.71
 
@@ -191,6 +195,7 @@ load_iea_reference <- function(path_iea) {
     filter(Variable %in% names(IEA_VARIABLE_FUEL)) %>%
     transmute(
       region = Region,
+      fuel = unname(IEA_VARIABLE_FUEL[Variable]),
       variable = Variable,
       year = IEA_ALIGN_YEAR,
       value_EJ = .data[[yr_col]]
@@ -200,7 +205,6 @@ load_iea_reference <- function(path_iea) {
 #' Sum R12 regions by fuel (same global scope as MixB aggregate)
 aggregate_iea_by_fuel <- function(iea) {
   iea %>%
-    mutate(fuel = unname(IEA_VARIABLE_FUEL[variable])) %>%
     filter(!is.na(fuel), grepl("^R12_", region)) %>%
     group_by(year, fuel) %>%
     summarise(value_EJ = sum(value_EJ, na.rm = TRUE), .groups = "drop")
@@ -253,6 +257,59 @@ log_gap_summary <- function(gaps) {
   invisible(gaps)
 }
 
+#' Per R12 node and fuel at IEA_ALIGN_YEAR (for regional gap allocation).
+compute_fuel_gaps_by_region <- function(mixb, path_iea) {
+  mixb_reg <- aggregate_mixb_by_fuel_region(mixb) %>%
+    filter(year == IEA_ALIGN_YEAR) %>%
+    select(node = region, fuel, mixb_EJ = value_EJ)
+
+  iea_reg <- load_iea_reference(path_iea) %>%
+    filter(grepl("^R12_", region)) %>%
+    select(node = region, fuel, iea_EJ = value_EJ)
+
+  gaps <- mixb_reg %>%
+    left_join(iea_reg, by = c("node", "fuel")) %>%
+    mutate(
+      year = IEA_ALIGN_YEAR,
+      gap_EJ = mixb_EJ - iea_EJ,
+      abs_gap_EJ = abs(gap_EJ)
+    )
+
+  missing <- gaps %>% filter(is.na(iea_EJ) | is.na(mixb_EJ))
+  if (nrow(missing) > 0) {
+    warning(
+      "Regional gap rows with missing MixB or IEA: ",
+      paste(unique(paste0(missing$node, "/", missing$fuel)), collapse = ", ")
+    )
+  }
+  gaps
+}
+
+log_gap_summary_regional <- function(gaps_by_region) {
+  message(
+    "Step 3 — mixb vs IEA (", IEA_ALIGN_YEAR, ", by R12 node; diagnostic only, EJ):"
+  )
+  reg_gaps <- gaps_by_region %>%
+    filter(grepl("^R12_", node), !is.na(gap_EJ))
+  for (fuel in ALIGN_FUELS) {
+    rows <- reg_gaps %>% filter(fuel == !!fuel)
+    if (nrow(rows) == 0) {
+      message("  ", fuel, ": no regional data")
+      next
+    }
+    n_exceed <- sum(vapply(seq_len(nrow(rows)), function(i) {
+      gap_exceeds_threshold(rows$gap_EJ[i], fuel)
+    }, logical(1)))
+    world_mixb <- sum(rows$mixb_EJ, na.rm = TRUE)
+    world_iea <- sum(rows$iea_EJ, na.rm = TRUE)
+    message(sprintf(
+      "  %s: %d R12 node(s) | R12-sum mixb = %.3f EJ | R12-sum IEA = %.3f EJ | %d node(s) exceed threshold",
+      fuel, nrow(rows), world_mixb, world_iea, n_exceed
+    ))
+  }
+  invisible(gaps_by_region)
+}
+
 
 # -----------------------------------------------------------------------------
 # STEP 4 — Threshold check
@@ -273,17 +330,35 @@ fuels_needing_alignment <- function(gaps) {
   }, logical(1))]
 }
 
-
 # -----------------------------------------------------------------------------
 # STEP 5 — Allocate gap to fuel × node × commodity
 # -----------------------------------------------------------------------------
 
-#' Split 2020 fuel gap across (fuel, node, commodity); one factor row per series (all years).
+factors_from_shares_2020 <- function(shares_2020, target_correction_EJ, fuel) {
+  total_EJ_2020 <- sum(shares_2020$value_EJ_2020, na.rm = TRUE)
+  if (total_EJ_2020 <= 0) {
+    return(NULL)
+  }
+  shares_2020 %>%
+    mutate(
+      share = value_EJ_2020 / total_EJ_2020,
+      delta_EJ = target_correction_EJ * share,
+      value_GWa_2020 = ej_to_gwa(value_EJ_2020),
+      scale_factor = if_else(
+        value_GWa_2020 > ALIGN_VALUE_EPS,
+        ej_to_gwa(value_EJ_2020 + delta_EJ) / value_GWa_2020,
+        NA_real_
+      ),
+      use_additive = is.na(scale_factor) | !is.finite(scale_factor),
+      fuel = fuel
+    ) %>%
+    select(node, commodity, fuel, share, delta_EJ, scale_factor, use_additive)
+}
+
+#' Global allocation: one 2020 gap per fuel (R12 sum), split over all node × commodity.
 #'
-#' Called once per `fuel`. Share at each (node, commodity) for that fuel:
+#' Share at each (node, commodity) for that fuel:
 #'   share = value_EJ_2020(fuel, node, commodity) / sum_{node,commodity} value_EJ_2020(fuel, ·, ·)
-#' over all MixB rows (comm + resid STURM + GLANCE). Then:
-#'   delta_EJ(fuel, node, commodity) = target_correction_EJ(fuel) * share.
 allocate_gap_to_tech_region <- function(mixb, gaps, fuel) {
   gap_row <- gaps %>% filter(fuel == !!fuel, year == IEA_ALIGN_YEAR)
   if (nrow(gap_row) == 0 || is.na(gap_row$gap_EJ[1])) {
@@ -311,26 +386,61 @@ allocate_gap_to_tech_region <- function(mixb, gaps, fuel) {
     group_by(node, commodity) %>%
     summarise(value_EJ_2020 = sum(value_EJ, na.rm = TRUE), .groups = "drop")
 
-  total_EJ_2020 <- sum(shares_2020$value_EJ_2020, na.rm = TRUE)
-  if (total_EJ_2020 <= 0) {
+  out <- factors_from_shares_2020(shares_2020, target_correction_EJ, fuel)
+  if (is.null(out)) {
     warning("Step 5 — zero mixb total for ", fuel, " in ", IEA_ALIGN_YEAR)
+  }
+  out
+}
+
+#' Regional allocation: one 2020 gap per fuel × R12 node; split only within that node.
+#'
+#' At each node: target_correction_EJ(node) = IEA(node) − MixB(node) = −gap_EJ(node).
+#' Commodity shares use only rows with that node at IEA_ALIGN_YEAR.
+allocate_gap_to_tech_region_regional <- function(mixb, gaps_by_region, fuel) {
+  rows <- mixb %>%
+    filter(unit == "GWa", grepl("^R12_", node)) %>%
+    mutate(
+      row_fuel = vapply(commodity, map_mixb_commodity_to_fuel, character(1)),
+      value_EJ = gwa_to_ej(value)
+    ) %>%
+    filter(row_fuel == fuel)
+
+  if (nrow(rows) == 0) {
+    warning("Step 5 — no mixb rows for fuel: ", fuel)
     return(NULL)
   }
 
-  shares_2020 %>%
-    mutate(
-      share = value_EJ_2020 / total_EJ_2020,
-      delta_EJ = target_correction_EJ * share,
-      value_GWa_2020 = ej_to_gwa(value_EJ_2020),
-      scale_factor = if_else(
-        value_GWa_2020 > ALIGN_VALUE_EPS,
-        ej_to_gwa(value_EJ_2020 + delta_EJ) / value_GWa_2020,
-        NA_real_
-      ),
-      use_additive = is.na(scale_factor) | !is.finite(scale_factor),
-      fuel = fuel
-    ) %>%
-    select(node, commodity, fuel, share, delta_EJ, scale_factor, use_additive)
+  region_gaps <- gaps_by_region %>%
+    filter(fuel == !!fuel, grepl("^R12_", node), !is.na(gap_EJ))
+
+  factor_list <- lapply(region_gaps$node, function(node) {
+    gap_row <- region_gaps %>% filter(node == !!node)
+    if (nrow(gap_row) == 0) {
+      return(NULL)
+    }
+    target_correction_EJ <- -gap_row$gap_EJ[1]
+
+    shares_2020 <- rows %>%
+      filter(node == !!node, year == IEA_ALIGN_YEAR) %>%
+      group_by(node, commodity) %>%
+      summarise(value_EJ_2020 = sum(value_EJ, na.rm = TRUE), .groups = "drop")
+
+    out <- factors_from_shares_2020(shares_2020, target_correction_EJ, fuel)
+    if (is.null(out)) {
+      warning(
+        "Step 5 — zero mixb at ", node, " for ", fuel, " in ", IEA_ALIGN_YEAR,
+        " (skipped)"
+      )
+    }
+    out
+  })
+
+  factor_list <- Filter(Negate(is.null), factor_list)
+  if (length(factor_list) == 0) {
+    return(NULL)
+  }
+  bind_rows(factor_list)
 }
 
 
@@ -637,20 +747,31 @@ align_scenario <- function(s, dir_message_linking, path_iea) {
   mixb_agg <- aggregate_mixb_by_fuel(mixb)
   iea_agg  <- aggregate_iea_by_fuel(iea)
 
-  # STEP 3 — compute gaps between MixB and IEA by fuel
+  # STEP 3 — compute gaps between MixB and IEA by fuel (global); regional if needed
   gaps <- compute_fuel_gaps(mixb_agg, iea_agg)
   log_gap_summary(gaps)
+  gaps_by_region <- NULL
+  if (ALIGN_GAP_ALLOCATION == "regional") {
+    gaps_by_region <- compute_fuel_gaps_by_region(mixb, path_iea)
+    log_gap_summary_regional(gaps_by_region)
+  }
 
   mixb_before <- mixb
 
   # STEP 4–6 — allocate gap to fuel × node × commodity; apply adjustment
   mixb_aligned <- mixb
+  use_regional <- identical(ALIGN_GAP_ALLOCATION, "regional")
+  if (!is.character(ALIGN_GAP_ALLOCATION) ||
+      !ALIGN_GAP_ALLOCATION %in% c("global", "regional")) {
+    stop("ALIGN_GAP_ALLOCATION must be 'global' or 'regional'")
+  }
   if (!needs_alignment(gaps)) {
     message("gaps below threshold — no adjustment")
   } else {
     message(
       "apply correction in ", ALIGN_APPLY_START, "–", ALIGN_APPLY_END,
-      " (gap vs IEA at ", IEA_ALIGN_YEAR, ", fade = ", ALIGN_FADE, ")"
+      " (gap vs IEA at ", IEA_ALIGN_YEAR, ", fade = ", ALIGN_FADE,
+      ", allocation = ", ALIGN_GAP_ALLOCATION, ")"
     )
     if (IEA_ALIGN_YEAR < ALIGN_APPLY_START || IEA_ALIGN_YEAR > ALIGN_APPLY_END) {
       warning(
@@ -659,9 +780,15 @@ align_scenario <- function(s, dir_message_linking, path_iea) {
       )
     }
     for (fuel in fuels_needing_alignment(gaps)) {
-      message("Step 5–6 — aligning fuel: ", fuel)
-      factors <- allocate_gap_to_tech_region(mixb_before, gaps, fuel)
-      mixb_aligned <- apply_alignment_adjustment(mixb_aligned, factors)
+      message("Step 5–6 — aligning fuel: ", fuel, " (", ALIGN_GAP_ALLOCATION, ")")
+      factors <- if (use_regional) {
+        allocate_gap_to_tech_region_regional(mixb_before, gaps_by_region, fuel)
+      } else {
+        allocate_gap_to_tech_region(mixb_before, gaps, fuel)
+      }
+      if (!is.null(factors) && nrow(factors) > 0) {
+        mixb_aligned <- apply_alignment_adjustment(mixb_aligned, factors)
+      }
     }
   }
 

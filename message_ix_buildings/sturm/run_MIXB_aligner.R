@@ -38,8 +38,16 @@ dir.create(dirname(path_iea), recursive = TRUE, showWarnings = FALSE)
 #   Adjustments on MixB rows          → GWa
 # Conversion: value_EJ = value_GWa / u_EJ_GWa  (same factor as F10 / R01)
 
-ALIGN_FUELS <- c("gas", "coal", "oil")
-ALIGN_THRESH_EJ <- list(oil = 2, coal = 2, gas = 2)  # EJ; use |gap_EJ|
+ALIGN_FUELS <- c(
+  "gas", 
+  "coal", 
+  "oil", 
+  "electricity")
+ALIGN_THRESH_EJ <- list(
+  oil = 2, 
+  coal = 2, 
+  gas = 2, 
+  electricity = 5)  # EJ; use |gap_EJ|
 
 gap_exceeds_threshold <- function(gap_EJ, fuel) {
   !is.na(gap_EJ) && abs(gap_EJ) > ALIGN_THRESH_EJ[[fuel]]
@@ -82,46 +90,73 @@ ALIGN_COMMODITIES <- list(
   coal = c(
     "coal_resid_heat", "coal_resid_hotwater",
     "coal_comm_heat", "coal_comm_hotwater"
+  ),
+  electricity = c(
+    "electr_resid_cool", "electr_resid_heat", "electr_resid_hotwater", "electr_resid_other_uses",
+    "electr_comm_cool", "electr_comm_heat", "electr_comm_hotwater", "electr_comm_other_uses",
+    "electr_resid_cook", "electr_resid_apps"
   )
 )
+# First segment of align names (gas, lightoil, coal, electr) — used by align_commodity_to_mixb
+ALIGN_NAME_FUEL_TOKENS <- unique(vapply(
+  unlist(ALIGN_COMMODITIES, use.names = FALSE),
+  function(x) sub("_(resid|comm)_.*", "", x),
+  character(1)
+))
 
 # IEA World Energy Balances variables → aligner fuel groups
 IEA_VARIABLE_FUEL <- c(
   "Final Energy|Residential and Commercial|Liquids"       = "oil",
   "Final Energy|Residential and Commercial|Solids|Coal"   = "coal",
-  "Final Energy|Residential and Commercial|Gases"         = "gas"
+  "Final Energy|Residential and Commercial|Gases"         = "gas",
+  "Final Energy|Residential and Commercial|Electricity"   = "electricity"
 )
 IEA_ALIGN_YEAR <- 2020L
 
-# MixB MESSAGE export: {sector}_{enduse}_{fuel}  e.g. resid_heat_gas, comm_hotwater_lightoil
-mixb_commodity_to_align <- function(commodity) {
-  m <- stringr::str_match(
-    commodity,
-    "^(resid|comm)_(heat|hotwater|cook)_(lightoil|gas|coal)$"
-  )
+# Align label {fuel}_{sector}_{enduse}  e.g. gas_resid_heat, electr_resid_cool
+# MESSAGE export {sector}_{enduse}_{fuel_token}  e.g. resid_heat_gas, resid_cool_electr
+align_commodity_to_mixb <- function(align_commodity) {
+  m <- stringr::str_match(align_commodity, "^([^_]+)_(resid|comm)_(.+)$")
   if (is.na(m[1, 1])) {
     return(NA_character_)
   }
-  paste(m[1, 4], m[1, 2], m[1, 3], sep = "_")
+  fuel <- m[1, 2]
+  if (!fuel %in% ALIGN_NAME_FUEL_TOKENS) {
+    return(NA_character_)
+  }
+  # align: {fuel}_{sector}_{enduse}  →  MESSAGE: {sector}_{enduse}_{fuel}
+  paste(m[1, 3], m[1, 4], fuel, sep = "_")
 }
 
-align_commodity_to_mixb <- function(align_commodity) {
-  m <- stringr::str_match(
-    align_commodity,
-    "^(lightoil|gas|coal)_(resid|comm)_(heat|hotwater|cook)$"
-  )
-  if (is.na(m[1, 1])) {
-    return(NA_character_)
+build_commodity_name_maps <- function() {
+  align <- unlist(ALIGN_COMMODITIES, use.names = FALSE)
+  message <- vapply(align, align_commodity_to_mixb, character(1))
+  if (any(is.na(message))) {
+    stop(
+      "ALIGN_COMMODITIES entry has no MESSAGE name: ",
+      paste(align[is.na(message)], collapse = ", ")
+    )
   }
-  paste(m[1, 3], m[1, 4], m[1, 2], sep = "_")
+  list(
+    align_to_message = stats::setNames(message, align),
+    message_to_align = stats::setNames(align, message)
+  )
+}
+
+.COMMODITY_MAPS <- build_commodity_name_maps()
+
+mixb_commodity_to_align <- function(commodity) {
+  if (commodity %in% names(.COMMODITY_MAPS$message_to_align)) {
+    return(unname(.COMMODITY_MAPS$message_to_align[commodity]))
+  }
+  if (commodity %in% names(.COMMODITY_MAPS$align_to_message)) {
+    return(commodity)
+  }
+  NA_character_
 }
 
 map_mixb_commodity_to_fuel <- function(commodity) {
-  align_name <- if (stringr::str_detect(commodity, "^(resid|comm)_")) {
-    mixb_commodity_to_align(commodity)
-  } else {
-    commodity
-  }
+  align_name <- mixb_commodity_to_align(commodity)
   if (is.na(align_name)) {
     return(NA_character_)
   }
@@ -138,10 +173,9 @@ aggregate_mixb_by_fuel <- function(mixb) {
   mixb %>%
     filter(unit == "GWa") %>%  # exclude material / floor rows in MESSAGE export
     mutate(
-      align_commodity = vapply(commodity, mixb_commodity_to_align, character(1)),
       fuel = vapply(commodity, map_mixb_commodity_to_fuel, character(1))
     ) %>%
-    filter(!is.na(fuel), !is.na(align_commodity)) %>%
+    filter(!is.na(fuel)) %>%
     group_by(year, fuel) %>%
     summarise(
       value_GWa = sum(value, na.rm = TRUE),
@@ -238,20 +272,40 @@ compute_fuel_gaps <- function(mixb_agg, iea_agg) {
 }
 
 log_gap_summary <- function(gaps) {
-  message("Step 3 — mixb vs IEA (", IEA_ALIGN_YEAR, ", global R12 sum, EJ):")
+  thresh_txt <- paste(
+    vapply(ALIGN_FUELS, function(f) {
+      sprintf("%s %.1f", f, ALIGN_THRESH_EJ[[f]])
+    }, character(1)),
+    collapse = ", "
+  )
+  message(
+    "Step 3 — mixb vs IEA (", IEA_ALIGN_YEAR,
+    ", global R12 sum, EJ; |gap| thresholds: ", thresh_txt, "):"
+  )
   for (fuel in ALIGN_FUELS) {
     row <- gaps %>% filter(fuel == !!fuel)
     if (nrow(row) == 0) {
-      message("  ", fuel, ": no data")
+      message("  ", fuel, ": no mapped MixB / IEA rows (check ALIGN_COMMODITIES)")
+      next
+    }
+    if (is.na(row$iea_EJ[1])) {
+      message("  ", fuel, ": mixb = ", sprintf("%.3f", row$mixb_EJ[1]),
+              " EJ | IEA missing for this fuel")
+      next
+    }
+    if (is.na(row$mixb_EJ[1])) {
+      message("  ", fuel, ": IEA = ", sprintf("%.3f", row$iea_EJ[1]),
+              " EJ | no mapped MixB commodities")
       next
     }
     thresh <- ALIGN_THRESH_EJ[[fuel]]
     gap <- row$gap_EJ[1]
     abs_gap <- row$abs_gap_EJ[1]
     flag <- if (gap_exceeds_threshold(gap, fuel)) "EXCEEDS threshold" else "within threshold"
+    n_comm <- length(ALIGN_COMMODITIES[[fuel]])
     message(sprintf(
-      "  %s: mixb = %.3f EJ | IEA = %.3f EJ | gap = %+.3f EJ | |gap| = %.3f EJ (threshold %.1f EJ) → %s",
-      fuel, row$mixb_EJ[1], row$iea_EJ[1], gap, abs_gap, thresh, flag
+      "  %s (%d commodities): mixb = %.3f EJ | IEA = %.3f EJ | gap = %+.3f EJ | |gap| = %.3f EJ (thresh %.1f EJ) → %s",
+      fuel, n_comm, row$mixb_EJ[1], row$iea_EJ[1], gap, abs_gap, thresh, flag
     ))
   }
   invisible(gaps)
@@ -284,32 +338,6 @@ compute_fuel_gaps_by_region <- function(mixb, path_iea) {
   }
   gaps
 }
-
-log_gap_summary_regional <- function(gaps_by_region) {
-  message(
-    "Step 3 — mixb vs IEA (", IEA_ALIGN_YEAR, ", by R12 node; diagnostic only, EJ):"
-  )
-  reg_gaps <- gaps_by_region %>%
-    filter(grepl("^R12_", node), !is.na(gap_EJ))
-  for (fuel in ALIGN_FUELS) {
-    rows <- reg_gaps %>% filter(fuel == !!fuel)
-    if (nrow(rows) == 0) {
-      message("  ", fuel, ": no regional data")
-      next
-    }
-    n_exceed <- sum(vapply(seq_len(nrow(rows)), function(i) {
-      gap_exceeds_threshold(rows$gap_EJ[i], fuel)
-    }, logical(1)))
-    world_mixb <- sum(rows$mixb_EJ, na.rm = TRUE)
-    world_iea <- sum(rows$iea_EJ, na.rm = TRUE)
-    message(sprintf(
-      "  %s: %d R12 node(s) | R12-sum mixb = %.3f EJ | R12-sum IEA = %.3f EJ | %d node(s) exceed threshold",
-      fuel, nrow(rows), world_mixb, world_iea, n_exceed
-    ))
-  }
-  invisible(gaps_by_region)
-}
-
 
 # -----------------------------------------------------------------------------
 # STEP 4 — Threshold check
@@ -747,13 +775,12 @@ align_scenario <- function(s, dir_message_linking, path_iea) {
   mixb_agg <- aggregate_mixb_by_fuel(mixb)
   iea_agg  <- aggregate_iea_by_fuel(iea)
 
-  # STEP 3 — compute gaps between MixB and IEA by fuel (global); regional if needed
+  # STEP 3 — global gaps (regional gaps computed silently when needed for STEP 5)
   gaps <- compute_fuel_gaps(mixb_agg, iea_agg)
   log_gap_summary(gaps)
   gaps_by_region <- NULL
   if (ALIGN_GAP_ALLOCATION == "regional") {
     gaps_by_region <- compute_fuel_gaps_by_region(mixb, path_iea)
-    log_gap_summary_regional(gaps_by_region)
   }
 
   mixb_before <- mixb
@@ -827,6 +854,11 @@ align_scenario <- function(s, dir_message_linking, path_iea) {
 
 message("MixB aligner cwd: ", getwd())
 message("message_linking: ", dir_message_linking, " | IEA: ", path_iea)
+message(
+  "Align fuels (vs IEA R&C): ", paste(ALIGN_FUELS, collapse = ", "),
+  " | allocation: ", ALIGN_GAP_ALLOCATION,
+  " | apply ", ALIGN_APPLY_START, "–", ALIGN_APPLY_END
+)
 
 for (s in scenarios) {
   align_scenario(s, dir_message_linking, path_iea)

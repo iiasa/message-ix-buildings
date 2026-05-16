@@ -578,8 +578,14 @@ write_aligned_mixb <- function(mixb, path_out) {
 # -----------------------------------------------------------------------------
 
 #' Human-readable list of align commodities for plot subtitles (from ALIGN_COMMODITIES).
-align_fuel_commodities_label <- function(fuel) {
-  paste(ALIGN_COMMODITIES[[fuel]], collapse = ", ")
+#' Multiple lines when there are more than `n_per_line` names (ggplot subtitle uses \\n).
+align_fuel_commodities_label <- function(fuel, n_per_line = 3L) {
+  x <- ALIGN_COMMODITIES[[fuel]]
+  if (length(x) <= n_per_line) {
+    return(paste(x, collapse = ", "))
+  }
+  chunks <- split(x, ceiling(seq_along(x) / n_per_line))
+  paste(vapply(chunks, paste, character(1), collapse = ", "), collapse = "\n")
 }
 
 #' Long time series for one scenario: MixB before, MixB after, IEA (EJ).
@@ -624,7 +630,7 @@ plot_alignment_fuel_page <- function(plot_data, fuel, scenario) {
 
   commodities_label <- align_fuel_commodities_label(fuel)
   plot_subtitle <- paste0(
-    "Scenario ", scenario, " | EJ/yr\nCommodities: ", commodities_label
+    "Scenario ", scenario, " | EJ/yr\nCommodities:\n", commodities_label
   )
 
   series_cols <- c(
@@ -656,7 +662,7 @@ plot_alignment_fuel_page <- function(plot_data, fuel, scenario) {
     theme(
       legend.position = "bottom",
       plot.title = element_text(face = "bold"),
-      plot.subtitle = element_text(size = 7, lineheight = 0.95)
+      plot.subtitle = element_text(size = 7, lineheight = 0.85, hjust = 0)
     )
 
   p_regions <- ggplot(reg_df, aes(x = year, y = value_EJ, color = series, linetype = series)) +
@@ -692,7 +698,7 @@ plot_alignment_fuel_page <- function(plot_data, fuel, scenario) {
     theme(
       legend.position = "none",
       plot.title = element_text(face = "bold"),
-      plot.subtitle = element_text(size = 7, lineheight = 0.95),
+      plot.subtitle = element_text(size = 7, lineheight = 0.85, hjust = 0),
       strip.text = element_text(face = "bold")
     )
 

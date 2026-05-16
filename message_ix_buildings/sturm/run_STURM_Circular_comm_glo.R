@@ -16,26 +16,19 @@ if (requireNamespace("rstudioapi", quietly = TRUE) && rstudioapi::isAvailable())
   }
 }
 
-# Paths (STURM_data lives under message_ix_buildings/data/, not sturm/)
+# Paths — CSV inputs live under sturm/data/ (input lists + input_comm / input_resid)
 rcode_path <- paste0(getwd(), "/model/")
-data_path <- paste0(dirname(getwd()), "/data/STURM_data/")
+data_path <- paste0(getwd(), "/data/")
 input_path <- paste0(data_path, "input_comm/")
 rout_path <- paste0(getwd(), "/output/")
 
 # Source model function
 source(paste0(rcode_path, "F10_scenario_runs_MESSAGE_2100.R"))
 
-
-# # Regions: EU27 + UK + Norway
-# reg_eu <- c("C-WEU-AUT", "C-WEU-BEL","C-EEU-BGR","C-WEU-CYP","C-EEU-CZE","C-WEU-DEU","C-WEU-DNK","C-EEU-EST","C-WEU-GRC","C-WEU-ESP",
-#             "C-WEU-FIN","C-WEU-FRA","C-EEU-HRV","C-EEU-HUN","C-WEU-IRL","C-WEU-ITA","C-EEU-LTU","C-WEU-LUX","C-EEU-LVA","C-WEU-MLT",
-#             "C-WEU-NLD","C-EEU-POL","C-WEU-PRT","C-EEU-ROU","C-WEU-SWE","C-EEU-SVN","C-EEU-SVK",
-#             "C-WEU-GBR","C-WEU-NOR")
-
-# scenarios = c("NPi-Reference", "NPi-Sufficiency", "NPi-Circular", "15C-Reference", "15C-Sufficiency", "15C-Circular")
-scenarios = c("R", "LED")
-
-dir.create("./temp/", recursive = TRUE, showWarnings = FALSE)
+dir_message_linking <- file.path(getwd(), "message_linking")
+dir.create(dir_message_linking, recursive = TRUE, showWarnings = FALSE)
+source(file.path(dir_message_linking, "load_scenario_config.R"))
+scenarios <- load_scenarios()
 
 for(s in scenarios){
   
@@ -70,7 +63,7 @@ for(s in scenarios){
   write_csv(sturm_scenarios %>% filter(!commodity %in% c("comm_heat_v_no_heat","comm_hotwater_v_no_heat")),
             paste0(rout_path,"report_MESSAGE_comm_",s,".csv"))
 
-  write.csv(sturm_scenarios, paste0("./temp/", s, "_comm_sturm.csv"), row.names = FALSE)
+  write.csv(sturm_scenarios, file.path(dir_message_linking, paste0("comm_sturm_", s, ".csv")), row.names = FALSE)
 
 }
 
@@ -85,7 +78,7 @@ for(s in scenarios){
 # Run the commands below and then the content of function "run_scenario" in the script "F10_scenario_runs_MESSAGE_2100.R"
 
 rcode_path <- paste0(getwd(), "/model/")
-data_path <- paste0(dirname(getwd()), "/data/STURM_data/")
+data_path <- paste0(getwd(), "/data/")
 input_path <- paste0(data_path, "input_comm/")
 rout_path <- paste0(getwd(), "/output/")
 
@@ -94,7 +87,7 @@ file_inputs <- "input_list_comm_2026_05_11_CE.csv"
 #file_data_model = "data_model_resid_SSP_2023.csv"
 
 
-#prices<-read_csv(paste0(getwd(),"/STURM_data/","input_prices_R12.csv"))
+#prices<-read_csv(paste0(getwd(),"/data/","input_prices_R12.csv"))
 prices=NULL
 
 scen <- "SSP2"

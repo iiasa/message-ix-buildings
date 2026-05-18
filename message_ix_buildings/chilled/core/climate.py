@@ -1437,6 +1437,7 @@ def process_country_maps(config: "Config"):
 
 def process_final_maps(config: "Config"):
     input_path = config.dle_path
+    population_path = config.pop_path
     out_path = os.path.join(config.project_path, "out", "version", config.vstr)
     vdd_path = os.path.join(
         out_path,
@@ -1541,19 +1542,13 @@ def process_final_maps(config: "Config"):
             # Load population data
             popdata = xr.Dataset()
             popdata["urban"] = xr.open_dataarray(
-                os.path.join(
-                    input_path, "population", "population", suff2 + "_urban_hd.nc4"
-                )
+                os.path.join(population_path, suff2 + "_urban_hd.nc4")
             )
             popdata["rural"] = xr.open_dataarray(
-                os.path.join(
-                    input_path, "population", "population", suff2 + "_rural_hd.nc4"
-                )
+                os.path.join(population_path, suff2 + "_rural_hd.nc4")
             )
             popdata["total"] = xr.open_dataarray(
-                os.path.join(
-                    input_path, "population", "population", suff2 + "_total_hd.nc4"
-                )
+                os.path.join(population_path, suff2 + "_total_hd.nc4")
             )
 
             # Floor area data
@@ -1836,6 +1831,7 @@ def process_iso_tables(config: "Config"):
     start = datetime.datetime.now()
 
     input_path = config.dle_path
+    population_path = config.pop_path
     out_path = os.path.join(config.project_path, "out", "version", config.vstr)
     vdd_path = os.path.join(out_path, "VDD_ene_calcs", config.gcm, config.rcp)
     floorarea_path = os.path.join(out_path, "floorarea_country", config.gcm, config.rcp)
@@ -1921,9 +1917,7 @@ def process_iso_tables(config: "Config"):
         for urt in updated_urts:
             popdata[urt] = xr.open_dataarray(
                 os.path.join(
-                    input_path,
-                    "population",
-                    "population",
+                    population_path,
                     suff + "_" + urt + "_hd.nc4",
                 )
             )

@@ -1,12 +1,9 @@
 import sys
 from argparse import ArgumentParser
 
-from message_ix_buildings.chilled.preprocess.archetypes import (
-    create_archetype_variables,
-    create_archetypes,
-)
+from message_ix_buildings.chilled.core.emulator import apply_emulator
 from message_ix_buildings.chilled.util.common import get_logger
-from message_ix_buildings.chilled.util.config import Config
+from message_ix_buildings.chilled.util.config import Config  # type: ignore
 
 log = get_logger(__name__)
 
@@ -47,10 +44,11 @@ def print_arguments(parsed_arguments):
     )
 
 
-# create climate outputs
 def create_config(parsed_arguments):
     cfg = Config(
         vstr=parsed_arguments.version,
+        cool=0,
+        heat=1,
     )
 
     return cfg
@@ -66,11 +64,8 @@ def main(args=None):
     print_arguments(parsed_arguments=parsed_args)
     cfg = create_config(parsed_arguments=parsed_args)
 
-    create_archetypes(cfg)
-    log.info("Archetypes created successfully.")
-
-    create_archetype_variables(cfg)
-    log.info("Archetype variables created successfully.")
+    log.info("RUNNING apply_emulator()........")
+    apply_emulator(cfg)
 
 
 if __name__ == "__main__":

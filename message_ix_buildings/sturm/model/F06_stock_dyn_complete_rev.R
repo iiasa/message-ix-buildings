@@ -66,11 +66,11 @@ ct_bld_age_i <- ct_bld_age %>% filter(yrs[i] >= year_i & yrs[i] <= year_f) %>%
 
 # Calculate demolitions - detailed - by fuel, yr_con - i-th year
 dem_det_age_i <- bld_det_age_i %>% filter(year == yrs[i-1]) %>%  # Stock from previous year
-  select(-year) %>%
   #mutate(age = yrs[i]-yr_con) %>% # Calculate age of buildings
   # left_join(b) %>% # Attach probability of demolition
   left_join(prob_dem %>% pivot_wider(names_from="parameter",values_from = "prob_dem")) %>% 
   #left_join(bld_dyn_par %>% select(-c(p_dem_hist, p_ren_hist, ren_tau, ren_sd, l_new, l_ren))) %>% # Attach probability of demolition
+  select(-year) %>%
   mutate(pdem = pweibull(yrs[i]-yr_con, shape = shape, scale = scale) - pweibull(yrs[i-1]-yr_con, shape = shape, scale = scale)) %>% #CDF: difference between two consecutive time steps
   mutate(n_dem = ifelse(n_units_fuel>0,round(pdem * n_units_fuel,rnd),0)) %>%
   rename(n_units_fuel_p = n_units_fuel) %>% # N. units are from the previous time-step

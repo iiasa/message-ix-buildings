@@ -82,6 +82,36 @@ prep_prices_long <- function(prices, price_fuels) {
   p
 }
 
+#' TRUE if P and P_ref share the same lvl on all elasticity fuels (node, commodity, year).
+prices_lvl_identical <- function(
+    prices,
+    prices_ref,
+    price_fuels = c("biomass", "lightoil", "electr"),
+    tol = 1e-9) {
+  p <- prep_prices_long(prices, price_fuels)
+  pref <- prep_prices_long(prices_ref, price_fuels)
+  if (!nrow(p) && !nrow(pref)) {
+    return(TRUE)
+  }
+  if (!nrow(p) || !nrow(pref)) {
+    return(FALSE)
+  }
+  m <- merge(
+    p,
+    pref,
+    by = c("node_price", "commodity", "year"),
+    suffixes = c("_p", "_ref")
+  )
+  if (nrow(m) != nrow(p) || nrow(m) != nrow(pref)) {
+    return(FALSE)
+  }
+  diffs <- abs(m$lvl_p - m$lvl_ref)
+  if (!any(is.finite(diffs))) {
+    return(FALSE)
+  }
+  max(diffs, na.rm = TRUE) <= tol
+}
+
 #' @param demand data.frame scenario demand before elasticity (node, commodity, year, value GWa)
 #' @param prices data.frame P — input_prices_R12 (node, commodity, year, lvl)
 #' @param prices_ref data.frame P_ref — input_prices_R12_default

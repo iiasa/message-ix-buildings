@@ -33,6 +33,7 @@ ELASTICITY_BY_FUEL <- c(
 )
 
 # Centered moving average on P only (odd window >= 3; 0 = off). P_ref file is unchanged.
+# Skipped automatically when P and P_ref have identical lvl for elasticity fuels.
 PRICE_SMOOTH_WINDOW <- 5L
 
 # resid_cook_non-comm has no price commodity -> unchanged (no entry above)
@@ -93,8 +94,17 @@ for (s in scenarios) {
   prices <- read_prices_csv(path_p)
   prices_ref <- read_prices_csv(path_prices_ref)
 
+  price_smooth_window <- PRICE_SMOOTH_WINDOW
   if (PRICE_SMOOTH_WINDOW >= 2L) {
-    prices <- smooth_prices_lvl(prices, window = PRICE_SMOOTH_WINDOW)
+    if (prices_lvl_identical(prices, prices_ref, names(ELASTICITY_BY_FUEL))) {
+      price_smooth_window <- 0L
+      message(
+        "GLANCE: P and P_ref identical on elasticity fuels — skipping price smoothing (",
+        s, ")"
+      )
+    } else {
+      prices <- smooth_prices_lvl(prices, window = PRICE_SMOOTH_WINDOW)
+    }
   }
 
   demand_responded <- apply_mix_responder_demand(
@@ -111,8 +121,8 @@ for (s in scenarios) {
 
   out_glance <- file.path(dir_message_linking, paste0("resid_comm_glance_", s, ".csv"))
   write.csv(demand_responded, out_glance, row.names = FALSE)
-  smooth_note <- if (PRICE_SMOOTH_WINDOW >= 2L) {
-    paste0(", P smoothed (window ", PRICE_SMOOTH_WINDOW, ")")
+  smooth_note <- if (price_smooth_window >= 2L) {
+    paste0(", P smoothed (window ", price_smooth_window, ")")
   } else {
     ""
   }
@@ -138,7 +148,7 @@ for (s in scenarios) {
       path_prices_ref = path_prices_ref,
       fuels = names(ELASTICITY_BY_FUEL),
       elasticity_ref_year = ELASTICITY_REF_YEAR,
-      price_smooth_window = PRICE_SMOOTH_WINDOW
+      price_smooth_window = price_smooth_window
     )
   }
 }

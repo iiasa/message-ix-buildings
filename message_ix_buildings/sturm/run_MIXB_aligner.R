@@ -22,11 +22,14 @@ if (requireNamespace("rstudioapi", quietly = TRUE) && rstudioapi::isAvailable())
 
 dir_message_linking <- file.path(getwd(), "message_linking")
 dir.create(dir_message_linking, recursive = TRUE, showWarnings = FALSE)
+source(file.path(dir_message_linking, "resolve_sturm_data_dir.R"))
 source(file.path(dir_message_linking, "load_scenario_config.R"))
 scenarios <- load_scenarios()
 
-path_iea <- file.path(getwd(), "data", "ref_iea_bt.csv")
-dir.create(dirname(path_iea), recursive = TRUE, showWarnings = FALSE)
+# IEA reference: sturm/data/ (default) or <local-data>/buildings/sturm/ (private)
+#   default:  Rscript run_MIXB_aligner.R
+#   private:  Rscript run_MIXB_aligner.R --data=private
+path_iea <- file.path(resolve_sturm_data_dir(), "ref_iea_bt.csv")
 
 # -----------------------------------------------------------------------------
 # STEP 0 — Aligner parameters

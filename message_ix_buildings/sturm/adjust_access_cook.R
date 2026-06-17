@@ -30,9 +30,11 @@ ADJUST_ELECTR <- TRUE
 ELECTR_END_BOOST <- 0.20
 ELECTR_BLEND_START_YEAR <- 2040L
 
-path_in <- file.path(getwd(), "data", "access_cook_ssp2.csv")
-path_out <- file.path(getwd(), "data", "access_cook.csv")
 dir_message_linking <- file.path(getwd(), "message_linking")
+source(file.path(dir_message_linking, "resolve_sturm_data_dir.R"))
+data_dir <- resolve_sturm_data_dir()
+path_in <- file.path(data_dir, "access_cook_ssp2.csv")
+path_out <- file.path(data_dir, "access_cook.csv")
 path_pdf <- file.path(dir_message_linking, "access_cook_before_after.pdf")
 COOK_COMMODITIES <- c(
   "resid_cook_biomass",

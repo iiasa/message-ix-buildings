@@ -27,3 +27,6 @@ user_settings.py
 
 # log files
 *.log
+
+# STURM user-local data path (see local_data.yaml.example)
+message_ix_buildings/sturm/local_data.yaml

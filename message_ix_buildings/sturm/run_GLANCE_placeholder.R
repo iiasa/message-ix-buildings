@@ -44,6 +44,7 @@ GLANCE_WRITE_PLOTS <- TRUE
 
 dir_message_linking <- file.path(getwd(), "message_linking")
 dir.create(dir_message_linking, recursive = TRUE, showWarnings = FALSE)
+source(file.path(dir_message_linking, "resolve_sturm_data_dir.R"))
 source(file.path(dir_message_linking, "load_scenario_config.R"))
 source(file.path(dir_message_linking, "run_MIX_responder.R"))
 if (isTRUE(GLANCE_WRITE_PLOTS)) {
@@ -51,7 +52,7 @@ if (isTRUE(GLANCE_WRITE_PLOTS)) {
 }
 scenarios <- load_scenarios()
 
-data_dir <- file.path(getwd(), "data")
+data_dir <- resolve_sturm_data_dir()
 path_cook <- file.path(data_dir, "access_cook.csv")
 path_glance_app <- file.path(data_dir, "glance_app.csv")
 path_prices <- file.path(data_dir, "input_prices_R12.csv")
@@ -68,7 +69,8 @@ if (length(missing)) {
     "Missing GLANCE inputs under sturm/data:\n",
     paste0("  ", missing, collapse = "\n"),
     "\nAdd access_cook.csv, glance_app.csv, input_prices_R12.csv, ",
-    "and input_prices_R12_default.csv, then re-run."
+    "and input_prices_R12_default.csv under the STURM data directory ",
+    "(default: sturm/data/; private: <local-data>/buildings/sturm/), then re-run."
   )
 }
 

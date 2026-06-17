@@ -1,0 +1,15 @@
+# STURM private data — local data root (message-static-data clone).
+# Only used when you run scripts with --data=private.
+#
+# Setup (pick one):
+#   A) ixmp / message-ix-models users — set in ~/.local/share/ixmp/config.json:
+#        "message_local_data": "/path/to/message-static-data"
+#      (or run: Rscript setup_sturm_local_data.R /path/to/message-static-data)
+#
+#   B) R-only users (no ixmp) — copy this file and edit local_data below:
+#        cp local_data.yaml.example local_data.yaml
+#
+# Private inputs must live at: <local_data>/buildings/sturm/
+# (same files as sturm/data/, e.g. input_resid/, input_prices_R12.csv, …)
+
+local_data: /path/to/message-static-data

@@ -85,7 +85,8 @@ ALIGN_COMMODITIES <- list(
   ),
   gas = c(
     "gas_resid_heat", "gas_resid_hotwater",
-    "gas_comm_heat", "gas_comm_hotwater"
+    "gas_comm_heat", "gas_comm_hotwater",
+    "gas_resid_apps"
   ),
   coal = c(
     "coal_resid_heat", "coal_resid_hotwater",
@@ -146,6 +147,7 @@ build_commodity_name_maps <- function() {
 .COMMODITY_MAPS <- build_commodity_name_maps()
 
 mixb_commodity_to_align <- function(commodity) {
+  commodity <- sub("^resids_", "resid_", commodity) # YJ: Pin XZ to rename
   if (commodity %in% names(.COMMODITY_MAPS$message_to_align)) {
     return(unname(.COMMODITY_MAPS$message_to_align[commodity]))
   }

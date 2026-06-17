@@ -17,6 +17,7 @@ responder_commodities_for_price_fuel <- function(fuel) {
     fuel,
     biomass = "resid_cook_biomass",
     lightoil = "resid_cook_lightoil",
+    gas = "resid_apps_gas",
     electr = c("resid_cook_electr", "resid_apps_electr"),
     character(0)
   )
@@ -30,6 +31,7 @@ responder_commodity_to_price_commodity <- function(commodity) {
     resid_cook_lightoil = "lightoil",
     resid_cook_electr = "electr",
     resid_apps_electr = "electr",
+    resid_apps_gas = "gas",
     NULL
   )
 }
@@ -86,7 +88,7 @@ prep_prices_long <- function(prices, price_fuels) {
 prices_lvl_identical <- function(
     prices,
     prices_ref,
-    price_fuels = c("biomass", "lightoil", "electr"),
+    price_fuels = c("biomass", "lightoil", "gas", "electr"),
     tol = 1e-9) {
   p <- prep_prices_long(prices, price_fuels)
   pref <- prep_prices_long(prices_ref, price_fuels)
@@ -115,11 +117,11 @@ prices_lvl_identical <- function(
 #' @param demand data.frame scenario demand before elasticity (node, commodity, year, value GWa)
 #' @param prices data.frame P — input_prices_R12 (node, commodity, year, lvl)
 #' @param prices_ref data.frame P_ref — input_prices_R12_default
-#' @param elasticity named numeric: biomass, lightoil, electr (negative typical)
+#' @param elasticity named numeric: biomass, lightoil, gas, electr
 apply_mix_responder_demand <- function(demand, prices, prices_ref, elasticity) {
-  price_fuels <- intersect(names(elasticity), c("biomass", "lightoil", "electr"))
+  price_fuels <- intersect(names(elasticity), c("biomass", "lightoil", "gas", "electr"))
   if (!length(price_fuels)) {
-    stop("elasticity must name at least one of: biomass, lightoil, electr")
+    stop("elasticity must name at least one of: biomass, lightoil, gas, electr")
   }
 
   prices_ref <- prep_prices_long(prices_ref, price_fuels)

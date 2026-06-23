@@ -1,0 +1,170 @@
+sector,scenario,scenario_name,year,operational_MtCO2e
+Residential,A_r,Combined R,2020,456.84136301865493
+Residential,A_r,Combined R,2025,425.9519810515878
+Residential,A_r,Combined R,2030,381.335800624726
+Residential,A_r,Combined R,2035,337.74100827735003
+Residential,A_r,Combined R,2040,293.3614890789231
+Residential,A_r,Combined R,2045,267.17381215080036
+Residential,A_r,Combined R,2050,261.6662598939306
+Residential,A_r,Combined R,2055,246.81021707681046
+Residential,A_r,Combined R,2060,231.05791235263976
+Residential,A_r,Combined R,2070,193.17548885814043
+Residential,A_r,Combined R,2080,173.27083922922793
+Residential,A_r,Combined R,2090,160.1138618831038
+Residential,A_r,Combined R,2100,149.49265992271538
+Residential,A_tp,Combined TP,2020,456.84136301865493
+Residential,A_tp,Combined TP,2025,425.9519810515878
+Residential,A_tp,Combined TP,2030,356.60433066836606
+Residential,A_tp,Combined TP,2035,296.75929338698757
+Residential,A_tp,Combined TP,2040,244.06026933185575
+Residential,A_tp,Combined TP,2045,212.12260522246044
+Residential,A_tp,Combined TP,2050,200.039137211616
+Residential,A_tp,Combined TP,2055,193.42813323483858
+Residential,A_tp,Combined TP,2060,185.58210406581242
+Residential,A_tp,Combined TP,2070,163.77969652045735
+Residential,A_tp,Combined TP,2080,153.0013255538799
+Residential,A_tp,Combined TP,2090,145.51124426374432
+Residential,A_tp,Combined TP,2100,138.4154122968697
+Residential,CP_r,Climate policy R,2020,456.84136301865493
+Residential,CP_r,Climate policy R,2025,423.25931927888473
+Residential,CP_r,Climate policy R,2030,268.4802362009857
+Residential,CP_r,Climate policy R,2035,171.94067102787082
+Residential,CP_r,Climate policy R,2040,118.14496216645747
+Residential,CP_r,Climate policy R,2045,86.60376537235679
+Residential,CP_r,Climate policy R,2050,65.21141483968837
+Residential,CP_r,Climate policy R,2055,53.120822675044785
+Residential,CP_r,Climate policy R,2060,42.078535556841445
+Residential,CP_r,Climate policy R,2070,26.199635163607613
+Residential,CP_r,Climate policy R,2080,19.986524347078216
+Residential,CP_r,Climate policy R,2090,17.269617053082655
+Residential,CP_r,Climate policy R,2100,14.833233240025098
+Residential,CP_tp,Climate policy TP,2020,456.84136301865493
+Residential,CP_tp,Climate policy TP,2025,423.25931927888473
+Residential,CP_tp,Climate policy TP,2030,250.66587731869384
+Residential,CP_tp,Climate policy TP,2035,150.8943509669094
+Residential,CP_tp,Climate policy TP,2040,98.7325952338449
+Residential,CP_tp,Climate policy TP,2045,71.07008764661411
+Residential,CP_tp,Climate policy TP,2050,54.332292843618276
+Residential,CP_tp,Climate policy TP,2055,47.69897834394374
+Residential,CP_tp,Climate policy TP,2060,40.37275057073041
+Residential,CP_tp,Climate policy TP,2070,29.933606564836268
+Residential,CP_tp,Climate policy TP,2080,25.509301246049333
+Residential,CP_tp,Climate policy TP,2090,22.610698314958253
+Residential,CP_tp,Climate policy TP,2100,19.880850199439873
+Residential,C_r,Close R,2020,456.84136301865493
+Residential,C_r,Close R,2025,425.9519810515878
+Residential,C_r,Close R,2030,397.2937443730008
+Residential,C_r,Close R,2035,364.7174889779972
+Residential,C_r,Close R,2040,326.7619628658525
+Residential,C_r,Close R,2045,305.4128903908873
+Residential,C_r,Close R,2050,307.504479444907
+Residential,C_r,Close R,2055,284.3533325645985
+Residential,C_r,Close R,2060,261.50232833793916
+Residential,C_r,Close R,2070,210.66271347358318
+Residential,C_r,Close R,2080,184.09267242663958
+Residential,C_r,Close R,2090,167.1062072401797
+Residential,C_r,Close R,2100,154.1358145042503
+Residential,C_tp,Close TP,2020,456.84136301865493
+Residential,C_tp,Close TP,2025,425.9519810515878
+Residential,C_tp,Close TP,2030,397.2937443730008
+Residential,C_tp,Close TP,2035,364.7174889779972
+Residential,C_tp,Close TP,2040,326.7619628658525
+Residential,C_tp,Close TP,2045,305.4128903908873
+Residential,C_tp,Close TP,2050,307.504479444907
+Residential,C_tp,Close TP,2055,284.3533325645985
+Residential,C_tp,Close TP,2060,261.50232833793916
+Residential,C_tp,Close TP,2070,210.66271347358318
+Residential,C_tp,Close TP,2080,184.09267242663958
+Residential,C_tp,Close TP,2090,167.1062072401797
+Residential,C_tp,Close TP,2100,154.1358145042503
+Residential,E_r,Efficiency R,2020,456.84136301865493
+Residential,E_r,Efficiency R,2025,423.25931927888473
+Residential,E_r,Efficiency R,2030,334.9838199798346
+Residential,E_r,Efficiency R,2035,268.9476300754331
+Residential,E_r,Efficiency R,2040,211.53015199970392
+Residential,E_r,Efficiency R,2045,184.3561013495163
+Residential,E_r,Efficiency R,2050,184.69296563077563
+Residential,E_r,Efficiency R,2055,170.99558567447485
+Residential,E_r,Efficiency R,2060,158.40471166299446
+Residential,E_r,Efficiency R,2070,126.13021170745716
+Residential,E_r,Efficiency R,2080,115.96513621708947
+Residential,E_r,Efficiency R,2090,111.81085710910153
+Residential,E_r,Efficiency R,2100,108.23305559809494
+Residential,E_tp,Efficiency TP,2020,456.84136301865493
+Residential,E_tp,Efficiency TP,2025,423.25931927888473
+Residential,E_tp,Efficiency TP,2030,314.18215150718686
+Residential,E_tp,Efficiency TP,2035,239.4901214077959
+Residential,E_tp,Efficiency TP,2040,180.90816736692935
+Residential,E_tp,Efficiency TP,2045,154.30213559698277
+Residential,E_tp,Efficiency TP,2050,152.7611271052771
+Residential,E_tp,Efficiency TP,2055,145.4438744334255
+Residential,E_tp,Efficiency TP,2060,137.9996667135102
+Residential,E_tp,Efficiency TP,2070,115.31994759809905
+Residential,E_tp,Efficiency TP,2080,108.53774228705183
+Residential,E_tp,Efficiency TP,2090,105.69326256753875
+Residential,E_tp,Efficiency TP,2100,103.09263512878461
+Residential,N_r,Narrow R,2020,456.84136301865493
+Residential,N_r,Narrow R,2025,425.9519810515878
+Residential,N_r,Narrow R,2030,381.335800624726
+Residential,N_r,Narrow R,2035,337.26331572315405
+Residential,N_r,Narrow R,2040,292.0816721607297
+Residential,N_r,Narrow R,2045,264.90518406823134
+Residential,N_r,Narrow R,2050,258.27956485175235
+Residential,N_r,Narrow R,2055,241.77855784442465
+Residential,N_r,Narrow R,2060,224.8052471142765
+Residential,N_r,Narrow R,2070,185.47378500562755
+Residential,N_r,Narrow R,2080,164.7803958764837
+Residential,N_r,Narrow R,2090,151.3390269399913
+Residential,N_r,Narrow R,2100,140.85237071930766
+Residential,N_tp,Narrow TP,2020,456.84136301865493
+Residential,N_tp,Narrow TP,2025,425.9519810515878
+Residential,N_tp,Narrow TP,2030,356.60433066836606
+Residential,N_tp,Narrow TP,2035,295.8823166908681
+Residential,N_tp,Narrow TP,2040,241.74326462288033
+Residential,N_tp,Narrow TP,2045,208.17543668222123
+Residential,N_tp,Narrow TP,2050,194.62672401854996
+Residential,N_tp,Narrow TP,2055,186.06590306465569
+Residential,N_tp,Narrow TP,2060,176.77716235070912
+Residential,N_tp,Narrow TP,2070,152.94193623963542
+Residential,N_tp,Narrow TP,2080,141.01148394752755
+Residential,N_tp,Narrow TP,2090,133.00738103028309
+Residential,N_tp,Narrow TP,2100,126.00203471829853
+Residential,R,Reference,2020,456.84136301865493
+Residential,R,Reference,2025,425.9519810515878
+Residential,R,Reference,2030,397.2937443730008
+Residential,R,Reference,2035,364.7174889779972
+Residential,R,Reference,2040,326.7619628658525
+Residential,R,Reference,2045,305.4128903908873
+Residential,R,Reference,2050,307.504479444907
+Residential,R,Reference,2055,284.3533325645985
+Residential,R,Reference,2060,261.50232833793916
+Residential,R,Reference,2070,210.66271347358318
+Residential,R,Reference,2080,184.09267242663958
+Residential,R,Reference,2090,167.1062072401797
+Residential,R,Reference,2100,154.1358145042503
+Residential,S_r,Slow R,2020,456.84136301865493
+Residential,S_r,Slow R,2025,425.9519810515878
+Residential,S_r,Slow R,2030,397.2937443730008
+Residential,S_r,Slow R,2035,365.37597197883747
+Residential,S_r,Slow R,2040,328.58421925188617
+Residential,S_r,Slow R,2045,308.77598337240755
+Residential,S_r,Slow R,2050,312.80798577154184
+Residential,S_r,Slow R,2055,291.43289434767354
+Residential,S_r,Slow R,2060,269.83325202450715
+Residential,S_r,Slow R,2070,220.2063365269263
+Residential,S_r,Slow R,2080,194.2438367211735
+Residential,S_r,Slow R,2090,177.35067137028864
+Residential,S_r,Slow R,2100,164.03010244832527
+Residential,S_tp,Slow TP,2020,456.84136301865493
+Residential,S_tp,Slow TP,2025,425.9519810515878
+Residential,S_tp,Slow TP,2030,397.2937443730008
+Residential,S_tp,Slow TP,2035,366.4552593808624
+Residential,S_tp,Slow TP,2040,331.2786346643785
+Residential,S_tp,Slow TP,2045,313.16974869880664
+Residential,S_tp,Slow TP,2050,318.9144470318219
+Residential,S_tp,Slow TP,2055,298.6156659801175
+Residential,S_tp,Slow TP,2060,277.62898360746874
+Residential,S_tp,Slow TP,2070,228.05507521553903
+Residential,S_tp,Slow TP,2080,201.80444814085263
+Residential,S_tp,Slow TP,2090,184.43719211810674
+Residential,S_tp,Slow TP,2100,170.46616306793445

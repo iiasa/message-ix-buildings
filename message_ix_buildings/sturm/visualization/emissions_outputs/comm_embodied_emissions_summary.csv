@@ -1,0 +1,133 @@
+sector,scenario,scenario_name,year,embodied_MtCO2e
+Commercial,A_r,Combined R,2025,755.1852230967793
+Commercial,A_r,Combined R,2030,544.1776236665777
+Commercial,A_r,Combined R,2035,431.00029382021654
+Commercial,A_r,Combined R,2040,346.764232495348
+Commercial,A_r,Combined R,2045,281.62112963105005
+Commercial,A_r,Combined R,2050,239.85720582117867
+Commercial,A_r,Combined R,2055,197.08871289549407
+Commercial,A_r,Combined R,2060,176.96897994616063
+Commercial,A_r,Combined R,2070,163.69801354518677
+Commercial,A_r,Combined R,2080,169.3452497558779
+Commercial,A_r,Combined R,2090,168.31914190993734
+Commercial,A_r,Combined R,2100,143.75307128698373
+Commercial,A_tp,Combined TP,2025,755.1852230967793
+Commercial,A_tp,Combined TP,2030,435.0570671847236
+Commercial,A_tp,Combined TP,2035,304.23452055063996
+Commercial,A_tp,Combined TP,2040,207.37010228671656
+Commercial,A_tp,Combined TP,2045,141.67377709802665
+Commercial,A_tp,Combined TP,2050,108.61593909904067
+Commercial,A_tp,Combined TP,2055,82.73983607779854
+Commercial,A_tp,Combined TP,2060,73.10322577926047
+Commercial,A_tp,Combined TP,2070,67.17322348573651
+Commercial,A_tp,Combined TP,2080,73.66363043055443
+Commercial,A_tp,Combined TP,2090,76.08361257490064
+Commercial,A_tp,Combined TP,2100,64.72587490085812
+Commercial,C_r,Close R,2025,755.1852230967793
+Commercial,C_r,Close R,2030,605.2430419555257
+Commercial,C_r,Close R,2035,506.0302256297656
+Commercial,C_r,Close R,2040,435.90989423236704
+Commercial,C_r,Close R,2045,382.3620952078506
+Commercial,C_r,Close R,2050,350.34501724428986
+Commercial,C_r,Close R,2055,315.6739711471679
+Commercial,C_r,Close R,2060,289.2155017128968
+Commercial,C_r,Close R,2070,272.8786668277451
+Commercial,C_r,Close R,2080,270.1465453301358
+Commercial,C_r,Close R,2090,255.18892638692708
+Commercial,C_r,Close R,2100,211.8580670310109
+Commercial,C_tp,Close TP,2025,755.1852230967793
+Commercial,C_tp,Close TP,2030,605.2430419555257
+Commercial,C_tp,Close TP,2035,506.0302256297656
+Commercial,C_tp,Close TP,2040,435.90989423236704
+Commercial,C_tp,Close TP,2045,382.3620952078506
+Commercial,C_tp,Close TP,2050,350.34501724428986
+Commercial,C_tp,Close TP,2055,315.6739711471679
+Commercial,C_tp,Close TP,2060,289.2155017128968
+Commercial,C_tp,Close TP,2070,272.8786668277451
+Commercial,C_tp,Close TP,2080,270.1465453301358
+Commercial,C_tp,Close TP,2090,255.18892638692708
+Commercial,C_tp,Close TP,2100,211.8580670310109
+Commercial,E_r,Efficiency R,2025,755.1852230967793
+Commercial,E_r,Efficiency R,2030,544.1776236665777
+Commercial,E_r,Efficiency R,2035,431.00029382018977
+Commercial,E_r,Efficiency R,2040,346.7642324953085
+Commercial,E_r,Efficiency R,2045,281.62112963122706
+Commercial,E_r,Efficiency R,2050,239.85720582122482
+Commercial,E_r,Efficiency R,2055,197.08871289527363
+Commercial,E_r,Efficiency R,2060,176.9689799461165
+Commercial,E_r,Efficiency R,2070,163.69801354519038
+Commercial,E_r,Efficiency R,2080,169.34524975593035
+Commercial,E_r,Efficiency R,2090,168.31914190998293
+Commercial,E_r,Efficiency R,2100,143.75307128696986
+Commercial,E_tp,Efficiency TP,2025,755.1852230967793
+Commercial,E_tp,Efficiency TP,2030,435.0570671847236
+Commercial,E_tp,Efficiency TP,2035,304.2345205506583
+Commercial,E_tp,Efficiency TP,2040,207.37010228675376
+Commercial,E_tp,Efficiency TP,2045,141.67377709807232
+Commercial,E_tp,Efficiency TP,2050,108.61593909910553
+Commercial,E_tp,Efficiency TP,2055,82.73983607774503
+Commercial,E_tp,Efficiency TP,2060,73.10322577920154
+Commercial,E_tp,Efficiency TP,2070,67.1732234857449
+Commercial,E_tp,Efficiency TP,2080,73.66363043052975
+Commercial,E_tp,Efficiency TP,2090,76.08361257487996
+Commercial,E_tp,Efficiency TP,2100,64.72587490087902
+Commercial,N_r,Narrow R,2025,755.1852230967793
+Commercial,N_r,Narrow R,2030,544.1776236665777
+Commercial,N_r,Narrow R,2035,452.82319782975895
+Commercial,N_r,Narrow R,2040,386.74303040810423
+Commercial,N_r,Narrow R,2045,337.21484356423355
+Commercial,N_r,Narrow R,2050,309.63620997128714
+Commercial,N_r,Narrow R,2055,280.72710776350425
+Commercial,N_r,Narrow R,2060,258.159273711158
+Commercial,N_r,Narrow R,2070,244.04775596548103
+Commercial,N_r,Narrow R,2080,240.8962996541042
+Commercial,N_r,Narrow R,2090,226.60499454653052
+Commercial,N_r,Narrow R,2100,187.44813920753364
+Commercial,N_tp,Narrow TP,2025,755.1852230967793
+Commercial,N_tp,Narrow TP,2030,435.0570671847236
+Commercial,N_tp,Narrow TP,2035,340.76513898430323
+Commercial,N_tp,Narrow TP,2040,263.2733183334539
+Commercial,N_tp,Narrow TP,2045,206.4875739778637
+Commercial,N_tp,Narrow TP,2050,181.35477961484062
+Commercial,N_tp,Narrow TP,2055,166.17629250662932
+Commercial,N_tp,Narrow TP,2060,153.73646990759056
+Commercial,N_tp,Narrow TP,2070,145.72150188982272
+Commercial,N_tp,Narrow TP,2080,143.00110565707746
+Commercial,N_tp,Narrow TP,2090,133.43375007922376
+Commercial,N_tp,Narrow TP,2100,109.60332164209325
+Commercial,R,Reference,2025,755.1852230967793
+Commercial,R,Reference,2030,605.2430419555257
+Commercial,R,Reference,2035,506.0302256297656
+Commercial,R,Reference,2040,435.90989423236704
+Commercial,R,Reference,2045,382.3620952078506
+Commercial,R,Reference,2050,350.34501724428986
+Commercial,R,Reference,2055,315.6739711471679
+Commercial,R,Reference,2060,289.2155017128968
+Commercial,R,Reference,2070,272.8786668277451
+Commercial,R,Reference,2080,270.1465453301358
+Commercial,R,Reference,2090,255.18892638692708
+Commercial,R,Reference,2100,211.8580670310109
+Commercial,S_r,Slow R,2025,755.1852230967793
+Commercial,S_r,Slow R,2030,605.2430419555257
+Commercial,S_r,Slow R,2035,483.50894115366475
+Commercial,S_r,Slow R,2040,393.44050033911077
+Commercial,S_r,Slow R,2045,321.70487472868086
+Commercial,S_r,Slow R,2050,273.0892104474597
+Commercial,S_r,Slow R,2055,222.52134214523204
+Commercial,S_r,Slow R,2060,198.0800980616665
+Commercial,S_r,Slow R,2070,181.73778638123505
+Commercial,S_r,Slow R,2080,187.8906812004802
+Commercial,S_r,Slow R,2090,187.6255639545823
+Commercial,S_r,Slow R,2100,161.0905473012511
+Commercial,S_tp,Slow TP,2025,755.1852230967793
+Commercial,S_tp,Slow TP,2030,605.2430419555257
+Commercial,S_tp,Slow TP,2035,462.8641955545753
+Commercial,S_tp,Slow TP,2040,357.6875104007969
+Commercial,S_tp,Slow TP,2045,274.85815934110116
+Commercial,S_tp,Slow TP,2050,218.34047424785504
+Commercial,S_tp,Slow TP,2055,162.55809463771115
+Commercial,S_tp,Slow TP,2060,138.8613680991565
+Commercial,S_tp,Slow TP,2070,122.76132356979217
+Commercial,S_tp,Slow TP,2080,132.89750471000838
+Commercial,S_tp,Slow TP,2090,138.320171113337
+Commercial,S_tp,Slow TP,2100,118.95434501887387

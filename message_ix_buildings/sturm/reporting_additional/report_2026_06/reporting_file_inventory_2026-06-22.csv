@@ -1,0 +1,19 @@
+scenario,scenario_name,sector,sector_name,file,aggregation_level,exists
+A_r,Combined R,comm,Commercial,C:/Users/nawawi/Documents/GitHub/message-ix-buildings/message_ix_buildings/sturm/output/report_STURM_A_r_comm_region_bld_material.csv,country,TRUE
+A_r,Combined R,resid,Residential,C:/Users/nawawi/Documents/GitHub/message-ix-buildings/message_ix_buildings/sturm/output/report_STURM_A_r_resid_region_bld_material.csv,country,TRUE
+A_tp,Combined TP,comm,Commercial,C:/Users/nawawi/Documents/GitHub/message-ix-buildings/message_ix_buildings/sturm/output/report_STURM_A_tp_comm_region_bld_material.csv,country,TRUE
+A_tp,Combined TP,resid,Residential,C:/Users/nawawi/Documents/GitHub/message-ix-buildings/message_ix_buildings/sturm/output/report_STURM_A_tp_resid_region_bld_material.csv,country,TRUE
+C_r,Close R,comm,Commercial,C:/Users/nawawi/Documents/GitHub/message-ix-buildings/message_ix_buildings/sturm/output/report_STURM_C_r_comm_region_bld_material.csv,country,TRUE
+C_r,Close R,resid,Residential,C:/Users/nawawi/Documents/GitHub/message-ix-buildings/message_ix_buildings/sturm/output/report_STURM_C_r_resid_region_bld_material.csv,country,TRUE
+C_tp,Close TP,comm,Commercial,C:/Users/nawawi/Documents/GitHub/message-ix-buildings/message_ix_buildings/sturm/output/report_STURM_C_tp_comm_region_bld_material.csv,country,TRUE
+C_tp,Close TP,resid,Residential,C:/Users/nawawi/Documents/GitHub/message-ix-buildings/message_ix_buildings/sturm/output/report_STURM_C_tp_resid_region_bld_material.csv,country,TRUE
+N_r,Narrow R,comm,Commercial,C:/Users/nawawi/Documents/GitHub/message-ix-buildings/message_ix_buildings/sturm/output/report_STURM_N_r_comm_region_bld_material.csv,country,TRUE
+N_r,Narrow R,resid,Residential,C:/Users/nawawi/Documents/GitHub/message-ix-buildings/message_ix_buildings/sturm/output/report_STURM_N_r_resid_region_bld_material.csv,country,TRUE
+N_tp,Narrow TP,comm,Commercial,C:/Users/nawawi/Documents/GitHub/message-ix-buildings/message_ix_buildings/sturm/output/report_STURM_N_tp_comm_region_bld_material.csv,country,TRUE
+N_tp,Narrow TP,resid,Residential,C:/Users/nawawi/Documents/GitHub/message-ix-buildings/message_ix_buildings/sturm/output/report_STURM_N_tp_resid_region_bld_material.csv,country,TRUE
+R,Reference,comm,Commercial,C:/Users/nawawi/Documents/GitHub/message-ix-buildings/message_ix_buildings/sturm/output/report_STURM_R_comm_region_bld_material.csv,country,TRUE
+R,Reference,resid,Residential,C:/Users/nawawi/Documents/GitHub/message-ix-buildings/message_ix_buildings/sturm/output/report_STURM_R_resid_region_bld_material.csv,country,TRUE
+S_r,Slow R,comm,Commercial,C:/Users/nawawi/Documents/GitHub/message-ix-buildings/message_ix_buildings/sturm/output/report_STURM_S_r_comm_region_bld_material.csv,country,TRUE
+S_r,Slow R,resid,Residential,C:/Users/nawawi/Documents/GitHub/message-ix-buildings/message_ix_buildings/sturm/output/report_STURM_S_r_resid_region_bld_material.csv,country,TRUE
+S_tp,Slow TP,comm,Commercial,C:/Users/nawawi/Documents/GitHub/message-ix-buildings/message_ix_buildings/sturm/output/report_STURM_S_tp_comm_region_bld_material.csv,country,TRUE
+S_tp,Slow TP,resid,Residential,C:/Users/nawawi/Documents/GitHub/message-ix-buildings/message_ix_buildings/sturm/output/report_STURM_S_tp_resid_region_bld_material.csv,country,TRUE

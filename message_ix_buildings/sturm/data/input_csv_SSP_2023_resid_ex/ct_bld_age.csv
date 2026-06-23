@@ -1,6 +1,0 @@
-bld_age_id,bld_age_name,mat,year_i,year_f
-p1,p1 until 1945,perm,0,1945
-p2,p2 1946-1990,perm,1946,1990
-p3,p3 1991-2015,perm,1991,2015
-p5,p5 after 2015,perm,2016,2100
-ns,ns,sub,0,2100

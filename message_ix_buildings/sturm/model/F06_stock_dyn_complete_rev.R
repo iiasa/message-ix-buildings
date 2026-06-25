@@ -734,67 +734,143 @@ if("material" %in% report_var){
     # find the user-defined treatments other than reuse, recycling, and others
     other_treatments <- setdiff(unique(shr_mat_eol$eol_treat), c("reuse", "recycling", "others"))
     
-    # calculate reuse and recycling at regional level, depending on regional (region_bld) TOTAL demands
-    mat_reuse_recyc_aggr_i <- mat_stock_i %>%
-      ## aggregating demand to regional level
-      group_by(region_bld, region_gea, mat, material, scenario, year) %>%
-      summarise(mat_demand_Mt = sum(mat_demand_Mt),
-                mat_scrap_Mt = sum(mat_scrap_Mt)) %>%
-      
-      left_join(
-        shr_mat_eol %>%
-          pivot_wider(
-            names_from = eol_treat,
-            values_from = shr_mat_eol
-          ),
-        by = c("region_gea", "material", "year")
-      ) %>%
-      
-      # reuse & recycling (only if present)
-      mutate(
-        mat_reuse_Mt = if ("reuse" %in% unique(shr_mat_eol$eol_treat)) pmin(mat_demand_Mt, mat_scrap_Mt * reuse) else 0,
-        mat_recycling_Mt = if ("recycling" %in% unique(shr_mat_eol$eol_treat)) pmin(mat_demand_Mt - mat_reuse_Mt, mat_scrap_Mt * recycling) else 0
-      )  %>%
-      
-      # select relevant cols
-      select(region_bld, region_gea, mat, material, scenario, year, mat_reuse_Mt, mat_recycling_Mt) %>%
-      rename(mat_reuse_aggr_Mt = mat_reuse_Mt,
-             mat_recycling_aggr_Mt = mat_recycling_Mt)
+    # Calculate reuse and recycling at the selected geographic level,
+    # depending on total demand within each geographic group
+    # Geographic and material dimensions used for EOL aggregation
+    eol_group_vars <- unique(
+      c(
+        geo_levels,
+        "mat",
+        "material",
+        "scenario",
+        "year"
+      )
+    )
     
-    # disaggregate reuse and recycling, then calculate other treatments
-    mat_stock_i <- mat_stock_i %>%
+    # Calculate reuse and recycling at the selected geographic level,
+    # depending on total material demand within each geographic group
+    mat_reuse_recyc_aggr_i <- mat_stock_i %>%
+      
+      # Aggregate demand and scrap to the selected geographic level
+      group_by_at(
+        eol_group_vars
+      ) %>%
+      
+      summarise(
+        mat_demand_Mt = sum(mat_demand_Mt),
+        mat_scrap_Mt = sum(mat_scrap_Mt),
+        .groups = "drop"
+      ) %>%
+      
       left_join(
         shr_mat_eol %>%
           pivot_wider(
             names_from = eol_treat,
             values_from = shr_mat_eol
           ),
-        by = c("region_gea", "material", "year")
+        by = c(
+          "region_gea",
+          "material",
+          "year"
+        )
       ) %>%
       
-      # # reuse & recycling potentials (only if present)
-      # mutate(
-      #   mat_reuse_max_Mt = if ("reuse" %in% unique(shr_mat_eol$eol_treat)) mat_scrap_Mt * reuse else 0,
-      #   mat_recycling_max_Mt = if ("recycling" %in% unique(shr_mat_eol$eol_treat)) mat_scrap_Mt * recycling else 0
-      # ) %>%
+      # Reuse and recycling, only if present
+      mutate(
+        mat_reuse_Mt = if (
+          "reuse" %in% unique(shr_mat_eol$eol_treat)
+        ) {
+          pmin(
+            mat_demand_Mt,
+            mat_scrap_Mt * reuse
+          )
+        } else {
+          0
+        },
+        
+        mat_recycling_Mt = if (
+          "recycling" %in% unique(shr_mat_eol$eol_treat)
+        ) {
+          pmin(
+            mat_demand_Mt - mat_reuse_Mt,
+            mat_scrap_Mt * recycling
+          )
+        } else {
+          0
+        }
+      ) %>%
       
-      # now allocate regional aggregated reuse / recycling using weighting by mat_demand
-      left_join(mat_reuse_recyc_aggr_i) %>%
-      group_by(region_bld, region_gea, mat, material, scenario, year) %>%
+      # Select relevant columns
+      select_at(
+        c(
+          eol_group_vars,
+          "mat_reuse_Mt",
+          "mat_recycling_Mt"
+        )
+      ) %>%
+      
+      rename(
+        mat_reuse_aggr_Mt = mat_reuse_Mt,
+        mat_recycling_aggr_Mt = mat_recycling_Mt
+      )
+    
+    # Disaggregate reuse and recycling, then calculate other treatments
+    mat_stock_i <- mat_stock_i %>%
+      
+      left_join(
+        shr_mat_eol %>%
+          pivot_wider(
+            names_from = eol_treat,
+            values_from = shr_mat_eol
+          ),
+        by = c(
+          "region_gea",
+          "material",
+          "year"
+        )
+      ) %>%
+      
+      # Allocate geographically aggregated reuse and recycling
+      # using weights based on material demand
+      left_join(
+        mat_reuse_recyc_aggr_i,
+        by = eol_group_vars
+      ) %>%
+      
+      group_by_at(
+        eol_group_vars
+      ) %>%
+      
       mutate(
         # Calculate the weight for each row within this group
         weight = mat_demand_Mt / sum(mat_demand_Mt),
-        # Replace NaN with 0 (in case sum is 0)
-        weight = ifelse(is.nan(weight), 0, weight),
-        # Allocate reuse proportionally
-        mat_reuse_alloc_Mt = first(mat_reuse_aggr_Mt) * weight,
-        # Allocate recycling proportionally
-        mat_recycling_alloc_Mt = first(mat_recycling_aggr_Mt) * weight
         
+        # Replace NaN with zero when total demand is zero
+        weight = ifelse(
+          is.nan(weight),
+          0,
+          weight
+        ),
+        
+        # Allocate reuse proportionally
+        mat_reuse_alloc_Mt =
+          first(mat_reuse_aggr_Mt) * weight,
+        
+        # Allocate recycling proportionally
+        mat_recycling_alloc_Mt =
+          first(mat_recycling_aggr_Mt) * weight
       ) %>%
+      
       ungroup() %>%
-      # remove cols
-      select(-c(mat_reuse_aggr_Mt, mat_recycling_aggr_Mt, weight)) %>%
+      
+      # Remove temporary columns
+      select(
+        -c(
+          mat_reuse_aggr_Mt,
+          mat_recycling_aggr_Mt,
+          weight
+        )
+      ) %>%
       
       # other treatments
       mutate(
@@ -879,14 +955,32 @@ if("material" %in% report_var){
   ## add material end-of-life treatments
   # find the user-defined treatments other than reuse, recycling, and others
   other_treatments <- setdiff(unique(shr_mat_eol$eol_treat), c("reuse", "recycling", "others"))
-  #
   
-  # calculate reuse and recycling at regional level, depending on regional (region_bld) TOTAL demands
+  # Geographic and material dimensions used for EOL aggregation
+  eol_group_vars <- unique(
+    c(
+      geo_levels,
+      "mat",
+      "material",
+      "scenario",
+      "year"
+    )
+  )
+  
+  # Calculate reuse and recycling at the selected geographic level,
+  # depending on total material demand within each geographic group
   mat_reuse_recyc_aggr_i <- mat_stock_i %>%
-    ## aggregating demand to regional level
-    group_by(region_bld, region_gea, mat, material, scenario, year) %>%
-    summarise(mat_demand_Mt = sum(mat_demand_Mt),
-              mat_scrap_Mt = sum(mat_scrap_Mt)) %>%
+    
+    # Aggregate demand and scrap to the selected geographic level
+    group_by_at(
+      eol_group_vars
+    ) %>%
+    
+    summarise(
+      mat_demand_Mt = sum(mat_demand_Mt),
+      mat_scrap_Mt = sum(mat_scrap_Mt),
+      .groups = "drop"
+    ) %>%
     
     left_join(
       shr_mat_eol %>%
@@ -894,54 +988,109 @@ if("material" %in% report_var){
           names_from = eol_treat,
           values_from = shr_mat_eol
         ),
-      by = c("region_gea", "material", "year")
+      by = c(
+        "region_gea",
+        "material",
+        "year"
+      )
     ) %>%
     
-    # reuse & recycling (only if present)
+    # Reuse and recycling, only if present
     mutate(
-      mat_reuse_Mt = if ("reuse" %in% unique(shr_mat_eol$eol_treat)) pmin(mat_demand_Mt, mat_scrap_Mt * reuse) else 0,
-      mat_recycling_Mt = if ("recycling" %in% unique(shr_mat_eol$eol_treat)) pmin(mat_demand_Mt - mat_reuse_Mt, mat_scrap_Mt * recycling) else 0
-    )  %>%
+      mat_reuse_Mt = if (
+        "reuse" %in% unique(shr_mat_eol$eol_treat)
+      ) {
+        pmin(
+          mat_demand_Mt,
+          mat_scrap_Mt * reuse
+        )
+      } else {
+        0
+      },
+      
+      mat_recycling_Mt = if (
+        "recycling" %in% unique(shr_mat_eol$eol_treat)
+      ) {
+        pmin(
+          mat_demand_Mt - mat_reuse_Mt,
+          mat_scrap_Mt * recycling
+        )
+      } else {
+        0
+      }
+    ) %>%
     
-    # select relevant cols
-    select(region_bld, region_gea, mat, material, scenario, year, mat_reuse_Mt, mat_recycling_Mt) %>%
-    rename(mat_reuse_aggr_Mt = mat_reuse_Mt,
-           mat_recycling_aggr_Mt = mat_recycling_Mt)
+    # Select relevant columns
+    select_at(
+      c(
+        eol_group_vars,
+        "mat_reuse_Mt",
+        "mat_recycling_Mt"
+      )
+    ) %>%
+    
+    rename(
+      mat_reuse_aggr_Mt = mat_reuse_Mt,
+      mat_recycling_aggr_Mt = mat_recycling_Mt
+    )
   
-  # disaggregate reuse and recycling, then calculate other treatments
+  # Disaggregate reuse and recycling, then calculate other treatments
   mat_stock_i <- mat_stock_i %>%
+    
     left_join(
       shr_mat_eol %>%
         pivot_wider(
           names_from = eol_treat,
           values_from = shr_mat_eol
         ),
-      by = c("region_gea", "material", "year")
+      by = c(
+        "region_gea",
+        "material",
+        "year"
+      )
     ) %>%
     
-    # # reuse & recycling potentials (only if present)
-    # mutate(
-    #   mat_reuse_max_Mt = if ("reuse" %in% unique(shr_mat_eol$eol_treat)) mat_scrap_Mt * reuse else 0,
-    #   mat_recycling_max_Mt = if ("recycling" %in% unique(shr_mat_eol$eol_treat)) mat_scrap_Mt * recycling else 0
-    # ) %>%
+    # Allocate geographically aggregated reuse and recycling
+    # using weights based on material demand
+    left_join(
+      mat_reuse_recyc_aggr_i,
+      by = eol_group_vars
+    ) %>%
     
-    # now allocate regional aggregated reuse / recycling using weighting by mat_demand
-    left_join(mat_reuse_recyc_aggr_i) %>%
-    group_by(region_bld, region_gea, mat, material, scenario, year) %>%
+    group_by_at(
+      eol_group_vars
+    ) %>%
+    
     mutate(
       # Calculate the weight for each row within this group
       weight = mat_demand_Mt / sum(mat_demand_Mt),
-      # Replace NaN with 0 (in case sum is 0)
-      weight = ifelse(is.nan(weight), 0, weight),
-      # Allocate reuse proportionally
-      mat_reuse_alloc_Mt = first(mat_reuse_aggr_Mt) * weight,
-      # Allocate recycling proportionally
-      mat_recycling_alloc_Mt = first(mat_recycling_aggr_Mt) * weight
       
+      # Replace NaN with zero when total demand is zero
+      weight = ifelse(
+        is.nan(weight),
+        0,
+        weight
+      ),
+      
+      # Allocate reuse proportionally
+      mat_reuse_alloc_Mt =
+        first(mat_reuse_aggr_Mt) * weight,
+      
+      # Allocate recycling proportionally
+      mat_recycling_alloc_Mt =
+        first(mat_recycling_aggr_Mt) * weight
     ) %>%
+    
     ungroup() %>%
-    # remove cols
-    select(-c(mat_reuse_aggr_Mt, mat_recycling_aggr_Mt, weight)) %>%
+    
+    # Remove temporary columns
+    select(
+      -c(
+        mat_reuse_aggr_Mt,
+        mat_recycling_aggr_Mt,
+        weight
+      )
+    ) %>%
     
     # other treatments
     mutate(

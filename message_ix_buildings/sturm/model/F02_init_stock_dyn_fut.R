@@ -10,6 +10,8 @@ fun_stock_init_fut <- function(sector, run,
                                geo_data, geo_levels, geo_level,
                                bld_cases_eneff, bld_cases_fuel,
                                pop,
+                               pop_urt,
+                               pop_clim,
                                hh_size, # used for residential
                                floor_cap, # used for commercial
                                ct_inc_cl,
@@ -68,97 +70,272 @@ fun_stock_init_fut <- function(sector, run,
   # number of income classes
   n_inc_cl <- length(unique(ct_inc_cl$inc_cl))
   
-  # Standardize input column names
-  if ("value" %in% names(pop) & !"pop" %in% names(pop)) {
-    pop <- pop %>% rename(pop = value)
-  }
-  
-  if ("value" %in% names(hh_size) & !"hh_size" %in% names(hh_size)) {
-    hh_size <- hh_size %>% rename(hh_size = value)
-  }
-  # Total number of building units: (Residential: number of households (units) - Commercial: total floorspace (m2))
-  if (sector == "resid") {
-    
-    pop_clean <- pop
-    
-    if ("value" %in% names(pop_clean) && !"pop" %in% names(pop_clean)) {
-      pop_clean <- pop_clean %>% rename(pop = value)
-    }
-    
-    hh_size_clean <- hh_size
-    
-    if ("value" %in% names(hh_size_clean) && !"hh_size" %in% names(hh_size_clean)) {
-      hh_size_clean <- hh_size_clean %>% rename(hh_size = value)
-    }
-    
-    if (!"pop" %in% names(pop_clean)) {
-      stop("Column `pop` not found in pop_clean. Check names(pop).")
-    }
-    
-    if (!"hh_size" %in% names(hh_size_clean)) {
-      stop("Column `hh_size` not found in hh_size_clean. Check names(hh_size).")
-    }
-    
-    bld_units <- geo_data %>%
-      select_at(geo_levels) %>%
-      left_join(pop_clean, by = "region_bld") %>%
-      filter(year %in% yrs) %>%
-      left_join(hh_size_clean, by = c("region_bld", "urt", "year")) %>%
-      mutate(bld_units = round(1e6 * .data$pop / n_inc_cl / .data$hh_size, rnd)) %>%
-      select(-c(pop, hh_size))
-    
-    try(if(nrow(bld_units) != nrow(distinct(bld_units))) stop("Error in aggregated households calculations! duplicated records in hh"))
-  }
-
-  if (sector == "comm") {
+  # ----------------------------------------------------------
+  # Standardise input column names
+  # ----------------------------------------------------------
   
   pop_clean <- pop
-  
-  if ("value" %in% names(pop_clean) && !"pop" %in% names(pop_clean)) {
-    pop_clean <- pop_clean %>% rename(pop = value)
-  }
-  
+  pop_urt_clean <- pop_urt
+  pop_clim_clean <- pop_clim
+  hh_size_clean <- hh_size
   floor_cap_clean <- floor_cap
   
-  if ("value" %in% names(floor_cap_clean) && !"floor_cap" %in% names(floor_cap_clean)) {
-    floor_cap_clean <- floor_cap_clean %>% rename(floor_cap = value)
+  if (
+    "value" %in% names(pop_clean) &&
+    !"pop" %in% names(pop_clean)
+  ) {
+    pop_clean <- pop_clean %>%
+      rename(pop = value)
   }
+  
+  if (
+    "value" %in% names(pop_urt_clean) &&
+    !"pop_urt" %in% names(pop_urt_clean)
+  ) {
+    pop_urt_clean <- pop_urt_clean %>%
+      rename(pop_urt = value)
+  }
+  
+  if (
+    "value" %in% names(pop_clim_clean) &&
+    !"pop_clim" %in% names(pop_clim_clean)
+  ) {
+    pop_clim_clean <- pop_clim_clean %>%
+      rename(pop_clim = value)
+  }
+  
+  if (
+    "value" %in% names(hh_size_clean) &&
+    !"hh_size" %in% names(hh_size_clean)
+  ) {
+    hh_size_clean <- hh_size_clean %>%
+      rename(hh_size = value)
+  }
+  
+  if (
+    "value" %in% names(floor_cap_clean) &&
+    !"floor_cap" %in% names(floor_cap_clean)
+  ) {
+    floor_cap_clean <- floor_cap_clean %>%
+      rename(floor_cap = value)
+  }
+  
+  
+  # ----------------------------------------------------------
+  # Validate population inputs
+  # ----------------------------------------------------------
   
   if (!"pop" %in% names(pop_clean)) {
-    stop("Column `pop` not found in pop_clean. Check names(pop).")
+    stop(
+      "Column `pop` not found in the total-population input."
+    )
   }
   
-  if (!"floor_cap" %in% names(floor_cap_clean)) {
-    stop("Column `floor_cap` not found in floor_cap_clean. Check names(floor_cap).")
+  if (!"pop_urt" %in% names(pop_urt_clean)) {
+    stop(
+      "Column `pop_urt` not found in the urban/rural population-share input."
+    )
   }
   
-  geo_lookup <- geo_data %>%
-    select(any_of(c("region_bld", "region_gea"))) %>%
-    distinct()
-  
-  base_comm <- floor_cap_clean %>%
-    filter(year %in% yrs)
-  
-  if (!"region_gea" %in% names(base_comm)) {
-    base_comm <- base_comm %>%
-      left_join(geo_lookup, by = "region_bld")
+  if (!"pop_clim" %in% names(pop_clim_clean)) {
+    stop(
+      "Column `pop_clim` not found in the climate-zone population-share input."
+    )
   }
   
-  by_pop <- intersect(
-    c("region_bld", "region_gea", "urt", "clim", "year"),
-    intersect(names(base_comm), names(pop_clean))
-  )
   
-  bld_units <- base_comm %>%
-    left_join(pop_clean, by = by_pop) %>%
-    mutate(bld_units = round(1e6 * .data$pop * .data$floor_cap, rnd)) %>%
-    select(-c(pop, floor_cap)) %>%
-    arrange(across(any_of(c("region_bld", "region_gea", "urt", "clim", "year"))))
+  # ----------------------------------------------------------
+  # Combine separate population inputs
+  #
+  # total population
+  #   × urban/rural share
+  #   × climate-zone share
+  # ----------------------------------------------------------
   
-  try(if(nrow(bld_units) != nrow(distinct(bld_units))) {
-    stop("Error in aggregated commercial floor-area calculations! duplicated records in bld_units")
-  })
-}
+  population_detailed <- geo_data %>%
+    select_at(
+      geo_levels
+    ) %>%
+    left_join(
+      pop_clean,
+      by = "region_bld"
+    ) %>%
+    left_join(
+      pop_urt_clean,
+      by = c(
+        "region_bld",
+        "year"
+      )
+    ) %>%
+    mutate(
+      pop = pop * pop_urt
+    ) %>%
+    select(
+      -pop_urt
+    ) %>%
+    left_join(
+      pop_clim_clean,
+      by = c(
+        "region_bld",
+        "urt"
+      )
+    ) %>%
+    mutate(
+      pop = pop * pop_clim
+    ) %>%
+    select(
+      -pop_clim
+    ) %>%
+    filter(
+      year %in% yrs
+    )
+  
+  
+  # ----------------------------------------------------------
+  # Residential building units
+  # ----------------------------------------------------------
+  
+  if (sector == "resid") {
+    
+    if (!"hh_size" %in% names(hh_size_clean)) {
+      stop(
+        "Column `hh_size` not found in the household-size input."
+      )
+    }
+    
+    bld_units <- population_detailed %>%
+      left_join(
+        hh_size_clean,
+        by = c(
+          "region_bld",
+          "urt",
+          "year"
+        )
+      ) %>%
+      mutate(
+        bld_units = round(
+          1e6 * pop / n_inc_cl / hh_size,
+          rnd
+        )
+      ) %>%
+      select(
+        -c(
+          pop,
+          hh_size
+        )
+      )
+    
+    try(
+      if (
+        nrow(bld_units) !=
+        nrow(distinct(bld_units))
+      ) {
+        stop(
+          paste(
+            "Error in aggregated household calculations:",
+            "duplicated records in bld_units."
+          )
+        )
+      }
+    )
+  }
+  
+  
+  # ----------------------------------------------------------
+  # Commercial building units
+  # ----------------------------------------------------------
+  
+  if (sector == "comm") {
+    
+    if (!"floor_cap" %in% names(floor_cap_clean)) {
+      stop(
+        "Column `floor_cap` not found in the commercial floor-cap input."
+      )
+    }
+    
+    geo_lookup <- geo_data %>%
+      select(
+        any_of(
+          c(
+            "region_bld",
+            "region_gea"
+          )
+        )
+      ) %>%
+      distinct()
+    
+    base_comm <- floor_cap_clean %>%
+      filter(
+        year %in% yrs
+      )
+    
+    if (!"region_gea" %in% names(base_comm)) {
+      base_comm <- base_comm %>%
+        left_join(
+          geo_lookup,
+          by = "region_bld"
+        )
+    }
+    
+    by_pop <- intersect(
+      c(
+        "region_bld",
+        "region_gea",
+        "urt",
+        "clim",
+        "year"
+      ),
+      intersect(
+        names(base_comm),
+        names(population_detailed)
+      )
+    )
+    
+    bld_units <- base_comm %>%
+      left_join(
+        population_detailed,
+        by = by_pop
+      ) %>%
+      mutate(
+        bld_units = round(
+          1e6 * pop * floor_cap,
+          rnd
+        )
+      ) %>%
+      select(
+        -c(
+          pop,
+          floor_cap
+        )
+      ) %>%
+      arrange(
+        across(
+          any_of(
+            c(
+              "region_bld",
+              "region_gea",
+              "urt",
+              "clim",
+              "year"
+            )
+          )
+        )
+      )
+    
+    try(
+      if (
+        nrow(bld_units) !=
+        nrow(distinct(bld_units))
+      ) {
+        stop(
+          paste(
+            "Error in aggregated commercial floor-area calculations:",
+            "duplicated records in bld_units."
+          )
+        )
+      }
+    )
+  }
   
   
   if(mod_arch == "new"){

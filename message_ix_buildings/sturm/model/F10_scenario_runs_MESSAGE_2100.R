@@ -153,6 +153,8 @@ run_scenario <- function(run,
                                            d$geo_data, geo_levels, geo_level,
                                            d$bld_cases_eneff, d$bld_cases_fuel,
                                            d$pop,
+                                           d$pop_urt,
+                                           d$pop_clim,
                                            d$hh_size, # used for residential
                                            d$floor_cap, # used for commercial
                                            d$ct_inc_cl,
@@ -183,6 +185,8 @@ run_scenario <- function(run,
                                              d$geo_data, geo_levels, geo_level,
                                              d$bld_cases_eneff, d$bld_cases_fuel,
                                              d$pop,
+                                             d$pop_urt,
+                                             d$pop_clim,
                                              d$hh_size, # used for residential
                                              d$floor_cap, # used for commercial
                                              d$ct_inc_cl,
@@ -431,7 +435,9 @@ run_scenario <- function(run,
                                          d$geo_data, geo_levels, geo_level,
                                          d$bld_cases_eneff, d$bld_cases_fuel,
                                          d$pop,
-                                         hh_size=NULL, #hh_size, # used for residential
+                                         d$pop_urt,
+                                         d$pop_clim,
+                                         hh_size = NULL, # used for residential
                                          d$floor_cap, # used for commercial
                                          d$ct_inc_cl,
                                          d$ct_eneff, d$ct_fuel_comb,

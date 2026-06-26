@@ -439,15 +439,15 @@ R32USA,urb,Zone_2B Hot Dry,0.017759496
 R32USA,urb,Zone_3A Warm Humid,0.14747475
 R32USA,urb,Zone_3B Warm Dry,0.026813117
 R32USA,urb,Zone_3C Warm Marine,0.07954591
-R32USA,urb,Zone_4A Mixed Humid,0.23753443899999999
+R32USA,urb,Zone_4A Mixed Humid,0.23753443900000001
 R32USA,urb,Zone_4C Mixed Marine,0.03282534
 R32USA,urb,Zone_5A Cool Humid,0.229232177
 R32USA,urb,Zone_5C Cool Marine,0.016290545
 R32USA,urb,Zone_6A Cold Humid,0.053079422
 R32USA,urb,Zone_7A Very cold Humid,0.003912815
-C-WEU-HRV,rur,Zone_3A Warm Humid,0.143387272
-C-WEU-HRV,rur,Zone_4A Mixed Humid,0.436405296
-C-WEU-HRV,rur,Zone_5A Cool Humid,0.420207432
-C-WEU-HRV,urb,Zone_3A Warm Humid,0.130260071
-C-WEU-HRV,urb,Zone_4A Mixed Humid,0.346308354
-C-WEU-HRV,urb,Zone_5A Cool Humid,0.523431575
+C-EEU-HRV,rur,Zone_3A Warm Humid,0.143387272
+C-EEU-HRV,rur,Zone_4A Mixed Humid,0.436405296
+C-EEU-HRV,rur,Zone_5A Cool Humid,0.420207432
+C-EEU-HRV,urb,Zone_3A Warm Humid,0.130260071
+C-EEU-HRV,urb,Zone_4A Mixed Humid,0.346308354
+C-EEU-HRV,urb,Zone_5A Cool Humid,0.523431575

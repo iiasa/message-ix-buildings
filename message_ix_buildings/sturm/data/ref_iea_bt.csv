@@ -1,0 +1,170 @@
+﻿Model,Scenario,Region,Variable,Unit,2015,2020,2023
+History_R12,EDGAR_r2024,World,Emissions|CO2|Energy|Demand|Transportation,Mt CO2/yr,7737.758081,7092.906805,8239.050212
+History_R12,EDGAR_r2024,World,Emissions|CO2|Energy|Demand|Residential and Commercial,Mt CO2/yr,3118.711554,3158.290653,3242.29178
+History_R12,EDGAR_r2024,R12_AFR,Emissions|CO2|Energy|Demand|Transportation,Mt CO2/yr,184.8941594,192.1266995,214.4413835
+History_R12,EDGAR_r2024,R12_AFR,Emissions|CO2|Energy|Demand|Residential and Commercial,Mt CO2/yr,48.55537869,44.12825982,47.6928532
+History_R12,EDGAR_r2024,R12_CHN,Emissions|CO2|Energy|Demand|Transportation,Mt CO2/yr,835.7475698,909.7922763,1084.21332
+History_R12,EDGAR_r2024,R12_CHN,Emissions|CO2|Energy|Demand|Residential and Commercial,Mt CO2/yr,625.2371764,558.7047682,600.9777162
+History_R12,EDGAR_r2024,R12_EEU,Emissions|CO2|Energy|Demand|Transportation,Mt CO2/yr,142.7048173,162.4355119,181.5042373
+History_R12,EDGAR_r2024,R12_EEU,Emissions|CO2|Energy|Demand|Residential and Commercial,Mt CO2/yr,101.0410244,99.03902637,89.96491401
+History_R12,EDGAR_r2024,R12_FSU,Emissions|CO2|Energy|Demand|Transportation,Mt CO2/yr,327.389507,332.6077863,366.7362442
+History_R12,EDGAR_r2024,R12_FSU,Emissions|CO2|Energy|Demand|Residential and Commercial,Mt CO2/yr,285.1026893,359.6093329,384.3468519
+History_R12,EDGAR_r2024,R12_LAM,Emissions|CO2|Energy|Demand|Transportation,Mt CO2/yr,598.5833532,490.607305,606.9456917
+History_R12,EDGAR_r2024,R12_LAM,Emissions|CO2|Energy|Demand|Residential and Commercial,Mt CO2/yr,149.1235155,142.7000631,152.0412183
+History_R12,EDGAR_r2024,R12_MEA,Emissions|CO2|Energy|Demand|Transportation,Mt CO2/yr,576.8776957,533.3949389,608.889218
+History_R12,EDGAR_r2024,R12_MEA,Emissions|CO2|Energy|Demand|Residential and Commercial,Mt CO2/yr,225.9286714,267.8061626,288.9737816
+History_R12,EDGAR_r2024,R12_NAM,Emissions|CO2|Energy|Demand|Transportation,Mt CO2/yr,1874.009733,1658.492845,1879.211305
+History_R12,EDGAR_r2024,R12_NAM,Emissions|CO2|Energy|Demand|Residential and Commercial,Mt CO2/yr,649.0332675,637.4465167,684.57653
+History_R12,EDGAR_r2024,R12_PAO,Emissions|CO2|Energy|Demand|Transportation,Mt CO2/yr,317.6612567,285.5536163,291.311808
+History_R12,EDGAR_r2024,R12_PAO,Emissions|CO2|Energy|Demand|Residential and Commercial,Mt CO2/yr,152.8586411,142.0092633,130.8977714
+History_R12,EDGAR_r2024,R12_PAS,Emissions|CO2|Energy|Demand|Transportation,Mt CO2/yr,444.0125941,438.5688204,494.0697475
+History_R12,EDGAR_r2024,R12_PAS,Emissions|CO2|Energy|Demand|Residential and Commercial,Mt CO2/yr,128.0024115,130.0601869,132.4431005
+History_R12,EDGAR_r2024,R12_RCPA,Emissions|CO2|Energy|Demand|Transportation,Mt CO2/yr,43.0156903,53.77105274,57.20326608
+History_R12,EDGAR_r2024,R12_RCPA,Emissions|CO2|Energy|Demand|Residential and Commercial,Mt CO2/yr,16.49051447,25.41606423,27.93555415
+History_R12,EDGAR_r2024,R12_SAS,Emissions|CO2|Energy|Demand|Transportation,Mt CO2/yr,325.5986121,348.2851252,413.2254577
+History_R12,EDGAR_r2024,R12_SAS,Emissions|CO2|Energy|Demand|Residential and Commercial,Mt CO2/yr,171.4954303,192.0261756,211.8874252
+History_R12,EDGAR_r2024,R12_WEU,Emissions|CO2|Energy|Demand|Transportation,Mt CO2/yr,868.3946076,755.0605031,843.3458047
+History_R12,EDGAR_r2024,R12_WEU,Emissions|CO2|Energy|Demand|Residential and Commercial,Mt CO2/yr,565.842833,559.3448331,490.5540632
+History_R12,IEA Energy Statistics (r2024),World,Final Energy|Residential and Commercial|Gases,EJ/yr,26.34838,29.53158,30.36213
+History_R12,IEA Energy Statistics (r2024),World,Final Energy|Transportation|Electricity,EJ/yr,1.00078,1.20324,1.49772
+History_R12,IEA Energy Statistics (r2024),World,Final Energy|Residential and Commercial|Liquids,EJ/yr,17.84612,17.84055,18.15002
+History_R12,IEA Energy Statistics (r2024),World,Final Energy|Transportation,EJ/yr,126.44616,114.4543,129.62532
+History_R12,IEA Energy Statistics (r2024),World,Final Energy|Residential and Commercial|Electricity,EJ/yr,41.1186,45.5891,49.39067
+History_R12,IEA Energy Statistics (r2024),World,Final Energy|Residential and Commercial|Solids|Biomass,EJ/yr,1.46587,1.61462,1.6296
+History_R12,IEA Energy Statistics (r2024),World,Final Energy|Residential and Commercial|Heat,EJ/yr,6.15159,6.67461,7.04117
+History_R12,IEA Energy Statistics (r2024),World,Final Energy|Transportation|Gases,EJ/yr,1.7703,2.22004,2.32838
+History_R12,IEA Energy Statistics (r2024),World,Final Energy|Transportation|Liquids,EJ/yr,123.67251,110.98909,125.76333
+History_R12,IEA Energy Statistics (r2024),World,Final Energy|Residential and Commercial,EJ/yr,101.1222,108.46352,113.40788
+History_R12,IEA Energy Statistics (r2024),World,Final Energy|Residential and Commercial|Solids|Coal,EJ/yr,6.48953,4.7512,3.99797
+History_R12,IEA Energy Statistics (r2024),R12_AFR,Final Energy|Residential and Commercial|Gases,EJ/yr,0.00462,0.00329,0.00427
+History_R12,IEA Energy Statistics (r2024),R12_AFR,Final Energy|Transportation|Electricity,EJ/yr,0.01234,0.00865,0.00804
+History_R12,IEA Energy Statistics (r2024),R12_AFR,Final Energy|Residential and Commercial|Liquids,EJ/yr,0.48183,0.47869,0.54252
+History_R12,IEA Energy Statistics (r2024),R12_AFR,Final Energy|Transportation,EJ/yr,2.82317,2.84345,3.38525
+History_R12,IEA Energy Statistics (r2024),R12_AFR,Final Energy|Residential and Commercial|Electricity,EJ/yr,0.60207,0.72499,0.76305
+History_R12,IEA Energy Statistics (r2024),R12_AFR,Final Energy|Residential and Commercial|Solids|Biomass,EJ/yr,5.58929,5.94752,6.03249
+History_R12,IEA Energy Statistics (r2024),R12_AFR,Final Energy|Residential and Commercial|Heat,EJ/yr,,,
+History_R12,IEA Energy Statistics (r2024),R12_AFR,Final Energy|Transportation|Gases,EJ/yr,0.00005,0.00003,0.00016
+History_R12,IEA Energy Statistics (r2024),R12_AFR,Final Energy|Transportation|Liquids,EJ/yr,2.81034,2.83451,3.37676
+History_R12,IEA Energy Statistics (r2024),R12_AFR,Final Energy|Residential and Commercial,EJ/yr,6.92923,7.32327,7.50406
+History_R12,IEA Energy Statistics (r2024),R12_AFR,Final Energy|Residential and Commercial|Solids|Coal,EJ/yr,0.24673,0.1636,0.15614
+History_R12,IEA Energy Statistics (r2024),R12_CHN,Final Energy|Residential and Commercial|Gases,EJ/yr,1.98087,2.79288,2.95328
+History_R12,IEA Energy Statistics (r2024),R12_CHN,Final Energy|Transportation|Electricity,EJ/yr,0.25982,0.47951,0.63645
+History_R12,IEA Energy Statistics (r2024),R12_CHN,Final Energy|Residential and Commercial|Liquids,EJ/yr,2.93099,3.00633,3.03916
+History_R12,IEA Energy Statistics (r2024),R12_CHN,Final Energy|Transportation,EJ/yr,12.70502,13.85549,13.65394
+History_R12,IEA Energy Statistics (r2024),R12_CHN,Final Energy|Residential and Commercial|Electricity,EJ/yr,5.85968,8.64376,10.54648
+History_R12,IEA Energy Statistics (r2024),R12_CHN,Final Energy|Residential and Commercial|Solids|Biomass,EJ/yr,1.41096,1.28438,1.27475
+History_R12,IEA Energy Statistics (r2024),R12_CHN,Final Energy|Residential and Commercial|Heat,EJ/yr,1.1541,1.77232,2.06745
+History_R12,IEA Energy Statistics (r2024),R12_CHN,Final Energy|Transportation|Gases,EJ/yr,0.70587,1.07731,1.03911
+History_R12,IEA Energy Statistics (r2024),R12_CHN,Final Energy|Transportation|Liquids,EJ/yr,11.73922,12.29867,11.97838
+History_R12,IEA Energy Statistics (r2024),R12_CHN,Final Energy|Residential and Commercial,EJ/yr,19.09245,22.28464,24.36525
+History_R12,IEA Energy Statistics (r2024),R12_CHN,Final Energy|Residential and Commercial|Solids|Coal,EJ/yr,4.52066,2.88672,2.28412
+History_R12,IEA Energy Statistics (r2024),R12_EEU,Final Energy|Residential and Commercial|Gases,EJ/yr,0.78117,0.83137,0.84966
+History_R12,IEA Energy Statistics (r2024),R12_EEU,Final Energy|Transportation|Electricity,EJ/yr,0.03085,0.03174,0.0357
+History_R12,IEA Energy Statistics (r2024),R12_EEU,Final Energy|Residential and Commercial|Liquids,EJ/yr,0.27749,0.30628,0.3027
+History_R12,IEA Energy Statistics (r2024),R12_EEU,Final Energy|Transportation,EJ/yr,2.1502,2.43311,2.77369
+History_R12,IEA Energy Statistics (r2024),R12_EEU,Final Energy|Residential and Commercial|Electricity,EJ/yr,0.90547,0.9458,0.98872
+History_R12,IEA Energy Statistics (r2024),R12_EEU,Final Energy|Residential and Commercial|Solids|Biomass,EJ/yr,0.3671,0.40274,0.42668
+History_R12,IEA Energy Statistics (r2024),R12_EEU,Final Energy|Residential and Commercial|Heat,EJ/yr,0.47442,0.46666,0.4619
+History_R12,IEA Energy Statistics (r2024),R12_EEU,Final Energy|Transportation|Gases,EJ/yr,0.00675,0.01095,0.01232
+History_R12,IEA Energy Statistics (r2024),R12_EEU,Final Energy|Transportation|Liquids,EJ/yr,2.11256,2.39041,2.72566
+History_R12,IEA Energy Statistics (r2024),R12_EEU,Final Energy|Residential and Commercial,EJ/yr,3.22309,3.30246,3.30765
+History_R12,IEA Energy Statistics (r2024),R12_EEU,Final Energy|Residential and Commercial|Solids|Coal,EJ/yr,0.40523,0.33517,0.26158
+History_R12,IEA Energy Statistics (r2024),R12_FSU,Final Energy|Residential and Commercial|Gases,EJ/yr,3.46173,4.49125,4.51166
+History_R12,IEA Energy Statistics (r2024),R12_FSU,Final Energy|Transportation|Electricity,EJ/yr,0.26414,0.24334,0.26005
+History_R12,IEA Energy Statistics (r2024),R12_FSU,Final Energy|Residential and Commercial|Liquids,EJ/yr,1.05994,1.27639,1.61647
+History_R12,IEA Energy Statistics (r2024),R12_FSU,Final Energy|Transportation,EJ/yr,4.11313,4.31293,4.54951
+History_R12,IEA Energy Statistics (r2024),R12_FSU,Final Energy|Residential and Commercial|Electricity,EJ/yr,1.79671,1.91525,2.07271
+History_R12,IEA Energy Statistics (r2024),R12_FSU,Final Energy|Residential and Commercial|Solids|Biomass,EJ/yr,0.38555,0.38311,0.37921
+History_R12,IEA Energy Statistics (r2024),R12_FSU,Final Energy|Residential and Commercial|Heat,EJ/yr,3.45543,3.33595,3.41132
+History_R12,IEA Energy Statistics (r2024),R12_FSU,Final Energy|Transportation|Gases,EJ/yr,0.04749,0.1857,0.2122
+History_R12,IEA Energy Statistics (r2024),R12_FSU,Final Energy|Transportation|Liquids,EJ/yr,3.80067,3.88307,4.07632
+History_R12,IEA Energy Statistics (r2024),R12_FSU,Final Energy|Residential and Commercial,EJ/yr,10.52226,11.80013,12.37907
+History_R12,IEA Energy Statistics (r2024),R12_FSU,Final Energy|Residential and Commercial|Solids|Coal,EJ/yr,0.36216,0.39686,0.3862
+History_R12,IEA Energy Statistics (r2024),R12_LAM,Final Energy|Residential and Commercial|Gases,EJ/yr,0.69971,0.60107,0.67644
+History_R12,IEA Energy Statistics (r2024),R12_LAM,Final Energy|Transportation|Electricity,EJ/yr,0.01947,0.01879,0.02333
+History_R12,IEA Energy Statistics (r2024),R12_LAM,Final Energy|Residential and Commercial|Liquids,EJ/yr,1.8125,1.7616,1.86635
+History_R12,IEA Energy Statistics (r2024),R12_LAM,Final Energy|Transportation,EJ/yr,9.8157,8.01897,9.90509
+History_R12,IEA Energy Statistics (r2024),R12_LAM,Final Energy|Residential and Commercial|Electricity,EJ/yr,2.63994,2.66435,2.84462
+History_R12,IEA Energy Statistics (r2024),R12_LAM,Final Energy|Residential and Commercial|Solids|Biomass,EJ/yr,2.3029,2.38205,2.41766
+History_R12,IEA Energy Statistics (r2024),R12_LAM,Final Energy|Residential and Commercial|Heat,EJ/yr,,,
+History_R12,IEA Energy Statistics (r2024),R12_LAM,Final Energy|Transportation|Gases,EJ/yr,0.24954,0.1904,0.24213
+History_R12,IEA Energy Statistics (r2024),R12_LAM,Final Energy|Transportation|Liquids,EJ/yr,9.54669,7.80978,9.63963
+History_R12,IEA Energy Statistics (r2024),R12_LAM,Final Energy|Residential and Commercial,EJ/yr,7.49454,7.46672,7.87017
+History_R12,IEA Energy Statistics (r2024),R12_LAM,Final Energy|Residential and Commercial|Solids|Coal,EJ/yr,0.00343,0.0025,0.00308
+History_R12,IEA Energy Statistics (r2024),R12_MEA,Final Energy|Residential and Commercial|Gases,EJ/yr,2.55465,3.40993,3.56213
+History_R12,IEA Energy Statistics (r2024),R12_MEA,Final Energy|Transportation|Electricity,EJ/yr,0.00896,0.01037,0.01162
+History_R12,IEA Energy Statistics (r2024),R12_MEA,Final Energy|Residential and Commercial|Liquids,EJ/yr,1.34181,1.31137,1.29446
+History_R12,IEA Energy Statistics (r2024),R12_MEA,Final Energy|Transportation,EJ/yr,8.91209,7.96526,9.30406
+History_R12,IEA Energy Statistics (r2024),R12_MEA,Final Energy|Residential and Commercial|Electricity,EJ/yr,3.39683,3.62361,3.96264
+History_R12,IEA Energy Statistics (r2024),R12_MEA,Final Energy|Residential and Commercial|Solids|Biomass,EJ/yr,0.58564,0.60291,0.60913
+History_R12,IEA Energy Statistics (r2024),R12_MEA,Final Energy|Residential and Commercial|Heat,EJ/yr,,,
+History_R12,IEA Energy Statistics (r2024),R12_MEA,Final Energy|Transportation|Gases,EJ/yr,0.27647,0.30733,0.34194
+History_R12,IEA Energy Statistics (r2024),R12_MEA,Final Energy|Transportation|Liquids,EJ/yr,8.62666,7.64756,8.9505
+History_R12,IEA Energy Statistics (r2024),R12_MEA,Final Energy|Residential and Commercial,EJ/yr,7.90852,8.98049,9.46651
+History_R12,IEA Energy Statistics (r2024),R12_MEA,Final Energy|Residential and Commercial|Solids|Coal,EJ/yr,0.00043,0.00036,0.00043
+History_R12,IEA Energy Statistics (r2024),R12_NAM,Final Energy|Residential and Commercial|Gases,EJ/yr,8.79333,8.98129,9.60135
+History_R12,IEA Energy Statistics (r2024),R12_NAM,Final Energy|Transportation|Electricity,EJ/yr,0.03633,0.04143,0.06473
+History_R12,IEA Energy Statistics (r2024),R12_NAM,Final Energy|Residential and Commercial|Liquids,EJ/yr,2.17251,1.89462,1.99562
+History_R12,IEA Energy Statistics (r2024),R12_NAM,Final Energy|Transportation,EJ/yr,28.47764,24.69846,28.10774
+History_R12,IEA Energy Statistics (r2024),R12_NAM,Final Energy|Residential and Commercial|Electricity,EJ/yr,11.8198,12.2073,12.53881
+History_R12,IEA Energy Statistics (r2024),R12_NAM,Final Energy|Residential and Commercial|Solids|Biomass,EJ/yr,0.51193,0.62989,0.74848
+History_R12,IEA Energy Statistics (r2024),R12_NAM,Final Energy|Residential and Commercial|Heat,EJ/yr,0.05106,0.05363,0.04931
+History_R12,IEA Energy Statistics (r2024),R12_NAM,Final Energy|Transportation|Gases,EJ/yr,0.04231,0.05249,0.06823
+History_R12,IEA Energy Statistics (r2024),R12_NAM,Final Energy|Transportation|Liquids,EJ/yr,28.399,24.60454,27.97478
+History_R12,IEA Energy Statistics (r2024),R12_NAM,Final Energy|Residential and Commercial,EJ/yr,23.49619,23.91834,25.10694
+History_R12,IEA Energy Statistics (r2024),R12_NAM,Final Energy|Residential and Commercial|Solids|Coal,EJ/yr,0.03867,0.02092,0.02579
+History_R12,IEA Energy Statistics (r2024),R12_PAO,Final Energy|Residential and Commercial|Gases,EJ/yr,0.96666,0.89445,0.91265
+History_R12,IEA Energy Statistics (r2024),R12_PAO,Final Energy|Transportation|Electricity,EJ/yr,0.08378,0.08192,0.08347
+History_R12,IEA Energy Statistics (r2024),R12_PAO,Final Energy|Residential and Commercial|Liquids,EJ/yr,1.34634,1.26131,1.12972
+History_R12,IEA Energy Statistics (r2024),R12_PAO,Final Energy|Transportation,EJ/yr,5.0333,4.38572,4.45245
+History_R12,IEA Energy Statistics (r2024),R12_PAO,Final Energy|Residential and Commercial|Electricity,EJ/yr,2.67205,2.6355,2.64044
+History_R12,IEA Energy Statistics (r2024),R12_PAO,Final Energy|Residential and Commercial|Solids|Biomass,EJ/yr,0.10917,0.1523,0.15693
+History_R12,IEA Energy Statistics (r2024),R12_PAO,Final Energy|Residential and Commercial|Heat,EJ/yr,0.02131,0.02126,0.02746
+History_R12,IEA Energy Statistics (r2024),R12_PAO,Final Energy|Transportation|Gases,EJ/yr,0.00711,0.00459,0.00242
+History_R12,IEA Energy Statistics (r2024),R12_PAO,Final Energy|Transportation|Liquids,EJ/yr,4.94234,4.29919,4.36654
+History_R12,IEA Energy Statistics (r2024),R12_PAO,Final Energy|Residential and Commercial,EJ/yr,5.19791,5.04605,4.95197
+History_R12,IEA Energy Statistics (r2024),R12_PAO,Final Energy|Residential and Commercial|Solids|Coal,EJ/yr,0.04783,0.04698,0.04874
+History_R12,IEA Energy Statistics (r2024),R12_PAS,Final Energy|Residential and Commercial|Gases,EJ/yr,0.53731,0.60252,0.63831
+History_R12,IEA Energy Statistics (r2024),R12_PAS,Final Energy|Transportation|Electricity,EJ/yr,0.02432,0.03104,0.03317
+History_R12,IEA Energy Statistics (r2024),R12_PAS,Final Energy|Residential and Commercial|Liquids,EJ/yr,1.41895,1.43463,1.31854
+History_R12,IEA Energy Statistics (r2024),R12_PAS,Final Energy|Transportation,EJ/yr,7.38807,6.97263,7.99093
+History_R12,IEA Energy Statistics (r2024),R12_PAS,Final Energy|Residential and Commercial|Electricity,EJ/yr,2.57564,2.94403,3.11071
+History_R12,IEA Energy Statistics (r2024),R12_PAS,Final Energy|Residential and Commercial|Solids|Biomass,EJ/yr,1.1167,0.99269,0.97917
+History_R12,IEA Energy Statistics (r2024),R12_PAS,Final Energy|Residential and Commercial|Heat,EJ/yr,0.07508,0.10849,0.09933
+History_R12,IEA Energy Statistics (r2024),R12_PAS,Final Energy|Transportation|Gases,EJ/yr,0.17152,0.09955,0.0886
+History_R12,IEA Energy Statistics (r2024),R12_PAS,Final Energy|Transportation|Liquids,EJ/yr,7.19223,6.84204,7.86916
+History_R12,IEA Energy Statistics (r2024),R12_PAS,Final Energy|Residential and Commercial,EJ/yr,5.78312,6.12872,6.19505
+History_R12,IEA Energy Statistics (r2024),R12_PAS,Final Energy|Residential and Commercial|Solids|Coal,EJ/yr,0.0478,0.02992,0.02586
+History_R12,IEA Energy Statistics (r2024),R12_RCPA,Final Energy|Residential and Commercial|Gases,EJ/yr,0,0,0
+History_R12,IEA Energy Statistics (r2024),R12_RCPA,Final Energy|Transportation|Electricity,EJ/yr,,0.00195,0.00422
+History_R12,IEA Energy Statistics (r2024),R12_RCPA,Final Energy|Residential and Commercial|Liquids,EJ/yr,0.16209,0.21681,0.2328
+History_R12,IEA Energy Statistics (r2024),R12_RCPA,Final Energy|Transportation,EJ/yr,0.6359,0.75563,0.87488
+History_R12,IEA Energy Statistics (r2024),R12_RCPA,Final Energy|Residential and Commercial|Electricity,EJ/yr,0.29299,0.42549,0.48243
+History_R12,IEA Energy Statistics (r2024),R12_RCPA,Final Energy|Residential and Commercial|Solids|Biomass,EJ/yr,0.38615,0.38643,0.39219
+History_R12,IEA Energy Statistics (r2024),R12_RCPA,Final Energy|Residential and Commercial|Heat,EJ/yr,0.03077,0.03774,0.04239
+History_R12,IEA Energy Statistics (r2024),R12_RCPA,Final Energy|Transportation|Gases,EJ/yr,0.00046,0.00092,0.00059
+History_R12,IEA Energy Statistics (r2024),R12_RCPA,Final Energy|Transportation|Liquids,EJ/yr,0.63475,0.71231,0.83587
+History_R12,IEA Energy Statistics (r2024),R12_RCPA,Final Energy|Residential and Commercial,EJ/yr,0.97843,1.23255,1.29041
+History_R12,IEA Energy Statistics (r2024),R12_RCPA,Final Energy|Residential and Commercial|Solids|Coal,EJ/yr,0.10643,0.16607,0.14059
+History_R12,IEA Energy Statistics (r2024),R12_SAS,Final Energy|Residential and Commercial|Gases,EJ/yr,0.54358,0.71598,0.74451
+History_R12,IEA Energy Statistics (r2024),R12_SAS,Final Energy|Transportation|Electricity,EJ/yr,0.05977,0.05282,0.09231
+History_R12,IEA Energy Statistics (r2024),R12_SAS,Final Energy|Residential and Commercial|Liquids,EJ/yr,1.98801,2.16538,2.34695
+History_R12,IEA Energy Statistics (r2024),R12_SAS,Final Energy|Transportation,EJ/yr,4.85953,5.15159,6.22067
+History_R12,IEA Energy Statistics (r2024),R12_SAS,Final Energy|Residential and Commercial|Electricity,EJ/yr,2.48052,2.89174,3.42632
+History_R12,IEA Energy Statistics (r2024),R12_SAS,Final Energy|Residential and Commercial|Solids|Biomass,EJ/yr,3.28646,3.24279,3.23411
+History_R12,IEA Energy Statistics (r2024),R12_SAS,Final Energy|Residential and Commercial|Heat,EJ/yr,0,0,0
+History_R12,IEA Energy Statistics (r2024),R12_SAS,Final Energy|Transportation|Gases,EJ/yr,0.18533,0.18584,0.20203
+History_R12,IEA Energy Statistics (r2024),R12_SAS,Final Energy|Transportation|Liquids,EJ/yr,4.61443,4.91293,5.92633
+History_R12,IEA Energy Statistics (r2024),R12_SAS,Final Energy|Residential and Commercial,EJ/yr,8.69884,9.49439,10.28161
+History_R12,IEA Energy Statistics (r2024),R12_SAS,Final Energy|Residential and Commercial|Solids|Coal,EJ/yr,0.37022,0.42495,0.46179
+History_R12,IEA Energy Statistics (r2024),R12_WEU,Final Energy|Residential and Commercial|Gases,EJ/yr,6.02477,6.20754,5.90785
+History_R12,IEA Energy Statistics (r2024),R12_WEU,Final Energy|Transportation|Electricity,EJ/yr,0.201,0.2017,0.24462
+History_R12,IEA Energy Statistics (r2024),R12_WEU,Final Energy|Residential and Commercial|Liquids,EJ/yr,2.86815,2.74351,2.48215
+History_R12,IEA Energy Statistics (r2024),R12_WEU,Final Energy|Transportation,EJ/yr,14.75765,12.28003,14.56832
+History_R12,IEA Energy Statistics (r2024),R12_WEU,Final Energy|Residential and Commercial|Electricity,EJ/yr,6.09635,5.99157,6.04041
+History_R12,IEA Energy Statistics (r2024),R12_WEU,Final Energy|Residential and Commercial|Solids|Biomass,EJ/yr,0.9668,0.95109,1.04443
+History_R12,IEA Energy Statistics (r2024),R12_WEU,Final Energy|Residential and Commercial|Heat,EJ/yr,0.89022,0.87934,0.88282
+History_R12,IEA Energy Statistics (r2024),R12_WEU,Final Energy|Transportation|Gases,EJ/yr,0.07406,0.0814,0.09071
+History_R12,IEA Energy Statistics (r2024),R12_WEU,Final Energy|Transportation|Liquids,EJ/yr,14.48219,11.99656,14.23257
+History_R12,IEA Energy Statistics (r2024),R12_WEU,Final Energy|Residential and Commercial,EJ/yr,17.38784,17.27351,16.80289
+History_R12,IEA Energy Statistics (r2024),R12_WEU,Final Energy|Residential and Commercial|Solids|Coal,EJ/yr,0.33994,0.27714,0.20365

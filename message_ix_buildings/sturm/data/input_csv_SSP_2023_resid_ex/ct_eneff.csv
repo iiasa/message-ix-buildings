@@ -1,0 +1,13 @@
+eneff,mat,bld_age
+s1,perm,p1
+s2,perm,p2
+s3,perm,p3
+s51_std,perm,p5
+s52_low,perm,p5
+sr11_std,perm,p5
+sr12_low,perm,p5
+sr21_std,perm,p5
+sr22_low,perm,p5
+sr31_std,perm,p5
+sr32_low,perm,p5
+ns,sub,ns

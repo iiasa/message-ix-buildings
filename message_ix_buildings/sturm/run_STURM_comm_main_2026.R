@@ -51,7 +51,7 @@ scenarios <- c(
 
 # Geographic scope:
 #   "global", "eu27", or "custom"
-region_run_mode <- "eu27"
+region_run_mode <- "global"
 
 
 # Used only when region_run_mode = "custom"

@@ -767,12 +767,7 @@ if("material" %in% report_var){
           pivot_wider(
             names_from = eol_treat,
             values_from = shr_mat_eol
-          ),
-        by = c(
-          "region_gea",
-          "material",
-          "year"
-        )
+          )
       ) %>%
       
       # Reuse and recycling, only if present
@@ -822,12 +817,7 @@ if("material" %in% report_var){
           pivot_wider(
             names_from = eol_treat,
             values_from = shr_mat_eol
-          ),
-        by = c(
-          "region_gea",
-          "material",
-          "year"
-        )
+          )
       ) %>%
       
       # Allocate geographically aggregated reuse and recycling
@@ -987,12 +977,7 @@ if("material" %in% report_var){
         pivot_wider(
           names_from = eol_treat,
           values_from = shr_mat_eol
-        ),
-      by = c(
-        "region_gea",
-        "material",
-        "year"
-      )
+        )
     ) %>%
     
     # Reuse and recycling, only if present
@@ -1042,12 +1027,7 @@ if("material" %in% report_var){
         pivot_wider(
           names_from = eol_treat,
           values_from = shr_mat_eol
-        ),
-      by = c(
-        "region_gea",
-        "material",
-        "year"
-      )
+        )
     ) %>%
     
     # Allocate geographically aggregated reuse and recycling

@@ -93,7 +93,7 @@ mod_vacant <- "none"
 region_selection <- NULL
 region_label <- "global"
 
-input_list_file <- "input_list_comm_2026_05_18_CE.csv"
+input_list_file <- "input_list_comm_2026_SSP_CE.csv"
 
 
 # ------------------------------------------------------------

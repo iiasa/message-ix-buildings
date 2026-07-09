@@ -40,6 +40,12 @@ PRICE_SMOOTH_WINDOW <- 5L
 
 GLANCE_WRITE_PLOTS <- TRUE
 
+# Years (aligned with run_STURM_bmt_*); glance_app.csv rows outside this set are dropped.
+years_to_run <- c(
+  seq(2020, 2060, 5),
+  seq(2070, 2100, 10)
+)
+
 # -----------------------------------------------------------------------------
 
 dir_message_linking <- file.path(getwd(), "message_linking")
@@ -78,12 +84,14 @@ normalize_glance_commodity <- function(commodity) {
 }
 
 #' Energy rows (GWa) for one scenario key from glance_app.csv.
-load_glance_app_demand <- function(glance_app, scenario) {
+load_glance_app_demand <- function(glance_app, scenario, years = years_to_run) {
   if (!"scenario" %in% names(glance_app)) {
     stop("glance_app.csv must have a 'scenario' column")
   }
   out <- glance_app[
-    glance_app$scenario == scenario & glance_app$unit == "GWa",
+    glance_app$scenario == scenario &
+      glance_app$unit == "GWa" &
+      glance_app$year %in% years,
     ,
     drop = FALSE
   ]

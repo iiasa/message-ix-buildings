@@ -23,9 +23,26 @@ if ("energy" %in% report_var){
   if (paste(geo_level_report) %in% names(report$en_stock)) {
     en_stock_aggr <- report$en_stock} else {
     en_stock_aggr <- report$en_stock %>% left_join(geo_data %>% select_at(paste(c(geo_level, geo_level_report))))}
-  
+
+  # Gross floor-space stock (bn m2) — same floor_Mm2 basis as NAVIGATE / IRP stock reports
+  floor_stock_aggr <- en_stock_aggr %>%
+    group_by_at(paste(c(geo_level_report, "year"))) %>%
+    summarise(value = sum(floor_Mm2, na.rm = TRUE) / 1000, .groups = "drop")
+
+  floor_stock_aggr[,"reg_rep"] <- floor_stock_aggr[,paste(geo_level_report)]
+
+  floor_stock_aggr <- floor_stock_aggr %>%
+    mutate(node = paste0(geo_level_report, "_", reg_rep)) %>%
+    mutate(commodity = paste0(sector, "_floor_stock")) %>%
+    mutate(level = "demand") %>%
+    mutate(time = "year") %>%
+    mutate(unit = "bn m2") %>%
+    select(node, commodity, level, year, time, value, unit)
+
+  output <- rbind(output, floor_stock_aggr)
+
   # others_TJ -- use instead: other_uses_TJ
-  
+
   # Aggregate results -  Energy - for MESSAGE
   en_stock_aggr <- en_stock_aggr %>%
     select(-c(stock_M, floor_Mm2, cool_ac_TJ, cool_fans_TJ)) %>%

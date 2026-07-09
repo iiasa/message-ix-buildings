@@ -366,8 +366,17 @@ for (
       paste0("resid_sturm_", s, ".csv")
     )
     
+    linking_output <- sturm_result
+    if (
+      is.data.frame(linking_output) &&
+      "commodity" %in% names(linking_output)
+    ) {
+      linking_output <- linking_output %>%
+        filter(!grepl("_floor_stock$", commodity))
+    }
+
     write.csv(
-      sturm_result,
+      linking_output,
       linking_file,
       row.names = FALSE
     )

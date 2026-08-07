@@ -37,7 +37,12 @@ fun_stock_dyn <- function(sector,
                           shr_mat_eol,
                           #mat_stock,
                           report_var,
-                          report
+                          report,
+                          mod_ren = "NULL",
+                          rate_switch_fuel_heat_norenov = NULL,
+                          rate_switch_fuel_heat_renov = NULL,
+                          sw_prob_fuel_ren_i = NULL,
+                          sw_prob_fuel_noren_i = NULL
                           ){
 
   # rounding (number of decimals)
@@ -360,6 +365,134 @@ if ("sub" %in% unique(bld_cases_eneff$mat)){
   #   ungroup() %>%
   #   select(-c(mod_decision,year))
     
+    if (mod_ren == "zhu") {
+
+      # Sequential mode: renovation changes efficiency first and retains the
+      # existing heating fuel until the fuel-switch step below.
+      fuel_group_cols <- unique(c(geo_level, geo_level_aggr, "urt", "inc_cl"))
+
+      ren_det_age_i <- dem_det_age_i %>%
+        add_column(year = yrs[i], .before = "yr_con") %>%
+        mutate(n_units_fuel_exst = n_units_fuel_p - n_dem - n_empty) %>%
+        left_join(rate_ren_i) %>%
+        mutate(rate_ren = ifelse(is.na(rate_ren), 0, rate_ren)) %>%
+        left_join(ms_ren_i %>% rename(eneff = eneff_i)) %>%
+        mutate(
+          eneff_f = ifelse(is.na(ms_ren), eneff, eneff_f),
+          ms_ren = ifelse(is.na(ms_ren), 0, ms_ren),
+          n_units_fuel = round(
+            n_units_fuel_exst * rate_ren * stp * ms_ren, rnd
+          )
+        ) %>%
+        select(-n_units_fuel_p, -n_dem, -n_empty, -n_units_fuel_exst,
+               -rate_ren, -mod_decision, -ms_ren)
+
+      exst_det_age_i <- dem_det_age_i %>%
+        left_join(
+          ren_det_age_i %>%
+            group_by_at(setdiff(names(ren_det_age_i), c("eneff_f", "n_units_fuel"))) %>%
+            summarise(n_ren = sum(n_units_fuel)) %>%
+            ungroup()
+        ) %>%
+        mutate(n_units_fuel_exst = n_units_fuel_p - n_dem - n_empty - n_ren) %>%
+        select(-n_units_fuel_p, -n_dem, -n_empty, -n_ren)
+
+      ren_det_age_i <- ren_det_age_i %>%
+        filter(n_units_fuel != 0) %>%
+        select(-eneff) %>%
+        rename(eneff = eneff_f)
+
+      # Fuel switching for buildings renovated in the current period.
+      ren_sw_det_age_i <- ren_det_age_i %>%
+        rename(n_units_fuel_ren = n_units_fuel) %>%
+        left_join(rate_switch_fuel_heat_renov) %>%
+        left_join(
+          sw_prob_fuel_ren_i %>%
+            select(all_of(c(fuel_group_cols, "year")),
+                   fuel_heat = fuel_heat_i, fuel_heat_f, T),
+          by = c(fuel_group_cols, "year", "fuel_heat")
+        ) %>%
+        mutate(
+          rate_switch_fuel_heat_renov = ifelse(
+            is.na(rate_switch_fuel_heat_renov), 0,
+            pmin(pmax(rate_switch_fuel_heat_renov, 0), 1)
+          ),
+          switch_share_renov = pmin(rate_switch_fuel_heat_renov * stp, 1),
+          fuel_heat_f = ifelse(is.na(fuel_heat_f), fuel_heat, fuel_heat_f),
+          T = ifelse(is.na(T), 1, T),
+          n_units_fuel = round(n_units_fuel_ren * switch_share_renov * T, rnd)
+        ) %>%
+        filter(n_units_fuel > 0) %>%
+        select(-n_units_fuel_ren, -bld_age_min,
+               -rate_switch_fuel_heat_renov, -switch_share_renov, -T)
+
+      ren_det_age_i <- ren_det_age_i %>%
+        left_join(
+          ren_sw_det_age_i %>%
+            group_by_at(setdiff(names(ren_sw_det_age_i), c("fuel_heat_f", "n_units_fuel"))) %>%
+            summarise(n_sw = sum(n_units_fuel)) %>%
+            ungroup()
+        ) %>%
+        mutate(n_sw = ifelse(is.na(n_sw), 0, n_sw),
+               n_units_fuel = n_units_fuel - n_sw) %>%
+        select(-n_sw)
+
+      ren_sw_det_age_i <- ren_sw_det_age_i %>%
+        select(-fuel_heat) %>%
+        rename(fuel_heat = fuel_heat_f)
+
+      ren_det_age_i <- bind_rows(ren_det_age_i, ren_sw_det_age_i) %>%
+        filter(n_units_fuel > 0) %>%
+        group_by_at(setdiff(names(.), "n_units_fuel")) %>%
+        summarise(n_units_fuel = sum(n_units_fuel)) %>%
+        ungroup()
+
+      # Fuel switching for buildings that were not renovated this period.
+      exst_sw_det_age_i <- exst_det_age_i %>%
+        left_join(rate_switch_fuel_heat_norenov) %>%
+        mutate(
+          rate_switch_fuel_heat_norenov = ifelse(
+            is.na(rate_switch_fuel_heat_norenov), 0,
+            rate_switch_fuel_heat_norenov
+          ),
+          switch_share = ifelse(
+            !is.na(bld_age_min) & year - yr_con > bld_age_min,
+            pmin(pmax(rate_switch_fuel_heat_norenov * stp, 0), 1),
+            0
+          )
+        ) %>%
+        left_join(
+          sw_prob_fuel_noren_i %>%
+            select(all_of(c(fuel_group_cols, "year")),
+                   fuel_heat = fuel_heat_i, fuel_heat_f, T),
+          by = c(fuel_group_cols, "year", "fuel_heat")
+        ) %>%
+        mutate(
+          fuel_heat_f = ifelse(is.na(fuel_heat_f), fuel_heat, fuel_heat_f),
+          T = ifelse(is.na(T), 1, T),
+          n_units_fuel = round(n_units_fuel_exst * switch_share * T, rnd)
+        ) %>%
+        filter(n_units_fuel > 0) %>%
+        select(-n_units_fuel_exst, -bld_age_min,
+               -rate_switch_fuel_heat_norenov, -switch_share, -T)
+
+      exst_det_age_i <- exst_det_age_i %>%
+        left_join(
+          exst_sw_det_age_i %>%
+            group_by_at(setdiff(names(exst_sw_det_age_i), c("fuel_heat_f", "n_units_fuel"))) %>%
+            summarise(n_sw = sum(n_units_fuel)) %>%
+            ungroup()
+        ) %>%
+        mutate(n_sw = ifelse(is.na(n_sw), 0, n_sw),
+               n_units_fuel = n_units_fuel_exst - n_sw) %>%
+        select(-n_units_fuel_exst, -n_sw)
+
+      exst_sw_det_age_i <- exst_sw_det_age_i %>%
+        select(-fuel_heat) %>%
+        rename(fuel_heat = fuel_heat_f)
+
+    } else {
+
     ## Existing buildings - renovated
     ren_det_age_i <- dem_det_age_i %>% 
       add_column(year = yrs[i], .before = "yr_con") %>%
@@ -453,6 +586,8 @@ if ("sub" %in% unique(bld_cases_eneff$mat)){
     exst_sw_det_age_i <- exst_sw_det_age_i %>%
       select(-fuel_heat) %>%
       rename(fuel_heat = fuel_heat_f)
+
+    }
 
     
     ### OLD CODE - Existing buildings

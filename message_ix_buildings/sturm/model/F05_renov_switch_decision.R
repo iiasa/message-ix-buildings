@@ -324,3 +324,31 @@ fun_ms_fuel_sw <- function(yrs,i,
 # rm(lcc_ren_hh_sum)
 # rm(lcc_ren_hh_exp)
 # rm(ms_ren_tenr_i)
+
+
+# -----------------------------------------------------------------------------
+# In the sequential (zhu) mode, renovation changes the efficiency level only.
+# The existing heating fuel is retained and is handled later by the fuel-switch
+# decision in F06.
+fun_ms_ren_target_zhu <- function(yrs, i,
+                                  bld_cases_fuel,
+                                  shr_eneff_ren) {
+
+  print(paste0("Running renovation efficiency target - year ", yrs[i]))
+
+  ms_ren_i <- bld_cases_fuel %>%
+    mutate(year = yrs[i]) %>%
+    rename(eneff_i = eneff) %>%
+    left_join(shr_eneff_ren) %>%
+    filter(
+      !is.na(shr_eneff_ren),
+      shr_eneff_ren > 0,
+      mod_decision == 1
+    ) %>%
+    mutate(ms_ren = shr_eneff_ren) %>%
+    select(-bld_age, -shr_eneff_ren)
+
+  print(paste0("Completed renovation efficiency target - year ", yrs[i]))
+
+  ms_ren_i
+}

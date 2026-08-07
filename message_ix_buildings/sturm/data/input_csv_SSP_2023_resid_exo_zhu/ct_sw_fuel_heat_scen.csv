@@ -1,0 +1,253 @@
+year,fuel_heat_i,fuel_heat_f,value
+2020,biomass_solid,biomass_solid,1
+2020,biomass_solid,coal,1
+2020,biomass_solid,oil,1
+2020,biomass_solid,electricity,1
+2020,biomass_solid,gas,1
+2020,biomass_solid,heat pump,1
+2020,coal,biomass_solid,0
+2020,coal,coal,1
+2020,coal,oil,1
+2020,coal,electricity,1
+2020,coal,gas,1
+2020,coal,heat pump,1
+2020,oil,biomass_solid,0
+2020,oil,coal,0
+2020,oil,oil,1
+2020,oil,electricity,1
+2020,oil,gas,1
+2020,oil,heat pump,1
+2020,electricity,biomass_solid,0
+2020,electricity,coal,0
+2020,electricity,oil,0
+2020,electricity,electricity,1
+2020,electricity,gas,1
+2020,electricity,heat pump,1
+2020,gas,biomass_solid,0
+2020,gas,coal,0
+2020,gas,oil,0
+2020,gas,electricity,0
+2020,gas,gas,1
+2020,gas,heat pump,1
+2020,heat pump,biomass_solid,0
+2020,heat pump,coal,0
+2020,heat pump,oil,0
+2020,heat pump,electricity,0
+2020,heat pump,gas,0
+2020,heat pump,heat pump,1
+2025,biomass_solid,biomass_solid,1
+2025,biomass_solid,coal,1
+2025,biomass_solid,oil,1
+2025,biomass_solid,electricity,1
+2025,biomass_solid,gas,1
+2025,biomass_solid,heat pump,1
+2025,coal,biomass_solid,0
+2025,coal,coal,1
+2025,coal,oil,1
+2025,coal,electricity,1
+2025,coal,gas,1
+2025,coal,heat pump,1
+2025,oil,biomass_solid,0
+2025,oil,coal,0
+2025,oil,oil,1
+2025,oil,electricity,1
+2025,oil,gas,1
+2025,oil,heat pump,1
+2025,electricity,biomass_solid,0
+2025,electricity,coal,0
+2025,electricity,oil,0
+2025,electricity,electricity,1
+2025,electricity,gas,1
+2025,electricity,heat pump,1
+2025,gas,biomass_solid,0
+2025,gas,coal,0
+2025,gas,oil,0
+2025,gas,electricity,0
+2025,gas,gas,1
+2025,gas,heat pump,1
+2025,heat pump,biomass_solid,0
+2025,heat pump,coal,0
+2025,heat pump,oil,0
+2025,heat pump,electricity,0
+2025,heat pump,gas,0
+2025,heat pump,heat pump,1
+2030,biomass_solid,biomass_solid,1
+2030,biomass_solid,coal,1
+2030,biomass_solid,oil,1
+2030,biomass_solid,electricity,1
+2030,biomass_solid,gas,1
+2030,biomass_solid,heat pump,1
+2030,coal,biomass_solid,0
+2030,coal,coal,1
+2030,coal,oil,1
+2030,coal,electricity,1
+2030,coal,gas,1
+2030,coal,heat pump,1
+2030,oil,biomass_solid,0
+2030,oil,coal,0
+2030,oil,oil,1
+2030,oil,electricity,1
+2030,oil,gas,1
+2030,oil,heat pump,1
+2030,electricity,biomass_solid,0
+2030,electricity,coal,0
+2030,electricity,oil,0
+2030,electricity,electricity,1
+2030,electricity,gas,1
+2030,electricity,heat pump,1
+2030,gas,biomass_solid,0
+2030,gas,coal,0
+2030,gas,oil,0
+2030,gas,electricity,0
+2030,gas,gas,1
+2030,gas,heat pump,1
+2030,heat pump,biomass_solid,0
+2030,heat pump,coal,0
+2030,heat pump,oil,0
+2030,heat pump,electricity,0
+2030,heat pump,gas,0
+2030,heat pump,heat pump,1
+2035,biomass_solid,biomass_solid,1
+2035,biomass_solid,coal,1
+2035,biomass_solid,oil,1
+2035,biomass_solid,electricity,1
+2035,biomass_solid,gas,1
+2035,biomass_solid,heat pump,1
+2035,coal,biomass_solid,0
+2035,coal,coal,1
+2035,coal,oil,1
+2035,coal,electricity,1
+2035,coal,gas,1
+2035,coal,heat pump,1
+2035,oil,biomass_solid,0
+2035,oil,coal,0
+2035,oil,oil,1
+2035,oil,electricity,1
+2035,oil,gas,1
+2035,oil,heat pump,1
+2035,electricity,biomass_solid,0
+2035,electricity,coal,0
+2035,electricity,oil,0
+2035,electricity,electricity,1
+2035,electricity,gas,1
+2035,electricity,heat pump,1
+2035,gas,biomass_solid,0
+2035,gas,coal,0
+2035,gas,oil,0
+2035,gas,electricity,0
+2035,gas,gas,1
+2035,gas,heat pump,1
+2035,heat pump,biomass_solid,0
+2035,heat pump,coal,0
+2035,heat pump,oil,0
+2035,heat pump,electricity,0
+2035,heat pump,gas,0
+2035,heat pump,heat pump,1
+2040,biomass_solid,biomass_solid,1
+2040,biomass_solid,coal,1
+2040,biomass_solid,oil,1
+2040,biomass_solid,electricity,1
+2040,biomass_solid,gas,1
+2040,biomass_solid,heat pump,1
+2040,coal,biomass_solid,0
+2040,coal,coal,1
+2040,coal,oil,1
+2040,coal,electricity,1
+2040,coal,gas,1
+2040,coal,heat pump,1
+2040,oil,biomass_solid,0
+2040,oil,coal,0
+2040,oil,oil,1
+2040,oil,electricity,1
+2040,oil,gas,1
+2040,oil,heat pump,1
+2040,electricity,biomass_solid,0
+2040,electricity,coal,0
+2040,electricity,oil,0
+2040,electricity,electricity,1
+2040,electricity,gas,1
+2040,electricity,heat pump,1
+2040,gas,biomass_solid,0
+2040,gas,coal,0
+2040,gas,oil,0
+2040,gas,electricity,0
+2040,gas,gas,1
+2040,gas,heat pump,1
+2040,heat pump,biomass_solid,0
+2040,heat pump,coal,0
+2040,heat pump,oil,0
+2040,heat pump,electricity,0
+2040,heat pump,gas,0
+2040,heat pump,heat pump,1
+2045,biomass_solid,biomass_solid,1
+2045,biomass_solid,coal,1
+2045,biomass_solid,oil,1
+2045,biomass_solid,electricity,1
+2045,biomass_solid,gas,1
+2045,biomass_solid,heat pump,1
+2045,coal,biomass_solid,0
+2045,coal,coal,1
+2045,coal,oil,1
+2045,coal,electricity,1
+2045,coal,gas,1
+2045,coal,heat pump,1
+2045,oil,biomass_solid,0
+2045,oil,coal,0
+2045,oil,oil,1
+2045,oil,electricity,1
+2045,oil,gas,1
+2045,oil,heat pump,1
+2045,electricity,biomass_solid,0
+2045,electricity,coal,0
+2045,electricity,oil,0
+2045,electricity,electricity,1
+2045,electricity,gas,1
+2045,electricity,heat pump,1
+2045,gas,biomass_solid,0
+2045,gas,coal,0
+2045,gas,oil,0
+2045,gas,electricity,0
+2045,gas,gas,1
+2045,gas,heat pump,1
+2045,heat pump,biomass_solid,0
+2045,heat pump,coal,0
+2045,heat pump,oil,0
+2045,heat pump,electricity,0
+2045,heat pump,gas,0
+2045,heat pump,heat pump,1
+2050,biomass_solid,biomass_solid,1
+2050,biomass_solid,coal,1
+2050,biomass_solid,oil,1
+2050,biomass_solid,electricity,1
+2050,biomass_solid,gas,1
+2050,biomass_solid,heat pump,1
+2050,coal,biomass_solid,0
+2050,coal,coal,1
+2050,coal,oil,1
+2050,coal,electricity,1
+2050,coal,gas,1
+2050,coal,heat pump,1
+2050,oil,biomass_solid,0
+2050,oil,coal,0
+2050,oil,oil,1
+2050,oil,electricity,1
+2050,oil,gas,1
+2050,oil,heat pump,1
+2050,electricity,biomass_solid,0
+2050,electricity,coal,0
+2050,electricity,oil,0
+2050,electricity,electricity,1
+2050,electricity,gas,1
+2050,electricity,heat pump,1
+2050,gas,biomass_solid,0
+2050,gas,coal,0
+2050,gas,oil,0
+2050,gas,electricity,0
+2050,gas,gas,1
+2050,gas,heat pump,1
+2050,heat pump,biomass_solid,0
+2050,heat pump,coal,0
+2050,heat pump,oil,0
+2050,heat pump,electricity,0
+2050,heat pump,gas,0
+2050,heat pump,heat pump,1

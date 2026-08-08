@@ -622,9 +622,13 @@ fun_stock_init_fut <- function(sector, run,
       #mutate(floor_heat_Mm2 = ifelse(acc_heat == 1, floor_Mm2, 0)) %>%
       mutate(floor_cool_Mm2 = ifelse(shr_acc_cool == 1, floor_Mm2 * shr_acc_cool, 0)) %>%
       mutate(heat_TJ = ifelse(fuel_heat == "v_no_heat", 0, en_dem_heat * n_units_fuel / 1e6 * hh_size * floor_cap * 3.6)) %>% # converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
-      mutate(cool_TJ = en_dem_cool * shr_acc_cool * n_units_fuel / 1e6 * hh_size * floor_cap * 3.6) %>% # converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
-      mutate(cool_ac_TJ = en_dem_c_ac * shr_acc_cool * n_units_fuel / 1e6 * hh_size * floor_cap * 3.6) %>% # converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
-      mutate(cool_fans_TJ = en_dem_c_fans * shr_acc_cool * n_units_fuel / 1e6 * hh_size * floor_cap * 3.6) %>% # Note:shr_acc_cool=1 for all cases (access calculated before) #converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
+      #mutate(cool_TJ = en_dem_cool * shr_acc_cool * n_units_fuel / 1e6 * hh_size * floor_cap * 3.6) %>% # converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
+      #mutate(cool_ac_TJ = en_dem_c_ac * shr_acc_cool * n_units_fuel / 1e6 * hh_size * floor_cap * 3.6) %>% # converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
+      #mutate(cool_fans_TJ = en_dem_c_fans * shr_acc_cool * n_units_fuel / 1e6 * hh_size * floor_cap * 3.6) %>% # Note:shr_acc_cool=1 for all cases (access calculated before) #converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
+      mutate(cool_TJ = en_dem_cool * 1 * n_units_fuel / 1e6 * hh_size * floor_cap * 3.6) %>% # converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
+      mutate(cool_ac_TJ = en_dem_c_ac * 1 * n_units_fuel / 1e6 * hh_size * floor_cap * 3.6) %>% # converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
+      mutate(cool_fans_TJ = en_dem_c_fans * 1 * n_units_fuel / 1e6 * hh_size * floor_cap * 3.6) %>% # Note:shr_acc_cool=1 for all cases (access calculated before) #converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
+      
       mutate(hotwater_TJ = ifelse(fuel_heat == "v_no_heat", 0, en_dem_dhw * n_units_fuel / 1e3)) %>% # converted from GJ/hh/yr to TJ
       mutate(other_uses_TJ = 0) %>% # other uses not covered for residential
       mutate(stock_M = n_units_fuel / 1e6) %>%
@@ -655,9 +659,13 @@ fun_stock_init_fut <- function(sector, run,
       #mutate(floor_heat_Mm2 = ifelse(acc_heat == 1, floor_Mm2, 0)) %>%
       mutate(floor_cool_Mm2 = ifelse(shr_acc_cool == 1, floor_Mm2 * shr_acc_cool, 0)) %>%
       mutate(heat_TJ = ifelse(fuel_heat == "v_no_heat", 0, en_dem_heat * n_units_fuel / 1e6 * 3.6)) %>% # converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
-      mutate(cool_TJ = en_dem_cool * shr_acc_cool * n_units_fuel / 1e6 * 3.6) %>% # converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
-      mutate(cool_ac_TJ = en_dem_c_ac * shr_acc_cool * n_units_fuel / 1e6 * 3.6) %>% # converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
-      mutate(cool_fans_TJ = en_dem_c_fans * shr_acc_cool * n_units_fuel / 1e6 * 3.6) %>% # Note:shr_acc_cool=1 for all cases (access calculated before) #converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
+      #mutate(cool_TJ = en_dem_cool * shr_acc_cool * n_units_fuel / 1e6 * 3.6) %>% # converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
+      #mutate(cool_ac_TJ = en_dem_c_ac * shr_acc_cool * n_units_fuel / 1e6 * 3.6) %>% # converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
+      #mutate(cool_fans_TJ = en_dem_c_fans * shr_acc_cool * n_units_fuel / 1e6 * 3.6) %>% # Note:shr_acc_cool=1 for all cases (access calculated before) #converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
+      mutate(cool_TJ = en_dem_cool * 1 * n_units_fuel / 1e6 * 3.6) %>% # converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
+      mutate(cool_ac_TJ = en_dem_c_ac * 1 * n_units_fuel / 1e6 * 3.6) %>% # converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
+      mutate(cool_fans_TJ = en_dem_c_fans * 1 * n_units_fuel / 1e6 * 3.6) %>% # Note:shr_acc_cool=1 for all cases (access calculated before) #converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
+      
       #mutate(hotwater_TJ = ifelse(fuel_heat == "v_no_heat", 0, en_dem_dhw * n_units_fuel / 1e6 * 3.6)) %>% # converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
       mutate(hotwater_TJ = ifelse(fuel_heat == "v_no_heat", 0, en_dem_dhw * n_units_fuel / 1e6 * 3.6)) %>% # converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.
       mutate(other_uses_TJ = en_int_others * n_units_fuel / 1e6 * 3.6) %>% # converted from kWh to MJ (3.6). Houssing units are in million, so results are in TJ.

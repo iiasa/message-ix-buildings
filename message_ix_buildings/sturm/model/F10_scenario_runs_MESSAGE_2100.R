@@ -588,20 +588,21 @@ run_scenario <- function(run,
   ### REPORTING ###
   
   ## MESSAGE report -  Aggregate results for reporting
-  if ("MESSAGE" %in% report_type) {output <- fun_report_MESSAGE(sector, report_var, report, d$geo_data, geo_level, geo_level_report)}
+  for (g in as.character(geo_level_report)) {
+  if ("MESSAGE" %in% report_type) {output <- fun_report_MESSAGE(sector, report_var, report, d$geo_data, geo_level, g)}
 
   ## STURM basic report (results written as csv)
-  if ("STURM" %in% report_type) {fun_report_basic(report, report_var, mod_vacant, d$geo_data, geo_level, geo_level_report, sector, run, path_out)}
+  if ("STURM" %in% report_type) {fun_report_basic(report, report_var, mod_vacant, d$geo_data, geo_level, g, sector, run, path_out)}
     
   ## Report results - IRP template (results written as csv)
-  if ("IRP" %in% report_type) {fun_report_IRP(report, report_var, d$geo_data, geo_level, geo_level_report, sector, run, yrs, path_out)}
+  if ("IRP" %in% report_type) {fun_report_IRP(report, report_var, d$geo_data, geo_level, g, sector, run, yrs, path_out)}
   
   ## Report results - NGFS template (results written as csv)
-  if ("NGFS" %in% report_type) {fun_report_NGFS(report, report_var, d$geo_data, geo_level, geo_level_report, sector, run, yrs, path_out)}
+  if ("NGFS" %in% report_type) {fun_report_NGFS(report, report_var, d$geo_data, geo_level, g, sector, run, yrs, path_out)}
   
   ## Report results - NGFS template (results written as csv)
-  if ("NAVIGATE" %in% report_type) {fun_report_NAVIGATE(report, report_var, d$geo_data, geo_level, geo_level_report, sector, run, yrs, path_out)} # path_in, ct_bld, ct_ren_eneff, ren_en_sav_scen # currently not used
-  
+  if ("NAVIGATE" %in% report_type) {fun_report_NAVIGATE(report, report_var, d$geo_data, geo_level, g, sector, run, yrs, path_out)} # path_in, ct_bld, ct_ren_eneff, ren_en_sav_scen # currently not used
+  }
   # Tracking time
   end_time <- Sys.time()
   print(paste("Time to run script 04_run_future: ",end_time - start_time))

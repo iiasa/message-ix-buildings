@@ -59,13 +59,13 @@ scenarios <- load_scenarios()
 
 data_dir <- file.path(getwd(), "data")
 path_cook <- file.path(data_dir, "access_cook.csv")
-path_glance_app <- file.path(data_dir, "glance_app.csv")
+path_app <- file.path(data_dir, "access_apps.csv") # YJ: can be updated to glance_app.csv later
 path_prices <- file.path(data_dir, "input_prices_R12.csv")
 path_prices_ref <- file.path(data_dir, "input_prices_R12_default.csv")
 
 missing <- c(
   if (!file.exists(path_cook)) path_cook,
-  if (!file.exists(path_glance_app)) path_glance_app,
+  if (!file.exists(path_app)) path_app,
   if (!file.exists(path_prices)) path_prices,
   if (!file.exists(path_prices_ref)) path_prices_ref
 )
@@ -109,7 +109,7 @@ load_glance_app_demand <- function(glance_app, scenario, years = years_to_run) {
 }
 
 demand_cook <- read.csv(path_cook, stringsAsFactors = FALSE)
-glance_app_all <- read.csv(path_glance_app, stringsAsFactors = FALSE)
+glance_app_all <- read.csv(path_app, stringsAsFactors = FALSE)
 
 resolve_price_path_p <- function(scenario, path_p) {
   p_candidates <- c(

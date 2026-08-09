@@ -761,8 +761,8 @@ align_scenario <- function(s, dir_message_linking, path_iea) {
 
   path_sturm_comm  <- file.path(dir_message_linking, paste0("comm_sturm_", s, ".csv"))
   path_sturm_resid <- file.path(dir_message_linking, paste0("resid_sturm_", s, ".csv"))
-  #path_glance <- file.path(dir_message_linking, paste0("resid_comm_glance_", s, ".csv"))
-  path_glance <- file.path(dir_message_linking, paste0("e_use_SSP2_20251226.csv"))
+  path_glance <- file.path(dir_message_linking, paste0("resid_comm_glance_", s, ".csv"))
+  # path_glance <- file.path(dir_message_linking, paste0("e_use_SSP2_20251226.csv"))
 
   # STEP 1 — load paired exports (skip if insufficient exports exist)
   if (!file.exists(path_sturm_comm) || !file.exists(path_sturm_resid)) {

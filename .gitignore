@@ -29,4 +29,5 @@ user_settings.py
 *.log
 
 message_ix_buildings/sturm/output/
+message_ix_buildings/sturm/post processing.Rmd
 message_ix_buildings/sturm/Outdated/output_outdated/

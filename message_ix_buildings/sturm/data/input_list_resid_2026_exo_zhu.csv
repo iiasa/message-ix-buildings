@@ -47,7 +47,8 @@ ct_fuel_excl_new,ct_fuel_excluded_new,,,
 ct_fuel_excl_ren,ct_fuel_excluded_ren,,,
 ct_fuel_excl_reg,ct_fuel_excluded_reg,,,
 ct_ren_fuel_heat,ct_ren_fuel_heat_scen,,,
-ct_sw_fuel_heat,ct_sw_fuel_heat_scen,,,
+ct_sw_fuel_heat_renov,ct_sw_fuel_heat_renov,,,ct_sw_fuel_heat_renov
+ct_sw_fuel_heat_norenov,ct_sw_fuel_heat_norenov,,,ct_sw_fuel_heat_norenov
 shr_eneff_new,bld_share_eneff_new_norm,,,
 shr_fuel_heat_new,bld_share_fuel_new_norm,,,
 shr_eneff_ren,bld_share_eneff_ren_norm,,,

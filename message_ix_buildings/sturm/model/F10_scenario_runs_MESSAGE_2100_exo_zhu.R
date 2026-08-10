@@ -339,10 +339,21 @@ run_scenario <- function(run,
 
         rate_ren_i <- d$rate_ren %>% 
           filter(year == yrs[i])
-        # Allowed fuel transitions M_ij are read from
-        # ct_sw_fuel_heat_scen.csv through the scenario input list.
-        transition_matrix_fuel_zhu <- d$ct_sw_fuel_heat %>%
-          filter(year == yrs[i])
+        # Allowed fuel transitions M_ij are read separately for renovated
+        # and non-renovated buildings through the scenario input list.
+        transition_matrix_fuel_renov_zhu <-
+          d$ct_sw_fuel_heat_renov %>%
+          filter(year == yrs[i]) %>%
+          rename(
+            ct_sw_fuel_heat = ct_sw_fuel_heat_renov
+          )
+
+        transition_matrix_fuel_norenov_zhu <-
+          d$ct_sw_fuel_heat_norenov %>%
+          filter(year == yrs[i]) %>%
+          rename(
+            ct_sw_fuel_heat = ct_sw_fuel_heat_norenov
+          )
 
         # F05b: calculate current-period relative fuel preferences
         # endogenously for renovated and non-renovated buildings.
@@ -386,7 +397,8 @@ run_scenario <- function(run,
         lst_switch_i <- fun_fuel_switch_decision_zhu(bld_det_age_i,
                                                      relative_preference_fuel_ren_zhu,
                                                      relative_preference_fuel_noren_zhu,
-                                                     transition_matrix_fuel_zhu,
+                                                     transition_matrix_fuel_renov_zhu,
+                                                     transition_matrix_fuel_norenov_zhu,
                                                      yrs,i,
                                                      geo_level,
                                                      geo_level_aggr

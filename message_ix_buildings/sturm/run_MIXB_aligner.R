@@ -44,10 +44,10 @@ ALIGN_FUELS <- c(
   "oil", 
   "electricity")
 ALIGN_THRESH_EJ <- list(
-  oil = 2, 
-  coal = 2, 
-  gas = 2, 
-  electricity = 5)  # EJ; use |gap_EJ|
+  oil = 0.1, 
+  coal = 0.1, 
+  gas = 0.1, 
+  electricity = 0.1)  # EJ; use |gap_EJ|
 
 gap_exceeds_threshold <- function(gap_EJ, fuel) {
   !is.na(gap_EJ) && abs(gap_EJ) > ALIGN_THRESH_EJ[[fuel]]

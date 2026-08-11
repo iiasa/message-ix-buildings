@@ -19,7 +19,7 @@ if (nzchar(script_path)) {
   setwd(dirname(script_path))
 }
 
-source("./model/F10_scenario_runs_MESSAGE_2100_exo_zhu.R")
+source("./model/F10_scenario_runs_MESSAGE_2100.R")
 
 
 # ------------------------------------------------------------
@@ -31,6 +31,7 @@ source("./model/F10_scenario_runs_MESSAGE_2100_exo_zhu.R")
 
 scenarios <- c(
   "IND_SSP2_zhu"
+  # "IND_SSP2"
   # "IND_SSP1",
   # "IND_SSP3"
 )

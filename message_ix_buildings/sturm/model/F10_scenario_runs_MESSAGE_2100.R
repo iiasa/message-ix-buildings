@@ -55,6 +55,7 @@ run_scenario <- function(run,
   source(file.path(path_rcode, "F04_constr_decision.R"))
   # source(file.path(path_rcode, "F05_renov_decision.R"))
   source(file.path(path_rcode, "F05_renov_switch_decision.R"))
+  source(file.path(path_rcode, "F05b_switch_decision.R"))
   source(file.path(path_rcode, "F02_init_stock_dyn_fut.R"))
   source(file.path(path_rcode, "F06_stock_dyn_complete_rev.R"))
   # source(file.path(path_rcode, "R00_report_basic.R"))
@@ -328,12 +329,82 @@ run_scenario <- function(run,
         )
         
         rate_ren_i = d$rate_ren %>% filter(year == yrs[i])
-        
-        }       
+
+      } else if(mod_ren == "zhu"){
+
+        ms_ren_i_zhu <- fun_ms_ren_target_zhu(yrs,i,
+                                              d$bld_cases_fuel,
+                                              d$shr_eneff_ren
+        )
+
+        rate_ren_i <- d$rate_ren %>% filter(year == yrs[i])
+
+        transition_matrix_fuel_renov_zhu <- d$ct_sw_fuel_heat_renov %>%
+          filter(year == yrs[i]) %>%
+          rename(ct_sw_fuel_heat = ct_sw_fuel_heat_renov)
+
+        transition_matrix_fuel_norenov_zhu <- d$ct_sw_fuel_heat_norenov %>%
+          filter(year == yrs[i]) %>%
+          rename(ct_sw_fuel_heat = ct_sw_fuel_heat_norenov)
+
+        relative_preference_fuel_ren_zhu <- fun_sw_pref_zhu(yrs, i,
+                                                            renov_status = "renov",
+                                                            d$hh_income,
+                                                            d$cost_inv_sw_heat,
+                                                            d$cost_om_sw_heat,
+                                                            d$eff_sw_heat,
+                                                            d$capacity_factor_sw_heat,
+                                                            d$discount_rate_sw_heat,
+                                                            d$lifetime_sw,
+                                                            d$cost_int_sw_heat_base,
+                                                            d$alpha_sw_heat,
+                                                            d$eta_sw_heat,
+                                                            price_en,
+                                                            d$geo_data,
+                                                            geo_level,
+                                                            geo_level_aggr
+        )
+
+        relative_preference_fuel_noren_zhu <- fun_sw_pref_zhu(
+          yrs, i,
+                                                            renov_status = "norenov",
+                                                            d$hh_income,
+                                                            d$cost_inv_sw_heat,
+                                                            d$cost_om_sw_heat,
+                                                            d$eff_sw_heat,
+                                                            d$capacity_factor_sw_heat,
+                                                            d$discount_rate_sw_heat,
+                                                            d$lifetime_sw,
+                                                            d$cost_int_sw_heat_base,
+                                                            d$alpha_sw_heat,
+                                                            d$eta_sw_heat,
+                                                            price_en,
+                                                            d$geo_data,
+                                                            geo_level,
+                                                            geo_level_aggr
+        )
+
+        lst_switch_i <- fun_fuel_switch_decision_zhu(yrs, i,
+                                                     bld_det_age_i,
+                                                     relative_preference_fuel_ren_zhu,
+                                                     relative_preference_fuel_noren_zhu,
+                                                     transition_matrix_fuel_renov_zhu,
+                                                     transition_matrix_fuel_norenov_zhu,
+                                                     geo_level,
+                                                     geo_level_aggr
+        )
+
+        sw_prob_fuel_ren_zhu <- lst_switch_i$sw_prob_fuel_ren_i
+        sw_prob_fuel_noren_zhu <- lst_switch_i$sw_prob_fuel_noren_i
+        rm(lst_switch_i)
+      }
       
-      
-      try(if(nrow(ms_ren_i)==0) stop("Error in renovation calculation! Empty dataframe ms_ren_i"))
-      try(if(nrow(ms_sw_i)==0) stop("Error in renovation calculation! Empty dataframe ms_sw_i"))
+      if (mod_ren == "zhu") {
+        try(if(nrow(ms_ren_i_zhu)==0) stop("Error in renovation calculation! Empty dataframe ms_ren_i_zhu"))
+      } else {
+        try(if(nrow(ms_ren_i)==0) stop("Error in renovation calculation! Empty dataframe ms_ren_i"))
+        try(if(nrow(ms_sw_i)==0) stop("Error in renovation calculation! Empty dataframe ms_sw_i"))
+
       
       if (mod_vacant == "vacant") { # V:
         
@@ -367,7 +438,38 @@ run_scenario <- function(run,
                                      #mat_stock,
                                      report_var,
                                      report
-        )} else {
+        )} else if(mod_ren == "zhu") {
+
+      lst_stock_i <- fun_stock_dyn(sector,
+                                   mod_arch,
+                                   mod_vacant,
+                                   yrs,i,
+                                   run,
+                                   geo_level, geo_level_aggr,geo_levels,
+                                   d$bld_cases_fuel, d$bld_cases_eneff,
+                                   d$ct_bld_age, d$ct_fuel_comb,
+                                   d$hh_size, d$floor_cap,
+                                   stock_aggr, bld_det_age_i,
+                                   d$prob_dem,
+                                   stock_vacant_i=NULL,
+                                   rate_vacant_occ=NULL,
+                                   rate_switch_fuel_heat=NULL,
+                                   ms_new_i, ms_ren_i_zhu, rate_ren_i,
+                                   ms_sw_i=NULL,
+                                   d$shr_distr_heat, d$shr_need_heat,
+                                   en_m2_scen_heat, en_m2_scen_cool,
+                                   en_hh_hw_scen,
+                                   en_m2_hw_scen, d$en_int_others,
+                                   d$mat_int,
+                                   d$shr_mat_eol,
+                                   report_var,
+                                   report,
+                                   mod_ren=mod_ren,
+                                   rate_switch_fuel_heat_norenov=d$rate_switch_fuel_heat_norenov,
+                                   rate_switch_fuel_heat_renov=d$rate_switch_fuel_heat_renov,
+                                   sw_prob_fuel_ren_i=sw_prob_fuel_ren_zhu,
+                                   sw_prob_fuel_noren_i=sw_prob_fuel_noren_zhu
+      )} else {
       # Stock turnover
       lst_stock_i <- fun_stock_dyn(sector,
                                    mod_arch,

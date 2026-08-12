@@ -1,0 +1,7 @@
+# keep this specific large file in LFS (no EOL changes)
+input_csv/reuse_rate_app_R61_2024-05-30.csv filter=lfs diff=lfs merge=lfs -text
+
+# normalize all other text files to LF in the repo
+*.csv text eol=lf
+*.py  text eol=lf
+*.txt text eol=lf

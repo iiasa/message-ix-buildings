@@ -82,12 +82,12 @@ PAO,rur,electricity,0.132686242
 PAS,urb,coal,0.03
 PAS,urb,oil,0.005
 PAS,urb,gas,0.001
-PAS,urb,biomass_solid,0.84772093
+PAS,urb,biomass_solid,0.38065441848400006
 PAS,urb,electricity,0.11627907
 PAS,rur,coal,0.03
 PAS,rur,oil,0.005
 PAS,rur,gas,0.001
-PAS,rur,biomass_solid,0.84772093
+PAS,rur,biomass_solid,0.38065441848400006
 PAS,rur,electricity,0.11627907
 SAS,urb,coal,0.05
 SAS,urb,oil,0.005

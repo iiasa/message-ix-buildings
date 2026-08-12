@@ -67,7 +67,7 @@ NAM,urb,electricity,0.153700559
 NAM,rur,coal,0
 NAM,rur,oil,0.104081632
 NAM,rur,gas,0.434818244
-NAM,rur,biomass_solid,0.363227896
+NAM,rur,biomass_solid,0.145371728
 NAM,rur,electricity,0.097872228
 PAO,urb,coal,0.033117936
 PAO,urb,oil,0.423709183
@@ -107,5 +107,5 @@ WEU,urb,electricity,0.160734144
 WEU,rur,coal,0.030399153
 WEU,rur,oil,0.130089138
 WEU,rur,gas,0.31755575
-WEU,rur,biomass_solid,0.300402132
+WEU,rur,biomass_solid,0.145371728
 WEU,rur,electricity,0.091553826

@@ -3,237 +3,237 @@ perm,s51_std,biomass_solid,electricity,2020,0
 perm,s51_std,coal,electricity,2020,0
 perm,s51_std,district_heat,electricity,2020,0
 perm,s51_std,electricity,electricity,2020,0
-perm,s51_std,heat pump,electricity,2020,0.4
-perm,s51_std,gas,electricity,2020,0.6
+perm,s51_std,heat pump,electricity,2020,0.5
+perm,s51_std,gas,electricity,2020,0.5
 perm,s51_std,oil,electricity,2020,0
 perm,s52_low,biomass_solid,electricity,2020,0
 perm,s52_low,coal,electricity,2020,0
 perm,s52_low,district_heat,electricity,2020,0
 perm,s52_low,electricity,electricity,2020,0
-perm,s52_low,heat pump,electricity,2020,0.4
-perm,s52_low,gas,electricity,2020,0.6
+perm,s52_low,heat pump,electricity,2020,0.5
+perm,s52_low,gas,electricity,2020,0.5
 perm,s52_low,oil,electricity,2020,0
 perm,s51_std,biomass_solid,electricity,2025,0
 perm,s51_std,coal,electricity,2025,0
 perm,s51_std,district_heat,electricity,2025,0
 perm,s51_std,electricity,electricity,2025,0
-perm,s51_std,heat pump,electricity,2025,0.45
-perm,s51_std,gas,electricity,2025,0.55
+perm,s51_std,heat pump,electricity,2025,0.583333
+perm,s51_std,gas,electricity,2025,0.416667
 perm,s51_std,oil,electricity,2025,0
 perm,s52_low,biomass_solid,electricity,2025,0
 perm,s52_low,coal,electricity,2025,0
 perm,s52_low,district_heat,electricity,2025,0
 perm,s52_low,electricity,electricity,2025,0
-perm,s52_low,heat pump,electricity,2025,0.45
-perm,s52_low,gas,electricity,2025,0.55
+perm,s52_low,heat pump,electricity,2025,0.583333
+perm,s52_low,gas,electricity,2025,0.416667
 perm,s52_low,oil,electricity,2025,0
 perm,s51_std,biomass_solid,electricity,2030,0
 perm,s51_std,coal,electricity,2030,0
 perm,s51_std,district_heat,electricity,2030,0
 perm,s51_std,electricity,electricity,2030,0
-perm,s51_std,heat pump,electricity,2030,0.5
-perm,s51_std,gas,electricity,2030,0.5
+perm,s51_std,heat pump,electricity,2030,0.666667
+perm,s51_std,gas,electricity,2030,0.333333
 perm,s51_std,oil,electricity,2030,0
 perm,s52_low,biomass_solid,electricity,2030,0
 perm,s52_low,coal,electricity,2030,0
 perm,s52_low,district_heat,electricity,2030,0
 perm,s52_low,electricity,electricity,2030,0
-perm,s52_low,heat pump,electricity,2030,0.5
-perm,s52_low,gas,electricity,2030,0.5
+perm,s52_low,heat pump,electricity,2030,0.666667
+perm,s52_low,gas,electricity,2030,0.333333
 perm,s52_low,oil,electricity,2030,0
 perm,s51_std,biomass_solid,electricity,2035,0
 perm,s51_std,coal,electricity,2035,0
 perm,s51_std,district_heat,electricity,2035,0
 perm,s51_std,electricity,electricity,2035,0
-perm,s51_std,heat pump,electricity,2035,0.55
-perm,s51_std,gas,electricity,2035,0.45
+perm,s51_std,heat pump,electricity,2035,0.75
+perm,s51_std,gas,electricity,2035,0.25
 perm,s51_std,oil,electricity,2035,0
 perm,s52_low,biomass_solid,electricity,2035,0
 perm,s52_low,coal,electricity,2035,0
 perm,s52_low,district_heat,electricity,2035,0
 perm,s52_low,electricity,electricity,2035,0
-perm,s52_low,heat pump,electricity,2035,0.55
-perm,s52_low,gas,electricity,2035,0.45
+perm,s52_low,heat pump,electricity,2035,0.75
+perm,s52_low,gas,electricity,2035,0.25
 perm,s52_low,oil,electricity,2035,0
 perm,s51_std,biomass_solid,electricity,2040,0
 perm,s51_std,coal,electricity,2040,0
 perm,s51_std,district_heat,electricity,2040,0
 perm,s51_std,electricity,electricity,2040,0
-perm,s51_std,heat pump,electricity,2040,0.6
-perm,s51_std,gas,electricity,2040,0.4
+perm,s51_std,heat pump,electricity,2040,0.833333
+perm,s51_std,gas,electricity,2040,0.166667
 perm,s51_std,oil,electricity,2040,0
 perm,s52_low,biomass_solid,electricity,2040,0
 perm,s52_low,coal,electricity,2040,0
 perm,s52_low,district_heat,electricity,2040,0
 perm,s52_low,electricity,electricity,2040,0
-perm,s52_low,heat pump,electricity,2040,0.6
-perm,s52_low,gas,electricity,2040,0.4
+perm,s52_low,heat pump,electricity,2040,0.833333
+perm,s52_low,gas,electricity,2040,0.166667
 perm,s52_low,oil,electricity,2040,0
 perm,s51_std,biomass_solid,electricity,2045,0
 perm,s51_std,coal,electricity,2045,0
 perm,s51_std,district_heat,electricity,2045,0
 perm,s51_std,electricity,electricity,2045,0
-perm,s51_std,heat pump,electricity,2045,0.65
-perm,s51_std,gas,electricity,2045,0.35
+perm,s51_std,heat pump,electricity,2045,0.916667
+perm,s51_std,gas,electricity,2045,0.083333
 perm,s51_std,oil,electricity,2045,0
 perm,s52_low,biomass_solid,electricity,2045,0
 perm,s52_low,coal,electricity,2045,0
 perm,s52_low,district_heat,electricity,2045,0
 perm,s52_low,electricity,electricity,2045,0
-perm,s52_low,heat pump,electricity,2045,0.65
-perm,s52_low,gas,electricity,2045,0.35
+perm,s52_low,heat pump,electricity,2045,0.916667
+perm,s52_low,gas,electricity,2045,0.083333
 perm,s52_low,oil,electricity,2045,0
 perm,s51_std,biomass_solid,electricity,2050,0
 perm,s51_std,coal,electricity,2050,0
 perm,s51_std,district_heat,electricity,2050,0
 perm,s51_std,electricity,electricity,2050,0
-perm,s51_std,heat pump,electricity,2050,0.7
-perm,s51_std,gas,electricity,2050,0.3
+perm,s51_std,heat pump,electricity,2050,1
+perm,s51_std,gas,electricity,2050,0
 perm,s51_std,oil,electricity,2050,0
 perm,s52_low,biomass_solid,electricity,2050,0
 perm,s52_low,coal,electricity,2050,0
 perm,s52_low,district_heat,electricity,2050,0
 perm,s52_low,electricity,electricity,2050,0
-perm,s52_low,heat pump,electricity,2050,0.7
-perm,s52_low,gas,electricity,2050,0.3
+perm,s52_low,heat pump,electricity,2050,1
+perm,s52_low,gas,electricity,2050,0
 perm,s52_low,oil,electricity,2050,0
 perm,s51_std,biomass_solid,electricity,2055,0
 perm,s51_std,coal,electricity,2055,0
 perm,s51_std,district_heat,electricity,2055,0
 perm,s51_std,electricity,electricity,2055,0
-perm,s51_std,heat pump,electricity,2055,0.7
-perm,s51_std,gas,electricity,2055,0.3
+perm,s51_std,heat pump,electricity,2055,1
+perm,s51_std,gas,electricity,2055,0
 perm,s51_std,oil,electricity,2055,0
 perm,s52_low,biomass_solid,electricity,2055,0
 perm,s52_low,coal,electricity,2055,0
 perm,s52_low,district_heat,electricity,2055,0
 perm,s52_low,electricity,electricity,2055,0
-perm,s52_low,heat pump,electricity,2055,0.7
-perm,s52_low,gas,electricity,2055,0.3
+perm,s52_low,heat pump,electricity,2055,1
+perm,s52_low,gas,electricity,2055,0
 perm,s52_low,oil,electricity,2055,0
 perm,s51_std,biomass_solid,electricity,2060,0
 perm,s51_std,coal,electricity,2060,0
 perm,s51_std,district_heat,electricity,2060,0
 perm,s51_std,electricity,electricity,2060,0
-perm,s51_std,heat pump,electricity,2060,0.7
-perm,s51_std,gas,electricity,2060,0.3
+perm,s51_std,heat pump,electricity,2060,1
+perm,s51_std,gas,electricity,2060,0
 perm,s51_std,oil,electricity,2060,0
 perm,s52_low,biomass_solid,electricity,2060,0
 perm,s52_low,coal,electricity,2060,0
 perm,s52_low,district_heat,electricity,2060,0
 perm,s52_low,electricity,electricity,2060,0
-perm,s52_low,heat pump,electricity,2060,0.7
-perm,s52_low,gas,electricity,2060,0.3
+perm,s52_low,heat pump,electricity,2060,1
+perm,s52_low,gas,electricity,2060,0
 perm,s52_low,oil,electricity,2060,0
 perm,s51_std,biomass_solid,electricity,2065,0
 perm,s51_std,coal,electricity,2065,0
 perm,s51_std,district_heat,electricity,2065,0
 perm,s51_std,electricity,electricity,2065,0
-perm,s51_std,heat pump,electricity,2065,0.7
-perm,s51_std,gas,electricity,2065,0.3
+perm,s51_std,heat pump,electricity,2065,1
+perm,s51_std,gas,electricity,2065,0
 perm,s51_std,oil,electricity,2065,0
 perm,s52_low,biomass_solid,electricity,2065,0
 perm,s52_low,coal,electricity,2065,0
 perm,s52_low,district_heat,electricity,2065,0
 perm,s52_low,electricity,electricity,2065,0
-perm,s52_low,heat pump,electricity,2065,0.7
-perm,s52_low,gas,electricity,2065,0.3
+perm,s52_low,heat pump,electricity,2065,1
+perm,s52_low,gas,electricity,2065,0
 perm,s52_low,oil,electricity,2065,0
 perm,s51_std,biomass_solid,electricity,2070,0
 perm,s51_std,coal,electricity,2070,0
 perm,s51_std,district_heat,electricity,2070,0
 perm,s51_std,electricity,electricity,2070,0
-perm,s51_std,heat pump,electricity,2070,0.7
-perm,s51_std,gas,electricity,2070,0.3
+perm,s51_std,heat pump,electricity,2070,1
+perm,s51_std,gas,electricity,2070,0
 perm,s51_std,oil,electricity,2070,0
 perm,s52_low,biomass_solid,electricity,2070,0
 perm,s52_low,coal,electricity,2070,0
 perm,s52_low,district_heat,electricity,2070,0
 perm,s52_low,electricity,electricity,2070,0
-perm,s52_low,heat pump,electricity,2070,0.7
-perm,s52_low,gas,electricity,2070,0.3
+perm,s52_low,heat pump,electricity,2070,1
+perm,s52_low,gas,electricity,2070,0
 perm,s52_low,oil,electricity,2070,0
 perm,s51_std,biomass_solid,electricity,2075,0
 perm,s51_std,coal,electricity,2075,0
 perm,s51_std,district_heat,electricity,2075,0
 perm,s51_std,electricity,electricity,2075,0
-perm,s51_std,heat pump,electricity,2075,0.7
-perm,s51_std,gas,electricity,2075,0.3
+perm,s51_std,heat pump,electricity,2075,1
+perm,s51_std,gas,electricity,2075,0
 perm,s51_std,oil,electricity,2075,0
 perm,s52_low,biomass_solid,electricity,2075,0
 perm,s52_low,coal,electricity,2075,0
 perm,s52_low,district_heat,electricity,2075,0
 perm,s52_low,electricity,electricity,2075,0
-perm,s52_low,heat pump,electricity,2075,0.7
-perm,s52_low,gas,electricity,2075,0.3
+perm,s52_low,heat pump,electricity,2075,1
+perm,s52_low,gas,electricity,2075,0
 perm,s52_low,oil,electricity,2075,0
 perm,s51_std,biomass_solid,electricity,2080,0
 perm,s51_std,coal,electricity,2080,0
 perm,s51_std,district_heat,electricity,2080,0
 perm,s51_std,electricity,electricity,2080,0
-perm,s51_std,heat pump,electricity,2080,0.7
-perm,s51_std,gas,electricity,2080,0.3
+perm,s51_std,heat pump,electricity,2080,1
+perm,s51_std,gas,electricity,2080,0
 perm,s51_std,oil,electricity,2080,0
 perm,s52_low,biomass_solid,electricity,2080,0
 perm,s52_low,coal,electricity,2080,0
 perm,s52_low,district_heat,electricity,2080,0
 perm,s52_low,electricity,electricity,2080,0
-perm,s52_low,heat pump,electricity,2080,0.7
-perm,s52_low,gas,electricity,2080,0.3
+perm,s52_low,heat pump,electricity,2080,1
+perm,s52_low,gas,electricity,2080,0
 perm,s52_low,oil,electricity,2080,0
 perm,s51_std,biomass_solid,electricity,2085,0
 perm,s51_std,coal,electricity,2085,0
 perm,s51_std,district_heat,electricity,2085,0
 perm,s51_std,electricity,electricity,2085,0
-perm,s51_std,heat pump,electricity,2085,0.7
-perm,s51_std,gas,electricity,2085,0.3
+perm,s51_std,heat pump,electricity,2085,1
+perm,s51_std,gas,electricity,2085,0
 perm,s51_std,oil,electricity,2085,0
 perm,s52_low,biomass_solid,electricity,2085,0
 perm,s52_low,coal,electricity,2085,0
 perm,s52_low,district_heat,electricity,2085,0
 perm,s52_low,electricity,electricity,2085,0
-perm,s52_low,heat pump,electricity,2085,0.7
-perm,s52_low,gas,electricity,2085,0.3
+perm,s52_low,heat pump,electricity,2085,1
+perm,s52_low,gas,electricity,2085,0
 perm,s52_low,oil,electricity,2085,0
 perm,s51_std,biomass_solid,electricity,2090,0
 perm,s51_std,coal,electricity,2090,0
 perm,s51_std,district_heat,electricity,2090,0
 perm,s51_std,electricity,electricity,2090,0
-perm,s51_std,heat pump,electricity,2090,0.7
-perm,s51_std,gas,electricity,2090,0.3
+perm,s51_std,heat pump,electricity,2090,1
+perm,s51_std,gas,electricity,2090,0
 perm,s51_std,oil,electricity,2090,0
 perm,s52_low,biomass_solid,electricity,2090,0
 perm,s52_low,coal,electricity,2090,0
 perm,s52_low,district_heat,electricity,2090,0
 perm,s52_low,electricity,electricity,2090,0
-perm,s52_low,heat pump,electricity,2090,0.7
-perm,s52_low,gas,electricity,2090,0.3
+perm,s52_low,heat pump,electricity,2090,1
+perm,s52_low,gas,electricity,2090,0
 perm,s52_low,oil,electricity,2090,0
 perm,s51_std,biomass_solid,electricity,2095,0
 perm,s51_std,coal,electricity,2095,0
 perm,s51_std,district_heat,electricity,2095,0
 perm,s51_std,electricity,electricity,2095,0
-perm,s51_std,heat pump,electricity,2095,0.7
-perm,s51_std,gas,electricity,2095,0.3
+perm,s51_std,heat pump,electricity,2095,1
+perm,s51_std,gas,electricity,2095,0
 perm,s51_std,oil,electricity,2095,0
 perm,s52_low,biomass_solid,electricity,2095,0
 perm,s52_low,coal,electricity,2095,0
 perm,s52_low,district_heat,electricity,2095,0
 perm,s52_low,electricity,electricity,2095,0
-perm,s52_low,heat pump,electricity,2095,0.7
-perm,s52_low,gas,electricity,2095,0.3
+perm,s52_low,heat pump,electricity,2095,1
+perm,s52_low,gas,electricity,2095,0
 perm,s52_low,oil,electricity,2095,0
 perm,s51_std,biomass_solid,electricity,2100,0
 perm,s51_std,coal,electricity,2100,0
 perm,s51_std,district_heat,electricity,2100,0
 perm,s51_std,electricity,electricity,2100,0
-perm,s51_std,heat pump,electricity,2100,0.7
-perm,s51_std,gas,electricity,2100,0.3
+perm,s51_std,heat pump,electricity,2100,1
+perm,s51_std,gas,electricity,2100,0
 perm,s51_std,oil,electricity,2100,0
 perm,s52_low,biomass_solid,electricity,2100,0
 perm,s52_low,coal,electricity,2100,0
 perm,s52_low,district_heat,electricity,2100,0
 perm,s52_low,electricity,electricity,2100,0
-perm,s52_low,heat pump,electricity,2100,0.7
-perm,s52_low,gas,electricity,2100,0.3
+perm,s52_low,heat pump,electricity,2100,1
+perm,s52_low,gas,electricity,2100,0
 perm,s52_low,oil,electricity,2100,0

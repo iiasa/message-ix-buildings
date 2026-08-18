@@ -1,0 +1,1057 @@
+region_gea,fuel_heat,year,value
+AFR,biomass_solid,2025,30.3354
+AFR,biomass_solid,2030,30.3354
+AFR,biomass_solid,2035,30.3354
+AFR,biomass_solid,2040,30.3354
+AFR,biomass_solid,2045,30.3354
+AFR,biomass_solid,2050,30.3354
+AFR,biomass_solid,2055,30.3354
+AFR,biomass_solid,2060,30.3354
+AFR,biomass_solid,2065,30.3354
+AFR,biomass_solid,2070,30.3354
+AFR,biomass_solid,2075,30.3354
+AFR,biomass_solid,2080,30.3354
+AFR,biomass_solid,2085,30.3354
+AFR,biomass_solid,2090,30.3354
+AFR,biomass_solid,2095,30.3354
+AFR,biomass_solid,2100,30.3354
+AFR,coal,2025,3.8076
+AFR,coal,2030,3.8076
+AFR,coal,2035,3.8076
+AFR,coal,2040,3.8076
+AFR,coal,2045,3.8076
+AFR,coal,2050,3.8076
+AFR,coal,2055,3.8076
+AFR,coal,2060,3.8076
+AFR,coal,2065,3.8076
+AFR,coal,2070,3.8076
+AFR,coal,2075,3.8076
+AFR,coal,2080,3.8076
+AFR,coal,2085,3.8076
+AFR,coal,2090,3.8076
+AFR,coal,2095,3.8076
+AFR,coal,2100,3.8076
+AFR,oil,2025,9.0972
+AFR,oil,2030,9.0972
+AFR,oil,2035,9.0972
+AFR,oil,2040,9.0972
+AFR,oil,2045,9.0972
+AFR,oil,2050,9.0972
+AFR,oil,2055,9.0972
+AFR,oil,2060,9.0972
+AFR,oil,2065,9.0972
+AFR,oil,2070,9.0972
+AFR,oil,2075,9.0972
+AFR,oil,2080,9.0972
+AFR,oil,2085,9.0972
+AFR,oil,2090,9.0972
+AFR,oil,2095,9.0972
+AFR,oil,2100,9.0972
+AFR,electricity,2025,8.9376
+AFR,electricity,2030,8.9376
+AFR,electricity,2035,8.9376
+AFR,electricity,2040,8.9376
+AFR,electricity,2045,8.9376
+AFR,electricity,2050,8.9376
+AFR,electricity,2055,8.9376
+AFR,electricity,2060,8.9376
+AFR,electricity,2065,8.9376
+AFR,electricity,2070,8.9376
+AFR,electricity,2075,8.9376
+AFR,electricity,2080,8.9376
+AFR,electricity,2085,8.9376
+AFR,electricity,2090,8.9376
+AFR,electricity,2095,8.9376
+AFR,electricity,2100,8.9376
+AFR,gas,2025,14.4438
+AFR,gas,2030,14.4438
+AFR,gas,2035,14.4438
+AFR,gas,2040,14.4438
+AFR,gas,2045,14.4438
+AFR,gas,2050,14.4438
+AFR,gas,2055,14.4438
+AFR,gas,2060,14.4438
+AFR,gas,2065,14.4438
+AFR,gas,2070,14.4438
+AFR,gas,2075,14.4438
+AFR,gas,2080,14.4438
+AFR,gas,2085,14.4438
+AFR,gas,2090,14.4438
+AFR,gas,2095,14.4438
+AFR,gas,2100,14.4438
+AFR,heat pump,2025,18.6618
+AFR,heat pump,2030,18.6618
+AFR,heat pump,2035,18.6618
+AFR,heat pump,2040,18.6618
+AFR,heat pump,2045,18.6618
+AFR,heat pump,2050,18.6618
+AFR,heat pump,2055,18.6618
+AFR,heat pump,2060,18.6618
+AFR,heat pump,2065,18.6618
+AFR,heat pump,2070,18.6618
+AFR,heat pump,2075,18.6618
+AFR,heat pump,2080,18.6618
+AFR,heat pump,2085,18.6618
+AFR,heat pump,2090,18.6618
+AFR,heat pump,2095,18.6618
+AFR,heat pump,2100,18.6618
+CPA,biomass_solid,2025,30.3354
+CPA,biomass_solid,2030,30.3354
+CPA,biomass_solid,2035,30.3354
+CPA,biomass_solid,2040,30.3354
+CPA,biomass_solid,2045,30.3354
+CPA,biomass_solid,2050,30.3354
+CPA,biomass_solid,2055,30.3354
+CPA,biomass_solid,2060,30.3354
+CPA,biomass_solid,2065,30.3354
+CPA,biomass_solid,2070,30.3354
+CPA,biomass_solid,2075,30.3354
+CPA,biomass_solid,2080,30.3354
+CPA,biomass_solid,2085,30.3354
+CPA,biomass_solid,2090,30.3354
+CPA,biomass_solid,2095,30.3354
+CPA,biomass_solid,2100,30.3354
+CPA,coal,2025,3.8076
+CPA,coal,2030,3.8076
+CPA,coal,2035,3.8076
+CPA,coal,2040,3.8076
+CPA,coal,2045,3.8076
+CPA,coal,2050,3.8076
+CPA,coal,2055,3.8076
+CPA,coal,2060,3.8076
+CPA,coal,2065,3.8076
+CPA,coal,2070,3.8076
+CPA,coal,2075,3.8076
+CPA,coal,2080,3.8076
+CPA,coal,2085,3.8076
+CPA,coal,2090,3.8076
+CPA,coal,2095,3.8076
+CPA,coal,2100,3.8076
+CPA,oil,2025,9.0972
+CPA,oil,2030,9.0972
+CPA,oil,2035,9.0972
+CPA,oil,2040,9.0972
+CPA,oil,2045,9.0972
+CPA,oil,2050,9.0972
+CPA,oil,2055,9.0972
+CPA,oil,2060,9.0972
+CPA,oil,2065,9.0972
+CPA,oil,2070,9.0972
+CPA,oil,2075,9.0972
+CPA,oil,2080,9.0972
+CPA,oil,2085,9.0972
+CPA,oil,2090,9.0972
+CPA,oil,2095,9.0972
+CPA,oil,2100,9.0972
+CPA,electricity,2025,8.9376
+CPA,electricity,2030,8.9376
+CPA,electricity,2035,8.9376
+CPA,electricity,2040,8.9376
+CPA,electricity,2045,8.9376
+CPA,electricity,2050,8.9376
+CPA,electricity,2055,8.9376
+CPA,electricity,2060,8.9376
+CPA,electricity,2065,8.9376
+CPA,electricity,2070,8.9376
+CPA,electricity,2075,8.9376
+CPA,electricity,2080,8.9376
+CPA,electricity,2085,8.9376
+CPA,electricity,2090,8.9376
+CPA,electricity,2095,8.9376
+CPA,electricity,2100,8.9376
+CPA,gas,2025,14.4438
+CPA,gas,2030,14.4438
+CPA,gas,2035,14.4438
+CPA,gas,2040,14.4438
+CPA,gas,2045,14.4438
+CPA,gas,2050,14.4438
+CPA,gas,2055,14.4438
+CPA,gas,2060,14.4438
+CPA,gas,2065,14.4438
+CPA,gas,2070,14.4438
+CPA,gas,2075,14.4438
+CPA,gas,2080,14.4438
+CPA,gas,2085,14.4438
+CPA,gas,2090,14.4438
+CPA,gas,2095,14.4438
+CPA,gas,2100,14.4438
+CPA,heat pump,2025,18.6618
+CPA,heat pump,2030,18.6618
+CPA,heat pump,2035,18.6618
+CPA,heat pump,2040,18.6618
+CPA,heat pump,2045,18.6618
+CPA,heat pump,2050,18.6618
+CPA,heat pump,2055,18.6618
+CPA,heat pump,2060,18.6618
+CPA,heat pump,2065,18.6618
+CPA,heat pump,2070,18.6618
+CPA,heat pump,2075,18.6618
+CPA,heat pump,2080,18.6618
+CPA,heat pump,2085,18.6618
+CPA,heat pump,2090,18.6618
+CPA,heat pump,2095,18.6618
+CPA,heat pump,2100,18.6618
+EEU,biomass_solid,2025,30.3354
+EEU,biomass_solid,2030,30.3354
+EEU,biomass_solid,2035,30.3354
+EEU,biomass_solid,2040,30.3354
+EEU,biomass_solid,2045,30.3354
+EEU,biomass_solid,2050,30.3354
+EEU,biomass_solid,2055,30.3354
+EEU,biomass_solid,2060,30.3354
+EEU,biomass_solid,2065,30.3354
+EEU,biomass_solid,2070,30.3354
+EEU,biomass_solid,2075,30.3354
+EEU,biomass_solid,2080,30.3354
+EEU,biomass_solid,2085,30.3354
+EEU,biomass_solid,2090,30.3354
+EEU,biomass_solid,2095,30.3354
+EEU,biomass_solid,2100,30.3354
+EEU,coal,2025,3.8076
+EEU,coal,2030,3.8076
+EEU,coal,2035,3.8076
+EEU,coal,2040,3.8076
+EEU,coal,2045,3.8076
+EEU,coal,2050,3.8076
+EEU,coal,2055,3.8076
+EEU,coal,2060,3.8076
+EEU,coal,2065,3.8076
+EEU,coal,2070,3.8076
+EEU,coal,2075,3.8076
+EEU,coal,2080,3.8076
+EEU,coal,2085,3.8076
+EEU,coal,2090,3.8076
+EEU,coal,2095,3.8076
+EEU,coal,2100,3.8076
+EEU,oil,2025,9.0972
+EEU,oil,2030,9.0972
+EEU,oil,2035,9.0972
+EEU,oil,2040,9.0972
+EEU,oil,2045,9.0972
+EEU,oil,2050,9.0972
+EEU,oil,2055,9.0972
+EEU,oil,2060,9.0972
+EEU,oil,2065,9.0972
+EEU,oil,2070,9.0972
+EEU,oil,2075,9.0972
+EEU,oil,2080,9.0972
+EEU,oil,2085,9.0972
+EEU,oil,2090,9.0972
+EEU,oil,2095,9.0972
+EEU,oil,2100,9.0972
+EEU,electricity,2025,8.9376
+EEU,electricity,2030,8.9376
+EEU,electricity,2035,8.9376
+EEU,electricity,2040,8.9376
+EEU,electricity,2045,8.9376
+EEU,electricity,2050,8.9376
+EEU,electricity,2055,8.9376
+EEU,electricity,2060,8.9376
+EEU,electricity,2065,8.9376
+EEU,electricity,2070,8.9376
+EEU,electricity,2075,8.9376
+EEU,electricity,2080,8.9376
+EEU,electricity,2085,8.9376
+EEU,electricity,2090,8.9376
+EEU,electricity,2095,8.9376
+EEU,electricity,2100,8.9376
+EEU,gas,2025,14.4438
+EEU,gas,2030,14.4438
+EEU,gas,2035,14.4438
+EEU,gas,2040,14.4438
+EEU,gas,2045,14.4438
+EEU,gas,2050,14.4438
+EEU,gas,2055,14.4438
+EEU,gas,2060,14.4438
+EEU,gas,2065,14.4438
+EEU,gas,2070,14.4438
+EEU,gas,2075,14.4438
+EEU,gas,2080,14.4438
+EEU,gas,2085,14.4438
+EEU,gas,2090,14.4438
+EEU,gas,2095,14.4438
+EEU,gas,2100,14.4438
+EEU,heat pump,2025,18.6618
+EEU,heat pump,2030,18.6618
+EEU,heat pump,2035,18.6618
+EEU,heat pump,2040,18.6618
+EEU,heat pump,2045,18.6618
+EEU,heat pump,2050,18.6618
+EEU,heat pump,2055,18.6618
+EEU,heat pump,2060,18.6618
+EEU,heat pump,2065,18.6618
+EEU,heat pump,2070,18.6618
+EEU,heat pump,2075,18.6618
+EEU,heat pump,2080,18.6618
+EEU,heat pump,2085,18.6618
+EEU,heat pump,2090,18.6618
+EEU,heat pump,2095,18.6618
+EEU,heat pump,2100,18.6618
+FSU,biomass_solid,2025,30.3354
+FSU,biomass_solid,2030,30.3354
+FSU,biomass_solid,2035,30.3354
+FSU,biomass_solid,2040,30.3354
+FSU,biomass_solid,2045,30.3354
+FSU,biomass_solid,2050,30.3354
+FSU,biomass_solid,2055,30.3354
+FSU,biomass_solid,2060,30.3354
+FSU,biomass_solid,2065,30.3354
+FSU,biomass_solid,2070,30.3354
+FSU,biomass_solid,2075,30.3354
+FSU,biomass_solid,2080,30.3354
+FSU,biomass_solid,2085,30.3354
+FSU,biomass_solid,2090,30.3354
+FSU,biomass_solid,2095,30.3354
+FSU,biomass_solid,2100,30.3354
+FSU,coal,2025,3.8076
+FSU,coal,2030,3.8076
+FSU,coal,2035,3.8076
+FSU,coal,2040,3.8076
+FSU,coal,2045,3.8076
+FSU,coal,2050,3.8076
+FSU,coal,2055,3.8076
+FSU,coal,2060,3.8076
+FSU,coal,2065,3.8076
+FSU,coal,2070,3.8076
+FSU,coal,2075,3.8076
+FSU,coal,2080,3.8076
+FSU,coal,2085,3.8076
+FSU,coal,2090,3.8076
+FSU,coal,2095,3.8076
+FSU,coal,2100,3.8076
+FSU,oil,2025,9.0972
+FSU,oil,2030,9.0972
+FSU,oil,2035,9.0972
+FSU,oil,2040,9.0972
+FSU,oil,2045,9.0972
+FSU,oil,2050,9.0972
+FSU,oil,2055,9.0972
+FSU,oil,2060,9.0972
+FSU,oil,2065,9.0972
+FSU,oil,2070,9.0972
+FSU,oil,2075,9.0972
+FSU,oil,2080,9.0972
+FSU,oil,2085,9.0972
+FSU,oil,2090,9.0972
+FSU,oil,2095,9.0972
+FSU,oil,2100,9.0972
+FSU,electricity,2025,8.9376
+FSU,electricity,2030,8.9376
+FSU,electricity,2035,8.9376
+FSU,electricity,2040,8.9376
+FSU,electricity,2045,8.9376
+FSU,electricity,2050,8.9376
+FSU,electricity,2055,8.9376
+FSU,electricity,2060,8.9376
+FSU,electricity,2065,8.9376
+FSU,electricity,2070,8.9376
+FSU,electricity,2075,8.9376
+FSU,electricity,2080,8.9376
+FSU,electricity,2085,8.9376
+FSU,electricity,2090,8.9376
+FSU,electricity,2095,8.9376
+FSU,electricity,2100,8.9376
+FSU,gas,2025,14.4438
+FSU,gas,2030,14.4438
+FSU,gas,2035,14.4438
+FSU,gas,2040,14.4438
+FSU,gas,2045,14.4438
+FSU,gas,2050,14.4438
+FSU,gas,2055,14.4438
+FSU,gas,2060,14.4438
+FSU,gas,2065,14.4438
+FSU,gas,2070,14.4438
+FSU,gas,2075,14.4438
+FSU,gas,2080,14.4438
+FSU,gas,2085,14.4438
+FSU,gas,2090,14.4438
+FSU,gas,2095,14.4438
+FSU,gas,2100,14.4438
+FSU,heat pump,2025,18.6618
+FSU,heat pump,2030,18.6618
+FSU,heat pump,2035,18.6618
+FSU,heat pump,2040,18.6618
+FSU,heat pump,2045,18.6618
+FSU,heat pump,2050,18.6618
+FSU,heat pump,2055,18.6618
+FSU,heat pump,2060,18.6618
+FSU,heat pump,2065,18.6618
+FSU,heat pump,2070,18.6618
+FSU,heat pump,2075,18.6618
+FSU,heat pump,2080,18.6618
+FSU,heat pump,2085,18.6618
+FSU,heat pump,2090,18.6618
+FSU,heat pump,2095,18.6618
+FSU,heat pump,2100,18.6618
+LAC,biomass_solid,2025,30.3354
+LAC,biomass_solid,2030,30.3354
+LAC,biomass_solid,2035,30.3354
+LAC,biomass_solid,2040,30.3354
+LAC,biomass_solid,2045,30.3354
+LAC,biomass_solid,2050,30.3354
+LAC,biomass_solid,2055,30.3354
+LAC,biomass_solid,2060,30.3354
+LAC,biomass_solid,2065,30.3354
+LAC,biomass_solid,2070,30.3354
+LAC,biomass_solid,2075,30.3354
+LAC,biomass_solid,2080,30.3354
+LAC,biomass_solid,2085,30.3354
+LAC,biomass_solid,2090,30.3354
+LAC,biomass_solid,2095,30.3354
+LAC,biomass_solid,2100,30.3354
+LAC,coal,2025,3.8076
+LAC,coal,2030,3.8076
+LAC,coal,2035,3.8076
+LAC,coal,2040,3.8076
+LAC,coal,2045,3.8076
+LAC,coal,2050,3.8076
+LAC,coal,2055,3.8076
+LAC,coal,2060,3.8076
+LAC,coal,2065,3.8076
+LAC,coal,2070,3.8076
+LAC,coal,2075,3.8076
+LAC,coal,2080,3.8076
+LAC,coal,2085,3.8076
+LAC,coal,2090,3.8076
+LAC,coal,2095,3.8076
+LAC,coal,2100,3.8076
+LAC,oil,2025,9.0972
+LAC,oil,2030,9.0972
+LAC,oil,2035,9.0972
+LAC,oil,2040,9.0972
+LAC,oil,2045,9.0972
+LAC,oil,2050,9.0972
+LAC,oil,2055,9.0972
+LAC,oil,2060,9.0972
+LAC,oil,2065,9.0972
+LAC,oil,2070,9.0972
+LAC,oil,2075,9.0972
+LAC,oil,2080,9.0972
+LAC,oil,2085,9.0972
+LAC,oil,2090,9.0972
+LAC,oil,2095,9.0972
+LAC,oil,2100,9.0972
+LAC,electricity,2025,8.9376
+LAC,electricity,2030,8.9376
+LAC,electricity,2035,8.9376
+LAC,electricity,2040,8.9376
+LAC,electricity,2045,8.9376
+LAC,electricity,2050,8.9376
+LAC,electricity,2055,8.9376
+LAC,electricity,2060,8.9376
+LAC,electricity,2065,8.9376
+LAC,electricity,2070,8.9376
+LAC,electricity,2075,8.9376
+LAC,electricity,2080,8.9376
+LAC,electricity,2085,8.9376
+LAC,electricity,2090,8.9376
+LAC,electricity,2095,8.9376
+LAC,electricity,2100,8.9376
+LAC,gas,2025,14.4438
+LAC,gas,2030,14.4438
+LAC,gas,2035,14.4438
+LAC,gas,2040,14.4438
+LAC,gas,2045,14.4438
+LAC,gas,2050,14.4438
+LAC,gas,2055,14.4438
+LAC,gas,2060,14.4438
+LAC,gas,2065,14.4438
+LAC,gas,2070,14.4438
+LAC,gas,2075,14.4438
+LAC,gas,2080,14.4438
+LAC,gas,2085,14.4438
+LAC,gas,2090,14.4438
+LAC,gas,2095,14.4438
+LAC,gas,2100,14.4438
+LAC,heat pump,2025,18.6618
+LAC,heat pump,2030,18.6618
+LAC,heat pump,2035,18.6618
+LAC,heat pump,2040,18.6618
+LAC,heat pump,2045,18.6618
+LAC,heat pump,2050,18.6618
+LAC,heat pump,2055,18.6618
+LAC,heat pump,2060,18.6618
+LAC,heat pump,2065,18.6618
+LAC,heat pump,2070,18.6618
+LAC,heat pump,2075,18.6618
+LAC,heat pump,2080,18.6618
+LAC,heat pump,2085,18.6618
+LAC,heat pump,2090,18.6618
+LAC,heat pump,2095,18.6618
+LAC,heat pump,2100,18.6618
+MEA,biomass_solid,2025,30.3354
+MEA,biomass_solid,2030,30.3354
+MEA,biomass_solid,2035,30.3354
+MEA,biomass_solid,2040,30.3354
+MEA,biomass_solid,2045,30.3354
+MEA,biomass_solid,2050,30.3354
+MEA,biomass_solid,2055,30.3354
+MEA,biomass_solid,2060,30.3354
+MEA,biomass_solid,2065,30.3354
+MEA,biomass_solid,2070,30.3354
+MEA,biomass_solid,2075,30.3354
+MEA,biomass_solid,2080,30.3354
+MEA,biomass_solid,2085,30.3354
+MEA,biomass_solid,2090,30.3354
+MEA,biomass_solid,2095,30.3354
+MEA,biomass_solid,2100,30.3354
+MEA,coal,2025,3.8076
+MEA,coal,2030,3.8076
+MEA,coal,2035,3.8076
+MEA,coal,2040,3.8076
+MEA,coal,2045,3.8076
+MEA,coal,2050,3.8076
+MEA,coal,2055,3.8076
+MEA,coal,2060,3.8076
+MEA,coal,2065,3.8076
+MEA,coal,2070,3.8076
+MEA,coal,2075,3.8076
+MEA,coal,2080,3.8076
+MEA,coal,2085,3.8076
+MEA,coal,2090,3.8076
+MEA,coal,2095,3.8076
+MEA,coal,2100,3.8076
+MEA,oil,2025,9.0972
+MEA,oil,2030,9.0972
+MEA,oil,2035,9.0972
+MEA,oil,2040,9.0972
+MEA,oil,2045,9.0972
+MEA,oil,2050,9.0972
+MEA,oil,2055,9.0972
+MEA,oil,2060,9.0972
+MEA,oil,2065,9.0972
+MEA,oil,2070,9.0972
+MEA,oil,2075,9.0972
+MEA,oil,2080,9.0972
+MEA,oil,2085,9.0972
+MEA,oil,2090,9.0972
+MEA,oil,2095,9.0972
+MEA,oil,2100,9.0972
+MEA,electricity,2025,8.9376
+MEA,electricity,2030,8.9376
+MEA,electricity,2035,8.9376
+MEA,electricity,2040,8.9376
+MEA,electricity,2045,8.9376
+MEA,electricity,2050,8.9376
+MEA,electricity,2055,8.9376
+MEA,electricity,2060,8.9376
+MEA,electricity,2065,8.9376
+MEA,electricity,2070,8.9376
+MEA,electricity,2075,8.9376
+MEA,electricity,2080,8.9376
+MEA,electricity,2085,8.9376
+MEA,electricity,2090,8.9376
+MEA,electricity,2095,8.9376
+MEA,electricity,2100,8.9376
+MEA,gas,2025,14.4438
+MEA,gas,2030,14.4438
+MEA,gas,2035,14.4438
+MEA,gas,2040,14.4438
+MEA,gas,2045,14.4438
+MEA,gas,2050,14.4438
+MEA,gas,2055,14.4438
+MEA,gas,2060,14.4438
+MEA,gas,2065,14.4438
+MEA,gas,2070,14.4438
+MEA,gas,2075,14.4438
+MEA,gas,2080,14.4438
+MEA,gas,2085,14.4438
+MEA,gas,2090,14.4438
+MEA,gas,2095,14.4438
+MEA,gas,2100,14.4438
+MEA,heat pump,2025,18.6618
+MEA,heat pump,2030,18.6618
+MEA,heat pump,2035,18.6618
+MEA,heat pump,2040,18.6618
+MEA,heat pump,2045,18.6618
+MEA,heat pump,2050,18.6618
+MEA,heat pump,2055,18.6618
+MEA,heat pump,2060,18.6618
+MEA,heat pump,2065,18.6618
+MEA,heat pump,2070,18.6618
+MEA,heat pump,2075,18.6618
+MEA,heat pump,2080,18.6618
+MEA,heat pump,2085,18.6618
+MEA,heat pump,2090,18.6618
+MEA,heat pump,2095,18.6618
+MEA,heat pump,2100,18.6618
+NAM,biomass_solid,2025,30.3354
+NAM,biomass_solid,2030,30.3354
+NAM,biomass_solid,2035,30.3354
+NAM,biomass_solid,2040,30.3354
+NAM,biomass_solid,2045,30.3354
+NAM,biomass_solid,2050,30.3354
+NAM,biomass_solid,2055,30.3354
+NAM,biomass_solid,2060,30.3354
+NAM,biomass_solid,2065,30.3354
+NAM,biomass_solid,2070,30.3354
+NAM,biomass_solid,2075,30.3354
+NAM,biomass_solid,2080,30.3354
+NAM,biomass_solid,2085,30.3354
+NAM,biomass_solid,2090,30.3354
+NAM,biomass_solid,2095,30.3354
+NAM,biomass_solid,2100,30.3354
+NAM,coal,2025,3.8076
+NAM,coal,2030,3.8076
+NAM,coal,2035,3.8076
+NAM,coal,2040,3.8076
+NAM,coal,2045,3.8076
+NAM,coal,2050,3.8076
+NAM,coal,2055,3.8076
+NAM,coal,2060,3.8076
+NAM,coal,2065,3.8076
+NAM,coal,2070,3.8076
+NAM,coal,2075,3.8076
+NAM,coal,2080,3.8076
+NAM,coal,2085,3.8076
+NAM,coal,2090,3.8076
+NAM,coal,2095,3.8076
+NAM,coal,2100,3.8076
+NAM,oil,2025,9.0972
+NAM,oil,2030,9.0972
+NAM,oil,2035,9.0972
+NAM,oil,2040,9.0972
+NAM,oil,2045,9.0972
+NAM,oil,2050,9.0972
+NAM,oil,2055,9.0972
+NAM,oil,2060,9.0972
+NAM,oil,2065,9.0972
+NAM,oil,2070,9.0972
+NAM,oil,2075,9.0972
+NAM,oil,2080,9.0972
+NAM,oil,2085,9.0972
+NAM,oil,2090,9.0972
+NAM,oil,2095,9.0972
+NAM,oil,2100,9.0972
+NAM,electricity,2025,8.9376
+NAM,electricity,2030,8.9376
+NAM,electricity,2035,8.9376
+NAM,electricity,2040,8.9376
+NAM,electricity,2045,8.9376
+NAM,electricity,2050,8.9376
+NAM,electricity,2055,8.9376
+NAM,electricity,2060,8.9376
+NAM,electricity,2065,8.9376
+NAM,electricity,2070,8.9376
+NAM,electricity,2075,8.9376
+NAM,electricity,2080,8.9376
+NAM,electricity,2085,8.9376
+NAM,electricity,2090,8.9376
+NAM,electricity,2095,8.9376
+NAM,electricity,2100,8.9376
+NAM,gas,2025,14.4438
+NAM,gas,2030,14.4438
+NAM,gas,2035,14.4438
+NAM,gas,2040,14.4438
+NAM,gas,2045,14.4438
+NAM,gas,2050,14.4438
+NAM,gas,2055,14.4438
+NAM,gas,2060,14.4438
+NAM,gas,2065,14.4438
+NAM,gas,2070,14.4438
+NAM,gas,2075,14.4438
+NAM,gas,2080,14.4438
+NAM,gas,2085,14.4438
+NAM,gas,2090,14.4438
+NAM,gas,2095,14.4438
+NAM,gas,2100,14.4438
+NAM,heat pump,2025,18.6618
+NAM,heat pump,2030,18.6618
+NAM,heat pump,2035,18.6618
+NAM,heat pump,2040,18.6618
+NAM,heat pump,2045,18.6618
+NAM,heat pump,2050,18.6618
+NAM,heat pump,2055,18.6618
+NAM,heat pump,2060,18.6618
+NAM,heat pump,2065,18.6618
+NAM,heat pump,2070,18.6618
+NAM,heat pump,2075,18.6618
+NAM,heat pump,2080,18.6618
+NAM,heat pump,2085,18.6618
+NAM,heat pump,2090,18.6618
+NAM,heat pump,2095,18.6618
+NAM,heat pump,2100,18.6618
+PAO,biomass_solid,2025,30.3354
+PAO,biomass_solid,2030,30.3354
+PAO,biomass_solid,2035,30.3354
+PAO,biomass_solid,2040,30.3354
+PAO,biomass_solid,2045,30.3354
+PAO,biomass_solid,2050,30.3354
+PAO,biomass_solid,2055,30.3354
+PAO,biomass_solid,2060,30.3354
+PAO,biomass_solid,2065,30.3354
+PAO,biomass_solid,2070,30.3354
+PAO,biomass_solid,2075,30.3354
+PAO,biomass_solid,2080,30.3354
+PAO,biomass_solid,2085,30.3354
+PAO,biomass_solid,2090,30.3354
+PAO,biomass_solid,2095,30.3354
+PAO,biomass_solid,2100,30.3354
+PAO,coal,2025,3.8076
+PAO,coal,2030,3.8076
+PAO,coal,2035,3.8076
+PAO,coal,2040,3.8076
+PAO,coal,2045,3.8076
+PAO,coal,2050,3.8076
+PAO,coal,2055,3.8076
+PAO,coal,2060,3.8076
+PAO,coal,2065,3.8076
+PAO,coal,2070,3.8076
+PAO,coal,2075,3.8076
+PAO,coal,2080,3.8076
+PAO,coal,2085,3.8076
+PAO,coal,2090,3.8076
+PAO,coal,2095,3.8076
+PAO,coal,2100,3.8076
+PAO,oil,2025,9.0972
+PAO,oil,2030,9.0972
+PAO,oil,2035,9.0972
+PAO,oil,2040,9.0972
+PAO,oil,2045,9.0972
+PAO,oil,2050,9.0972
+PAO,oil,2055,9.0972
+PAO,oil,2060,9.0972
+PAO,oil,2065,9.0972
+PAO,oil,2070,9.0972
+PAO,oil,2075,9.0972
+PAO,oil,2080,9.0972
+PAO,oil,2085,9.0972
+PAO,oil,2090,9.0972
+PAO,oil,2095,9.0972
+PAO,oil,2100,9.0972
+PAO,electricity,2025,8.9376
+PAO,electricity,2030,8.9376
+PAO,electricity,2035,8.9376
+PAO,electricity,2040,8.9376
+PAO,electricity,2045,8.9376
+PAO,electricity,2050,8.9376
+PAO,electricity,2055,8.9376
+PAO,electricity,2060,8.9376
+PAO,electricity,2065,8.9376
+PAO,electricity,2070,8.9376
+PAO,electricity,2075,8.9376
+PAO,electricity,2080,8.9376
+PAO,electricity,2085,8.9376
+PAO,electricity,2090,8.9376
+PAO,electricity,2095,8.9376
+PAO,electricity,2100,8.9376
+PAO,gas,2025,14.4438
+PAO,gas,2030,14.4438
+PAO,gas,2035,14.4438
+PAO,gas,2040,14.4438
+PAO,gas,2045,14.4438
+PAO,gas,2050,14.4438
+PAO,gas,2055,14.4438
+PAO,gas,2060,14.4438
+PAO,gas,2065,14.4438
+PAO,gas,2070,14.4438
+PAO,gas,2075,14.4438
+PAO,gas,2080,14.4438
+PAO,gas,2085,14.4438
+PAO,gas,2090,14.4438
+PAO,gas,2095,14.4438
+PAO,gas,2100,14.4438
+PAO,heat pump,2025,18.6618
+PAO,heat pump,2030,18.6618
+PAO,heat pump,2035,18.6618
+PAO,heat pump,2040,18.6618
+PAO,heat pump,2045,18.6618
+PAO,heat pump,2050,18.6618
+PAO,heat pump,2055,18.6618
+PAO,heat pump,2060,18.6618
+PAO,heat pump,2065,18.6618
+PAO,heat pump,2070,18.6618
+PAO,heat pump,2075,18.6618
+PAO,heat pump,2080,18.6618
+PAO,heat pump,2085,18.6618
+PAO,heat pump,2090,18.6618
+PAO,heat pump,2095,18.6618
+PAO,heat pump,2100,18.6618
+PAS,biomass_solid,2025,30.3354
+PAS,biomass_solid,2030,30.3354
+PAS,biomass_solid,2035,30.3354
+PAS,biomass_solid,2040,30.3354
+PAS,biomass_solid,2045,30.3354
+PAS,biomass_solid,2050,30.3354
+PAS,biomass_solid,2055,30.3354
+PAS,biomass_solid,2060,30.3354
+PAS,biomass_solid,2065,30.3354
+PAS,biomass_solid,2070,30.3354
+PAS,biomass_solid,2075,30.3354
+PAS,biomass_solid,2080,30.3354
+PAS,biomass_solid,2085,30.3354
+PAS,biomass_solid,2090,30.3354
+PAS,biomass_solid,2095,30.3354
+PAS,biomass_solid,2100,30.3354
+PAS,coal,2025,3.8076
+PAS,coal,2030,3.8076
+PAS,coal,2035,3.8076
+PAS,coal,2040,3.8076
+PAS,coal,2045,3.8076
+PAS,coal,2050,3.8076
+PAS,coal,2055,3.8076
+PAS,coal,2060,3.8076
+PAS,coal,2065,3.8076
+PAS,coal,2070,3.8076
+PAS,coal,2075,3.8076
+PAS,coal,2080,3.8076
+PAS,coal,2085,3.8076
+PAS,coal,2090,3.8076
+PAS,coal,2095,3.8076
+PAS,coal,2100,3.8076
+PAS,oil,2025,9.0972
+PAS,oil,2030,9.0972
+PAS,oil,2035,9.0972
+PAS,oil,2040,9.0972
+PAS,oil,2045,9.0972
+PAS,oil,2050,9.0972
+PAS,oil,2055,9.0972
+PAS,oil,2060,9.0972
+PAS,oil,2065,9.0972
+PAS,oil,2070,9.0972
+PAS,oil,2075,9.0972
+PAS,oil,2080,9.0972
+PAS,oil,2085,9.0972
+PAS,oil,2090,9.0972
+PAS,oil,2095,9.0972
+PAS,oil,2100,9.0972
+PAS,electricity,2025,8.9376
+PAS,electricity,2030,8.9376
+PAS,electricity,2035,8.9376
+PAS,electricity,2040,8.9376
+PAS,electricity,2045,8.9376
+PAS,electricity,2050,8.9376
+PAS,electricity,2055,8.9376
+PAS,electricity,2060,8.9376
+PAS,electricity,2065,8.9376
+PAS,electricity,2070,8.9376
+PAS,electricity,2075,8.9376
+PAS,electricity,2080,8.9376
+PAS,electricity,2085,8.9376
+PAS,electricity,2090,8.9376
+PAS,electricity,2095,8.9376
+PAS,electricity,2100,8.9376
+PAS,gas,2025,14.4438
+PAS,gas,2030,14.4438
+PAS,gas,2035,14.4438
+PAS,gas,2040,14.4438
+PAS,gas,2045,14.4438
+PAS,gas,2050,14.4438
+PAS,gas,2055,14.4438
+PAS,gas,2060,14.4438
+PAS,gas,2065,14.4438
+PAS,gas,2070,14.4438
+PAS,gas,2075,14.4438
+PAS,gas,2080,14.4438
+PAS,gas,2085,14.4438
+PAS,gas,2090,14.4438
+PAS,gas,2095,14.4438
+PAS,gas,2100,14.4438
+PAS,heat pump,2025,18.6618
+PAS,heat pump,2030,18.6618
+PAS,heat pump,2035,18.6618
+PAS,heat pump,2040,18.6618
+PAS,heat pump,2045,18.6618
+PAS,heat pump,2050,18.6618
+PAS,heat pump,2055,18.6618
+PAS,heat pump,2060,18.6618
+PAS,heat pump,2065,18.6618
+PAS,heat pump,2070,18.6618
+PAS,heat pump,2075,18.6618
+PAS,heat pump,2080,18.6618
+PAS,heat pump,2085,18.6618
+PAS,heat pump,2090,18.6618
+PAS,heat pump,2095,18.6618
+PAS,heat pump,2100,18.6618
+SAS,biomass_solid,2025,30.3354
+SAS,biomass_solid,2030,30.3354
+SAS,biomass_solid,2035,30.3354
+SAS,biomass_solid,2040,30.3354
+SAS,biomass_solid,2045,30.3354
+SAS,biomass_solid,2050,30.3354
+SAS,biomass_solid,2055,30.3354
+SAS,biomass_solid,2060,30.3354
+SAS,biomass_solid,2065,30.3354
+SAS,biomass_solid,2070,30.3354
+SAS,biomass_solid,2075,30.3354
+SAS,biomass_solid,2080,30.3354
+SAS,biomass_solid,2085,30.3354
+SAS,biomass_solid,2090,30.3354
+SAS,biomass_solid,2095,30.3354
+SAS,biomass_solid,2100,30.3354
+SAS,coal,2025,3.8076
+SAS,coal,2030,3.8076
+SAS,coal,2035,3.8076
+SAS,coal,2040,3.8076
+SAS,coal,2045,3.8076
+SAS,coal,2050,3.8076
+SAS,coal,2055,3.8076
+SAS,coal,2060,3.8076
+SAS,coal,2065,3.8076
+SAS,coal,2070,3.8076
+SAS,coal,2075,3.8076
+SAS,coal,2080,3.8076
+SAS,coal,2085,3.8076
+SAS,coal,2090,3.8076
+SAS,coal,2095,3.8076
+SAS,coal,2100,3.8076
+SAS,oil,2025,9.0972
+SAS,oil,2030,9.0972
+SAS,oil,2035,9.0972
+SAS,oil,2040,9.0972
+SAS,oil,2045,9.0972
+SAS,oil,2050,9.0972
+SAS,oil,2055,9.0972
+SAS,oil,2060,9.0972
+SAS,oil,2065,9.0972
+SAS,oil,2070,9.0972
+SAS,oil,2075,9.0972
+SAS,oil,2080,9.0972
+SAS,oil,2085,9.0972
+SAS,oil,2090,9.0972
+SAS,oil,2095,9.0972
+SAS,oil,2100,9.0972
+SAS,electricity,2025,8.9376
+SAS,electricity,2030,8.9376
+SAS,electricity,2035,8.9376
+SAS,electricity,2040,8.9376
+SAS,electricity,2045,8.9376
+SAS,electricity,2050,8.9376
+SAS,electricity,2055,8.9376
+SAS,electricity,2060,8.9376
+SAS,electricity,2065,8.9376
+SAS,electricity,2070,8.9376
+SAS,electricity,2075,8.9376
+SAS,electricity,2080,8.9376
+SAS,electricity,2085,8.9376
+SAS,electricity,2090,8.9376
+SAS,electricity,2095,8.9376
+SAS,electricity,2100,8.9376
+SAS,gas,2025,14.4438
+SAS,gas,2030,14.4438
+SAS,gas,2035,14.4438
+SAS,gas,2040,14.4438
+SAS,gas,2045,14.4438
+SAS,gas,2050,14.4438
+SAS,gas,2055,14.4438
+SAS,gas,2060,14.4438
+SAS,gas,2065,14.4438
+SAS,gas,2070,14.4438
+SAS,gas,2075,14.4438
+SAS,gas,2080,14.4438
+SAS,gas,2085,14.4438
+SAS,gas,2090,14.4438
+SAS,gas,2095,14.4438
+SAS,gas,2100,14.4438
+SAS,heat pump,2025,18.6618
+SAS,heat pump,2030,18.6618
+SAS,heat pump,2035,18.6618
+SAS,heat pump,2040,18.6618
+SAS,heat pump,2045,18.6618
+SAS,heat pump,2050,18.6618
+SAS,heat pump,2055,18.6618
+SAS,heat pump,2060,18.6618
+SAS,heat pump,2065,18.6618
+SAS,heat pump,2070,18.6618
+SAS,heat pump,2075,18.6618
+SAS,heat pump,2080,18.6618
+SAS,heat pump,2085,18.6618
+SAS,heat pump,2090,18.6618
+SAS,heat pump,2095,18.6618
+SAS,heat pump,2100,18.6618
+WEU,biomass_solid,2025,30.3354
+WEU,biomass_solid,2030,30.3354
+WEU,biomass_solid,2035,30.3354
+WEU,biomass_solid,2040,30.3354
+WEU,biomass_solid,2045,30.3354
+WEU,biomass_solid,2050,30.3354
+WEU,biomass_solid,2055,30.3354
+WEU,biomass_solid,2060,30.3354
+WEU,biomass_solid,2065,30.3354
+WEU,biomass_solid,2070,30.3354
+WEU,biomass_solid,2075,30.3354
+WEU,biomass_solid,2080,30.3354
+WEU,biomass_solid,2085,30.3354
+WEU,biomass_solid,2090,30.3354
+WEU,biomass_solid,2095,30.3354
+WEU,biomass_solid,2100,30.3354
+WEU,coal,2025,3.8076
+WEU,coal,2030,3.8076
+WEU,coal,2035,3.8076
+WEU,coal,2040,3.8076
+WEU,coal,2045,3.8076
+WEU,coal,2050,3.8076
+WEU,coal,2055,3.8076
+WEU,coal,2060,3.8076
+WEU,coal,2065,3.8076
+WEU,coal,2070,3.8076
+WEU,coal,2075,3.8076
+WEU,coal,2080,3.8076
+WEU,coal,2085,3.8076
+WEU,coal,2090,3.8076
+WEU,coal,2095,3.8076
+WEU,coal,2100,3.8076
+WEU,oil,2025,9.0972
+WEU,oil,2030,9.0972
+WEU,oil,2035,9.0972
+WEU,oil,2040,9.0972
+WEU,oil,2045,9.0972
+WEU,oil,2050,9.0972
+WEU,oil,2055,9.0972
+WEU,oil,2060,9.0972
+WEU,oil,2065,9.0972
+WEU,oil,2070,9.0972
+WEU,oil,2075,9.0972
+WEU,oil,2080,9.0972
+WEU,oil,2085,9.0972
+WEU,oil,2090,9.0972
+WEU,oil,2095,9.0972
+WEU,oil,2100,9.0972
+WEU,electricity,2025,8.9376
+WEU,electricity,2030,8.9376
+WEU,electricity,2035,8.9376
+WEU,electricity,2040,8.9376
+WEU,electricity,2045,8.9376
+WEU,electricity,2050,8.9376
+WEU,electricity,2055,8.9376
+WEU,electricity,2060,8.9376
+WEU,electricity,2065,8.9376
+WEU,electricity,2070,8.9376
+WEU,electricity,2075,8.9376
+WEU,electricity,2080,8.9376
+WEU,electricity,2085,8.9376
+WEU,electricity,2090,8.9376
+WEU,electricity,2095,8.9376
+WEU,electricity,2100,8.9376
+WEU,gas,2025,14.4438
+WEU,gas,2030,14.4438
+WEU,gas,2035,14.4438
+WEU,gas,2040,14.4438
+WEU,gas,2045,14.4438
+WEU,gas,2050,14.4438
+WEU,gas,2055,14.4438
+WEU,gas,2060,14.4438
+WEU,gas,2065,14.4438
+WEU,gas,2070,14.4438
+WEU,gas,2075,14.4438
+WEU,gas,2080,14.4438
+WEU,gas,2085,14.4438
+WEU,gas,2090,14.4438
+WEU,gas,2095,14.4438
+WEU,gas,2100,14.4438
+WEU,heat pump,2025,18.6618
+WEU,heat pump,2030,18.6618
+WEU,heat pump,2035,18.6618
+WEU,heat pump,2040,18.6618
+WEU,heat pump,2045,18.6618
+WEU,heat pump,2050,18.6618
+WEU,heat pump,2055,18.6618
+WEU,heat pump,2060,18.6618
+WEU,heat pump,2065,18.6618
+WEU,heat pump,2070,18.6618
+WEU,heat pump,2075,18.6618
+WEU,heat pump,2080,18.6618
+WEU,heat pump,2085,18.6618
+WEU,heat pump,2090,18.6618
+WEU,heat pump,2095,18.6618
+WEU,heat pump,2100,18.6618

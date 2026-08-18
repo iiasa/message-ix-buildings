@@ -1,0 +1,221 @@
+region_gea,urt,renov_status,fuel_heat,value
+AFR,urb,norenov,biomass_solid,0.0709
+AFR,urb,norenov,oil,-0.0387
+AFR,urb,norenov,electricity,0.8340
+AFR,urb,norenov,gas,0.0000
+AFR,urb,norenov,heat pump,0.0307
+AFR,urb,renov,biomass_solid,0.0932
+AFR,urb,renov,oil,-0.0324
+AFR,urb,renov,electricity,0.7232
+AFR,urb,renov,gas,0.0000
+AFR,urb,renov,heat pump,0.0401
+AFR,rur,norenov,biomass_solid,0.0485
+AFR,rur,norenov,oil,-0.0294
+AFR,rur,norenov,electricity,0.5496
+AFR,rur,norenov,gas,0.0000
+AFR,rur,norenov,heat pump,0.0062
+AFR,rur,renov,biomass_solid,0.0479
+AFR,rur,renov,oil,0.0376
+AFR,rur,renov,electricity,0.3659
+AFR,rur,renov,gas,0.0000
+AFR,rur,renov,heat pump,0.0201
+CPA,urb,norenov,biomass_solid,0.0709
+CPA,urb,norenov,oil,-0.0387
+CPA,urb,norenov,electricity,0.8340
+CPA,urb,norenov,gas,0.0000
+CPA,urb,norenov,heat pump,0.0307
+CPA,urb,renov,biomass_solid,0.0932
+CPA,urb,renov,oil,-0.0324
+CPA,urb,renov,electricity,0.7232
+CPA,urb,renov,gas,0.0000
+CPA,urb,renov,heat pump,0.0401
+CPA,rur,norenov,biomass_solid,0.0485
+CPA,rur,norenov,oil,-0.0294
+CPA,rur,norenov,electricity,0.5496
+CPA,rur,norenov,gas,0.0000
+CPA,rur,norenov,heat pump,0.0062
+CPA,rur,renov,biomass_solid,0.0479
+CPA,rur,renov,oil,0.0376
+CPA,rur,renov,electricity,0.3659
+CPA,rur,renov,gas,0.0000
+CPA,rur,renov,heat pump,0.0201
+EEU,urb,norenov,biomass_solid,0.0709
+EEU,urb,norenov,oil,-0.0387
+EEU,urb,norenov,electricity,0.8340
+EEU,urb,norenov,gas,0.0000
+EEU,urb,norenov,heat pump,0.0307
+EEU,urb,renov,biomass_solid,0.0932
+EEU,urb,renov,oil,-0.0324
+EEU,urb,renov,electricity,0.7232
+EEU,urb,renov,gas,0.0000
+EEU,urb,renov,heat pump,0.0401
+EEU,rur,norenov,biomass_solid,0.0485
+EEU,rur,norenov,oil,-0.0294
+EEU,rur,norenov,electricity,0.5496
+EEU,rur,norenov,gas,0.0000
+EEU,rur,norenov,heat pump,0.0062
+EEU,rur,renov,biomass_solid,0.0479
+EEU,rur,renov,oil,0.0376
+EEU,rur,renov,electricity,0.3659
+EEU,rur,renov,gas,0.0000
+EEU,rur,renov,heat pump,0.0201
+FSU,urb,norenov,biomass_solid,0.0709
+FSU,urb,norenov,oil,-0.0387
+FSU,urb,norenov,electricity,0.8340
+FSU,urb,norenov,gas,0.0000
+FSU,urb,norenov,heat pump,0.0307
+FSU,urb,renov,biomass_solid,0.0932
+FSU,urb,renov,oil,-0.0324
+FSU,urb,renov,electricity,0.7232
+FSU,urb,renov,gas,0.0000
+FSU,urb,renov,heat pump,0.0401
+FSU,rur,norenov,biomass_solid,0.0485
+FSU,rur,norenov,oil,-0.0294
+FSU,rur,norenov,electricity,0.5496
+FSU,rur,norenov,gas,0.0000
+FSU,rur,norenov,heat pump,0.0062
+FSU,rur,renov,biomass_solid,0.0479
+FSU,rur,renov,oil,0.0376
+FSU,rur,renov,electricity,0.3659
+FSU,rur,renov,gas,0.0000
+FSU,rur,renov,heat pump,0.0201
+LAC,urb,norenov,biomass_solid,0.0709
+LAC,urb,norenov,oil,-0.0387
+LAC,urb,norenov,electricity,0.8340
+LAC,urb,norenov,gas,0.0000
+LAC,urb,norenov,heat pump,0.0307
+LAC,urb,renov,biomass_solid,0.0932
+LAC,urb,renov,oil,-0.0324
+LAC,urb,renov,electricity,0.7232
+LAC,urb,renov,gas,0.0000
+LAC,urb,renov,heat pump,0.0401
+LAC,rur,norenov,biomass_solid,0.0485
+LAC,rur,norenov,oil,-0.0294
+LAC,rur,norenov,electricity,0.5496
+LAC,rur,norenov,gas,0.0000
+LAC,rur,norenov,heat pump,0.0062
+LAC,rur,renov,biomass_solid,0.0479
+LAC,rur,renov,oil,0.0376
+LAC,rur,renov,electricity,0.3659
+LAC,rur,renov,gas,0.0000
+LAC,rur,renov,heat pump,0.0201
+MEA,urb,norenov,biomass_solid,0.0709
+MEA,urb,norenov,oil,-0.0387
+MEA,urb,norenov,electricity,0.8340
+MEA,urb,norenov,gas,0.0000
+MEA,urb,norenov,heat pump,0.0307
+MEA,urb,renov,biomass_solid,0.0932
+MEA,urb,renov,oil,-0.0324
+MEA,urb,renov,electricity,0.7232
+MEA,urb,renov,gas,0.0000
+MEA,urb,renov,heat pump,0.0401
+MEA,rur,norenov,biomass_solid,0.0485
+MEA,rur,norenov,oil,-0.0294
+MEA,rur,norenov,electricity,0.5496
+MEA,rur,norenov,gas,0.0000
+MEA,rur,norenov,heat pump,0.0062
+MEA,rur,renov,biomass_solid,0.0479
+MEA,rur,renov,oil,0.0376
+MEA,rur,renov,electricity,0.3659
+MEA,rur,renov,gas,0.0000
+MEA,rur,renov,heat pump,0.0201
+NAM,urb,norenov,biomass_solid,0.0709
+NAM,urb,norenov,oil,-0.0387
+NAM,urb,norenov,electricity,0.8340
+NAM,urb,norenov,gas,0.0000
+NAM,urb,norenov,heat pump,0.0307
+NAM,urb,renov,biomass_solid,0.0932
+NAM,urb,renov,oil,-0.0324
+NAM,urb,renov,electricity,0.7232
+NAM,urb,renov,gas,0.0000
+NAM,urb,renov,heat pump,0.0401
+NAM,rur,norenov,biomass_solid,0.0485
+NAM,rur,norenov,oil,-0.0294
+NAM,rur,norenov,electricity,0.5496
+NAM,rur,norenov,gas,0.0000
+NAM,rur,norenov,heat pump,0.0062
+NAM,rur,renov,biomass_solid,0.0479
+NAM,rur,renov,oil,0.0376
+NAM,rur,renov,electricity,0.3659
+NAM,rur,renov,gas,0.0000
+NAM,rur,renov,heat pump,0.0201
+PAO,urb,norenov,biomass_solid,0.0709
+PAO,urb,norenov,oil,-0.0387
+PAO,urb,norenov,electricity,0.8340
+PAO,urb,norenov,gas,0.0000
+PAO,urb,norenov,heat pump,0.0307
+PAO,urb,renov,biomass_solid,0.0932
+PAO,urb,renov,oil,-0.0324
+PAO,urb,renov,electricity,0.7232
+PAO,urb,renov,gas,0.0000
+PAO,urb,renov,heat pump,0.0401
+PAO,rur,norenov,biomass_solid,0.0485
+PAO,rur,norenov,oil,-0.0294
+PAO,rur,norenov,electricity,0.5496
+PAO,rur,norenov,gas,0.0000
+PAO,rur,norenov,heat pump,0.0062
+PAO,rur,renov,biomass_solid,0.0479
+PAO,rur,renov,oil,0.0376
+PAO,rur,renov,electricity,0.3659
+PAO,rur,renov,gas,0.0000
+PAO,rur,renov,heat pump,0.0201
+PAS,urb,norenov,biomass_solid,0.0709
+PAS,urb,norenov,oil,-0.0387
+PAS,urb,norenov,electricity,0.8340
+PAS,urb,norenov,gas,0.0000
+PAS,urb,norenov,heat pump,0.0307
+PAS,urb,renov,biomass_solid,0.0932
+PAS,urb,renov,oil,-0.0324
+PAS,urb,renov,electricity,0.7232
+PAS,urb,renov,gas,0.0000
+PAS,urb,renov,heat pump,0.0401
+PAS,rur,norenov,biomass_solid,0.0485
+PAS,rur,norenov,oil,-0.0294
+PAS,rur,norenov,electricity,0.5496
+PAS,rur,norenov,gas,0.0000
+PAS,rur,norenov,heat pump,0.0062
+PAS,rur,renov,biomass_solid,0.0479
+PAS,rur,renov,oil,0.0376
+PAS,rur,renov,electricity,0.3659
+PAS,rur,renov,gas,0.0000
+PAS,rur,renov,heat pump,0.0201
+SAS,urb,norenov,biomass_solid,0.0709
+SAS,urb,norenov,oil,-0.0387
+SAS,urb,norenov,electricity,0.8340
+SAS,urb,norenov,gas,0.0000
+SAS,urb,norenov,heat pump,0.0307
+SAS,urb,renov,biomass_solid,0.0932
+SAS,urb,renov,oil,-0.0324
+SAS,urb,renov,electricity,0.7232
+SAS,urb,renov,gas,0.0000
+SAS,urb,renov,heat pump,0.0401
+SAS,rur,norenov,biomass_solid,0.0485
+SAS,rur,norenov,oil,-0.0294
+SAS,rur,norenov,electricity,0.5496
+SAS,rur,norenov,gas,0.0000
+SAS,rur,norenov,heat pump,0.0062
+SAS,rur,renov,biomass_solid,0.0479
+SAS,rur,renov,oil,0.0376
+SAS,rur,renov,electricity,0.3659
+SAS,rur,renov,gas,0.0000
+SAS,rur,renov,heat pump,0.0201
+WEU,urb,norenov,biomass_solid,0.0709
+WEU,urb,norenov,oil,-0.0387
+WEU,urb,norenov,electricity,0.8340
+WEU,urb,norenov,gas,0.0000
+WEU,urb,norenov,heat pump,0.0307
+WEU,urb,renov,biomass_solid,0.0932
+WEU,urb,renov,oil,-0.0324
+WEU,urb,renov,electricity,0.7232
+WEU,urb,renov,gas,0.0000
+WEU,urb,renov,heat pump,0.0401
+WEU,rur,norenov,biomass_solid,0.0485
+WEU,rur,norenov,oil,-0.0294
+WEU,rur,norenov,electricity,0.5496
+WEU,rur,norenov,gas,0.0000
+WEU,rur,norenov,heat pump,0.0062
+WEU,rur,renov,biomass_solid,0.0479
+WEU,rur,renov,oil,0.0376
+WEU,rur,renov,electricity,0.3659
+WEU,rur,renov,gas,0.0000
+WEU,rur,renov,heat pump,0.0201

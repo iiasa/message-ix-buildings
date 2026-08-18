@@ -1,0 +1,67 @@
+region_gea,fuel_heat,value
+AFR,biomass_solid,0.0114
+AFR,coal,0.0114
+AFR,oil,0.0684
+AFR,electricity,0.1368
+AFR,gas,0.0342
+AFR,heat pump,0.1368
+CPA,biomass_solid,0.0114
+CPA,coal,0.0114
+CPA,oil,0.0684
+CPA,electricity,0.1368
+CPA,gas,0.0342
+CPA,heat pump,0.1368
+EEU,biomass_solid,0.0114
+EEU,coal,0.0114
+EEU,oil,0.0684
+EEU,electricity,0.1368
+EEU,gas,0.0342
+EEU,heat pump,0.1368
+FSU,biomass_solid,0.0114
+FSU,coal,0.0114
+FSU,oil,0.0684
+FSU,electricity,0.1368
+FSU,gas,0.0342
+FSU,heat pump,0.1368
+LAC,biomass_solid,0.0114
+LAC,coal,0.0114
+LAC,oil,0.0684
+LAC,electricity,0.1368
+LAC,gas,0.0342
+LAC,heat pump,0.1368
+MEA,biomass_solid,0.0114
+MEA,coal,0.0114
+MEA,oil,0.0684
+MEA,electricity,0.1368
+MEA,gas,0.0342
+MEA,heat pump,0.1368
+NAM,biomass_solid,0.0114
+NAM,coal,0.0114
+NAM,oil,0.0684
+NAM,electricity,0.1368
+NAM,gas,0.0342
+NAM,heat pump,0.1368
+PAO,biomass_solid,0.0114
+PAO,coal,0.0114
+PAO,oil,0.0684
+PAO,electricity,0.1368
+PAO,gas,0.0342
+PAO,heat pump,0.1368
+PAS,biomass_solid,0.0114
+PAS,coal,0.0114
+PAS,oil,0.0684
+PAS,electricity,0.1368
+PAS,gas,0.0342
+PAS,heat pump,0.1368
+SAS,biomass_solid,0.0114
+SAS,coal,0.0114
+SAS,oil,0.0684
+SAS,electricity,0.1368
+SAS,gas,0.0342
+SAS,heat pump,0.1368
+WEU,biomass_solid,0.0114
+WEU,coal,0.0114
+WEU,oil,0.0684
+WEU,electricity,0.1368
+WEU,gas,0.0342
+WEU,heat pump,0.1368

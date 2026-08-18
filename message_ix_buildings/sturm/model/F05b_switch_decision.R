@@ -7,6 +7,7 @@ fun_sw_pref_zhu <- function(yrs, i,
                             hh_income,
                             cost_inv_sw_heat,
                             cost_om_sw_heat,
+                            cost_fuel_sw_heat,
                             eff_sw_heat,
                             capacity_factor_sw_heat,
                             discount_rate_sw_heat,
@@ -60,10 +61,11 @@ fun_sw_pref_zhu <- function(yrs, i,
       by = c(geo_level_aggr, "urt")
     )
 
-  # MESSAGE prices are expressed per GJ in price_en. Aggregate the detailed
-  # building regions to region_gea and map heat pumps to electricity prices.
-  price_i <- price_en %>%
-    filter(year == current_year) %>%
+  # Keep the fuel-cost level used for the 2020 calibration, while using
+  # price_en only to evolve that level over time. Heat pumps follow the
+  # electricity-price index.
+  price_by_year <- price_en %>%
+    filter(year %in% c(income_reference_year, current_year)) %>%
     left_join(
       geo_data %>%
         select(all_of(c(geo_level, geo_level_aggr))) %>%
@@ -76,6 +78,20 @@ fun_sw_pref_zhu <- function(yrs, i,
       .groups = "drop"
     )
 
+  price_i <- price_by_year %>%
+    filter(year == current_year) %>%
+    rename(price_en_current = price_en) %>%
+    left_join(
+      price_by_year %>%
+        filter(year == income_reference_year) %>%
+        select(-year) %>%
+        rename(price_en_base = price_en),
+      by = c(geo_level_aggr, "fuel")
+    ) %>%
+    mutate(
+      price_multiplier = price_en_current / price_en_base
+    )
+
   # Technology-specific LCOH in 2020 USD/kWh of useful heat. The FTT
   # capacity-factor input is expressed in thousand full-load hours/year.
   technology_i <- cost_inv_sw_heat %>%
@@ -86,6 +102,10 @@ fun_sw_pref_zhu <- function(yrs, i,
     left_join(
       cost_om_sw_heat %>% filter(year == current_year),
       by = c(geo_level_aggr, "fuel_heat", "year")
+    ) %>%
+    left_join(
+      cost_fuel_sw_heat,
+      by = c(geo_level_aggr, "fuel_heat")
     ) %>%
     left_join(
       eff_sw_heat %>% filter(year == current_year),
@@ -125,7 +145,7 @@ fun_sw_pref_zhu <- function(yrs, i,
         cost_om_sw_heat /
         (capacity_factor_sw_heat * 1000),
       fuel_cost =
-        price_en * 0.0036 / eff_sw_heat,
+        cost_fuel_sw_heat * price_multiplier / eff_sw_heat,
       lcoh = investment_cost + om_cost + fuel_cost
     )
 
@@ -326,12 +346,12 @@ fun_fuel_transition_probability_zhu <- function(stock_fuel_i,
 }
 
 
-fun_fuel_switch_decision_zhu <- function(bld_det_age_i,
+fun_fuel_switch_decision_zhu <- function(yrs, i,
+                                         bld_det_age_i,
                                          relative_preference_fuel_ren,
                                          relative_preference_fuel_noren,
                                          transition_matrix_fuel_renov,
                                          transition_matrix_fuel_norenov,
-                                         yrs, i,
                                          geo_level,
                                          geo_level_aggr) {
 

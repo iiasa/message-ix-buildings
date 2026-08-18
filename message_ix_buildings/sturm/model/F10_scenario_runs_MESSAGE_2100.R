@@ -352,6 +352,7 @@ run_scenario <- function(run,
                                                             d$hh_income,
                                                             d$cost_inv_sw_heat,
                                                             d$cost_om_sw_heat,
+                                                            d$cost_fuel_sw_heat,
                                                             d$eff_sw_heat,
                                                             d$capacity_factor_sw_heat,
                                                             d$discount_rate_sw_heat,
@@ -371,6 +372,7 @@ run_scenario <- function(run,
                                                             d$hh_income,
                                                             d$cost_inv_sw_heat,
                                                             d$cost_om_sw_heat,
+                                                            d$cost_fuel_sw_heat,
                                                             d$eff_sw_heat,
                                                             d$capacity_factor_sw_heat,
                                                             d$discount_rate_sw_heat,
@@ -404,6 +406,7 @@ run_scenario <- function(run,
       } else {
         try(if(nrow(ms_ren_i)==0) stop("Error in renovation calculation! Empty dataframe ms_ren_i"))
         try(if(nrow(ms_sw_i)==0) stop("Error in renovation calculation! Empty dataframe ms_sw_i"))
+      }
 
       
       if (mod_vacant == "vacant") { # V:

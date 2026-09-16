@@ -42,7 +42,7 @@ rate_switch_fuel_heat,rate_switch_fuel_heat_ssp2,,,,,,,,,rate_switch_fuel_heat_s
 rate_ren,ren_rate_en_max_ssp2,,,,,,,,,ren_rate_en_max_ssp2_REN_H,ren_rate_en_max_ssp2_REN_H,ren_rate_en_max_ssp2_REN_H
 ct_fuel_excl_new,ct_fuel_excluded_new,,,,,,,,,,,
 ct_fuel_excl_ren,ct_fuel_excluded_ren,,,,,,,,,,,
-ct_fuel_excl_reg,ct_fuel_excluded_reg,,,,,,,,,,,
+ct_fuel_excl_reg,ct_fuel_excluded_reg_2026_07_01,,,,,,,,,,,
 ct_ren_fuel_heat,ct_ren_fuel_heat_scen,,,,,,,,,,,
 shr_eneff_new,bld_share_eneff_new_norm,,,,,,,,,,,
 shr_fuel_heat_new,bld_share_fuel_new_norm,,,,,,,,,,,

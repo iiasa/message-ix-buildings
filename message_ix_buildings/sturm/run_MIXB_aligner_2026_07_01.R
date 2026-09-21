@@ -582,9 +582,10 @@ apply_alignment_adjustment <- function(
 # -----------------------------------------------------------------------------
 
 write_aligned_mixb <- function(mixb, path_out) {
-  # MESSAGE schema; `value` remains in GWa
+  # YJ: force to round to 4 decimals to avoid MESSAGEix unscaled infeasibility
   mixb %>%
     select(node, commodity, level, year, time, value, unit) %>%
+    mutate(value = sprintf("%.4f", round(as.numeric(value), 4))) %>%
     write_csv(path_out)
 }
 

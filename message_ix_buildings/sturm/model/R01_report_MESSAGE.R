@@ -7,6 +7,32 @@ fun_report_MESSAGE <- function(sector, report_var, report, geo_data, geo_level, 
 
 print(paste0("Aggregate and report results - MESSAGE runs"))
 
+  # MESSAGE outputs always use R12.
+  geo_level_report <- "R12"
+  
+  required_columns <- c(geo_level, geo_level_report)
+  
+  if (!all(required_columns %in% names(geo_data))) {
+    stop(
+      "MESSAGE reporting requires the model region and R12 columns in geo_data.",
+      call. = FALSE
+    )
+  }
+  
+  geo_data <- geo_data %>%
+    select(all_of(required_columns)) %>%
+    distinct()
+  
+  if (
+    anyNA(geo_data) ||
+    any(duplicated(geo_data[[geo_level]]))
+  ) {
+    stop(
+      "The model-region-to-R12 mapping contains missing or conflicting entries.",
+      call. = FALSE
+    )
+  }
+  
 # End-uses  
 if(sector == "resid"){end_uses <- c("heat","cool","hotwater","other_uses")}
 if(sector == "comm"){end_uses <- c("heat","cool","hotwater","other_uses")}
@@ -20,9 +46,16 @@ output <- data.frame()
 
 ## Energy results
 if ("energy" %in% report_var){
-  if (paste(geo_level_report) %in% names(report$en_stock)) {
-    en_stock_aggr <- report$en_stock} else {
-    en_stock_aggr <- report$en_stock %>% left_join(geo_data %>% select_at(paste(c(geo_level, geo_level_report))))}
+  if (geo_level_report %in% names(report$en_stock)) {
+    en_stock_aggr <- report$en_stock
+  } else {
+    en_stock_aggr <- report$en_stock %>%
+      left_join(geo_data, by = geo_level)
+  }
+  
+  if (anyNA(en_stock_aggr[[geo_level_report]])) {
+    stop("Missing R12 mapping in energy results.", call. = FALSE)
+  }
   
   # others_TJ -- use instead: other_uses_TJ
   
@@ -111,9 +144,17 @@ if ("energy" %in% report_var){
 # Aggregate results - Material - for MESSAGE
 # NOTE: only permanent buildings considered (no data for slums)
 if ("material" %in% report_var){
-  if (paste(geo_level_report) %in% names(report$mat_stock)) {
-    mat_stock_aggr <- report$mat_stock %>% filter(mat == "perm")} else {
-    mat_stock_aggr <- report$mat_stock %>% filter(mat == "perm")%>% left_join(geo_data %>% select_at(paste(c(geo_level, geo_level_report))))}
+  mat_stock_aggr <- report$mat_stock %>%
+    filter(mat == "perm")
+  
+  if (!geo_level_report %in% names(mat_stock_aggr)) {
+    mat_stock_aggr <- mat_stock_aggr %>%
+      left_join(geo_data, by = geo_level)
+  }
+  
+  if (anyNA(mat_stock_aggr[[geo_level_report]])) {
+    stop("Missing R12 mapping in material results.", call. = FALSE)
+  }
   
   
   mat_stock_aggr <- mat_stock_aggr %>%

@@ -3,7 +3,9 @@
 # MESSAGE linking uses this yaml to pass scenario keys
 
 scenarios:
-  - R
+  - R_mitig_agg
+  - R_mitig_mod
+
 
 # Examples (uncomment and replace scenarios above):
 #   - R

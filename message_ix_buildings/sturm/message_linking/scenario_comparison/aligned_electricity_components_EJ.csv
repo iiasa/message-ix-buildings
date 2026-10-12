@@ -1,0 +1,118 @@
+fuel,scenario,component,year,value_EJ
+electricity,R_mitig,Commercial STURM,2020,20.122556979446887
+electricity,R_mitig,Commercial STURM,2025,24.576376557136083
+electricity,R_mitig,Commercial STURM,2030,30.37109375333048
+electricity,R_mitig,Commercial STURM,2035,35.22020004339619
+electricity,R_mitig,Commercial STURM,2040,39.818380904075646
+electricity,R_mitig,Commercial STURM,2045,44.22666445984818
+electricity,R_mitig,Commercial STURM,2050,48.15801359935716
+electricity,R_mitig,Commercial STURM,2055,51.42339411699602
+electricity,R_mitig,Commercial STURM,2060,54.0970667481328
+electricity,R_mitig,Commercial STURM,2070,57.60154672914018
+electricity,R_mitig,Commercial STURM,2080,59.55084141338673
+electricity,R_mitig,Commercial STURM,2090,60.251426924854606
+electricity,R_mitig,Commercial STURM,2100,59.68337546848127
+electricity,R_mitig,GLANCE,2020,14.931545366100604
+electricity,R_mitig,GLANCE,2025,17.183218873312853
+electricity,R_mitig,GLANCE,2030,17.474307239574195
+electricity,R_mitig,GLANCE,2035,17.973749515601625
+electricity,R_mitig,GLANCE,2040,18.36391487451595
+electricity,R_mitig,GLANCE,2045,18.9483485055763
+electricity,R_mitig,GLANCE,2050,19.590103958450378
+electricity,R_mitig,GLANCE,2055,20.299583631633816
+electricity,R_mitig,GLANCE,2060,21.056822172850694
+electricity,R_mitig,GLANCE,2070,22.67425129506737
+electricity,R_mitig,GLANCE,2080,24.51959231243071
+electricity,R_mitig,GLANCE,2090,26.656291005056232
+electricity,R_mitig,GLANCE,2100,29.229915571087982
+electricity,R_mitig,Residential STURM,2020,10.559287654452508
+electricity,R_mitig,Residential STURM,2025,11.8107165965478
+electricity,R_mitig,Residential STURM,2030,13.031493790394043
+electricity,R_mitig,Residential STURM,2035,14.158094479409195
+electricity,R_mitig,Residential STURM,2040,15.197235379774302
+electricity,R_mitig,Residential STURM,2045,16.168888132060886
+electricity,R_mitig,Residential STURM,2050,16.994877970566794
+electricity,R_mitig,Residential STURM,2055,17.675420239935807
+electricity,R_mitig,Residential STURM,2060,18.267424281823473
+electricity,R_mitig,Residential STURM,2070,19.024272466928256
+electricity,R_mitig,Residential STURM,2080,19.43853317956697
+electricity,R_mitig,Residential STURM,2090,19.39109891598523
+electricity,R_mitig,Residential STURM,2100,18.88148938788569
+electricity,R_mitig_agg,Commercial STURM,2020,20.122556979446887
+electricity,R_mitig_agg,Commercial STURM,2025,24.576376557136083
+electricity,R_mitig_agg,Commercial STURM,2030,30.37109375333048
+electricity,R_mitig_agg,Commercial STURM,2035,36.7193335103572
+electricity,R_mitig_agg,Commercial STURM,2040,42.21032794414766
+electricity,R_mitig_agg,Commercial STURM,2045,47.059297964977716
+electricity,R_mitig_agg,Commercial STURM,2050,50.961749774107496
+electricity,R_mitig_agg,Commercial STURM,2055,54.003992184294944
+electricity,R_mitig_agg,Commercial STURM,2060,56.389444114418694
+electricity,R_mitig_agg,Commercial STURM,2070,59.31334049112302
+electricity,R_mitig_agg,Commercial STURM,2080,60.787046748934
+electricity,R_mitig_agg,Commercial STURM,2090,61.150961927842566
+electricity,R_mitig_agg,Commercial STURM,2100,60.35187488358918
+electricity,R_mitig_agg,GLANCE,2020,14.931545366100604
+electricity,R_mitig_agg,GLANCE,2025,17.183218873312853
+electricity,R_mitig_agg,GLANCE,2030,17.474307239574195
+electricity,R_mitig_agg,GLANCE,2035,17.973749515601625
+electricity,R_mitig_agg,GLANCE,2040,18.36391487451595
+electricity,R_mitig_agg,GLANCE,2045,18.9483485055763
+electricity,R_mitig_agg,GLANCE,2050,19.590103958450378
+electricity,R_mitig_agg,GLANCE,2055,20.299583631633816
+electricity,R_mitig_agg,GLANCE,2060,21.056822172850694
+electricity,R_mitig_agg,GLANCE,2070,22.67425129506737
+electricity,R_mitig_agg,GLANCE,2080,24.51959231243071
+electricity,R_mitig_agg,GLANCE,2090,26.656291005056232
+electricity,R_mitig_agg,GLANCE,2100,29.229915571087982
+electricity,R_mitig_agg,Residential STURM,2020,10.559287654452508
+electricity,R_mitig_agg,Residential STURM,2025,11.8107165965478
+electricity,R_mitig_agg,Residential STURM,2030,13.031493790394043
+electricity,R_mitig_agg,Residential STURM,2035,15.352198665485066
+electricity,R_mitig_agg,Residential STURM,2040,17.704389108312093
+electricity,R_mitig_agg,Residential STURM,2045,19.967528651359157
+electricity,R_mitig_agg,Residential STURM,2050,21.73433097646278
+electricity,R_mitig_agg,Residential STURM,2055,22.793337325806988
+electricity,R_mitig_agg,Residential STURM,2060,23.334199198366314
+electricity,R_mitig_agg,Residential STURM,2070,23.8088422445556
+electricity,R_mitig_agg,Residential STURM,2080,23.629085649754177
+electricity,R_mitig_agg,Residential STURM,2090,22.946591355332256
+electricity,R_mitig_agg,Residential STURM,2100,21.855287261878516
+electricity,R_mitig_mod,Commercial STURM,2020,20.122556979446887
+electricity,R_mitig_mod,Commercial STURM,2025,24.576376557136083
+electricity,R_mitig_mod,Commercial STURM,2030,30.37109375333048
+electricity,R_mitig_mod,Commercial STURM,2035,35.59498341013635
+electricity,R_mitig_mod,Commercial STURM,2040,40.498555030285914
+electricity,R_mitig_mod,Commercial STURM,2045,45.14723290788506
+electricity,R_mitig_mod,Commercial STURM,2050,49.198883455818255
+electricity,R_mitig_mod,Commercial STURM,2055,52.50472390363233
+electricity,R_mitig_mod,Commercial STURM,2060,55.16644485703535
+electricity,R_mitig_mod,Commercial STURM,2070,58.55341595107086
+electricity,R_mitig_mod,Commercial STURM,2080,60.34296946638127
+electricity,R_mitig_mod,Commercial STURM,2090,60.89161906209282
+electricity,R_mitig_mod,Commercial STURM,2100,60.19754237746188
+electricity,R_mitig_mod,GLANCE,2020,14.931545366100604
+electricity,R_mitig_mod,GLANCE,2025,17.183218873312853
+electricity,R_mitig_mod,GLANCE,2030,17.474307239574195
+electricity,R_mitig_mod,GLANCE,2035,17.973749515601625
+electricity,R_mitig_mod,GLANCE,2040,18.36391487451595
+electricity,R_mitig_mod,GLANCE,2045,18.9483485055763
+electricity,R_mitig_mod,GLANCE,2050,19.590103958450378
+electricity,R_mitig_mod,GLANCE,2055,20.299583631633816
+electricity,R_mitig_mod,GLANCE,2060,21.056822172850694
+electricity,R_mitig_mod,GLANCE,2070,22.67425129506737
+electricity,R_mitig_mod,GLANCE,2080,24.51959231243071
+electricity,R_mitig_mod,GLANCE,2090,26.656291005056232
+electricity,R_mitig_mod,GLANCE,2100,29.229915571087982
+electricity,R_mitig_mod,Residential STURM,2020,10.559287654452508
+electricity,R_mitig_mod,Residential STURM,2025,11.8107165965478
+electricity,R_mitig_mod,Residential STURM,2030,13.031493790394043
+electricity,R_mitig_mod,Residential STURM,2035,14.456620525963995
+electricity,R_mitig_mod,Residential STURM,2040,15.851395097879422
+electricity,R_mitig_mod,Residential STURM,2045,17.218078788049883
+electricity,R_mitig_mod,Residential STURM,2050,18.404128344481
+electricity,R_mitig_mod,Residential STURM,2055,19.31751607441979
+electricity,R_mitig_mod,Residential STURM,2060,19.994600937182803
+electricity,R_mitig_mod,Residential STURM,2070,20.842225263028997
+electricity,R_mitig_mod,Residential STURM,2080,21.201513286501232
+electricity,R_mitig_mod,Residential STURM,2090,21.030329226403794
+electricity,R_mitig_mod,Residential STURM,2100,20.364771481856028

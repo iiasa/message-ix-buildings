@@ -73,7 +73,7 @@ if (length(missing)) {
   stop(
     "Missing GLANCE inputs under sturm/data:\n",
     paste0("  ", missing, collapse = "\n"),
-    "\nAdd access_cook.csv, glance_app.csv, input_prices_R12.csv, ",
+    "\nAdd access_cook.csv, access_apps.csv, input_prices_R12.csv, ",
     "and input_prices_R12_default.csv, then re-run."
   )
 }
@@ -83,10 +83,10 @@ normalize_glance_commodity <- function(commodity) {
   sub("^resids_", "resid_", commodity) # YJ: Pin XZ to rename
 }
 
-#' Energy rows (GWa) for one scenario key from glance_app.csv.
+#' Energy rows (GWa) for one scenario key from access_apps.csv.
 load_glance_app_demand <- function(glance_app, scenario, years = years_to_run) {
   if (!"scenario" %in% names(glance_app)) {
-    stop("glance_app.csv must have a 'scenario' column")
+    stop("access_apps.csv must have a 'scenario' column")
   }
   out <- glance_app[
     glance_app$scenario == scenario &
@@ -96,9 +96,9 @@ load_glance_app_demand <- function(glance_app, scenario, years = years_to_run) {
     drop = FALSE
   ]
   if (!nrow(out)) {
-    warning(
+    stop(
       "GLANCE: no GWa rows for scenario '", scenario,
-      "' in glance_app.csv (available: ",
+      "' in access_apps.csv (available: ",
       paste(sort(unique(glance_app$scenario)), collapse = ", "),
       ")"
     )
@@ -123,11 +123,34 @@ resolve_price_path_p <- function(scenario, path_p) {
   p_found[[1L]]
 }
 
-for (s in scenarios) {
-  demand_scenario <- rbind(
-    demand_cook,
-    load_glance_app_demand(glance_app_all, s)
+# Fixed appliance dataset shared by the switching experiments.
+GLANCE_APP_REFERENCE_SCENARIO <- "R_mitig_SN"
+
+# Load the shared appliance dataset once, independently of output scenario names.
+app_demand <- load_glance_app_demand(
+  glance_app_all,
+  GLANCE_APP_REFERENCE_SCENARIO
+)
+expected_app_commodities <- c("resid_apps_electr", "resid_apps_gas")
+missing_app_commodities <- setdiff(expected_app_commodities, unique(app_demand$commodity))
+if (nrow(app_demand) == 0L || length(missing_app_commodities)) {
+  stop(
+    "GLANCE: incomplete appliance demand for reference scenario '",
+    GLANCE_APP_REFERENCE_SCENARIO, "'. Missing: ",
+    paste(missing_app_commodities, collapse = ", "),
+    ". Check data/access_apps.csv before writing scenario outputs."
   )
+}
+if (anyNA(app_demand) || any(!is.finite(app_demand$value)) || any(app_demand$value < 0)) {
+  stop("GLANCE: missing, nonfinite or negative appliance demand in data/access_apps.csv")
+}
+message(
+  "GLANCE: using appliance reference '", GLANCE_APP_REFERENCE_SCENARIO,
+  "' for output scenarios: ", paste(scenarios, collapse = ", ")
+)
+
+for (s in scenarios) {
+  demand_scenario <- rbind(demand_cook, app_demand)
 
   path_p <- resolve_price_path_p(s, path_prices)
   prices <- read_prices_csv(path_p)
@@ -193,3 +216,4 @@ for (s in scenarios) {
 }
 
 message("GLANCE done (", length(scenarios), " scenario(s)).")
+

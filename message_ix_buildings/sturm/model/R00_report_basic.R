@@ -75,7 +75,7 @@ fun_report_basic <- function(report, report_var, geo_data, geo_level, geo_level_
                               ))) %>%
           summarise(n_units =sum(n_units_eneff))%>%
           ungroup()}
-    write_csv(mat_stock_rep, paste0(path_out,"report_STURM_",scenario_name,"_", sector, "_",geo_level_report, "_vintage.csv") )
+    write_csv(bld_eneff_age_rep, paste0(path_out,"report_STURM_",scenario_name,"_", sector, "_",geo_level_report, "_vintage.csv") )
   }
 
   # Write household-type results (household-type overlay only)

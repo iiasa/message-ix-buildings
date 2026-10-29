@@ -1,16 +1,11 @@
 
 ## CONSTRUCTION DECISIONS
-## this calculation is to be put within a loop on "i" (time steps)
-## Different fuels currently not included
-
-## check construction period: extract valid ones for the current timestep 
-
-# # mod_stock_level == "fuel"
-# # ms = 1 -> level "country" "scenario" "urt" "inc_cl""arch"  "clim"  "acc_cool" (choice between eneffs and fuels)
+## Functions called within the loop on time steps "i" (script F10)
 
 
-## Complete model with fuel choice
-
+## Endogenous construction decisions
+# Multinomial logit on life-cycle costs (LCC): choice of eneff standard and heating fuel for new buildings
+# of the current construction period. Returns market shares "ms" by building case, summing to 1 over (eneff, fuel_heat).
 fun_ms_new <- function(yrs,i,
                        bld_cases_fuel, ct_bld_age,
                        hh_size, floor_cap,
@@ -22,151 +17,100 @@ fun_ms_new <- function(yrs,i,
 
 print(paste0("Running construction decisions - year ", yrs[i]))
 
-ct_bld_age_id_i <- ct_bld_age %>% 
-  filter(yrs[i] >= year_i & yrs[i] <= year_f) 
+# Construction period(s) of the current year
+ct_bld_age_id_i <- ct_bld_age %>%
+  filter(yrs[i] >= year_i & yrs[i] <= year_f) %>%
+  pull(bld_age_id)
 
-ct_bld_age_id_i <- ct_bld_age_id_i[["bld_age_id"]]
-
-  
-## Prepare investment cost data
+# Investment and intangible costs for the current year
 cost_invest_new_shell_i <- cost_invest_new_shell %>% filter(year == yrs[i])
 cost_invest_new_heat_i <- cost_invest_new_heat %>% filter(year == yrs[i])
-
-
-## Prepare intangible cost data
 cost_intang_new_shell_i <- cost_intang_new_shell %>% filter(year == yrs[i])
 cost_intang_new_heat_i <- cost_intang_new_heat %>% filter(year == yrs[i])
 
-
-## Prepare dataframe for LCC calculations at household level - New constructions
+## LCC of each option, by building case
 lcc_new_hh <- bld_cases_fuel %>%
-  mutate(year = yrs[i]) %>% # Attach year (in the loop)
-  ljoin(hh_size) %>% # Add HH size # %>% filter(year == yrs[i]) # Filter "i" year 
-  ljoin(floor_cap) %>% 
-  #filter(year == yrs[i]) %>% # Filter "i" year 
-  ljoin(ct_fuel_excl_new) %>% ## Constraint: fuels not allowed for new construction
-  ljoin(ct_fuel_excl_reg) %>% ## Constraint: fuels not used in specific regions
-  mutate_cond(is.na(ct_fuel_excl_new), ct_fuel_excl_new = 0) %>% # 0=fuel permitted; 1=fuel excluded
-  mutate_cond(is.na(ct_fuel_excl_reg), ct_fuel_excl_reg = 0) %>% # 0=fuel permitted; 1=fuel excluded
-  ljoin(cost_invest_new_shell_i) %>% ## Add investment costs - shell
-  ljoin(cost_invest_new_heat_i) %>% ## Add investment costs - heating fuel shift
-  #mutate(cost_inv = cost_shell + cost_heat) %>% 
-  mutate(cost_invest_hh = cost_invest_new_heat + (cost_invest_new_shell * floor_cap * hh_size)) %>% # Heat sys cost per unit - Shell costs per m2
-  ljoin(en_hh_tot) %>% ## Add operative costs (total) # %>% filter(year == yrs[i]) # Filter "i" year 
+  mutate(year = yrs[i]) %>%
+  ljoin(hh_size) %>%
+  ljoin(floor_cap) %>%
+  ljoin(ct_fuel_excl_new) %>% # fuels not allowed in new construction
+  ljoin(ct_fuel_excl_reg) %>% # fuels not used in the region
+  mutate_cond(is.na(ct_fuel_excl_new), ct_fuel_excl_new = 0) %>% # 0 = fuel permitted; 1 = fuel excluded
+  mutate_cond(is.na(ct_fuel_excl_reg), ct_fuel_excl_reg = 0) %>%
+  ljoin(cost_invest_new_shell_i) %>%
+  ljoin(cost_invest_new_heat_i) %>%
+  mutate(cost_invest_hh = cost_invest_new_heat + (cost_invest_new_shell * floor_cap * hh_size)) %>% # heating system per unit + shell per m2
+  ljoin(en_hh_tot) %>%
   mutate(cost_op_hh = cost_op_m2 * floor_cap * hh_size) %>%
-  #mutate(cost_intang_hh = 0) %>% ## Add intangible costs
-  ljoin(cost_intang_new_shell_i) %>% ## Add intangible costs - shell
-  ljoin(cost_intang_new_heat_i) %>% ## Add intangible costs - heating fuel shift
-  mutate(cost_intang_hh = cost_intang_new_heat + (cost_intang_new_shell * floor_cap * hh_size)) %>% # total intangible costs by hh
-  ljoin(discount_new) %>% ## Add discount rates #%>% filter(year == yrs[i]) # Filter "i" year 
-  ljoin(lifetime_new) %>% ## Add lifetime new construction (for investment: based on loan duration)
-  ljoin(heterog_new) %>% # Add heterogeneity parameter
-  #mutate(lifetime_new = lifetime_new) %>% ## Add lifetime new construction (for investment: based on loan duration) ## old formulation
-  mutate(lcc_new = fun_lcc(cost_invest_hh, cost_op_hh, cost_intang_hh, discount_new, lifetime_new)) %>% ## Apply LCC function to new construction
-  mutate(lcc_new_exp = fun_lcc_exp(lcc_new, heterog_new))
+  ljoin(cost_intang_new_shell_i) %>%
+  ljoin(cost_intang_new_heat_i) %>%
+  mutate(cost_intang_hh = cost_intang_new_heat + (cost_intang_new_shell * floor_cap * hh_size)) %>%
+  ljoin(discount_new) %>%
+  ljoin(lifetime_new) %>% # lifetime for investment (loan duration)
+  ljoin(heterog_new) %>%
+  mutate(lcc_new = fun_lcc(cost_invest_hh, cost_op_hh, cost_intang_hh, discount_new, lifetime_new)) %>%
+  mutate(lcc_new_exp = fun_lcc_exp(lcc_new, heterog_new)) # logit term
 
-print(paste0("generate lcc_new_hh "))
-# Filter rows based on constraints and calc settings
+# Keep available options only
 lcc_new_hh <- lcc_new_hh %>%
-  filter(bld_age %in% ct_bld_age_id_i) %>% # only current construction period allowed
-  filter(mod_decision == 1) %>% # cases out of modelling decisions (e.g. district heating, substandard buildings)
-  filter(ct_fuel_excl_new == 0 & ct_fuel_excl_reg == 0) %>% # excluded non-permitted fuels (e.g. coal for passive houses)
-  filter(cost_intang_new_shell != 99999) %>% # FILTERING BASED ON INTANGIBLE COSTS
-  filter(cost_intang_new_heat != 99999) %>% # FILTERING BASED ON INTANGIBLE COSTS
+  filter(bld_age %in% ct_bld_age_id_i) %>% # current construction period only
+  filter(mod_decision == 1) %>% # exclude cases out of modelling decisions (e.g. district heating, substandard buildings)
+  filter(ct_fuel_excl_new == 0 & ct_fuel_excl_reg == 0) %>% # exclude non-permitted fuels (e.g. coal for passive houses)
+  filter(cost_intang_new_shell != 99999) %>% # 99999 = option not available
+  filter(cost_intang_new_heat != 99999) %>%
   filter(!is.na(lcc_new))
 
-print(paste0("generate lcc_new_hh_exp "))
-# Dataframe with data on exponents  
-lcc_new_hh_exp <- lcc_new_hh %>% select(-c(hh_size, floor_cap, #cost_inv, 
-                                           cost_invest_hh, 
-                                           #fuel_heat, fuel_cool, ## here they should stay!!! they represent different choices 
-                                           #en_m2, en_hh,      
-                                           # price_en,
+## Market shares
+# Cost columns are dropped so that the remaining columns identify the decision (case, option)
+lcc_new_hh_exp <- lcc_new_hh %>% select(-c(hh_size, floor_cap,
+                                           cost_invest_hh,
                                            mod_decision, ct_fuel_excl_new,ct_fuel_excl_reg,
                                            cost_invest_new_shell, cost_invest_new_heat,
-                                           cost_op_m2, cost_op_hh, 
+                                           cost_op_m2, cost_op_hh,
                                            cost_intang_new_shell, cost_intang_new_heat,
                                            cost_intang_hh,
                                            discount_new, lifetime_new, lcc_new, heterog_new))
 
-print(paste0("generate lcc_new_hh_sum "))
-# calculate sum of exponents
-lcc_new_hh_sum <- lcc_new_hh_exp %>% 
-  #mutate(eneff_fuel = paste(c(eneff,fuel_heat),sep="_")) %>%
-  group_by_at(setdiff(names(lcc_new_hh_exp), c("eneff", "fuel_heat", "lcc_new_exp"))) %>% # Select all variables, except "eneff_f" and "lcc_ren_hh_exp" for grouping)
-  #group_by_at(setdiff(names(lcc_new_hh_exp), c("eneff", "fuel_heat", "fuel_cool", "lcc_new_exp"))) %>% ## NOT WORKING!!! # Select all variables, except "eneff_f" and "lcc_ren_hh_exp" for grouping)
+# Sum of logit terms over the options (eneff, fuel_heat)
+lcc_new_hh_sum <- lcc_new_hh_exp %>%
+  group_by_at(setdiff(names(lcc_new_hh_exp), c("eneff", "fuel_heat", "lcc_new_exp"))) %>%
   summarise(lcc_new_exp_sum=sum(lcc_new_exp))
 
-print(paste0("update lcc_new_hh_exp "))
-# join sums 
-lcc_new_hh_exp <- lcc_new_hh_exp %>% ljoin(lcc_new_hh_sum) %>%
-  mutate(ms = lcc_new_exp/lcc_new_exp_sum) #market share - not weighted on share of hh tenure
-
-print(paste0("generate ms_new_i"))
-# Market shares for the year "i"
-ms_new_i <- lcc_new_hh_exp %>% 
+ms_new_i <- lcc_new_hh_exp %>%
+  ljoin(lcc_new_hh_sum) %>%
+  mutate(ms = lcc_new_exp/lcc_new_exp_sum) %>%
   select(-c(lcc_new_exp, lcc_new_exp_sum)) %>%
-  mutate_cond(mat == "sub", ms = 1) %>% # assign ms = 1 to substandard buildings
-  mutate_cond(bld_age %nin% ct_bld_age_id_i, ms = 0) %>% # assign ms = 0 to standards not valid for the current period
-  mutate(ms = round(ms,5)) %>% # round results to save memory
-  #filter(!is.na(ms)) %>% # filter out NA values
-  select(-bld_age) # Remove periods of construction
+  mutate_cond(mat == "sub", ms = 1) %>% # substandard buildings: one option only
+  mutate(ms = round(ms,5)) %>%
+  select(-bld_age)
 
-# # Market share by eneff (used to assign eneff shares to district heating - new construction) ### MOVED TO stock dynamics script
-# # Market shares for the year "i" 
-# ms_new_eneff_i <- ms_new_i %>%
-#   group_by_at(setdiff(names(ms_new_i), c("fuel_heat", "ms"))) %>% # Select all variables, except "eneff_f" and "lcc_ren_hh_exp" for grouping))
-#   summarise(ms_eneff = sum(ms))
-#
-# output = list(ms_new_i,ms_new_eneff_i)
 print(paste0("Completed construction decisions - year ", yrs[i]))
 output = ms_new_i
 
-  
 } # END FUNCTION
 
-# SIMPLE FUNCTION - Fixed market shares
 
+## Exogenous construction decisions: fixed market shares of eneff and heating fuel
 fun_ms_new_target <- function(yrs,i,
-                              bld_cases_eneff, bld_cases_fuel, 
+                              bld_cases_eneff, bld_cases_fuel,
                               ct_bld_age,
                               shr_eneff_new, shr_fuel_heat_new){
-  
+
   print(paste0("Running construction target - year ", yrs[i]))
-  
-  # Filter building age cohorts - current period of construction
+
+  # Construction period(s) of the current year
   p_i <- ct_bld_age %>% filter(year_i <= yrs[i] & year_f >= yrs[i]) %>% pull(bld_age_id)
-  
-  ## Prepare dataframe for LCC calculations at household level - New constructions
-  ms_new_i <- bld_cases_fuel %>% 
-    mutate(year = yrs[i]) %>% 
-    ljoin(shr_eneff_new) %>% # Join market share column
+
+  ms_new_i <- bld_cases_fuel %>%
+    mutate(year = yrs[i]) %>%
+    ljoin(shr_eneff_new) %>%
     ljoin(shr_fuel_heat_new) %>%
     filter(bld_age %in% p_i) %>%
     mutate(ms= shr_eneff_new*shr_fuel_heat_new) %>%
-    mutate_cond(is.na(ms) & eneff == "ns", ms = 1) %>%
-    filter(!is.na(ms)) %>% # temporary fix (renovated buildings are taken as they belong to building period p5)
+    mutate_cond(is.na(ms) & eneff == "ns", ms = 1) %>% # non-standard buildings
+    filter(!is.na(ms)) %>%
     select(-c(bld_age,shr_eneff_new,shr_fuel_heat_new))
 
-  
-  # ## Prepare dataframe at eneff level (used to assign district heating in script M04) ### MOVED TO stock dynamics script
-  # ms_new_eneff_i <- bld_cases_eneff %>% 
-  #   mutate(year = yrs[i]) %>% 
-  #   ljoin(shr_eneff_new) %>% # Join market share column
-  #   filter(bld_age %in% p_i) %>%
-  #   mutate_cond(is.na(ms_eneff) & eneff == "ns", ms = 1) %>%
-  #   select(-c(bld_age))
-  
   print(paste0("Completed construction target - year ", yrs[i]))
   output = ms_new_i
 }
-
-  # # remove unused files
-  # rm(ct_bld_age_id_i)
-  # rm(lcc_new_hh,lcc_new_hh_exp,lcc_new_hh_sum)
-
-# write out results for testing
-#write.csv(ms_new_i, paste0(path_out,"ms_new_test.csv"))
-
-
-

@@ -1,7 +1,10 @@
 
 ### F01 SCRIPT - FUNCTION TO LOAD AND PROCESS DATA INPUTS
 
-fun_inputs_csv <- function(path_in, path_inputs, file_inputs, sector, run){ #file_scenarios, 
+# Inputs of the household-type overlay: loaded only when mod_hh_type = "overlay" (script F07)
+hh_inputs <- c("ct_hh_type", "shr_hh_type", "shr_hh_housing")
+
+fun_inputs_csv <- function(path_in, path_inputs, file_inputs, sector, run, mod_hh_type = "none"){ #file_scenarios,
 
   # # PATH DATA INPUT FILES
   # path_in_csv = path_in #paste0(path_in,"./input_csv/")
@@ -15,6 +18,9 @@ fun_inputs_csv <- function(path_in, path_inputs, file_inputs, sector, run){ #fil
   input = input %>% 
     mutate(name_file = ifelse(is.na(name_file),reference,name_file)) %>%
     select(name_parameter,name_file)
+
+  # Household-type inputs are not read unless the overlay is on
+  if (mod_hh_type == "none") input = input %>% filter(!name_parameter %in% hh_inputs)
 
 
   ### DATA LOADING AND PROCESSING

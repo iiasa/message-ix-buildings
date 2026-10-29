@@ -41,26 +41,26 @@ cost_intang_new_heat_i <- cost_intang_new_heat %>% filter(year == yrs[i])
 ## Prepare dataframe for LCC calculations at household level - New constructions
 lcc_new_hh <- bld_cases_fuel %>%
   mutate(year = yrs[i]) %>% # Attach year (in the loop)
-  left_join(hh_size) %>% # Add HH size # %>% filter(year == yrs[i]) # Filter "i" year 
-  left_join(floor_cap) %>% 
+  ljoin(hh_size) %>% # Add HH size # %>% filter(year == yrs[i]) # Filter "i" year 
+  ljoin(floor_cap) %>% 
   #filter(year == yrs[i]) %>% # Filter "i" year 
-  left_join(ct_fuel_excl_new) %>% ## Constraint: fuels not allowed for new construction
-  left_join(ct_fuel_excl_reg) %>% ## Constraint: fuels not used in specific regions
+  ljoin(ct_fuel_excl_new) %>% ## Constraint: fuels not allowed for new construction
+  ljoin(ct_fuel_excl_reg) %>% ## Constraint: fuels not used in specific regions
   mutate_cond(is.na(ct_fuel_excl_new), ct_fuel_excl_new = 0) %>% # 0=fuel permitted; 1=fuel excluded
   mutate_cond(is.na(ct_fuel_excl_reg), ct_fuel_excl_reg = 0) %>% # 0=fuel permitted; 1=fuel excluded
-  left_join(cost_invest_new_shell_i) %>% ## Add investment costs - shell
-  left_join(cost_invest_new_heat_i) %>% ## Add investment costs - heating fuel shift
+  ljoin(cost_invest_new_shell_i) %>% ## Add investment costs - shell
+  ljoin(cost_invest_new_heat_i) %>% ## Add investment costs - heating fuel shift
   #mutate(cost_inv = cost_shell + cost_heat) %>% 
   mutate(cost_invest_hh = cost_invest_new_heat + (cost_invest_new_shell * floor_cap * hh_size)) %>% # Heat sys cost per unit - Shell costs per m2
-  left_join(en_hh_tot) %>% ## Add operative costs (total) # %>% filter(year == yrs[i]) # Filter "i" year 
+  ljoin(en_hh_tot) %>% ## Add operative costs (total) # %>% filter(year == yrs[i]) # Filter "i" year 
   mutate(cost_op_hh = cost_op_m2 * floor_cap * hh_size) %>%
   #mutate(cost_intang_hh = 0) %>% ## Add intangible costs
-  left_join(cost_intang_new_shell_i) %>% ## Add intangible costs - shell
-  left_join(cost_intang_new_heat_i) %>% ## Add intangible costs - heating fuel shift
+  ljoin(cost_intang_new_shell_i) %>% ## Add intangible costs - shell
+  ljoin(cost_intang_new_heat_i) %>% ## Add intangible costs - heating fuel shift
   mutate(cost_intang_hh = cost_intang_new_heat + (cost_intang_new_shell * floor_cap * hh_size)) %>% # total intangible costs by hh
-  left_join(discount_new) %>% ## Add discount rates #%>% filter(year == yrs[i]) # Filter "i" year 
-  left_join(lifetime_new) %>% ## Add lifetime new construction (for investment: based on loan duration)
-  left_join(heterog_new) %>% # Add heterogeneity parameter
+  ljoin(discount_new) %>% ## Add discount rates #%>% filter(year == yrs[i]) # Filter "i" year 
+  ljoin(lifetime_new) %>% ## Add lifetime new construction (for investment: based on loan duration)
+  ljoin(heterog_new) %>% # Add heterogeneity parameter
   #mutate(lifetime_new = lifetime_new) %>% ## Add lifetime new construction (for investment: based on loan duration) ## old formulation
   mutate(lcc_new = fun_lcc(cost_invest_hh, cost_op_hh, cost_intang_hh, discount_new, lifetime_new)) %>% ## Apply LCC function to new construction
   mutate(lcc_new_exp = fun_lcc_exp(lcc_new, heterog_new))
@@ -99,7 +99,7 @@ lcc_new_hh_sum <- lcc_new_hh_exp %>%
 
 print(paste0("update lcc_new_hh_exp "))
 # join sums 
-lcc_new_hh_exp <- lcc_new_hh_exp %>% left_join(lcc_new_hh_sum) %>%
+lcc_new_hh_exp <- lcc_new_hh_exp %>% ljoin(lcc_new_hh_sum) %>%
   mutate(ms = lcc_new_exp/lcc_new_exp_sum) #market share - not weighted on share of hh tenure
 
 print(paste0("generate ms_new_i"))
@@ -140,8 +140,8 @@ fun_ms_new_target <- function(yrs,i,
   ## Prepare dataframe for LCC calculations at household level - New constructions
   ms_new_i <- bld_cases_fuel %>% 
     mutate(year = yrs[i]) %>% 
-    left_join(shr_eneff_new) %>% # Join market share column
-    left_join(shr_fuel_heat_new) %>%
+    ljoin(shr_eneff_new) %>% # Join market share column
+    ljoin(shr_fuel_heat_new) %>%
     filter(bld_age %in% p_i) %>%
     mutate(ms= shr_eneff_new*shr_fuel_heat_new) %>%
     mutate_cond(is.na(ms) & eneff == "ns", ms = 1) %>%
@@ -152,7 +152,7 @@ fun_ms_new_target <- function(yrs,i,
   # ## Prepare dataframe at eneff level (used to assign district heating in script M04) ### MOVED TO stock dynamics script
   # ms_new_eneff_i <- bld_cases_eneff %>% 
   #   mutate(year = yrs[i]) %>% 
-  #   left_join(shr_eneff_new) %>% # Join market share column
+  #   ljoin(shr_eneff_new) %>% # Join market share column
   #   filter(bld_age %in% p_i) %>%
   #   mutate_cond(is.na(ms_eneff) & eneff == "ns", ms = 1) %>%
   #   select(-c(bld_age))

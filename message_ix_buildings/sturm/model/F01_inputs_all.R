@@ -60,12 +60,12 @@ fun_build_data_model <- function(d, sector, geo_level, geo_level_aggr,geo_levels
                                 #arch = ct_bld_arch,
                                 stringsAsFactors = FALSE) %>%
     rename_at("geo_level", ~paste0(geo_level)) %>%
-    left_join(d$geo_data %>% select_at(geo_levels)) %>%
-    left_join(d$clim_zones, by=c(paste(geo_level), "urt")) %>%
-    left_join(d$ct_inc_cl) %>%
-    left_join(d$ct_bld) %>%
-    left_join(d$ct_eneff, by="mat") %>%
-    #left_join(ct_access, by="mat") %>% # REMOVED in this version
+    ljoin(d$geo_data %>% select_at(geo_levels)) %>%
+    ljoin(d$clim_zones, by=c(paste(geo_level), "urt")) %>%
+    ljoin(d$ct_inc_cl) %>%
+    ljoin(d$ct_bld) %>%
+    ljoin(d$ct_eneff, by="mat") %>%
+    #ljoin(ct_access, by="mat") %>% # REMOVED in this version
     inner_join(d$ct_fuel_comb, by=c("mat" = "mat")) %>%
     # select(!!as.symbol(geo_level), scenario, urt, clim, inc_cl, arch, mat, eneff) %>% # Re-order the columns
     arrange(!!as.symbol(geo_level), #scenario,

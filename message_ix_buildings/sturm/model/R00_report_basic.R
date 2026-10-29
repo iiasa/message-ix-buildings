@@ -77,4 +77,31 @@ fun_report_basic <- function(report, report_var, geo_data, geo_level, geo_level_
           ungroup()}
     write_csv(mat_stock_rep, paste0(path_out,"report_STURM_",scenario_name,"_", sector, "_",geo_level_report, "_vintage.csv") )
   }
+
+  # Write household-type results (household-type overlay only)
+  if (!is.null(report$hh_stock)) {
+    print(paste0("Write household-type results : ", scenario_name))
+
+    hh_cols <- c("urt", "clim", "inc_cl", "year", "hh_type", "n_units", "n_hh", "n_hh_target")
+    housing_cols <- setdiff(names(report$hh_stock), c(names(geo_data), hh_cols))
+
+    hh_rep <- report$hh_stock %>%
+      ljoin(geo_data) %>%
+      mutate(abs_dev = abs(n_hh - n_hh_target))
+
+    # Households by type and housing type (million)
+    hh_stock_rep <- hh_rep %>%
+      group_by_at(c(geo_level_report, "urt", "inc_cl", housing_cols, "hh_type", "year")) %>%
+      summarise(n_hh_M = sum(n_hh) / 1e6,
+                n_hh_target_M = sum(n_hh_target) / 1e6) %>%
+      ungroup()
+    write_csv(hh_stock_rep, paste0(path_out,"report_STURM_",scenario_name,"_", sector, "_",geo_level_report, "_hh_stock.csv") )
+
+    # Housing mismatch: share of households not living where the survey distribution would place them
+    hh_mismatch_rep <- hh_rep %>%
+      group_by_at(c(geo_level_report, "year")) %>%
+      summarise(mismatch = 0.5 * sum(abs_dev) / sum(n_hh)) %>%
+      ungroup()
+    write_csv(hh_mismatch_rep, paste0(path_out,"report_STURM_",scenario_name,"_", sector, "_",geo_level_report, "_hh_mismatch.csv") )
+  }
 }

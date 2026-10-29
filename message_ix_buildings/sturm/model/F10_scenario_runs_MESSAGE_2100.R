@@ -19,7 +19,8 @@ run_scenario <- function(run,
                          input_mode, 
                          mod_arch,
                          mod_new, mod_ren,
-                         report_type, report_var){
+                         report_type, report_var,
+                         mod_hh_type = "none"){ # household-type overlay: "none" or "overlay" (residential only)
   
   print(paste("Start scenario run: ", run, "_", sector))
 
@@ -60,6 +61,7 @@ run_scenario <- function(run,
   source(file.path(path_rcode, "F05_renov_switch_decision.R"))
   source(file.path(path_rcode, "F02_init_stock_dyn_fut.R"))
   source(file.path(path_rcode, "F06_stock_dyn_complete_rev.R"))
+  source(file.path(path_rcode, "F07_hh_type_overlay.R"))
   # source(file.path(path_rcode, "R00_report_basic.R"))
   if ("STURM" %in% report_type) {source(file.path(path_rcode, "R00_report_basic.R"))}
   if ("MESSAGE" %in% report_type) {source(file.path(path_rcode, "R01_report_MESSAGE.R"))}
@@ -86,7 +88,7 @@ run_scenario <- function(run,
     print("Load data - csv")
     
     # Source - input data
-    d <- fun_inputs_csv(path_in, path_inputs, file_inputs, sector, run) #file_scenarios, 
+    d <- fun_inputs_csv(path_in, path_inputs, file_inputs, sector, run, mod_hh_type) #file_scenarios,
     
     print("Data loaded!")
   }
@@ -98,6 +100,10 @@ run_scenario <- function(run,
   d <- fun_build_data_model(d, sector, geo_level, geo_level_aggr,geo_levels, region_select)
   
   print("Data model - built!")
+
+  ## Household-type overlay: check and prepare inputs
+  if (!mod_hh_type %in% c("none", "overlay")) stop("mod_hh_type must be 'none' or 'overlay'")
+  if (mod_hh_type == "overlay") {d <- fun_hh_prepare(d, sector, yrs, geo_levels)}
   
   
 
@@ -177,7 +183,10 @@ run_scenario <- function(run,
     # if ("material" %in% report){mat_stock = lst_stock_init$mat_stock}
     
     rm(lst_stock_init)
-    
+
+    # Household-type overlay - base year
+    if (mod_hh_type == "overlay") {report <- fun_hh_overlay(report, bld_det_age_i, yrs[1], d, geo_levels)}
+
     print(paste("Initialize scenario run", sector, "- completed!"))
     
     # Loop over timesteps
@@ -332,12 +341,15 @@ run_scenario <- function(run,
       #ms_new = lst_stock_i$ms_new
       #ms_ren = lst_stock_i$ms_ren
       rm(lst_stock_i)
-      
+
+      # Household-type overlay - current year
+      if (mod_hh_type == "overlay") {report <- fun_hh_overlay(report, bld_det_age_i, yrs[i], d, geo_levels)}
+
     }
-    
+
   }
-  
-  
+
+
   ### COMMERCIAL SECTOR
   
   if (sector == "comm") {

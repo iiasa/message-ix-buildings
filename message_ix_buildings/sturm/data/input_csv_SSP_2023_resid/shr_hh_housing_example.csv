@@ -1,0 +1,13 @@
+hh_type,arch,value
+single,sfh,0.20
+single,mfh,0.75
+single,inf,0.05
+couple,sfh,0.45
+couple,mfh,0.50
+couple,inf,0.05
+family,sfh,0.65
+family,mfh,0.30
+family,inf,0.05
+elderly,sfh,0.50
+elderly,mfh,0.45
+elderly,inf,0.05

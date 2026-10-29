@@ -1,0 +1,17 @@
+urt,hh_type,year,value
+urb,single,2020,0.30
+urb,couple,2020,0.25
+urb,family,2020,0.25
+urb,elderly,2020,0.20
+urb,single,2050,0.35
+urb,couple,2050,0.22
+urb,family,2050,0.18
+urb,elderly,2050,0.25
+rur,single,2020,0.20
+rur,couple,2020,0.25
+rur,family,2020,0.35
+rur,elderly,2020,0.20
+rur,single,2050,0.22
+rur,couple,2050,0.24
+rur,family,2050,0.29
+rur,elderly,2050,0.25

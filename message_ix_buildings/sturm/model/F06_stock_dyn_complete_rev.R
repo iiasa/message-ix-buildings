@@ -67,9 +67,9 @@ ct_bld_age_i <- ct_bld_age %>% filter(yrs[i] >= year_i & yrs[i] <= year_f) %>%
 # Calculate demolitions - detailed - by fuel, yr_con - i-th year
 dem_det_age_i <- bld_det_age_i %>% filter(year == yrs[i-1]) %>%  # Stock from previous year
   #mutate(age = yrs[i]-yr_con) %>% # Calculate age of buildings
-  # left_join(b) %>% # Attach probability of demolition
-  left_join(prob_dem %>% pivot_wider(names_from="parameter",values_from = "prob_dem")) %>% 
-  #left_join(bld_dyn_par %>% select(-c(p_dem_hist, p_ren_hist, ren_tau, ren_sd, l_new, l_ren))) %>% # Attach probability of demolition
+  # ljoin(b) %>% # Attach probability of demolition
+  ljoin(prob_dem %>% pivot_wider(names_from="parameter",values_from = "prob_dem")) %>% 
+  #ljoin(bld_dyn_par %>% select(-c(p_dem_hist, p_ren_hist, ren_tau, ren_sd, l_new, l_ren))) %>% # Attach probability of demolition
   select(-year) %>%
   mutate(pdem = pweibull(yrs[i]-yr_con, shape = shape, scale = scale) - pweibull(yrs[i-1]-yr_con, shape = shape, scale = scale)) %>% #CDF: difference between two consecutive time steps
   mutate(n_dem = ifelse(n_units_fuel>0,round(pdem * n_units_fuel,rnd),0)) %>%
@@ -84,7 +84,7 @@ if(mod_arch == "new"){
   
   # Calculate demolition, new constructions - aggregated ("mat" level) - for i-th year
   bld_aggr_i <- stock_aggr %>% filter(year == yrs[i]) %>% # stock variation current year 
-    left_join(dem_det_age_i %>% # aggregate demolitions by arch
+    ljoin(dem_det_age_i %>% # aggregate demolitions by arch
                 group_by_at(setdiff(names(dem_det_age_i), 
                                     c("yr_con", "arch","eneff","fuel_heat","fuel_cool"
                                       ,"bld_age"
@@ -107,7 +107,7 @@ if(mod_arch == "new"){
     mutate(n_units_fuel_upd_tot = sum(n_units_fuel_p - n_dem))%>%
     ungroup() %>%
     mutate(shr_aggr_age = (n_units_fuel_p - n_dem)/n_units_fuel_upd_tot)%>%
-    left_join(bld_aggr_i %>% select(-c(year, n_units_aggr, var_aggr, n_dem, n_new))) %>%
+    ljoin(bld_aggr_i %>% select(-c(year, n_units_aggr, var_aggr, n_dem, n_new))) %>%
     mutate(n_empty = ifelse(shr_aggr_age>0 & n_units_fuel_p>0, round(n_empty * shr_aggr_age,rnd), 0)) %>% # update number of empty buildings by vintage cohort
     select(-c(n_units_fuel_upd_tot, shr_aggr_age))
   
@@ -122,10 +122,10 @@ if(mod_arch == "new"){
     # rowwise() %>% # add period of construction
     # mutate(bld_age = ct_bld_age$bld_age_id[which(ct_bld_age$mat == mat & ct_bld_age$year_i <= yr_con & ct_bld_age$year_f >= yr_con)]) %>%
     # ungroup() %>%
-    left_join(ct_bld_age_i) %>%
-    left_join(shr_arch) %>% # join shares of arch in new construction
-    left_join(shr_distr_heat) %>%
-    left_join(ms_new_i) %>% # join shares of eneff and fuel_heat in new construction
+    ljoin(ct_bld_age_i) %>%
+    ljoin(shr_arch) %>% # join shares of arch in new construction
+    ljoin(shr_distr_heat) %>%
+    ljoin(ms_new_i) %>% # join shares of eneff and fuel_heat in new construction
     #mutate(mod_decision = 1) %>%
     mutate(n_new = round(n_new * shr_arch * c(1-shr_distr_heat) * ms, rnd)) %>%
     #mutate(n_dem = 0) %>% 
@@ -142,9 +142,9 @@ if(mod_arch == "new"){
     filter(mat != "sub") %>%
     select(-c(n_units_aggr,var_aggr,n_dem,n_empty)) %>% 
     add_column(yr_con = yrs[i], .after = "year") %>%
-    left_join(ct_bld_age_i) %>%
-    left_join(shr_arch) %>% # join shares of arch in new construction
-    left_join(shr_distr_heat) %>%
+    ljoin(ct_bld_age_i) %>%
+    ljoin(shr_arch) %>% # join shares of arch in new construction
+    ljoin(shr_distr_heat) %>%
     mutate(eneff = "s51_std", # CHANGE THIS!!!!
              fuel_heat = "district_heat", fuel_cool = "electricity"
            #, mod_decision = 0
@@ -164,7 +164,7 @@ if(mod_arch == "new"){
   
   # Calculate demolition, new constructions - aggregated ("arch" level) - for i-th year
   bld_aggr_i <- stock_aggr %>% filter(year == yrs[i]) %>% # stock variation current year 
-    left_join(dem_det_age_i %>% # aggregate demolitions by arch
+    ljoin(dem_det_age_i %>% # aggregate demolitions by arch
                 group_by_at(setdiff(names(dem_det_age_i), 
                                     c("yr_con","eneff","fuel_heat","fuel_cool" #,"arch" 
                                       ,"bld_age"
@@ -190,7 +190,7 @@ if(mod_arch == "new"){
     mutate(n_units_fuel_upd_tot = sum(n_units_fuel_p - n_dem))%>% # surviving units
     ungroup() %>%
     mutate(shr_aggr_age = (n_units_fuel_p - n_dem)/n_units_fuel_upd_tot)%>%
-    left_join(bld_aggr_i %>% select(-c(year, n_units_aggr, var_aggr, n_dem, n_new))) %>%
+    ljoin(bld_aggr_i %>% select(-c(year, n_units_aggr, var_aggr, n_dem, n_new))) %>%
     mutate(n_empty = ifelse(shr_aggr_age>0 & n_units_fuel_p>0, round(n_empty * shr_aggr_age,rnd), 0)) %>% # update number of empty buildings by vintage cohort
     mutate(n_empty = ifelse(n_units_fuel_p-n_dem-n_empty<0,0,n_empty)) %>% # correct exceeding empty buildings
     select(-c(n_units_fuel_upd_tot, shr_aggr_age))
@@ -210,10 +210,10 @@ if(mod_arch == "new"){
     # rowwise() %>% # add period of construction
     # mutate(bld_age = ct_bld_age$bld_age_id[which(ct_bld_age$mat == mat & ct_bld_age$year_i <= yr_con & ct_bld_age$year_f >= yr_con)]) %>%
     # ungroup() %>%
-    left_join(ct_bld_age_i) %>%
-    #left_join(shr_arch) %>% # join shares of arch in new construction
-    left_join(shr_distr_heat) %>%
-    left_join(ms_new_i) %>% # join shares of eneff and fuel_heat in new construction
+    ljoin(ct_bld_age_i) %>%
+    #ljoin(shr_arch) %>% # join shares of arch in new construction
+    ljoin(shr_distr_heat) %>%
+    ljoin(ms_new_i) %>% # join shares of eneff and fuel_heat in new construction
     #mutate(mod_decision = 1) %>%
     mutate(n_new = round(n_new *  c(1-shr_distr_heat) * ms, rnd)) %>%
     #mutate(n_dem = 0) %>% 
@@ -230,9 +230,9 @@ if(mod_arch == "new"){
     filter(mat != "sub") %>%
     select(-c(n_units_aggr,var_aggr,n_dem,n_empty)) %>% 
     add_column(yr_con = yrs[i], .after = "year") %>%
-    left_join(ct_bld_age_i) %>%
-    #left_join(shr_arch) %>% # join shares of arch in new construction
-    left_join(shr_distr_heat) %>%
+    ljoin(ct_bld_age_i) %>%
+    #ljoin(shr_arch) %>% # join shares of arch in new construction
+    ljoin(shr_distr_heat) %>%
     mutate(eneff = "s51_std", # CHANGE THIS!!!!
            fuel_heat = "district_heat", fuel_cool = "electricity"
            #, mod_decision = 0
@@ -256,7 +256,7 @@ if ("sub" %in% unique(bld_cases_eneff$mat)){
     filter(mat == "sub") %>%
     select(-c(n_units_aggr,var_aggr,n_dem,n_empty)) %>% 
     add_column(yr_con = yrs[i], .after = "year") %>%
-    left_join(ct_bld_age_i) %>%
+    ljoin(ct_bld_age_i) %>%
     mutate(arch = "inf", eneff = "ns", # CHANGE THIS!!!!
            fuel_heat = "electric", fuel_cool = "electricity"
            #, mod_decision = 0
@@ -289,8 +289,8 @@ if ("sub" %in% unique(bld_cases_eneff$mat)){
   # ## Fuel switching: yes/no (REMOVED)
   # bld_fuel_switch <- bld_cases_fuel %>%
   #   mutate(year=yrs[i]) %>%
-  #   #left_join(rate_switch_fuel_heat) %>%
-  #   left_join(ms_sw_i) %>%
+  #   #ljoin(rate_switch_fuel_heat) %>%
+  #   ljoin(ms_sw_i) %>%
   #   mutate(sw_fuel = ifelse(!is.na(ms) & ms>0,1,0))
   # bld_fuel_switch <- bld_fuel_switch  %>%
   #   group_by_at(setdiff(names(bld_fuel_switch), 
@@ -304,9 +304,9 @@ if ("sub" %in% unique(bld_cases_eneff$mat)){
       add_column(year = yrs[i], .before = "yr_con") %>%
       mutate(n_units_fuel_exst = n_units_fuel_p - n_dem - n_empty)  %>% # update results existing buildings (before renovation)
       ## Account for renovations
-      left_join(rate_ren_i) %>%
+      ljoin(rate_ren_i) %>%
       mutate(rate_ren = ifelse(is.na(rate_ren),0,rate_ren)) %>% # NAs for rate_ren -> no renovations! (e.g. no space heating demand) 
-      left_join(ms_ren_i %>% rename(eneff = eneff_i, fuel_heat = fuel_heat_i)) %>%
+      ljoin(ms_ren_i %>% rename(eneff = eneff_i, fuel_heat = fuel_heat_i)) %>%
       mutate(mod_decision = ifelse(is.na(ms_ren),0,mod_decision), # CHANGE THIS!!! no renovation if there is no MS data available (district heat)
              eneff_f = ifelse(is.na(ms_ren),eneff,eneff_f), # take original eneff if is.na(ms_ren)
              fuel_heat_f = ifelse(is.na(ms_ren),fuel_heat,fuel_heat_f)) %>%
@@ -328,7 +328,7 @@ if ("sub" %in% unique(bld_cases_eneff$mat)){
     
     ## Existing buildings - non-renovated - initialize
     exst_det_age_i <- dem_det_age_i %>%
-      left_join(ren_det_age_i %>%
+      ljoin(ren_det_age_i %>%
       #select(-c(eneff_f, fuel_heat_f)) %>%
       group_by_at(setdiff(names(ren_det_age_i), 
                           c("eneff_f","fuel_heat_f","n_units_fuel"))) %>% # Select all variables, except the ones indicated, for grouping
@@ -354,9 +354,9 @@ if ("sub" %in% unique(bld_cases_eneff$mat)){
     
     ## Existing buildings - non-renovated - fuel switch
     exst_sw_det_age_i <- exst_det_age_i %>%
-      #left_join(bld_fuel_switch) %>%
-      left_join(rate_switch_fuel_heat) %>%
-      left_join(ms_sw_i) %>%
+      #ljoin(bld_fuel_switch) %>%
+      ljoin(rate_switch_fuel_heat) %>%
+      ljoin(ms_sw_i) %>%
       mutate(rate_switch_fuel_heat = ifelse(year-yr_con > bld_age_min, rate_switch_fuel_heat, 0)) %>% # fuel switches only over the minimum age of buildings
       #mutate(n_units_fuel = round(n_units_fuel_exst * sw_fuel * (rate_switch_fuel_heat * stp) * ms, rnd)) %>% # calculate n.units - after renovation
       mutate(n_units_fuel = round(n_units_fuel_exst * (rate_switch_fuel_heat * stp) * ms, rnd)) %>% # calculate n.units - after renovation
@@ -376,8 +376,8 @@ if ("sub" %in% unique(bld_cases_eneff$mat)){
     
     # Update Existing buildings - non-renovated - without fuel switch
     exst_det_age_i <- exst_det_age_i %>%
-#      left_join(exst_sw_det_age_i_tmp) %>%
-      left_join(exst_sw_det_age_i %>%
+#      ljoin(exst_sw_det_age_i_tmp) %>%
+      ljoin(exst_sw_det_age_i %>%
                   group_by_at(setdiff(names(exst_sw_det_age_i),
                                       c("fuel_heat_f","n_units_fuel"))) %>% # Select all variables, except the ones indicated, for grouping
                   summarise(n_sw = sum(n_units_fuel))%>%
@@ -400,9 +400,9 @@ if ("sub" %in% unique(bld_cases_eneff$mat)){
     #   add_column(year = yrs[i], .before = "yr_con") %>%
     #   mutate(n_units_fuel_exst = n_units_fuel_p - n_dem - n_empty)  %>% # update results existing buildings (before renovation)
     #   ## Account for renovations
-    #   left_join(rate_ren_i) %>%
+    #   ljoin(rate_ren_i) %>%
     #   mutate(rate_ren_upd = ifelse(is.na(rate_ren_upd),0,rate_ren_upd)) %>% # NAs for rate_ren -> no renovations! (e.g. no space heating demand) 
-    #   left_join(ms_ren_i %>% rename(eneff = eneff_i, fuel_heat = fuel_heat_i)) %>%
+    #   ljoin(ms_ren_i %>% rename(eneff = eneff_i, fuel_heat = fuel_heat_i)) %>%
     #   mutate(mod_decision = ifelse(is.na(ms_ren),0,mod_decision), # CHANGE THIS!!! no renovation if there is no MS data available (district heat)
     #          eneff_f = ifelse(is.na(ms_ren),eneff,eneff_f), # take original eneff if is.na(ms_ren)
     #          fuel_heat_f = ifelse(is.na(ms_ren),fuel_heat,fuel_heat_f)) %>%
@@ -497,8 +497,8 @@ en_stock_i <- bld_cases_fuel %>%
   mutate(scenario = run) %>%
   # mutate(ssp = ssp_r) %>%
   mutate(year= yrs[i]) %>%
-  left_join(bld_det_i %>% select(-bld_age)) %>% # issue matching periods of construction when definition is different!
-  #left_join(stock_fuel_i.df) %>%
+  ljoin(bld_det_i %>% select(-bld_age)) %>% # issue matching periods of construction when definition is different!
+  #ljoin(stock_fuel_i.df) %>%
   # Add "v_no_heat" category
   select(-c(mod_decision)) %>%
   pivot_wider(names_from = "fuel_heat", values_from = "n_units_fuel") %>% 
@@ -518,17 +518,17 @@ if(sector == "resid"){
   
   en_stock_i <- en_stock_i %>%
     #bld_cases_fuel %>% # To avoid NAs with non-available combination of eneff - fuel (slums)
-    #left_join(en_stock_i) %>%
-    left_join(shr_need_heat) %>%
+    #ljoin(en_stock_i) %>%
+    ljoin(shr_need_heat) %>%
     mutate(n_units_fuel = ifelse(fuel_heat == "v_no_heat",# Rescale number of units based on fuel # Heating access not considered here!!
                                  n_units_eneff* (1-shr_need_heat), 
                                  n_units_fuel*shr_need_heat)) %>%
-    left_join(hh_size) %>%
-    left_join(floor_cap) %>%
-    #left_join(shr_acc_cool) %>%
-    left_join(en_m2_scen_heat) %>%
-    left_join(en_m2_scen_cool) %>%
-    left_join(en_hh_hw_scen) %>%
+    ljoin(hh_size) %>%
+    ljoin(floor_cap) %>%
+    #ljoin(shr_acc_cool) %>%
+    ljoin(en_m2_scen_heat) %>%
+    ljoin(en_m2_scen_cool) %>%
+    ljoin(en_hh_hw_scen) %>%
     mutate(floor_Mm2 = n_units_fuel / 1e6 * hh_size * floor_cap) %>% # convert n. units to millions
     mutate(floor_heat_Mm2 = floor_Mm2) %>%
     #mutate(floor_heat_Mm2 = ifelse(acc_heat == 1, floor_Mm2, 0)) %>%
@@ -551,18 +551,18 @@ if(sector == "resid"){
 if(sector == "comm"){
   
   en_stock_i <- en_stock_i %>% # To avoid NAs with non-available combination of eneff - fuel (slums)
-    #left_join(en_stock_i) %>%
-    left_join(shr_need_heat) %>%
+    #ljoin(en_stock_i) %>%
+    ljoin(shr_need_heat) %>%
     mutate(n_units_fuel = ifelse(fuel_heat == "v_no_heat",# Rescale number of units based on fuel # Heating access not considered here!!
                                  n_units_eneff* (1-shr_need_heat), 
                                  n_units_fuel*shr_need_heat)) %>%
-    #left_join(hh_size) %>%
-    #left_join(floor) %>%
-    #left_join(shr_acc_cool) %>%
-    left_join(en_m2_scen_heat) %>%
-    left_join(en_m2_scen_cool) %>%
-    left_join(en_m2_hw_scen) %>%
-    left_join(en_int_others) %>%
+    #ljoin(hh_size) %>%
+    #ljoin(floor) %>%
+    #ljoin(shr_acc_cool) %>%
+    ljoin(en_m2_scen_heat) %>%
+    ljoin(en_m2_scen_cool) %>%
+    ljoin(en_m2_hw_scen) %>%
+    ljoin(en_int_others) %>%
     mutate(floor_Mm2 = n_units_fuel / 1e6) %>%
     mutate(floor_heat_Mm2 = floor_Mm2) %>%
     #mutate(floor_heat_Mm2 = ifelse(acc_heat == 1, floor_Mm2, 0)) %>%
@@ -628,17 +628,17 @@ if("material" %in% report_var){
       mutate(scenario = run) %>%
       # mutate(ssp = ssp_r) %>%
       mutate(year= yrs[i]) %>%
-      left_join(hh_size) %>%
-      left_join(floor_cap) %>%
-      left_join(bld_eneff_i) %>%
-      left_join(dem_eneff_i) %>%
-      left_join(new_eneff_i) %>%
+      ljoin(hh_size) %>%
+      ljoin(floor_cap) %>%
+      ljoin(bld_eneff_i) %>%
+      ljoin(dem_eneff_i) %>%
+      ljoin(new_eneff_i) %>%
       mutate(n_units = ifelse(is.na(n_units),0,n_units),
              n_new = ifelse(is.na(n_new),0,n_new),
              n_dem = ifelse(is.na(n_dem),0,n_dem)) %>%
       filter(n_units + n_new + n_dem != 0) %>%
     filter(mat != "sub") %>% # Exclude slums (no material intensity data)
-    left_join(mat_int) %>%
+    ljoin(mat_int) %>%
     #filter(arch != "inf") %>% # Materials not calculated for slums
     mutate(floor_tot_Mm2 = n_units * hh_size * floor_cap / 1e6) %>% # Mm2
     mutate(floor_new_Mm2 = n_new * hh_size * floor_cap / stp / 1e6) %>% # Mm2/yr
@@ -680,7 +680,7 @@ if("material" %in% report_var){
       summarise(mat_demand_Mt = sum(mat_demand_Mt),
                 mat_scrap_Mt = sum(mat_scrap_Mt)) %>%
       
-      left_join(
+      ljoin(
         shr_mat_eol %>%
           pivot_wider(
             names_from = eol_treat,
@@ -702,7 +702,7 @@ if("material" %in% report_var){
     
     # disaggregate reuse and recycling, then calculate other treatments
     mat_stock_i <- mat_stock_i %>%
-      left_join(
+      ljoin(
         shr_mat_eol %>%
           pivot_wider(
             names_from = eol_treat,
@@ -718,7 +718,7 @@ if("material" %in% report_var){
       # ) %>%
       
       # now allocate regional aggregated reuse / recycling using weighting by mat_demand
-      left_join(mat_reuse_recyc_aggr_i) %>%
+      ljoin(mat_reuse_recyc_aggr_i) %>%
       group_by(region_bld, region_gea, mat, material, scenario, year) %>%
       mutate(
         # Calculate the weight for each row within this group
@@ -777,15 +777,15 @@ if("material" %in% report_var){
     mutate(scenario = run) %>%
     # mutate(ssp = ssp_r) %>%
     mutate(year= yrs[i]) %>%
-    #left_join(floor_cap) %>%
-    left_join(bld_eneff_i) %>%
-    left_join(dem_eneff_i) %>%
-    left_join(new_eneff_i) %>%
+    #ljoin(floor_cap) %>%
+    ljoin(bld_eneff_i) %>%
+    ljoin(dem_eneff_i) %>%
+    ljoin(new_eneff_i) %>%
     mutate(n_units = ifelse(is.na(n_units),0,n_units),
            n_new = ifelse(is.na(n_new),0,n_new),
            n_dem = ifelse(is.na(n_dem),0,n_dem)) %>%
     filter(n_units + n_new + n_dem != 0) %>%
-    left_join(mat_int) %>%
+    ljoin(mat_int) %>%
     #filter(arch != "inf") %>% # Materials not calculated for slums
     mutate(floor_tot_Mm2 = n_units / 1e6) %>% # Mm2
     mutate(floor_new_Mm2 = n_new / stp / 1e6) %>% # Mm2/yr
@@ -827,7 +827,7 @@ if("material" %in% report_var){
     summarise(mat_demand_Mt = sum(mat_demand_Mt),
               mat_scrap_Mt = sum(mat_scrap_Mt)) %>%
     
-    left_join(
+    ljoin(
       shr_mat_eol %>%
         pivot_wider(
           names_from = eol_treat,
@@ -849,7 +849,7 @@ if("material" %in% report_var){
   
   # disaggregate reuse and recycling, then calculate other treatments
   mat_stock_i <- mat_stock_i %>%
-    left_join(
+    ljoin(
       shr_mat_eol %>%
         pivot_wider(
           names_from = eol_treat,
@@ -865,7 +865,7 @@ if("material" %in% report_var){
     # ) %>%
     
     # now allocate regional aggregated reuse / recycling using weighting by mat_demand
-    left_join(mat_reuse_recyc_aggr_i) %>%
+    ljoin(mat_reuse_recyc_aggr_i) %>%
     group_by(region_bld, region_gea, mat, material, scenario, year) %>%
     mutate(
       # Calculate the weight for each row within this group

@@ -105,12 +105,12 @@ bld_age_exst <- ct_bld_age %>% filter(year_i < yrs[i]) %>% select(bld_age_id) %>
 ## Prepare dataframe for LCC calculations at household level - Renovations
 lcc_ren_hh <- bld_cases_fuel_tenr %>% 
   filter(bld_age %in% bld_age_exst) %>% ## RENOVATION POSSIBLE FOR EXISTING BUILDINGS ONLY 
-  left_join(ct_ren_eneff %>% rename(eneff = eneff_i)) %>% # add eneff categories for renovations
-  left_join(ct_ren_fuel_heat %>% rename(fuel_heat = fuel_heat_i)) %>% # add heat_fuel categories for renovations
-  left_join(ct_fuel_excl_ren) %>% ## Constraint: fuels not allowed for renovation
-  left_join(ct_fuel_excl_reg %>% 
+  ljoin(ct_ren_eneff %>% rename(eneff = eneff_i)) %>% # add eneff categories for renovations
+  ljoin(ct_ren_fuel_heat %>% rename(fuel_heat = fuel_heat_i)) %>% # add heat_fuel categories for renovations
+  ljoin(ct_fuel_excl_ren) %>% ## Constraint: fuels not allowed for renovation
+  ljoin(ct_fuel_excl_reg %>% 
               rename(ct_fuel_excl_i_reg = ct_fuel_excl_reg)) %>% ## Constraint (before renovation): fuels not used in specific regions
-  left_join(ct_fuel_excl_reg %>% 
+  ljoin(ct_fuel_excl_reg %>% 
               rename(fuel_heat_f = fuel_heat) %>%
               rename(ct_fuel_excl_f_reg = ct_fuel_excl_reg)) %>% ## Constraint (after renovation): fuels not used in specific regions
   filter(mod_decision == 1) %>% # exclude cases out of modelling decisions (e.g. district heating, substandard buildings)
@@ -125,28 +125,28 @@ lcc_ren_hh <- bld_cases_fuel_tenr %>%
            (eneff == eneff_f & ct_ren_fuel_heat == 1) | # transitions between eneffs for existing buildings (without renovation) require the renovation switch "swt_ren" to be ON
            (eneff != eneff_f & ct_ren_fuel_heat == 1)) %>% # transitions between eneffs for renovations require the renovation switch "ct_ren_fuel_heat" to be ON (1). Note:  swt_exst and  swt_ren replaced by one column only: ct_ren_fuel_heat 
     mutate(year = yrs[i]) %>% # Attach year (in the loop)
-  left_join(hh_size) %>% # Add HH size
-  left_join(floor_cap) %>% ## Add floor per capita
-  left_join(lifetime_ren) %>% ## Add lifetime ren construction (for investment: based on loan duration)
-  #left_join(bld_dyn_par) %>% ## Add all building synamics parameter 
-  left_join(cost_invest_ren_shell_i) %>% ## Add investment costs 
+  ljoin(hh_size) %>% # Add HH size
+  ljoin(floor_cap) %>% ## Add floor per capita
+  ljoin(lifetime_ren) %>% ## Add lifetime ren construction (for investment: based on loan duration)
+  #ljoin(bld_dyn_par) %>% ## Add all building synamics parameter 
+  ljoin(cost_invest_ren_shell_i) %>% ## Add investment costs 
   #filter(!is.na(cost_invest_ren_shell)) %>% # Remove NAs
-  left_join(cost_invest_ren_heat_i) %>% ## Add investment costs
+  ljoin(cost_invest_ren_heat_i) %>% ## Add investment costs
   #filter(!is.na(cost_invest_ren_heat)) %>% # Remove NAs
   mutate_cond(eneff == eneff_f & fuel_heat == fuel_heat_f, cost_invest_ren_heat = 0) %>% #no renovation
   mutate(cost_invest_hh = cost_invest_ren_heat + (cost_invest_ren_shell * floor_cap * hh_size)) %>% # Calculate total investment costs
-  left_join(en_hh_tot_ren_fin) %>% # operation costs after renovation
-  left_join(en_hh_tot_ren_init) %>% # operation costs before renovation 
+  ljoin(en_hh_tot_ren_fin) %>% # operation costs after renovation
+  ljoin(en_hh_tot_ren_init) %>% # operation costs before renovation 
   filter(cost_op_m2_init >0) %>% # Filter out hh with no operational cost # REMOVING ALL RECORDS WITH NO HEATING!!!
   mutate(cost_op_hh = cost_op_m2 * floor_cap * hh_size) %>%  ## Add operative costs (total)
   #mutate(cost_intang_hh = 0) %>% ## Add intangible costs
-  left_join(cost_intang_ren_shell_i) %>% ## Add intangible costs
+  ljoin(cost_intang_ren_shell_i) %>% ## Add intangible costs
   #filter(!is.na(cost_intang_ren_shell)) %>% # Remove NAs
-  left_join(cost_intang_ren_heat_i %>% rename(fuel_heat = fuel_heat_i)) %>% ## Add intangible costs
+  ljoin(cost_intang_ren_heat_i %>% rename(fuel_heat = fuel_heat_i)) %>% ## Add intangible costs
   #filter(!is.na(cost_intang_ren_heat)) %>% # Remove NAs
   mutate(cost_intang_hh = cost_intang_ren_heat + (cost_intang_ren_shell * floor_cap * hh_size)) %>% # Calculate total investment costs
-  left_join(discount_ren) %>% ## Add discount rates
-  left_join(heterog_ren) %>% ## Add discount rates
+  ljoin(discount_ren) %>% ## Add discount rates
+  ljoin(heterog_ren) %>% ## Add discount rates
   mutate(lcc_ren = fun_lcc(cost_invest_hh, cost_op_hh, cost_intang_hh, discount_ren, lifetime_ren)) %>% ## Apply LCC function to new construction
   mutate(cost_op_hh_lcc = lcc_ren - cost_intang_hh - cost_invest_hh) %>% # Calculate operation lcc (for reporting)
   mutate(lcc_ren_exp = fun_lcc_exp(lcc_ren, heterog_ren)) %>% ## Expon. nu
@@ -173,7 +173,7 @@ ms_i <- ms_i %>%
   mutate(lcc_ren_exp_sum=sum(lcc_ren_exp)) %>%
   ungroup() %>% ### ADD CHECK HERE ### "eneff_f" categories in "lcc_ren_hh" should include all possible renovation categories!
   mutate(ms_unwgt = lcc_ren_exp/lcc_ren_exp_sum) %>% #market share - not weighted on share of hh tenure
-  left_join(hh_tenure) %>% #Join data on tenure shares
+  ljoin(hh_tenure) %>% #Join data on tenure shares
   mutate(ms_wgt = ms_unwgt * hh_tenure) %>% # Weight market share on tenures
   group_by_at(setdiff(names(ms_i), c("lcc_ren_exp", "lcc_ren_exp_sum", "tenr", "ms_wgt","ms_unwgt", "hh_tenure"))) %>% # Select all variables, except "eneff" and "n_dem" for grouping)
   summarise(ms=round(sum(ms_wgt),rnd)) %>%
@@ -185,8 +185,8 @@ rate_ren_i <- ms_i %>%
   filter(eneff_i == eneff_f) %>% 
   mutate(ren_share_calc = 1-ms) %>%
   mutate(rate_ren_calc = (1-ms)/stp) %>%
-  left_join(rate_ren_low) %>%
-  left_join(rate_ren_high) %>%
+  ljoin(rate_ren_low) %>%
+  ljoin(rate_ren_high) %>%
   mutate(rate_ren = ifelse(rate_ren_calc < rate_ren_low, rate_ren_low, 
                                ifelse(rate_ren_calc > rate_ren_high, rate_ren_high, rate_ren_calc))) %>%
   rename(eneff = eneff_i, fuel_heat = fuel_heat_i) %>%
@@ -238,8 +238,8 @@ fun_ms_ren_target <- function(yrs,i,
     mutate(year = yrs[i]) %>% # Add years columns
     rename(eneff_i = eneff) %>% # Rename eneff column
     rename(fuel_heat_i = fuel_heat) %>%
-    left_join(shr_eneff_ren) %>% # Join market share column
-    left_join(shr_fuel_heat_ren) %>%
+    ljoin(shr_eneff_ren) %>% # Join market share column
+    ljoin(shr_fuel_heat_ren) %>%
     mutate(ms_ren = shr_eneff_ren*shr_fuel_heat_ren) %>%
     filter(!is.na(ms_ren)) %>%
     filter(ms_ren > 0) %>%
@@ -267,7 +267,7 @@ fun_ms_ren_target2 <- function(yrs,i,
     mutate(year = yrs[i]) %>% # Add years columns
     rename(eneff_i = eneff) %>% # Rename eneff column
     rename(fuel_heat_i = fuel_heat) %>%
-    left_join(ms_ren_target) %>% # Join market share column
+    ljoin(ms_ren_target) %>% # Join market share column
     #mutate(ms= ms_eneff*ms_fuel) %>%
     filter(!is.na(ms)) %>%
     filter(ms > 0) %>%
@@ -296,7 +296,7 @@ fun_ms_fuel_sw <- function(yrs,i,
     mutate(year = yrs[i]) %>% # Add years columns
     filter(bld_age %in% p_past) %>%
     #rename(fuel_heat_i = fuel_heat) %>%
-    left_join(shr_fuel_heat_sw) %>%
+    ljoin(shr_fuel_heat_sw) %>%
     filter(!is.na(shr_fuel_heat_sw)) %>%
     filter(shr_fuel_heat_sw > 0) %>%
     filter(mod_decision == 1) %>%

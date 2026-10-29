@@ -22,7 +22,11 @@ run_scenario <- function(run,
                          report_type, report_var){
   
   print(paste("Start scenario run: ", run, "_", sector))
-  
+
+  # Silence "summarise() has grouped output" messages during the run (formatting them is slow); restored on exit
+  old_options <- options(dplyr.summarise.inform = FALSE)
+  on.exit(options(old_options), add = TRUE)
+
   # Track time
   start_time <- Sys.time()
   
@@ -113,7 +117,7 @@ run_scenario <- function(run,
       rename_at("region",~paste(substr(prices$node[1],1,3))) # rename region column based on R11/R12
     
     price_en <- d$geo_data %>% # use the most granular level for prices
-      left_join(price_en) %>% # Join R11/R12 data
+      ljoin(price_en) %>% # Join R11/R12 data
       select_at(c(paste(geo_level),"year","fuel","price_en"))
     
     rm(prices)

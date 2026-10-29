@@ -67,16 +67,16 @@ fun_stock_init_fut <- function(sector, run,
   if (sector == "resid") {
     bld_units <- geo_data %>%
       select_at(geo_levels) %>%
-      left_join(pop) %>%
-      left_join(pop_urt, by = c("region_bld", "year")) %>%
+      ljoin(pop) %>%
+      ljoin(pop_urt, by = c("region_bld", "year")) %>%
       mutate(pop = pop * pop_urt) %>%
       select(region_bld, region_gea, urt, year, pop) %>%
-      left_join(pop_clim) %>%
+      ljoin(pop_clim) %>%
       mutate(pop = pop * pop_clim) %>%
       select(region_bld, region_gea, urt, clim, year, pop) %>%
       arrange(region_bld, region_gea, urt, clim, year) %>%
       filter(year %in% yrs) %>%
-      left_join(hh_size) %>%
+      ljoin(hh_size) %>%
       mutate(bld_units = round(1e6*pop/n_inc_cl/hh_size,rnd)) %>% # convert from million units to units
       select(-c(pop,hh_size))
     
@@ -87,16 +87,16 @@ fun_stock_init_fut <- function(sector, run,
   if (sector == "comm") {
     bld_units <- geo_data %>%
       select_at(geo_levels) %>%
-      left_join(pop) %>%
-      left_join(pop_urt, by = c("region_bld", "year")) %>%
+      ljoin(pop) %>%
+      ljoin(pop_urt, by = c("region_bld", "year")) %>%
       mutate(pop = pop * pop_urt) %>%
       select(region_bld, region_gea, urt, year, pop) %>%
-      left_join(pop_clim) %>%
+      ljoin(pop_clim) %>%
       mutate(pop = pop * pop_clim) %>%
       select(region_bld, region_gea, urt, clim, year, pop) %>%
       arrange(region_bld, region_gea, urt, clim, year) %>%
       filter(year %in% yrs) %>% 
-      left_join(floor_cap) %>% 
+      ljoin(floor_cap) %>% 
       mutate(bld_units = round(1e6*pop*floor_cap,rnd)) %>% # convert from million units to units
       # mutate(bld_units = round(pop*floor_cap,rnd)) %>% # million units
       select(-c(pop,floor_cap)) # %>%
@@ -112,9 +112,9 @@ fun_stock_init_fut <- function(sector, run,
     stock_aggr <- bld_cases_eneff %>% 
       select(-c(eneff,bld_age,arch)) %>% # aggregate at "mat" level
       distinct() %>%
-      left_join(bld_units) %>% # years filtered here
-      left_join(shr_mat) %>% 
-      #left_join(shr_arch) %>% # long format
+      ljoin(bld_units) %>% # years filtered here
+      ljoin(shr_mat) %>% 
+      #ljoin(shr_arch) %>% # long format
       mutate(n_units_aggr = round(bld_units * shr_mat,rnd)) %>% # to mat level
       #mutate(stock_arch_base = bld_units * shr_mat * shr_arch) %>% # to arch level
       select(-c(bld_units, shr_mat)) #%>%
@@ -124,7 +124,7 @@ fun_stock_init_fut <- function(sector, run,
     # Stock aggregated (mat level) - baseyear 
     stock_aggr_base <- geo_data %>%
       select_at(geo_levels) %>%
-      left_join(stock_arch_base) %>% 
+      ljoin(stock_arch_base) %>% 
       group_by_at(setdiff(names(stock_arch_base), c("bld_age", "arch", "yr_con", "stock_arch_base"))) %>% # Select all variables, except the ones specified
       summarise(n_units_aggr = sum(stock_arch_base)) %>%
       ungroup()
@@ -148,9 +148,9 @@ fun_stock_init_fut <- function(sector, run,
     stock_aggr <- bld_cases_eneff %>% 
       select(-c(eneff,bld_age)) %>% # aggregate at "arch" level
       distinct() %>%
-      left_join(bld_units) %>% # years filtered here
-      left_join(shr_mat) %>% 
-      left_join(shr_arch) %>% # long format
+      ljoin(bld_units) %>% # years filtered here
+      ljoin(shr_mat) %>% 
+      ljoin(shr_arch) %>% # long format
       #mutate(n_units_aggr = round(bld_units * shr_mat,rnd)) %>% # to mat level
       mutate(n_units_aggr = bld_units * shr_mat * shr_arch) %>% # to arch level
       #select(-c(bld_units, shr_mat)) #%>%
@@ -174,7 +174,7 @@ fun_stock_init_fut <- function(sector, run,
   # # calculate share of eneff in the base year based on the base stock data
   # shr_eneff <- bld_cases_eneff %>%
   #   mutate(year = yrs[1]) %>%
-  #   left_join(stock_arch_base) %>%
+  #   ljoin(stock_arch_base) %>%
   #   group_by_at(setdiff(names(stock_arch_base),c("yr_con","stock_arch_base"))) %>%
   #   summarise(shr_eneff = sum(stock_arch_base)) %>%
   #   ungroup() %>%
@@ -183,19 +183,19 @@ fun_stock_init_fut <- function(sector, run,
   # process base stock data
   stock_arch_base <- bld_cases_eneff %>%
     mutate(year = yrs[1]) %>%
-    left_join(stock_arch_base) %>%
+    ljoin(stock_arch_base) %>%
     mutate(stock_arch_base = ifelse(is.na(stock_arch_base), 0, stock_arch_base)) 
   
   # initialize DF stock by vintage (baseyear) - detailed fuel level
   bld_det_age_i <- stock_aggr %>%
       select(-var_aggr) %>%
       filter(year == yrs[1]) %>%  # baseyear results
-    left_join(ct_eneff) %>% 
-    left_join(ct_fuel_comb) %>% 
-    left_join(stock_arch_base) %>%
-    left_join(shr_fuel_heat_base) %>%
-    left_join(shr_distr_heat) %>%
-    #left_join(shr_acc_cool) %>%
+    ljoin(ct_eneff) %>% 
+    ljoin(ct_fuel_comb) %>% 
+    ljoin(stock_arch_base) %>%
+    ljoin(shr_fuel_heat_base) %>%
+    ljoin(shr_distr_heat) %>%
+    #ljoin(shr_acc_cool) %>%
     mutate(n_units_eneff = n_units_aggr * stock_arch_base) %>% 
     mutate(n_units_fuel = ifelse(fuel_heat == "district_heat", 
                                  round(n_units_eneff * shr_distr_heat,rnd), # district heating 
@@ -287,8 +287,8 @@ fun_stock_init_fut <- function(sector, run,
   en_stock <- bld_cases_fuel %>%
     mutate(scenario = run) %>%
     mutate(year= yrs[1]) %>%
-    left_join(bld_det_i %>% select(-bld_age)) %>% # issue matching periods of construction when definition is different!
-    #left_join(stock_fuel_i.df) %>%
+    ljoin(bld_det_i %>% select(-bld_age)) %>% # issue matching periods of construction when definition is different!
+    #ljoin(stock_fuel_i.df) %>%
     # Add "v_no_heat" category
     select(-c(mod_decision)) %>%
     pivot_wider(names_from = "fuel_heat", values_from = "n_units_fuel") %>%
@@ -308,17 +308,17 @@ fun_stock_init_fut <- function(sector, run,
     
     en_stock <- en_stock %>%
       #bld_cases_fuel %>% # To avoid NAs with non-available combination of eneff - fuel (slums)
-      #left_join(en_stock_i) %>%
-      left_join(shr_need_heat) %>%
+      #ljoin(en_stock_i) %>%
+      ljoin(shr_need_heat) %>%
       mutate(n_units_fuel = ifelse(fuel_heat == "v_no_heat",# Rescale number of units based on fuel # Heating access not considered here!!
                                    n_units_eneff* (1-shr_need_heat),
                                    n_units_fuel*shr_need_heat)) %>%
-      left_join(hh_size) %>%
-      left_join(floor_cap) %>%
-      #left_join(shr_acc_cool) %>%
-      left_join(en_m2_scen_heat) %>%
-      left_join(en_m2_scen_cool) %>%
-      left_join(en_hh_hw_scen) %>%
+      ljoin(hh_size) %>%
+      ljoin(floor_cap) %>%
+      #ljoin(shr_acc_cool) %>%
+      ljoin(en_m2_scen_heat) %>%
+      ljoin(en_m2_scen_cool) %>%
+      ljoin(en_hh_hw_scen) %>%
       mutate(floor_Mm2 = n_units_fuel / 1e6 * hh_size * floor_cap) %>% # convert n. units to millions
       mutate(floor_heat_Mm2 = floor_Mm2) %>%
       #mutate(floor_heat_Mm2 = ifelse(acc_heat == 1, floor_Mm2, 0)) %>%
@@ -340,18 +340,18 @@ fun_stock_init_fut <- function(sector, run,
   if(sector == "comm"){
     
     en_stock <- en_stock %>% # To avoid NAs with non-available combination of eneff - fuel (slums)
-      # left_join(en_stock_i) %>%
-      left_join(shr_need_heat) %>%
+      # ljoin(en_stock_i) %>%
+      ljoin(shr_need_heat) %>%
       mutate(n_units_fuel = ifelse(fuel_heat == "v_no_heat",# Rescale number of units based on fuel # Heating access not considered here!!
                                    n_units_eneff* (1-shr_need_heat),
                                    n_units_fuel*shr_need_heat)) %>%
-      #left_join(hh_size) %>%
-      #left_join(floor) %>%
-      #left_join(shr_acc_cool) %>%
-      left_join(en_m2_scen_heat) %>%
-      left_join(en_m2_scen_cool) %>%
-      left_join(en_m2_hw_scen) %>%
-      left_join(en_int_others) %>%
+      #ljoin(hh_size) %>%
+      #ljoin(floor) %>%
+      #ljoin(shr_acc_cool) %>%
+      ljoin(en_m2_scen_heat) %>%
+      ljoin(en_m2_scen_cool) %>%
+      ljoin(en_m2_hw_scen) %>%
+      ljoin(en_int_others) %>%
       mutate(floor_Mm2 = n_units_fuel / 1e6) %>%
       mutate(floor_heat_Mm2 = floor_Mm2) %>%
       #mutate(floor_heat_Mm2 = ifelse(acc_heat == 1, floor_Mm2, 0)) %>%
@@ -393,7 +393,7 @@ fun_stock_init_fut <- function(sector, run,
 # bld_aggr_age <- stock_aggr%>% 
 #   filter(year == yrs[1]) %>% 
 #   add_column(yr_con = yrs[1], .after = "year") %>%
-#   # left_join(ct_bld_age %>% 
+#   # ljoin(ct_bld_age %>% 
 #   #             filter(year_i <= yrs[1] & year_f >= yrs[1]) %>% 
 #   #             select(bld_age_id, mat) %>%
 #   #             rename(bld_age = bld_age_id)) %>%

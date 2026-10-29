@@ -15,7 +15,7 @@ fun_report_basic <- function(report, report_var, geo_data, geo_level, geo_level_
     if(geo_level_report == geo_level){
       en_stock_rep <- report$en_stock} else {
         en_stock_rep <- report$en_stock %>%
-          left_join(geo_data) %>%
+          ljoin(geo_data) %>%
           group_by_at(paste(c(geo_level_report, "urt","arch","mat","eneff","fuel_heat","fuel_cool",   
                               "scenario", # "ssp", # drop SSP
                               "year"))) %>%
@@ -40,7 +40,7 @@ fun_report_basic <- function(report, report_var, geo_data, geo_level, geo_level_
     if(geo_level_report == geo_level){
       mat_stock_rep <- report$mat_stock} else {
       mat_stock_rep <- report$mat_stock %>%
-          left_join(geo_data) %>%
+          ljoin(geo_data) %>%
           group_by_at(paste(c(geo_level_report, "urt","arch","mat","eneff","material",  
                               "scenario", # "ssp", # drop SSP
                               "year"))) %>%
@@ -69,7 +69,7 @@ fun_report_basic <- function(report, report_var, geo_data, geo_level, geo_level_
     if(geo_level_report == geo_level){
       bld_eneff_age_rep <- report$bld_eneff_age} else {
         bld_eneff_age_rep <- report$bld_eneff_age %>%
-          left_join(geo_data) %>%
+          ljoin(geo_data) %>%
           group_by_at(paste(c(geo_level_report, "year", "yr_con","urt","arch","mat","eneff"
                               #,"scenario", # "ssp", # drop SSP
                               ))) %>%

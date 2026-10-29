@@ -22,7 +22,7 @@ output <- data.frame()
 if ("energy" %in% report_var){
   if (paste(geo_level_report) %in% names(report$en_stock)) {
     en_stock_aggr <- report$en_stock} else {
-    en_stock_aggr <- report$en_stock %>% left_join(geo_data %>% select_at(paste(c(geo_level, geo_level_report))))}
+    en_stock_aggr <- report$en_stock %>% ljoin(geo_data %>% select_at(paste(c(geo_level, geo_level_report))))}
   
   # others_TJ -- use instead: other_uses_TJ
   
@@ -113,7 +113,7 @@ if ("energy" %in% report_var){
 if ("material" %in% report_var){
   if (paste(geo_level_report) %in% names(report$mat_stock)) {
     mat_stock_aggr <- report$mat_stock %>% filter(mat == "perm")} else {
-    mat_stock_aggr <- report$mat_stock %>% filter(mat == "perm")%>% left_join(geo_data %>% select_at(paste(c(geo_level, geo_level_report))))}
+    mat_stock_aggr <- report$mat_stock %>% filter(mat == "perm")%>% ljoin(geo_data %>% select_at(paste(c(geo_level, geo_level_report))))}
   
   
   mat_stock_aggr <- mat_stock_aggr %>%

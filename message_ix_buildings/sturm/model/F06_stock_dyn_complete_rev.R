@@ -258,7 +258,7 @@ if ("sub" %in% unique(bld_cases_eneff$mat)){
     add_column(yr_con = yrs[i], .after = "year") %>%
     ljoin(ct_bld_age_i) %>%
     mutate(arch = "inf", eneff = "ns", # CHANGE THIS!!!!
-           fuel_heat = "electric", fuel_cool = "electricity"
+           fuel_heat = "electricity", fuel_cool = "electricity" # fuel_heat must match ct_fuel_comb (mat "sub")
            #, mod_decision = 0
            ) %>%
     #mutate(n_new = n_new) %>%

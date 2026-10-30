@@ -213,15 +213,20 @@ fun_stock_init_fut <- function(sector, run,
         )
       ) %>%
       mutate(
+        n_hh = 1e6 * pop / hh_size # number of households (pop in million)
+      ) %>%
+      mutate(
+        # income classes are quantiles of households: equal number of households per class
         bld_units = round(
-          1e6 * pop / n_inc_cl / hh_size,
+          n_hh / n_inc_cl,
           rnd
         )
       ) %>%
       select(
         -c(
           pop,
-          hh_size
+          hh_size,
+          n_hh
         )
       )
     

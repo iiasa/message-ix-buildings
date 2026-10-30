@@ -77,8 +77,9 @@ fun_stock_init_fut <- function(sector, run,
       arrange(region_bld, region_gea, urt, clim, year) %>%
       filter(year %in% yrs) %>%
       ljoin(hh_size) %>%
-      mutate(bld_units = round(1e6*pop/n_inc_cl/hh_size,rnd)) %>% # convert from million units to units
-      select(-c(pop,hh_size))
+      mutate(n_hh = 1e6*pop/hh_size) %>% # number of households (pop in million)
+      mutate(bld_units = round(n_hh/n_inc_cl,rnd)) %>% # income classes are quantiles of households: equal number of households per class
+      select(-c(pop,hh_size,n_hh))
     
     
     try(if(nrow(bld_units) != nrow(distinct(bld_units))) stop("Error in aggregated households calculations! duplicated records in hh"))

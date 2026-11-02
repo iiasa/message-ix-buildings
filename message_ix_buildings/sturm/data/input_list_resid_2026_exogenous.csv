@@ -51,3 +51,6 @@ shr_eneff_ren,bld_share_eneff_ren_norm,NA,NA
 shr_fuel_heat_ren,bld_share_fuel_ren_norm,NA,NA
 shr_fuel_heat_sw,bld_share_fuel_switch_norm,NA,NA
 rate_ren,renov_rate,NA,NA
+ct_hh_type,ct_hh_type,NA,NA
+shr_hh_type,shr_hh_type_example,NA,NA
+shr_hh_housing,shr_hh_housing_example,NA,NA

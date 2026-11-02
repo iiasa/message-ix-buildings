@@ -66,3 +66,6 @@ shr_vacant_base_arch,shr_vacant_base_arch_resid_Eurostat,,,shr_vacant_base_arch_
 shr_vacant_base_period,shr_vacant_base_period_resid_Eurostat,,,shr_vacant_base_period_resid_Eurostat,shr_vacant_base_period_resid_Eurostat,,,shr_vacant_base_period_resid_Eurostat,shr_vacant_base_period_resid_Eurostat,shr_vacant_base_period_resid_Eurostat,shr_vacant_base_period_resid_Eurostat,shr_vacant_base_period_resid_Eurostat,shr_vacant_base_period_resid_Eurostat
 rate_vacant_occ,rate_vacant_occ_ssp2,,,rate_vacant_occ_S_r,rate_vacant_occ_S_tp,,,rate_vacant_occ_S_r,rate_vacant_occ_S_tp,rate_vacant_occ_S_r,rate_vacant_occ_S_tp,rate_vacant_occ_S_r,rate_vacant_occ_S_tp
 price_en,price_en_message_engage_NPi_2024_07,,,,,,,,,,,price_en_message_engage_NPi2020_600_2024_07,price_en_message_engage_NPi2020_600_2024_07
+ct_hh_type,ct_hh_type,,,,,,,,,,,,
+shr_hh_type,shr_hh_type_example,,,,,,,,,,,,
+shr_hh_housing,shr_hh_housing_example,,,,,,,,,,,,

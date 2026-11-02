@@ -47,6 +47,8 @@ custom_input_scope <- "eu27"  # global or eu27
 
 vacant_mode_selected <- "none"  # none or vacant
 
+hh_type_mode_selected <- "none"  # none or overlay (household types, see model/F07_hh_type_overlay.R)
+
 report_type_selected <- c(
   "STURM",
   "MESSAGE"
@@ -313,6 +315,11 @@ output_label <- paste0(
     vacant_mode_selected == "vacant",
     "_v",
     ""
+  ),
+  ifelse(
+    hh_type_mode_selected == "overlay",
+    "_hh",
+    ""
   )
 )
 
@@ -408,13 +415,17 @@ for (s in scenarios) {
       mod_vacant = vacant_mode_selected,
       
       report_type = report_type_selected,
-      report_var = report_var_selected
+      report_var = report_var_selected,
+      mod_hh_type = hh_type_mode_selected
     )
     
     if ("STURM" %in% report_type_selected) {
       
       walk(
-        report_var_selected,
+        c(
+          report_var_selected,
+          if (hh_type_mode_selected == "overlay") c("hh_stock", "hh_mismatch")
+        ),
         function(output_type) {
           
           rename_output(

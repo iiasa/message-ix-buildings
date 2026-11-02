@@ -44,6 +44,8 @@ countries_to_run <- "all"
 
 geo_level_report_selected <- "region_bld"
 
+hh_type_mode_selected <- "none"  # none or overlay (household types, see model/F07_hh_type_overlay.R)
+
 report_type_selected <- c(
   "STURM",
   "MESSAGE"
@@ -327,7 +329,12 @@ output_root <- file.path(
   "output",
   paste0(
     "resid_exogenous_",
-    region_label
+    region_label,
+    ifelse(
+      hh_type_mode_selected == "overlay",
+      "_hh",
+      ""
+    )
   )
 )
 
@@ -441,7 +448,8 @@ for (scenario_name in scenarios) {
       mod_vacant = "none",
       
       report_type = report_type_selected,
-      report_var = report_var_selected
+      report_var = report_var_selected,
+      mod_hh_type = hh_type_mode_selected
     )
     
     
@@ -450,7 +458,10 @@ for (scenario_name in scenarios) {
     if ("STURM" %in% report_type_selected) {
       
       walk(
-        report_var_selected,
+        c(
+          report_var_selected,
+          if (hh_type_mode_selected == "overlay") c("hh_stock", "hh_mismatch")
+        ),
         function(report_kind) {
           
           rename_output(

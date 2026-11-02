@@ -12,11 +12,16 @@ fun_report_basic <- function(report, report_var, mod_vacant, geo_data, geo_level
                                
     print(paste0("Write energy results : ", scenario_name))
     
-    if(geo_level_report == geo_level){
-      en_stock_rep <- report$en_stock} else {
-        en_stock_rep <- report$en_stock %>%
+    en_stock_rep <- report$en_stock
+    if (!is.null(report$hh_stock)) { # household-type overlay: breakdown by hh_type (F07)
+      en_stock_rep <- fun_hh_split(en_stock_rep, report$hh_stock,
+                                   c("stock_M", "floor_Mm2", "heat_TJ", "cool_TJ", "cool_ac_TJ", "cool_fans_TJ", "hotwater_TJ", "other_uses_TJ"))
+    }
+
+    if(geo_level_report != geo_level){
+        en_stock_rep <- en_stock_rep %>%
           ljoin(geo_data) %>%
-          group_by_at(paste(c(geo_level_report, "urt","arch","mat","eneff","fuel_heat","fuel_cool",   
+          group_by_at(paste(c(geo_level_report, "urt","arch","mat","eneff","fuel_heat","fuel_cool", intersect("hh_type", names(en_stock_rep)),   
                               "scenario", # "ssp", # drop SSP
                               "year"))) %>%
           summarise(stock_M =sum(stock_M),

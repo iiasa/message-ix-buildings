@@ -189,3 +189,30 @@ fun_hh_overlay <- function(report, bld_det_age_i, yr, d, geo_levels) {
 
   report
 }
+
+## Split a stock-based result table (e.g. report$en_stock) by household type
+# Each row is split by the shares of household types in its block and housing type (n_hh / n_units of the allocation).
+# Within a housing type, household types are assumed to be spread evenly over the other building-case columns
+# (e.g. mat, fuel). Energy intensities do not depend on hh_type yet, so energy is split like the dwellings.
+fun_hh_split <- function(df, hh_stock, value_cols) {
+
+  shr <- hh_stock %>%
+    mutate(shr_hh = ifelse(n_units > 0, n_hh / n_units, 0)) %>%
+    select(-c(n_units, n_hh, n_hh_target))
+  by <- setdiff(intersect(names(df), names(shr)), "hh_type")
+
+  out <- df %>%
+    inner_join(shr, by = by, relationship = "many-to-many") %>%
+    mutate(across(all_of(value_cols), ~ .x * shr_hh)) %>%
+    select(-shr_hh) %>%
+    relocate(hh_type, .before = all_of(value_cols[1]))
+
+  # Rows without households (no occupied units) are dropped: check that nothing else is lost
+  lost <- df %>% anti_join(shr, by = by)
+  lost_tot <- sum(abs(as.matrix(lost[value_cols])), na.rm = TRUE)
+  if (lost_tot > 1e-6 * max(1, sum(abs(as.matrix(df[value_cols])), na.rm = TRUE))) {
+    warning(paste0("fun_hh_split: rows without household allocation carry non-zero values (", signif(lost_tot, 3), ")"))
+  }
+
+  out
+}

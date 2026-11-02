@@ -10,7 +10,7 @@ Welcome to MESSAGEix-Buildings's documentation!
 
 - ACCESS
 - :doc:`chilled`
-- :doc:`sturm`
+- :doc:`sturm/index`
 
 …and their integration with the :doc:`MESSAGEix-GLOBIOM model family <message_ix_models:index>`.
 
@@ -20,7 +20,7 @@ At present, the package :mod:`message_ix_buildings` contains STURM and CHILLED o
    :maxdepth: 2
    :hidden:
 
-   sturm
+   sturm/index
    chilled
    dev
 

@@ -21,7 +21,8 @@ run_scenario <- function(run,
                          mod_new, mod_ren,
                          mod_vacant, #V:
                          report_type, report_var,
-                         mod_hh_type = "none"){ # household-type overlay: "none" or "overlay" (residential only)
+                         mod_hh_type = "none", # household-type overlay: "none" or "overlay" (residential only)
+                         hh_report_detail = "housing"){ # energy by household type: "housing" (dimensions of the allocation) or "full"
   
   print(paste("Start scenario run: ", run, "_", sector))
 
@@ -104,6 +105,7 @@ run_scenario <- function(run,
 
   ## Household-type overlay: check and prepare inputs
   if (!mod_hh_type %in% c("none", "overlay")) stop("mod_hh_type must be 'none' or 'overlay'")
+  if (!hh_report_detail %in% c("housing", "full")) stop("hh_report_detail must be 'housing' or 'full'")
   if (mod_hh_type == "overlay") {d <- fun_hh_prepare(d, sector, yrs, geo_levels)}
   
   
@@ -528,7 +530,7 @@ run_scenario <- function(run,
   if ("MESSAGE" %in% report_type) {output <- fun_report_MESSAGE(sector, report_var, report, d$geo_data, geo_level, geo_level_report)}
 
   ## STURM basic report (results written as csv)
-  if ("STURM" %in% report_type) {fun_report_basic(report, report_var, mod_vacant, d$geo_data, geo_level, geo_level_report, sector, run, path_out)}
+  if ("STURM" %in% report_type) {fun_report_basic(report, report_var, mod_vacant, d$geo_data, geo_level, geo_level_report, sector, run, path_out, hh_report_detail)}
     
   ## Report results - IRP template (results written as csv)
   if ("IRP" %in% report_type) {fun_report_IRP(report, report_var, d$geo_data, geo_level, geo_level_report, sector, run, yrs, path_out)}

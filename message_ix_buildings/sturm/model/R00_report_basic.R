@@ -3,7 +3,7 @@
 
 ## geo_level_report should be one of the column in the DF "geo_data"
 
-fun_report_basic <- function(report, report_var, mod_vacant, geo_data, geo_level, geo_level_report, sector, scenario_name, path_out){ #V:
+fun_report_basic <- function(report, report_var, mod_vacant, geo_data, geo_level, geo_level_report, sector, scenario_name, path_out, hh_report_detail = "housing"){ #V:
   
   print(paste0("Aggregate and report results - STURM Basic Report"))
 
@@ -12,16 +12,11 @@ fun_report_basic <- function(report, report_var, mod_vacant, geo_data, geo_level
                                
     print(paste0("Write energy results : ", scenario_name))
     
-    en_stock_rep <- report$en_stock
-    if (!is.null(report$hh_stock)) { # household-type overlay: breakdown by hh_type (F07)
-      en_stock_rep <- fun_hh_split(en_stock_rep, report$hh_stock,
-                                   c("stock_M", "floor_Mm2", "heat_TJ", "cool_TJ", "cool_ac_TJ", "cool_fans_TJ", "hotwater_TJ", "other_uses_TJ"))
-    }
-
-    if(geo_level_report != geo_level){
-        en_stock_rep <- en_stock_rep %>%
+    if(geo_level_report == geo_level){
+      en_stock_rep <- report$en_stock} else {
+        en_stock_rep <- report$en_stock %>%
           ljoin(geo_data) %>%
-          group_by_at(paste(c(geo_level_report, "urt","arch","mat","eneff","fuel_heat","fuel_cool", intersect("hh_type", names(en_stock_rep)),   
+          group_by_at(paste(c(geo_level_report, "urt","arch","mat","eneff","fuel_heat","fuel_cool",   
                               "scenario", # "ssp", # drop SSP
                               "year"))) %>%
           summarise(stock_M =sum(stock_M),
@@ -36,6 +31,17 @@ fun_report_basic <- function(report, report_var, mod_vacant, geo_data, geo_level
           ungroup()}
   
     write_csv(en_stock_rep, paste0(path_out,"report_STURM_",scenario_name,"_", sector, "_",geo_level_report, "_energy.csv") )
+
+    # Energy by household type (household-type overlay only, F07)
+    if (!is.null(report$hh_stock)) {
+      en_cols <- c("stock_M", "floor_Mm2", "heat_TJ", "cool_TJ", "cool_ac_TJ", "cool_fans_TJ", "hotwater_TJ", "other_uses_TJ")
+      housing_cols <- setdiff(names(report$hh_stock), c(names(geo_data), "urt", "clim", "inc_cl", "year", "hh_type", "n_units", "n_hh", "n_hh_target"))
+      en_hh <- fun_hh_split(report$en_stock, report$hh_stock, en_cols) %>% ljoin(geo_data)
+      # "housing": dimensions of the allocation only (the split over the other columns is an even-spread assumption); "full": all columns
+      detail_cols <- if (hh_report_detail == "full") setdiff(names(en_hh), c(names(geo_data), en_cols)) else c("urt", "inc_cl", housing_cols, "hh_type", "scenario", "year")
+      en_hh_rep <- en_hh %>% group_by_at(c(geo_level_report, detail_cols)) %>% summarise(across(all_of(en_cols), sum), .groups = "drop")
+      write_csv(en_hh_rep, paste0(path_out, "report_STURM_", scenario_name, "_", sector, "_", geo_level_report, "_energy_hh.csv"))
+    }
   }
   
   # Write material results

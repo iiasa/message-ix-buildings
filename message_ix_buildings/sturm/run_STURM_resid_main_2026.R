@@ -35,6 +35,7 @@ custom_input_scope <- "eu27"  # global or eu27
 
 vacant_mode_selected <- "none"  # none or vacant
 hh_type_mode_selected <- "none"  # none or overlay (household types, see model/F07_hh_type_overlay.R)
+hh_report_detail_selected <- "housing"  # energy by household type: housing (dimensions of the allocation) or full (all columns, large for global runs)
 
 report_type_selected <- c("STURM", "MESSAGE")
 report_var_selected <- c("energy", "material")
@@ -177,11 +178,12 @@ for (s in scenarios) {
       mod_vacant = vacant_mode_selected,
       report_type = report_type_selected,
       report_var = report_var_selected,
-      mod_hh_type = hh_type_mode_selected
+      mod_hh_type = hh_type_mode_selected,
+      hh_report_detail = hh_report_detail_selected
     )
 
     if ("STURM" %in% report_type_selected) {
-      report_kinds <- c(report_var_selected, if (hh_type_mode_selected == "overlay") c("hh_stock", "hh_mismatch"))
+      report_kinds <- c(report_var_selected, if (hh_type_mode_selected == "overlay") c("hh_stock", "hh_mismatch", if ("energy" %in% report_var_selected) "energy_hh"))
       for (output_type in report_kinds) {
         rename_output(file.path(rout_path, paste0("report_STURM_", s, "_resid_region_bld_", output_type, ".csv")),
                       file.path(rout_path, paste0("report_STURM_", s, "_resid_region_bld_", output_type, "_", output_label, ".csv")))

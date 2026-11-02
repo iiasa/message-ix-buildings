@@ -33,6 +33,7 @@ countries_to_run <- "all"
 
 geo_level_report_selected <- "region_bld"
 hh_type_mode_selected <- "none"  # none or overlay (household types, see model/F07_hh_type_overlay.R)
+hh_report_detail_selected <- "housing"  # energy by household type: housing (dimensions of the allocation) or full (all columns, large for global runs)
 
 report_type_selected <- c("STURM", "MESSAGE")
 report_var_selected <- c("energy", "material")
@@ -188,12 +189,13 @@ for (scenario_name in scenarios) {
       mod_vacant = "none",
       report_type = report_type_selected,
       report_var = report_var_selected,
-      mod_hh_type = hh_type_mode_selected
+      mod_hh_type = hh_type_mode_selected,
+      hh_report_detail = hh_report_detail_selected
     )
 
     # Rename STURM reports
     if ("STURM" %in% report_type_selected) {
-      report_kinds <- c(report_var_selected, if (hh_type_mode_selected == "overlay") c("hh_stock", "hh_mismatch"))
+      report_kinds <- c(report_var_selected, if (hh_type_mode_selected == "overlay") c("hh_stock", "hh_mismatch", if ("energy" %in% report_var_selected) "energy_hh"))
       for (report_kind in report_kinds) {
         rename_output(
           old_file = file.path(scenario_output_path, paste0("report_STURM_", scenario_name, "_resid_", geo_level_report_selected, "_", report_kind, ".csv")),

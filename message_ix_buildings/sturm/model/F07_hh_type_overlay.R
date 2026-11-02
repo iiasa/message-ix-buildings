@@ -5,7 +5,9 @@
 ## The stock turnover does not depend on household types; the allocation is recomputed at each time step.
 ##
 ## Inputs (input list):
-##   ct_hh_type:     household types (column hh_type)
+##   ct_hh_type:     household types (column hh_type); optional column tenr gives the tenure of each type
+##                   (combined types such as "single_own", "single_rent"); tenure is then reported and checked
+##                   against hh_tenure in the base year, but not used in the decisions
 ##   shr_hh_type:    share of households by type; sums to 1 over hh_type. Columns: hh_type, value, and any of
 ##                   the block columns (region, urt, clim, inc_cl, year)
 ##   shr_hh_housing: share of households of each type living in each housing type (e.g. from surveys);
@@ -63,6 +65,14 @@ fun_hh_prepare <- function(d, sector, yrs, geo_levels) {
   block_cols <- fun_hh_block_cols(geo_levels)
   bld_cols <- names(d$bld_cases_fuel)
   types <- unique(d$ct_hh_type$hh_type)
+
+  # Optional tenure of each household type (column tenr in ct_hh_type, e.g. types "single_own", "single_rent")
+  if ("tenr" %in% names(d$ct_hh_type)) {
+    if (any(is.na(d$ct_hh_type$tenr))) stop("ct_hh_type: missing values in tenr")
+    if (nrow(distinct(d$ct_hh_type, hh_type, tenr)) != length(types)) stop("ct_hh_type: each hh_type needs exactly one tenr")
+    unknown_tenr <- setdiff(d$ct_hh_type$tenr, d$ct_tenr$tenr)
+    if (length(unknown_tenr) > 0) stop(paste0("ct_hh_type: tenure not in ct_tenr: ", paste(unknown_tenr, collapse = ", ")))
+  }
 
   # Share of households by type
   extra <- setdiff(names(d$shr_hh_type), c(block_cols, "hh_type", "shr_hh_type"))
@@ -184,10 +194,48 @@ fun_hh_overlay <- function(report, bld_det_age_i, yr, d, geo_levels) {
 
   lst <- fun_hh_allocate(bld_det_age_i, yr, d$shr_hh_type, d$shr_hh_housing, d$ct_hh_type, geo_levels)
 
+  # Optional tenure: carried to the reports; in the base year, compared with hh_tenure
+  if ("tenr" %in% names(d$ct_hh_type)) {
+    lst$alloc <- lst$alloc %>% ljoin(d$ct_hh_type %>% select(hh_type, tenr), by = "hh_type")
+    if (is.null(report$hh_stock)) fun_hh_check_tenr(lst$alloc, bld_det_age_i, d$hh_tenure, yr)
+  }
+
   report$hh_stock <- bind_rows(report$hh_stock, lst$alloc)
   report$hh_mismatch <- bind_rows(report$hh_mismatch, lst$mismatch)
 
   report
+}
+
+## Compare the tenure shares of the allocation with hh_tenure (by region_gea x urt x mat), print a summary
+# Not used in the decisions: the renovation decisions (F05) still weight tenure with hh_tenure
+fun_hh_check_tenr <- function(alloc, stock, hh_tenure, yr, tol = 0.05) {
+
+  if (is.null(hh_tenure) || !"region_gea" %in% names(alloc)) return(invisible(NULL))
+
+  # mat of each housing type, from the stock (skip the check if the housing types do not identify mat)
+  if (!"mat" %in% names(alloc)) {
+    keys <- setdiff(intersect(names(alloc), names(stock)), "year")
+    map <- stock %>% distinct(across(all_of(c(keys, "mat"))))
+    if (nrow(map) != nrow(distinct(map[keys]))) {
+      print("Household-type overlay: tenure check skipped (housing types do not identify mat)")
+      return(invisible(NULL))
+    }
+    alloc <- alloc %>% ljoin(map, by = keys)
+  }
+
+  a <- alloc %>%
+    group_by(region_gea, urt, mat, tenr) %>% summarise(n_hh = sum(n_hh), .groups = "drop") %>%
+    group_by(region_gea, urt, mat) %>% mutate(shr = n_hh / sum(n_hh)) %>% ungroup() %>% select(-n_hh)
+  cmp <- hh_tenure %>%
+    filter(year == year[which.min(abs(year - yr))]) %>%
+    semi_join(a, by = c("region_gea", "urt", "mat")) %>%
+    ljoin(a, by = c("region_gea", "urt", "mat", "tenr")) %>%
+    mutate(diff = abs(coalesce(shr, 0) - hh_tenure))
+
+  n_bad <- sum(cmp$diff > tol)
+  print(paste0("Household-type overlay ", yr, ": tenure shares vs hh_tenure, max difference ", signif(max(cmp$diff), 3),
+               " (", n_bad, " of ", nrow(cmp), " region_gea x urt x mat x tenr cases differ by more than ", tol, ")"))
+  if (n_bad > 0) warning(paste0("Household-type tenure shares differ from hh_tenure by more than ", tol, " in ", n_bad, " cases"))
 }
 
 ## Split a stock-based result table (e.g. report$en_stock) by household type
@@ -205,7 +253,7 @@ fun_hh_split <- function(df, hh_stock, value_cols) {
     inner_join(shr, by = by, relationship = "many-to-many") %>%
     mutate(across(all_of(value_cols), ~ .x * shr_hh)) %>%
     select(-shr_hh) %>%
-    relocate(hh_type, .before = all_of(value_cols[1]))
+    relocate(any_of(c("hh_type", "tenr")), .before = all_of(value_cols[1]))
 
   # Rows without households (no occupied units) are dropped: check that nothing else is lost
   lost <- df %>% anti_join(shr, by = by)

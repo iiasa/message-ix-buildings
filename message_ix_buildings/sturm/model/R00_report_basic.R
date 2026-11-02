@@ -35,10 +35,10 @@ fun_report_basic <- function(report, report_var, mod_vacant, geo_data, geo_level
     # Energy by household type (household-type overlay only, F07)
     if (!is.null(report$hh_stock)) {
       en_cols <- c("stock_M", "floor_Mm2", "heat_TJ", "cool_TJ", "cool_ac_TJ", "cool_fans_TJ", "hotwater_TJ", "other_uses_TJ")
-      housing_cols <- setdiff(names(report$hh_stock), c(names(geo_data), "urt", "clim", "inc_cl", "year", "hh_type", "n_units", "n_hh", "n_hh_target"))
+      housing_cols <- setdiff(names(report$hh_stock), c(names(geo_data), "urt", "clim", "inc_cl", "year", "hh_type", "tenr", "n_units", "n_hh", "n_hh_target"))
       en_hh <- fun_hh_split(report$en_stock, report$hh_stock, en_cols) %>% ljoin(geo_data)
       # "housing": dimensions of the allocation only (the split over the other columns is an even-spread assumption); "full": all columns
-      detail_cols <- if (hh_report_detail == "full") setdiff(names(en_hh), c(names(geo_data), en_cols)) else c("urt", "inc_cl", housing_cols, "hh_type", "scenario", "year")
+      detail_cols <- if (hh_report_detail == "full") setdiff(names(en_hh), c(names(geo_data), en_cols)) else c("urt", "inc_cl", housing_cols, "hh_type", intersect("tenr", names(en_hh)), "scenario", "year")
       en_hh_rep <- en_hh %>% group_by_at(c(geo_level_report, detail_cols)) %>% summarise(across(all_of(en_cols), sum), .groups = "drop")
       write_csv(en_hh_rep, paste0(path_out, "report_STURM_", scenario_name, "_", sector, "_", geo_level_report, "_energy_hh.csv"))
     }
@@ -112,7 +112,7 @@ fun_report_basic <- function(report, report_var, mod_vacant, geo_data, geo_level
   if (!is.null(report$hh_stock)) {
     print(paste0("Write household-type results : ", scenario_name))
 
-    hh_cols <- c("urt", "clim", "inc_cl", "year", "hh_type", "n_units", "n_hh", "n_hh_target")
+    hh_cols <- c("urt", "clim", "inc_cl", "year", "hh_type", "tenr", "n_units", "n_hh", "n_hh_target")
     housing_cols <- setdiff(names(report$hh_stock), c(names(geo_data), hh_cols))
 
     hh_rep <- report$hh_stock %>%
@@ -121,7 +121,7 @@ fun_report_basic <- function(report, report_var, mod_vacant, geo_data, geo_level
 
     # Households by type and housing type (million)
     hh_stock_rep <- hh_rep %>%
-      group_by_at(c(geo_level_report, "urt", "inc_cl", housing_cols, "hh_type", "year")) %>%
+      group_by_at(c(geo_level_report, "urt", "inc_cl", housing_cols, "hh_type", intersect("tenr", names(hh_rep)), "year")) %>%
       summarise(n_hh_M = sum(n_hh) / 1e6,
                 n_hh_target_M = sum(n_hh_target) / 1e6) %>%
       ungroup()

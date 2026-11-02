@@ -40,6 +40,12 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 html_theme = "alabaster"
 html_static_path = ["_static"]
 
+# -- Options for sphinx.ext.extlinks ---------------------------------------------------
+
+extlinks = {
+    "pull": ("https://github.com/iiasa/message-ix-buildings/pull/%s", "PR #%s"),
+}
+
 # -- Options for Sphinx.ext.intersphinx ------------------------------------------------
 
 intersphinx_mapping = {

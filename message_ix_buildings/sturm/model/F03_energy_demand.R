@@ -22,27 +22,27 @@ print(paste0("Running energy demand year ", yrs[i]))
   
   en_m2_scen_det <- bld_cases_fuel %>%
     mutate(year = yrs[i]) %>%
-    #left_join(ct_eneff) %>% # to have "mat" for joining ct_access
-    left_join(eff_cool) %>%
-    left_join(eff_heat) %>%
-    left_join(en_sav_ren) %>%
+    #ljoin(ct_eneff) %>% # to have "mat" for joining ct_access
+    ljoin(eff_cool) %>%
+    ljoin(eff_heat) %>%
+    ljoin(en_sav_ren) %>%
     mutate_cond(is.na(en_sav_ren), en_sav_ren=0) %>%
     #mutate(en_sav_ren=0) %>% ## NO RENOVATION SCALING HERE - VALUES ARE NOT TO BE SCALED
-    left_join(hours_heat) %>%
+    ljoin(hours_heat) %>%
     mutate(f_h = hours_heat/24) %>%
-    left_join(shr_floor_cool) %>%
-    left_join(hours_cool) %>%
-    left_join(hours_fans) %>%
-    left_join(power_fans) %>%
+    ljoin(shr_floor_cool) %>%
+    ljoin(hours_cool) %>%
+    ljoin(hours_fans) %>%
+    ljoin(power_fans) %>%
     mutate(f_c = hours_cool/24) %>%
     mutate(f_f = hours_fans/24) %>% # fans operation
-    left_join(shr_floor_heat) %>%
-    left_join(shr_acc_cool) %>%
-    #left_join(cool_data_base) %>%
-    left_join(en_int_heat) %>%
-    left_join(en_int_cool) %>%
-    left_join(days_cool) %>%
-    #left_join(en_m2_sim) %>%
+    ljoin(shr_floor_heat) %>%
+    ljoin(shr_acc_cool) %>%
+    #ljoin(cool_data_base) %>%
+    ljoin(en_int_heat) %>%
+    ljoin(en_int_cool) %>%
+    ljoin(days_cool) %>%
+    #ljoin(en_m2_sim) %>%
     mutate(en_dem_heat = en_int_heat*(1-en_sav_ren)*shr_acc_heat/eff_heat*shr_floor_heat*f_h) %>% # Edit heating demand (final) [kWh/m2/y] # Removed acc_heat
     mutate(en_dem_c_ac = en_int_cool*(1-en_sav_ren)*shr_acc_cool/eff_cool*shr_floor_cool*f_c) %>% # Edit cooling demand - AC (final) [kWh/m2/y] (fans not included for now)
     mutate(en_dem_c_fans = days_cool * shr_floor_cool * f_f * 24 * power_fans / (25 * 1e3)) %>% # Cooling demand - FANS (final) [kWh/m2/y]
@@ -66,7 +66,7 @@ print(paste0("Running energy demand year ", yrs[i]))
   ## Energy demand SPACE HEATING ONLY - by fuel: for investment decisions
   en_m2_scen_heat <- bld_cases_fuel %>% 
     #mutate(fuel = fuel_heat) %>%
-    left_join(en_m2_scen_S) %>%
+    ljoin(en_m2_scen_S) %>%
     select(-c(en_dem_cool,en_dem_c_ac,en_dem_c_fans,bld_age,
               shr_acc_cool,
               fuel_cool,
@@ -74,7 +74,7 @@ print(paste0("Running energy demand year ", yrs[i]))
               mod_decision)) 
   
   en_m2_scen_cool <- bld_cases_fuel %>% 
-    left_join(en_m2_scen_S) %>%
+    ljoin(en_m2_scen_S) %>%
     select(-c(fuel_heat,
               en_dem_heat,bld_age,
               #eneff_fuel,
@@ -94,15 +94,15 @@ print(paste0("Running energy demand year ", yrs[i]))
   en_hh <- en_m2_scen_heat %>%
     rename(en_m2 = en_dem_heat) %>%
     mutate(fuel = fuel_heat) %>%
-    left_join(hh_size) %>%
+    ljoin(hh_size) %>%
     filter(year == yrs[i]) # Filter "i" year
   # filter(year >= yr_base & year <= yr_end) #Limit to the period yr_bas to yr_end
   
-  #en_hh <- en_hh %>% left_join(ct_eneff) #Add mat categories
-  #en_hh <- en_hh %>% left_join(ct_bld) #Add arch categories
-  en_hh <- en_hh %>% left_join(floor_cap) %>% #Add floor surface
+  #en_hh <- en_hh %>% ljoin(ct_eneff) #Add mat categories
+  #en_hh <- en_hh %>% ljoin(ct_bld) #Add arch categories
+  en_hh <- en_hh %>% ljoin(floor_cap) %>% #Add floor surface
     mutate(en_hh = en_m2 * floor_cap * hh_size) %>% #Calculate total energy demand per household
-    left_join(price_en) %>% #Associate energy prices to en_perm
+    ljoin(price_en) %>% #Associate energy prices to en_perm
     mutate(cost_op = u1 * en_hh * price_en) # calculate the total costs for operational energy
   
   ## Sum total energy costs for all fuels
@@ -114,7 +114,7 @@ print(paste0("Running energy demand year ", yrs[i]))
     ungroup()
   
   #Reorder rows
-  en_hh_tot <- bld_cases_fuel %>% left_join(en_hh_tot) #%>% select(-acc_cool)
+  en_hh_tot <- bld_cases_fuel %>% ljoin(en_hh_tot) #%>% select(-acc_cool)
   
   # # final energy costs to be used in renovation decisions (fuels and eneff are after renovation)
   # en_hh_tot_ren_fin <- en_hh_tot %>%
@@ -166,12 +166,12 @@ fun_hw_resid <- function(yrs, i,
   
   en_hh_hw_scen <- bld_cases_fuel %>%
     mutate(year = yrs[i]) %>%
-    #left_join(ct_eneff) %>% # to have "mat" for joining ct_access ## needed for DHW?
-    left_join(hh_size) %>%
-    #left_join(ct_fuel_dhw) %>%
-    left_join(eff_hotwater) %>%
-    left_join(en_int_hotwater) %>%
-    left_join(en_int_heat) %>% # join data energy demand - filter where heating is needed
+    #ljoin(ct_eneff) %>% # to have "mat" for joining ct_access ## needed for DHW?
+    ljoin(hh_size) %>%
+    #ljoin(ct_fuel_dhw) %>%
+    ljoin(eff_hotwater) %>%
+    ljoin(en_int_hotwater) %>%
+    ljoin(en_int_heat) %>% # join data energy demand - filter where heating is needed
     mutate(en_dem_dhw = hh_size*en_int_hotwater*acc_hw/eff_hotwater) %>% # DHW energy demand (final) [GJ/hh/y] 
     mutate_cond(en_int_heat == 0, en_dem_dhw=0) %>% # no hot water demand where there is no heating
     select(-year) %>%
@@ -193,9 +193,9 @@ fun_hw_comm <- function(yrs, i,
 
   en_m2_hw_scen <- bld_cases_fuel %>%
     mutate(year = yrs[i]) %>%
-    #left_join(ct_eneff) %>% # to have "mat" for joining ct_access ## needed for DHW?
-    left_join(eff_hotwater) %>%
-    left_join(en_m2_dhw) %>%
+    #ljoin(ct_eneff) %>% # to have "mat" for joining ct_access ## needed for DHW?
+    ljoin(eff_hotwater) %>%
+    ljoin(en_m2_dhw) %>%
     mutate(en_dem_dhw = en_int_hotwater/eff_hotwater) %>% # DHW energy demand (final) [kWh/m2/y] 
     select(-year) %>%
     select(-c(eff_hotwater,en_int_hotwater,mod_decision, bld_age))  

@@ -62,3 +62,6 @@ ct_fuel_excl_ren,ct_fuel_excluded_ren,,,,,,,ct_fuel_excluded_ren,,,,,,,,,,,,
 ct_fuel_excl_reg,ct_fuel_excluded_reg,,,,,,,ct_fuel_excluded_reg,,,,,,,,,,,,
 ct_ren_fuel_heat,ct_ren_fuel_heat_scen,,,,,,,ct_ren_fuel_heat_scen,,,,,,,,,,,,
 price_en,price_en_message_engage_NPi_2024_07,,,,,,,price_en_message_engage_NPi_2024_07,,,,,,,,,,,price_en_message_engage_NPi2020_600_2024_07,price_en_message_engage_NPi2020_600_2024_07
+ct_hh_type,ct_hh_type,,,,,,,,,,,,,,,,,,,
+shr_hh_type,shr_hh_type_example,,,,,,,,,,,,,,,,,,,
+shr_hh_housing,shr_hh_housing_example,,,,,,,,,,,,,,,,,,,

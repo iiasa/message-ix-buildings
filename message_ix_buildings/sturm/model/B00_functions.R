@@ -13,6 +13,23 @@ mutate_cond <- function(.data, condition, ..., envir = parent.frame()) {
 # Function to select not matching items
 `%nin%` = Negate(`%in%`) 
 
+## Left join on common columns (natural join), without the "Joining with `by = ...`" message
+# Same result as left_join(x, y) without "by"; the message formatting took about half of the run time
+# check_fanout = TRUE: stop if the join increases the number of rows of x
+ljoin <- function(x, y, by = NULL, ..., check_fanout = FALSE) {
+  if (is.null(by)) {
+    if (!is.data.frame(y)) return(left_join(x, y, ...)) # keep dplyr's own error (e.g. input missing from the input list)
+    by <- intersect(names(x), names(y))
+    if (length(by) == 0) stop("ljoin: no common columns between x and y; supply `by`")
+  }
+  out <- left_join(x, y, by = by, ...)
+  if (check_fanout && nrow(out) > nrow(x)) {
+    stop(paste0("ljoin: join on (", paste(by, collapse = ", "), ") increased rows from ",
+                nrow(x), " to ", nrow(out)))
+  }
+  out
+}
+
 # ## Convert DF to list
 # # DF = dataframe to convert
 # # row_names = names to assign to the vectors in the new list

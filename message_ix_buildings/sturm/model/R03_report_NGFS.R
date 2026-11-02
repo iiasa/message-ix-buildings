@@ -37,7 +37,7 @@ fun_report_NGFS <- function(report, report_var, geo_data, geo_level, geo_level_r
     ### Aggregate results -  Floorspace total
     if (paste(geo_level_report) %in% names(report$en_stock)) {
       stock_tot_ngfs <- report$en_stock} else {
-        stock_tot_ngfs <- report$en_stock %>% left_join(geo_data %>% select_at(paste(c(geo_level, geo_level_report))))}
+        stock_tot_ngfs <- report$en_stock %>% ljoin(geo_data %>% select_at(paste(c(geo_level, geo_level_report))))}
     
     stock_tot_ngfs <- stock_tot_ngfs %>%
       select(-c(stock_M, heat_TJ, cool_TJ, cool_ac_TJ, cool_fans_TJ)) %>%
@@ -76,7 +76,7 @@ fun_report_NGFS <- function(report, report_var, geo_data, geo_level, geo_level_r
     ## Aggregate energy results
     if (paste(geo_level_report) %in% names(report$en_stock)) {
       en_ngfs <- report$en_stock} else {
-      en_ngfs <- report$en_stock %>% left_join(geo_data %>% select_at(paste(c(geo_level, geo_level_report))))}
+      en_ngfs <- report$en_stock %>% ljoin(geo_data %>% select_at(paste(c(geo_level, geo_level_report))))}
     
     # Results by end-use
     en_ngfs_enduse <- en_ngfs %>%
@@ -169,7 +169,7 @@ fun_report_NGFS <- function(report, report_var, geo_data, geo_level, geo_level_r
   # 
   #   if (paste(geo_level_report) %in% names(report$mat_stock)) {
   #     stock_var_ngfs <- report$mat_stock} else {
-  #       stock_var_ngfs <- report$mat_stock %>% left_join(geo_data %>% select_at(paste(c(geo_level, geo_level_report))))}
+  #       stock_var_ngfs <- report$mat_stock %>% ljoin(geo_data %>% select_at(paste(c(geo_level, geo_level_report))))}
   #   
   #   
   #   stock_var_ngfs <- stock_var_ngfs %>%
@@ -216,7 +216,7 @@ fun_report_NGFS <- function(report, report_var, geo_data, geo_level, geo_level_r
   #     # Aggregate results - Materials
   #   
   #   if (paste(geo_level_report) %in% names(report$mat_stock)) {mat_ngfs <- report$mat_stock} else {
-  #       mat_ngfs <- report$mat_stock %>% left_join(geo_data %>% select_at(paste(c(geo_level, geo_level_report))))}
+  #       mat_ngfs <- report$mat_stock %>% ljoin(geo_data %>% select_at(paste(c(geo_level, geo_level_report))))}
   #   
   #   if(sector == "resid"){mat_ngfs <- mat_ngfs %>% mutate(subsector = "Residential") %>% filter(arch != "inf")} # Exclude informal buildings (no material data)
   #   if(sector == "comm"){mat_ngfs <- mat_ngfs %>% mutate(subsector = "Commercial")}

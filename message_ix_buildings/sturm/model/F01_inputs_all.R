@@ -1,7 +1,10 @@
 
 ### F01 SCRIPT - FUNCTION TO LOAD AND PROCESS DATA INPUTS
 
-fun_inputs_csv <- function(path_in, path_inputs, file_inputs, sector, run){ #file_scenarios, 
+# Inputs of the household-type overlay: loaded only when mod_hh_type = "overlay" (script F07)
+hh_inputs <- c("ct_hh_type", "shr_hh_type", "shr_hh_housing")
+
+fun_inputs_csv <- function(path_in, path_inputs, file_inputs, sector, run, mod_hh_type = "none"){ #file_scenarios,
 
   # # PATH DATA INPUT FILES
   # path_in_csv = path_in #paste0(path_in,"./input_csv/")
@@ -15,6 +18,9 @@ fun_inputs_csv <- function(path_in, path_inputs, file_inputs, sector, run){ #fil
   input = input %>% 
     mutate(name_file = ifelse(is.na(name_file),reference,name_file)) %>%
     select(name_parameter,name_file)
+
+  # Household-type inputs are not read unless the overlay is on
+  if (mod_hh_type == "none") input = input %>% filter(!name_parameter %in% hh_inputs)
 
 
   ### DATA LOADING AND PROCESSING
@@ -60,12 +66,12 @@ fun_build_data_model <- function(d, sector, geo_level, geo_level_aggr,geo_levels
                                 #arch = ct_bld_arch,
                                 stringsAsFactors = FALSE) %>%
     rename_at("geo_level", ~paste0(geo_level)) %>%
-    left_join(d$geo_data %>% select_at(geo_levels)) %>%
-    left_join(d$clim_zones, by=c(paste(geo_level), "urt")) %>%
-    left_join(d$ct_inc_cl) %>%
-    left_join(d$ct_bld) %>%
-    left_join(d$ct_eneff, by="mat") %>%
-    #left_join(ct_access, by="mat") %>% # REMOVED in this version
+    ljoin(d$geo_data %>% select_at(geo_levels)) %>%
+    ljoin(d$clim_zones, by=c(paste(geo_level), "urt")) %>%
+    ljoin(d$ct_inc_cl) %>%
+    ljoin(d$ct_bld) %>%
+    ljoin(d$ct_eneff, by="mat") %>%
+    #ljoin(ct_access, by="mat") %>% # REMOVED in this version
     inner_join(d$ct_fuel_comb, by=c("mat" = "mat")) %>%
     # select(!!as.symbol(geo_level), scenario, urt, clim, inc_cl, arch, mat, eneff) %>% # Re-order the columns
     arrange(!!as.symbol(geo_level), #scenario,

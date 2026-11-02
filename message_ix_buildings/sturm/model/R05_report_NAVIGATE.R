@@ -42,7 +42,7 @@ fun_report_NAVIGATE <- function(report, report_var, geo_data, geo_level, geo_lev
   ### Aggregate results -  Floorspace total
   if (paste(geo_level_report) %in% names(report$en_stock)) {
     stock_rep <- report$en_stock} else {
-      stock_rep <- report$en_stock %>% left_join(geo_data %>% select_at(paste(c(geo_level, geo_level_report))))}
+      stock_rep <- report$en_stock %>% ljoin(geo_data %>% select_at(paste(c(geo_level, geo_level_report))))}
     
   # report total results
   stock_rep_tot <- stock_rep %>%
@@ -106,7 +106,7 @@ fun_report_NAVIGATE <- function(report, report_var, geo_data, geo_level, geo_lev
     
     # Yearly renovation rate
     ren_rate_rep <- stock_tot %>%
-      left_join(stock_ren_tot) %>%
+      ljoin(stock_ren_tot) %>%
       mutate(stock_ren_tot = ifelse(is.na(stock_ren_tot),0,stock_ren_tot)) %>%
       group_by_at(paste(c(geo_level_report,"scenario"))) %>%
       mutate(stock_ren = ifelse(year==yrs[2], stock_ren_tot, stock_ren_tot - lag(stock_ren_tot))) %>%
@@ -159,10 +159,10 @@ fun_report_NAVIGATE <- function(report, report_var, geo_data, geo_level, geo_lev
   #   #   select(-c(scenario,ssp))
   #   
   #   u_val_ren <- ct_bld %>%
-  #     left_join(ct_ren_eneff) %>%
+  #     ljoin(ct_ren_eneff) %>%
   #     filter(eneff_f != eneff_i) %>% # filter only renovated buildings
-  #     left_join(ren_en_sav_scen %>% rename(eneff_f = eneff)) %>%
-  #     left_join(u_val %>% rename(eneff_i = eneff, u_val_i = u_val)) %>%
+  #     ljoin(ren_en_sav_scen %>% rename(eneff_f = eneff)) %>%
+  #     ljoin(u_val %>% rename(eneff_i = eneff, u_val_i = u_val)) %>%
   #     mutate(u_val = u_val_i * (1-ren_scl)) %>%
   #     rename(eneff = eneff_f) %>%
   #     select(-c(eneff_i, u_val_i, ren_scl)) %>%
@@ -182,9 +182,9 @@ fun_report_NAVIGATE <- function(report, report_var, geo_data, geo_level, geo_lev
   #   # U-values: join all datasets
   #   u_val <- stock_rep %>%
   #     select(-c(stock_M, heat_TJ, cool_TJ, cool_ac_TJ, cool_fans_TJ, hotwater_TJ, other_uses_TJ)) %>%
-  #     left_join(u_val) %>%
-  #     left_join(u_val_ren) %>%
-  #     left_join(u_val_slum) %>%
+  #     ljoin(u_val) %>%
+  #     ljoin(u_val_ren) %>%
+  #     ljoin(u_val_slum) %>%
   #     mutate(u_val = ifelse(is.na(u_val), u_val_ren, u_val)) %>%
   #     mutate(u_val = ifelse(arch == "inf", u_val_slum, u_val)) %>%
   #     select(-c(u_val_slum, u_val_ren, region_gea))
@@ -240,7 +240,7 @@ fun_report_NAVIGATE <- function(report, report_var, geo_data, geo_level, geo_lev
   ## Aggregate energy results
   if (paste(geo_level_report) %in% names(report$en_stock)) {
     en_rep <- report$en_stock} else {
-    en_rep <- report$en_stock %>% left_join(geo_data %>% select_at(paste(c(geo_level, geo_level_report))))}
+    en_rep <- report$en_stock %>% ljoin(geo_data %>% select_at(paste(c(geo_level, geo_level_report))))}
   
   # Results by end-use
   en_rep_enduse <- en_rep %>%
@@ -350,7 +350,7 @@ fun_report_NAVIGATE <- function(report, report_var, geo_data, geo_level, geo_lev
   # 
   #   if (paste(geo_level_report) %in% names(report$mat_stock)) {
   #     stock_var_rep <- report$mat_stock} else {
-  #       stock_var_rep <- report$mat_stock %>% left_join(geo_data %>% select_at(paste(c(geo_level, geo_level_report))))}
+  #       stock_var_rep <- report$mat_stock %>% ljoin(geo_data %>% select_at(paste(c(geo_level, geo_level_report))))}
   # 
   # 
   #   stock_var_rep <- stock_var_rep %>%
@@ -404,7 +404,7 @@ fun_report_NAVIGATE <- function(report, report_var, geo_data, geo_level, geo_lev
   if ("material" %in% report_var){
   
     if (paste(geo_level_report) %in% names(report$mat_stock)) {mat_rep <- report$mat_stock} else {
-        mat_rep <- report$mat_stock %>% left_join(geo_data %>% select_at(paste(c(geo_level, geo_level_report))))}
+        mat_rep <- report$mat_stock %>% ljoin(geo_data %>% select_at(paste(c(geo_level, geo_level_report))))}
 
     if(sector == "resid"){mat_rep <- mat_rep %>% mutate(subsector = lab_sector) %>% filter(arch != "inf")} # Exclude informal buildings (no material data)
     if(sector == "comm"){mat_rep <- mat_rep %>% mutate(subsector = lab_sector)}

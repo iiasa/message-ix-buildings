@@ -3,7 +3,7 @@
 
 ## geo_level_report should be one of the column in the DF "geo_data"
 
-fun_report_basic <- function(report, report_var, mod_vacant, geo_data, geo_level, geo_level_report, sector, scenario_name, path_out){ #V:
+fun_report_basic <- function(report, report_var, mod_vacant, geo_data, geo_level, geo_level_report, sector, scenario_name, path_out, hh_report_detail = "housing"){ #V:
   
   print(paste0("Aggregate and report results - STURM Basic Report"))
 
@@ -15,7 +15,7 @@ fun_report_basic <- function(report, report_var, mod_vacant, geo_data, geo_level
     if(geo_level_report == geo_level){
       en_stock_rep <- report$en_stock} else {
         en_stock_rep <- report$en_stock %>%
-          left_join(geo_data) %>%
+          ljoin(geo_data) %>%
           group_by_at(paste(c(geo_level_report, "urt","arch","mat","eneff","fuel_heat","fuel_cool",   
                               "scenario", # "ssp", # drop SSP
                               "year"))) %>%
@@ -31,6 +31,17 @@ fun_report_basic <- function(report, report_var, mod_vacant, geo_data, geo_level
           ungroup()}
   
     write_csv(en_stock_rep, paste0(path_out,"report_STURM_",scenario_name,"_", sector, "_",geo_level_report, "_energy.csv") )
+
+    # Energy by household type (household-type overlay only, F07)
+    if (!is.null(report$hh_stock)) {
+      en_cols <- c("stock_M", "floor_Mm2", "heat_TJ", "cool_TJ", "cool_ac_TJ", "cool_fans_TJ", "hotwater_TJ", "other_uses_TJ")
+      housing_cols <- setdiff(names(report$hh_stock), c(names(geo_data), "urt", "clim", "inc_cl", "year", "hh_type", "tenr", "n_units", "n_hh", "n_hh_target"))
+      en_hh <- fun_hh_split(report$en_stock, report$hh_stock, en_cols) %>% ljoin(geo_data)
+      # "housing": dimensions of the allocation only (the split over the other columns is an even-spread assumption); "full": all columns
+      detail_cols <- if (hh_report_detail == "full") setdiff(names(en_hh), c(names(geo_data), en_cols)) else c("urt", "inc_cl", housing_cols, "hh_type", intersect("tenr", names(en_hh)), "scenario", "year")
+      en_hh_rep <- en_hh %>% group_by_at(c(geo_level_report, detail_cols)) %>% summarise(across(all_of(en_cols), sum), .groups = "drop")
+      write_csv(en_hh_rep, paste0(path_out, "report_STURM_", scenario_name, "_", sector, "_", geo_level_report, "_energy_hh.csv"))
+    }
   }
   
   # Write material results
@@ -40,7 +51,7 @@ fun_report_basic <- function(report, report_var, mod_vacant, geo_data, geo_level
     if(geo_level_report == geo_level){
       mat_stock_rep <- report$mat_stock} else {
       mat_stock_rep <- report$mat_stock %>%
-          left_join(geo_data) %>%
+          ljoin(geo_data) %>%
           group_by_at(paste(c(geo_level_report, "urt","arch","mat","eneff","material",  
                               "scenario", # "ssp", # drop SSP
                               "year"))) %>%
@@ -69,13 +80,13 @@ fun_report_basic <- function(report, report_var, mod_vacant, geo_data, geo_level
     if(geo_level_report == geo_level){
       bld_eneff_age_rep <- report$bld_eneff_age} else {
         bld_eneff_age_rep <- report$bld_eneff_age %>%
-          left_join(geo_data) %>%
+          ljoin(geo_data) %>%
           group_by_at(paste(c(geo_level_report, "year", "yr_con","urt","arch","mat","eneff"
                               #,"scenario", # "ssp", # drop SSP
                               ))) %>%
           summarise(n_units =sum(n_units_eneff))%>%
           ungroup()}
-    write_csv(mat_stock_rep, paste0(path_out,"report_STURM_",scenario_name,"_", sector, "_",geo_level_report, "_vintage.csv") )
+    write_csv(bld_eneff_age_rep, paste0(path_out,"report_STURM_",scenario_name,"_", sector, "_",geo_level_report, "_vintage.csv") )
   }
  
    # Write vacant buildings results  
@@ -95,5 +106,32 @@ fun_report_basic <- function(report, report_var, mod_vacant, geo_data, geo_level
           ungroup()}
     
     write_csv(vacant_stock_rep, paste0(path_out,"report_STURM_",scenario_name,"_", sector, "_",geo_level_report, "_vacant.csv") )
+  }
+
+  # Write household-type results (household-type overlay only)
+  if (!is.null(report$hh_stock)) {
+    print(paste0("Write household-type results : ", scenario_name))
+
+    hh_cols <- c("urt", "clim", "inc_cl", "year", "hh_type", "tenr", "n_units", "n_hh", "n_hh_target")
+    housing_cols <- setdiff(names(report$hh_stock), c(names(geo_data), hh_cols))
+
+    hh_rep <- report$hh_stock %>%
+      ljoin(geo_data) %>%
+      mutate(abs_dev = abs(n_hh - n_hh_target))
+
+    # Households by type and housing type (million)
+    hh_stock_rep <- hh_rep %>%
+      group_by_at(c(geo_level_report, "urt", "inc_cl", housing_cols, "hh_type", intersect("tenr", names(hh_rep)), "year")) %>%
+      summarise(n_hh_M = sum(n_hh) / 1e6,
+                n_hh_target_M = sum(n_hh_target) / 1e6) %>%
+      ungroup()
+    write_csv(hh_stock_rep, paste0(path_out,"report_STURM_",scenario_name,"_", sector, "_",geo_level_report, "_hh_stock.csv") )
+
+    # Housing mismatch: share of households not living where the survey distribution would place them
+    hh_mismatch_rep <- hh_rep %>%
+      group_by_at(c(geo_level_report, "year")) %>%
+      summarise(mismatch = 0.5 * sum(abs_dev) / sum(n_hh)) %>%
+      ungroup()
+    write_csv(hh_mismatch_rep, paste0(path_out,"report_STURM_",scenario_name,"_", sector, "_",geo_level_report, "_hh_mismatch.csv") )
   }
 }

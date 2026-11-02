@@ -242,7 +242,7 @@ if(mod_arch == "new"){
       select(-shr_reocc_upd) 
     
     # Updated aggregate stock dataframe
-    bld_aggr_i <- bld_aggr_i_reocc %>% select(-n_reocc_upd, shr_reocc_upd)  
+    bld_aggr_i <- bld_aggr_i_reocc %>% select(-c(n_reocc_upd, shr_reocc_upd))
     
     # Update detailed existing buildings - demolitions
     dem_det_age_i <- dem_det_age_i %>%

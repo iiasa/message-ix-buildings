@@ -131,85 +131,39 @@ run_scenario <- function(run,
     # Initialize housing stock (fun)
     print(paste("Initialize scenario run", sector))
     
-    if (mod_vacant == "vacant") { # V:
-      print("DEBUG names(d)")
-      print(names(d))
-      
-      print("DEBUG key objects")
-      print(is.null(d$pop))
-      print(is.null(d$pop_urt))
-      print(is.null(d$pop_clim))
-      print(is.null(d$hh_size))
-      print(is.null(d$floor_cap))
-      print(is.null(d$stock_vacant_base))
-      print(is.null(d$shr_vacant_base_arch))
-      print(is.null(d$shr_vacant_base_period))
-      
-      lst_stock_init <- fun_stock_init_fut(sector,
-                                           run,
-                                           mod_arch,
-                                           mod_vacant, #V:
-                                           yrs,
-                                           d$geo_data, geo_levels, geo_level,
-                                           d$bld_cases_eneff, d$bld_cases_fuel,
-                                           d$pop,
-                                           d$pop_urt,
-                                           d$pop_clim,
-                                           d$hh_size, # used for residential
-                                           d$floor_cap, # used for commercial
-                                           d$ct_inc_cl,
-                                           d$ct_eneff, d$ct_fuel_comb,
-                                           d$stock_arch_base,
-                                           d$shr_mat, d$shr_arch, d$shr_fuel_heat_base, d$shr_distr_heat,
-                                           d$stock_vacant_base, d$shr_vacant_base_arch, d$shr_vacant_base_period, #V: used for vacant buildings only
-                                           d$en_int_heat, d$en_int_cool,
-                                           d$days_cool,
-                                           d$eff_cool, d$eff_heat,
-                                           d$en_sav_ren, 
-                                           d$hours_heat, d$shr_floor_heat,
-                                           d$hours_cool,d$shr_floor_cool,
-                                           d$hours_fans,d$power_fans,
-                                           d$shr_acc_cool,
-                                           d$eff_hotwater,d$en_int_hotwater,
-                                           en_int_others =NULL, # only for commercial
-                                           d$shr_need_heat,
-                                           price_en,
-                                           report_var
-      )} else {
-        
-        lst_stock_init <- fun_stock_init_fut(sector,
-                                             run,
-                                             mod_arch,
-                                             mod_vacant, #V:
-                                             yrs,
-                                             d$geo_data, geo_levels, geo_level,
-                                             d$bld_cases_eneff, d$bld_cases_fuel,
-                                             d$pop,
-                                             d$pop_urt,
-                                             d$pop_clim,
-                                             d$hh_size, # used for residential
-                                             d$floor_cap, # used for commercial
-                                             d$ct_inc_cl,
-                                             d$ct_eneff, d$ct_fuel_comb,
-                                             d$stock_arch_base,
-                                             d$shr_mat, d$shr_arch, d$shr_fuel_heat_base, d$shr_distr_heat,
-                                             stock_vacant_base = if (mod_vacant == "vacant") d$stock_vacant_base else NULL,
-                                             shr_vacant_base_arch = if (mod_vacant == "vacant") d$shr_vacant_base_arch else NULL,
-                                             shr_vacant_base_period = if (mod_vacant == "vacant") d$shr_vacant_base_period else NULL,
-                                             d$en_int_heat, d$en_int_cool,
-                                             d$days_cool,
-                                             d$eff_cool, d$eff_heat,
-                                             d$en_sav_ren, 
-                                             d$hours_heat, d$shr_floor_heat,
-                                             d$hours_cool,d$shr_floor_cool,
-                                             d$hours_fans,d$power_fans,
-                                             d$shr_acc_cool,
-                                             d$eff_hotwater,d$en_int_hotwater,
-                                             en_int_others =NULL, # only for commercial
-                                             d$shr_need_heat,
-                                             price_en,
-                                             report_var
-        ) }
+    lst_stock_init <- fun_stock_init_fut(sector,
+                                         run,
+                                         mod_arch,
+                                         mod_vacant, #V:
+                                         yrs,
+                                         d$geo_data, geo_levels, geo_level,
+                                         d$bld_cases_eneff, d$bld_cases_fuel,
+                                         d$pop,
+                                         d$pop_urt,
+                                         d$pop_clim,
+                                         d$hh_size, # used for residential
+                                         d$floor_cap, # used for commercial
+                                         d$ct_inc_cl,
+                                         d$ct_eneff, d$ct_fuel_comb,
+                                         d$stock_arch_base,
+                                         d$shr_mat, d$shr_arch, d$shr_fuel_heat_base, d$shr_distr_heat,
+                                         stock_vacant_base = if (mod_vacant == "vacant") d$stock_vacant_base else NULL,
+                                         shr_vacant_base_arch = if (mod_vacant == "vacant") d$shr_vacant_base_arch else NULL,
+                                         shr_vacant_base_period = if (mod_vacant == "vacant") d$shr_vacant_base_period else NULL,
+                                         d$en_int_heat, d$en_int_cool,
+                                         d$days_cool,
+                                         d$eff_cool, d$eff_heat,
+                                         d$en_sav_ren, 
+                                         d$hours_heat, d$shr_floor_heat,
+                                         d$hours_cool,d$shr_floor_cool,
+                                         d$hours_fans,d$power_fans,
+                                         d$shr_acc_cool,
+                                         d$eff_hotwater,d$en_int_hotwater,
+                                         en_int_others =NULL, # only for commercial
+                                         d$shr_need_heat,
+                                         price_en,
+                                         report_var
+    )
     
     
     # Extract dataframes from initialization list
@@ -335,39 +289,6 @@ run_scenario <- function(run,
       try(if(nrow(ms_ren_i)==0) stop("Error in renovation calculation! Empty dataframe ms_ren_i"))
       try(if(nrow(ms_sw_i)==0) stop("Error in renovation calculation! Empty dataframe ms_sw_i"))
       
-      if (mod_vacant == "vacant") { # V:
-        
-        lst_stock_i <- fun_stock_dyn(sector,
-                                     mod_arch,
-                                     mod_vacant, #V:
-                                     yrs,i,
-                                     run, #ssp_r, # removed ssp dimension
-                                     geo_level, geo_level_aggr,geo_levels,
-                                     d$bld_cases_fuel, d$bld_cases_eneff, 
-                                     d$ct_bld_age, d$ct_fuel_comb,
-                                     d$hh_size, d$floor_cap,
-                                     stock_aggr, bld_det_age_i, #bld_det, 
-                                     #bld_eneff_age,
-                                     d$prob_dem,
-                                     stock_vacant_i, # V:
-                                     d$rate_vacant_occ, # V:
-                                     #rate_ren_low, rate_ren_high, #ren_rate, 
-                                     d$rate_switch_fuel_heat,
-                                     #ms_new, ms_ren,
-                                     ms_new_i, ms_ren_i, rate_ren_i,
-                                     ms_sw_i,
-                                     #shr_acc_cool, 
-                                     d$shr_distr_heat, d$shr_need_heat,
-                                     en_m2_scen_heat, en_m2_scen_cool,
-                                     en_hh_hw_scen, 
-                                     en_m2_hw_scen, d$en_int_others, # used only in commercial
-                                     #en_stock,
-                                     d$mat_int,
-                                     d$shr_mat_eol,
-                                     #mat_stock,
-                                     report_var,
-                                     report
-        )} else {
       # Stock turnover
       lst_stock_i <- fun_stock_dyn(sector,
                                    mod_arch,
@@ -381,8 +302,8 @@ run_scenario <- function(run,
                                    stock_aggr, bld_det_age_i, #bld_det, 
                                    #bld_eneff_age,
                                    d$prob_dem,
-                                   stock_vacant_i=NULL, # V:
-                                   rate_vacant_occ=NULL, # V:
+                                   stock_vacant_i = if (mod_vacant == "vacant") stock_vacant_i else NULL, # V:
+                                   rate_vacant_occ = if (mod_vacant == "vacant") d$rate_vacant_occ else NULL, # V:
                                    #rate_ren_low, rate_ren_high, #ren_rate, 
                                    d$rate_switch_fuel_heat,
                                    #ms_new, ms_ren,
@@ -399,7 +320,7 @@ run_scenario <- function(run,
                                    #mat_stock,
                                    report_var,
                                    report
-      )}
+      )
       
       # Extract dataframes from list
       report = lst_stock_i$report

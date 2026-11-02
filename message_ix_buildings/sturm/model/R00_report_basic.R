@@ -90,7 +90,8 @@ fun_report_basic <- function(report, report_var, mod_vacant, geo_data, geo_level
           group_by_at(paste(c(geo_level_report, "urt","arch","mat","eneff",   
                               "scenario", # "ssp", # drop SSP
                               "year"))) %>%
-          summarise(stock_vacant_M =sum(stock_vacant_M))%>%
+          summarise(stock_vacant_M = sum(stock_vacant_M),
+                    stock_reocc_M = sum(stock_reocc_M)) %>%
           ungroup()}
     
     write_csv(vacant_stock_rep, paste0(path_out,"report_STURM_",scenario_name,"_", sector, "_",geo_level_report, "_vacant.csv") )

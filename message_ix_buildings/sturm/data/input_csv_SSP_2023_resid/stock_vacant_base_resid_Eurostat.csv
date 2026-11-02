@@ -1,0 +1,259 @@
+year,region_bld,clim,arch,urt,value,region_gea
+2020,C-EEU-BGR,Zone_4A Mixed Humid,mfh,rur,43183,EEU
+2020,C-EEU-BGR,Zone_4A Mixed Humid,mfh,urb,429357,EEU
+2020,C-EEU-BGR,Zone_4A Mixed Humid,sfh,rur,111500,EEU
+2020,C-EEU-BGR,Zone_4A Mixed Humid,sfh,urb,492038,EEU
+2020,C-EEU-BGR,Zone_5A Cool Humid,mfh,rur,21676,EEU
+2020,C-EEU-BGR,Zone_5A Cool Humid,mfh,urb,287740,EEU
+2020,C-EEU-BGR,Zone_5A Cool Humid,sfh,rur,11765,EEU
+2020,C-EEU-BGR,Zone_5A Cool Humid,sfh,urb,260415,EEU
+2020,C-EEU-CZE,Zone_5A Cool Humid,mfh,rur,121899,EEU
+2020,C-EEU-CZE,Zone_5A Cool Humid,mfh,urb,403839,EEU
+2020,C-EEU-CZE,Zone_5A Cool Humid,sfh,rur,114042,EEU
+2020,C-EEU-CZE,Zone_5A Cool Humid,sfh,urb,220114,EEU
+2020,C-EEU-EST,Zone_6A Cold Humid,mfh,rur,25956,EEU
+2020,C-EEU-EST,Zone_6A Cold Humid,mfh,urb,97631,EEU
+2020,C-EEU-EST,Zone_6A Cold Humid,sfh,rur,20360,EEU
+2020,C-EEU-EST,Zone_6A Cold Humid,sfh,urb,31743,EEU
+2020,C-EEU-HRV,Zone_3A Warm Humid,mfh,rur,62070,EEU
+2020,C-EEU-HRV,Zone_3A Warm Humid,sfh,rur,39218,EEU
+2020,C-EEU-HRV,Zone_4A Mixed Humid,mfh,rur,87011,EEU
+2020,C-EEU-HRV,Zone_4A Mixed Humid,mfh,urb,253535,EEU
+2020,C-EEU-HRV,Zone_4A Mixed Humid,sfh,rur,227771,EEU
+2020,C-EEU-HRV,Zone_4A Mixed Humid,sfh,urb,157356,EEU
+2020,C-EEU-HRV,Zone_4C Mixed Marine,mfh,rur,63302,EEU
+2020,C-EEU-HRV,Zone_4C Mixed Marine,sfh,rur,33757,EEU
+2020,C-EEU-HRV,Zone_5A Cool Humid,mfh,rur,16829,EEU
+2020,C-EEU-HRV,Zone_5A Cool Humid,sfh,rur,17635,EEU
+2020,C-EEU-HUN,Zone_4A Mixed Humid,mfh,rur,26183,EEU
+2020,C-EEU-HUN,Zone_4A Mixed Humid,mfh,urb,258389,EEU
+2020,C-EEU-HUN,Zone_4A Mixed Humid,sfh,rur,34925,EEU
+2020,C-EEU-HUN,Zone_4A Mixed Humid,sfh,urb,138880,EEU
+2020,C-EEU-HUN,Zone_5A Cool Humid,mfh,rur,15281,EEU
+2020,C-EEU-HUN,Zone_5A Cool Humid,mfh,urb,24160,EEU
+2020,C-EEU-HUN,Zone_5A Cool Humid,sfh,rur,33200,EEU
+2020,C-EEU-HUN,Zone_5A Cool Humid,sfh,urb,33438,EEU
+2020,C-EEU-LTU,Zone_5A Cool Humid,mfh,rur,3822,EEU
+2020,C-EEU-LTU,Zone_5A Cool Humid,mfh,urb,19300,EEU
+2020,C-EEU-LTU,Zone_5A Cool Humid,sfh,rur,3465,EEU
+2020,C-EEU-LTU,Zone_5A Cool Humid,sfh,urb,4376,EEU
+2020,C-EEU-LTU,Zone_6A Cold Humid,mfh,rur,4405,EEU
+2020,C-EEU-LTU,Zone_6A Cold Humid,mfh,urb,105798,EEU
+2020,C-EEU-LTU,Zone_6A Cold Humid,sfh,rur,4407,EEU
+2020,C-EEU-LTU,Zone_6A Cold Humid,sfh,urb,78723,EEU
+2020,C-EEU-LVA,Zone_6A Cold Humid,mfh,rur,57054,EEU
+2020,C-EEU-LVA,Zone_6A Cold Humid,mfh,urb,101377,EEU
+2020,C-EEU-LVA,Zone_6A Cold Humid,sfh,rur,52957,EEU
+2020,C-EEU-LVA,Zone_6A Cold Humid,sfh,urb,41559,EEU
+2020,C-EEU-POL,Zone_5A Cool Humid,mfh,rur,411901,EEU
+2020,C-EEU-POL,Zone_5A Cool Humid,mfh,urb,1451959,EEU
+2020,C-EEU-POL,Zone_5A Cool Humid,sfh,rur,439892,EEU
+2020,C-EEU-POL,Zone_5A Cool Humid,sfh,urb,365534,EEU
+2020,C-EEU-POL,Zone_6A Cold Humid,mfh,rur,9852,EEU
+2020,C-EEU-POL,Zone_6A Cold Humid,mfh,urb,30016,EEU
+2020,C-EEU-POL,Zone_6A Cold Humid,sfh,rur,14425,EEU
+2020,C-EEU-POL,Zone_6A Cold Humid,sfh,urb,21782,EEU
+2020,C-EEU-ROU,Zone_4A Mixed Humid,mfh,rur,134248,EEU
+2020,C-EEU-ROU,Zone_4A Mixed Humid,mfh,urb,420164,EEU
+2020,C-EEU-ROU,Zone_4A Mixed Humid,sfh,rur,270930,EEU
+2020,C-EEU-ROU,Zone_4A Mixed Humid,sfh,urb,241528,EEU
+2020,C-EEU-ROU,Zone_5A Cool Humid,mfh,rur,186961,EEU
+2020,C-EEU-ROU,Zone_5A Cool Humid,mfh,urb,330943,EEU
+2020,C-EEU-ROU,Zone_5A Cool Humid,sfh,rur,386124,EEU
+2020,C-EEU-ROU,Zone_5A Cool Humid,sfh,urb,366943,EEU
+2020,C-EEU-ROU,Zone_6A Cold Humid,mfh,rur,74721,EEU
+2020,C-EEU-ROU,Zone_6A Cold Humid,sfh,rur,105890,EEU
+2020,C-EEU-SVK,Zone_5A Cool Humid,mfh,rur,64219,EEU
+2020,C-EEU-SVK,Zone_5A Cool Humid,mfh,urb,105942,EEU
+2020,C-EEU-SVK,Zone_5A Cool Humid,sfh,rur,102661,EEU
+2020,C-EEU-SVK,Zone_5A Cool Humid,sfh,urb,80977,EEU
+2020,C-EEU-SVK,Zone_6A Cold Humid,mfh,rur,19628,EEU
+2020,C-EEU-SVK,Zone_6A Cold Humid,mfh,urb,21855,EEU
+2020,C-EEU-SVK,Zone_6A Cold Humid,sfh,rur,28043,EEU
+2020,C-EEU-SVK,Zone_6A Cold Humid,sfh,urb,34702,EEU
+2020,C-EEU-SVN,Zone_4A Mixed Humid,mfh,rur,23079,EEU
+2020,C-EEU-SVN,Zone_4A Mixed Humid,mfh,urb,8685,EEU
+2020,C-EEU-SVN,Zone_4A Mixed Humid,sfh,rur,39951,EEU
+2020,C-EEU-SVN,Zone_4A Mixed Humid,sfh,urb,5758,EEU
+2020,C-EEU-SVN,Zone_5A Cool Humid,mfh,rur,8504,EEU
+2020,C-EEU-SVN,Zone_5A Cool Humid,mfh,urb,32066,EEU
+2020,C-EEU-SVN,Zone_5A Cool Humid,sfh,rur,17390,EEU
+2020,C-EEU-SVN,Zone_5A Cool Humid,sfh,urb,18919,EEU
+2020,C-EEU-SVN,Zone_7A Very cold Humid,mfh,rur,4453,EEU
+2020,C-EEU-SVN,Zone_7A Very cold Humid,sfh,rur,6771,EEU
+2020,C-WEU-AUT,Zone_4A Mixed Humid,mfh,rur,19596,WEU
+2020,C-WEU-AUT,Zone_4A Mixed Humid,mfh,urb,146191,WEU
+2020,C-WEU-AUT,Zone_4A Mixed Humid,sfh,rur,21901,WEU
+2020,C-WEU-AUT,Zone_4A Mixed Humid,sfh,urb,37068,WEU
+2020,C-WEU-AUT,Zone_5A Cool Humid,mfh,rur,100743,WEU
+2020,C-WEU-AUT,Zone_5A Cool Humid,mfh,urb,70330,WEU
+2020,C-WEU-AUT,Zone_5A Cool Humid,sfh,rur,76030,WEU
+2020,C-WEU-AUT,Zone_5A Cool Humid,sfh,urb,42946,WEU
+2020,C-WEU-AUT,Zone_6A Cold Humid,mfh,rur,48857,WEU
+2020,C-WEU-AUT,Zone_6A Cold Humid,mfh,urb,166393,WEU
+2020,C-WEU-AUT,Zone_6A Cold Humid,sfh,rur,19243,WEU
+2020,C-WEU-AUT,Zone_6A Cold Humid,sfh,urb,39817,WEU
+2020,C-WEU-AUT,Zone_7A Very cold Humid,mfh,rur,58042,WEU
+2020,C-WEU-AUT,Zone_7A Very cold Humid,mfh,urb,26254,WEU
+2020,C-WEU-AUT,Zone_7A Very cold Humid,sfh,rur,16833,WEU
+2020,C-WEU-AUT,Zone_7A Very cold Humid,sfh,urb,3280,WEU
+2020,C-WEU-BEL,Zone_4A Mixed Humid,mfh,rur,5666,WEU
+2020,C-WEU-BEL,Zone_4A Mixed Humid,mfh,urb,465792,WEU
+2020,C-WEU-BEL,Zone_4A Mixed Humid,sfh,rur,14267,WEU
+2020,C-WEU-BEL,Zone_4A Mixed Humid,sfh,urb,237826,WEU
+2020,C-WEU-BEL,Zone_5A Cool Humid,mfh,rur,13669,WEU
+2020,C-WEU-BEL,Zone_5A Cool Humid,mfh,urb,27819,WEU
+2020,C-WEU-BEL,Zone_5A Cool Humid,sfh,rur,37351,WEU
+2020,C-WEU-BEL,Zone_5A Cool Humid,sfh,urb,28707,WEU
+2020,C-WEU-CYP,Zone_3A Warm Humid,mfh,urb,72235,WEU
+2020,C-WEU-CYP,Zone_3A Warm Humid,sfh,urb,65875,WEU
+2020,C-WEU-DEU,Zone_4A Mixed Humid,mfh,rur,2759,WEU
+2020,C-WEU-DEU,Zone_4A Mixed Humid,mfh,urb,386448,WEU
+2020,C-WEU-DEU,Zone_4A Mixed Humid,sfh,rur,1829,WEU
+2020,C-WEU-DEU,Zone_4A Mixed Humid,sfh,urb,72449,WEU
+2020,C-WEU-DEU,Zone_5A Cool Humid,mfh,rur,455307,WEU
+2020,C-WEU-DEU,Zone_5A Cool Humid,mfh,urb,1815594,WEU
+2020,C-WEU-DEU,Zone_5A Cool Humid,sfh,rur,167259,WEU
+2020,C-WEU-DEU,Zone_5A Cool Humid,sfh,urb,385872,WEU
+2020,C-WEU-DEU,Zone_6A Cold Humid,mfh,rur,8180,WEU
+2020,C-WEU-DEU,Zone_6A Cold Humid,mfh,urb,4881,WEU
+2020,C-WEU-DEU,Zone_6A Cold Humid,sfh,rur,2321,WEU
+2020,C-WEU-DEU,Zone_6A Cold Humid,sfh,urb,828,WEU
+2020,C-WEU-DNK,Zone_5A Cool Humid,mfh,rur,101724,WEU
+2020,C-WEU-DNK,Zone_5A Cool Humid,mfh,urb,227183,WEU
+2020,C-WEU-DNK,Zone_5A Cool Humid,sfh,rur,23529,WEU
+2020,C-WEU-DNK,Zone_5A Cool Humid,sfh,urb,53295,WEU
+2020,C-WEU-ESP,Zone_2B Hot Dry,mfh,urb,15043,WEU
+2020,C-WEU-ESP,Zone_2B Hot Dry,sfh,urb,6443,WEU
+2020,C-WEU-ESP,Zone_3A Warm Humid,mfh,rur,657,WEU
+2020,C-WEU-ESP,Zone_3A Warm Humid,mfh,urb,2921764,WEU
+2020,C-WEU-ESP,Zone_3A Warm Humid,sfh,rur,1748,WEU
+2020,C-WEU-ESP,Zone_3A Warm Humid,sfh,urb,1715039,WEU
+2020,C-WEU-ESP,Zone_3B Warm Dry,mfh,rur,2447,WEU
+2020,C-WEU-ESP,Zone_3B Warm Dry,mfh,urb,458707,WEU
+2020,C-WEU-ESP,Zone_3B Warm Dry,sfh,rur,3343,WEU
+2020,C-WEU-ESP,Zone_3B Warm Dry,sfh,urb,277658,WEU
+2020,C-WEU-ESP,Zone_3C Warm Marine,mfh,urb,233111,WEU
+2020,C-WEU-ESP,Zone_3C Warm Marine,sfh,urb,128948,WEU
+2020,C-WEU-ESP,Zone_4A Mixed Humid,mfh,rur,42370,WEU
+2020,C-WEU-ESP,Zone_4A Mixed Humid,mfh,urb,502748,WEU
+2020,C-WEU-ESP,Zone_4A Mixed Humid,sfh,rur,108203,WEU
+2020,C-WEU-ESP,Zone_4A Mixed Humid,sfh,urb,383159,WEU
+2020,C-WEU-ESP,Zone_4C Mixed Marine,mfh,rur,154782,WEU
+2020,C-WEU-ESP,Zone_4C Mixed Marine,mfh,urb,396252,WEU
+2020,C-WEU-ESP,Zone_4C Mixed Marine,sfh,rur,281126,WEU
+2020,C-WEU-ESP,Zone_4C Mixed Marine,sfh,urb,398466,WEU
+2020,C-WEU-FIN,Zone_6A Cold Humid,mfh,rur,15151,WEU
+2020,C-WEU-FIN,Zone_6A Cold Humid,mfh,urb,106894,WEU
+2020,C-WEU-FIN,Zone_6A Cold Humid,sfh,rur,5787,WEU
+2020,C-WEU-FIN,Zone_6A Cold Humid,sfh,urb,23470,WEU
+2020,C-WEU-FIN,Zone_7A Very cold Humid,mfh,rur,57315,WEU
+2020,C-WEU-FIN,Zone_7A Very cold Humid,mfh,urb,91240,WEU
+2020,C-WEU-FIN,Zone_7A Very cold Humid,sfh,rur,26734,WEU
+2020,C-WEU-FIN,Zone_7A Very cold Humid,sfh,urb,31027,WEU
+2020,C-WEU-FRA,Zone_0A Extremely hot Humid,mfh,urb,0,WEU
+2020,C-WEU-FRA,Zone_0A Extremely hot Humid,sfh,urb,0,WEU
+2020,C-WEU-FRA,Zone_1A Very hot Humid,mfh,urb,59690,WEU
+2020,C-WEU-FRA,Zone_1A Very hot Humid,sfh,urb,66963,WEU
+2020,C-WEU-FRA,Zone_2A Hot Humid,mfh,urb,18915,WEU
+2020,C-WEU-FRA,Zone_2A Hot Humid,sfh,urb,28328,WEU
+2020,C-WEU-FRA,Zone_3A Warm Humid,mfh,rur,104708,WEU
+2020,C-WEU-FRA,Zone_3A Warm Humid,mfh,urb,638602,WEU
+2020,C-WEU-FRA,Zone_3A Warm Humid,sfh,rur,190983,WEU
+2020,C-WEU-FRA,Zone_3A Warm Humid,sfh,urb,380907,WEU
+2020,C-WEU-FRA,Zone_3C Warm Marine,mfh,urb,226021,WEU
+2020,C-WEU-FRA,Zone_3C Warm Marine,sfh,urb,37069,WEU
+2020,C-WEU-FRA,Zone_4A Mixed Humid,mfh,rur,580492,WEU
+2020,C-WEU-FRA,Zone_4A Mixed Humid,mfh,urb,1436102,WEU
+2020,C-WEU-FRA,Zone_4A Mixed Humid,sfh,rur,1253180,WEU
+2020,C-WEU-FRA,Zone_4A Mixed Humid,sfh,urb,815395,WEU
+2020,C-WEU-FRA,Zone_4C Mixed Marine,mfh,rur,58350,WEU
+2020,C-WEU-FRA,Zone_4C Mixed Marine,sfh,rur,45760,WEU
+2020,C-WEU-FRA,Zone_5A Cool Humid,mfh,rur,73681,WEU
+2020,C-WEU-FRA,Zone_5A Cool Humid,mfh,urb,205365,WEU
+2020,C-WEU-FRA,Zone_5A Cool Humid,sfh,rur,161842,WEU
+2020,C-WEU-FRA,Zone_5A Cool Humid,sfh,urb,96103,WEU
+2020,C-WEU-FRA,Zone_7A Very cold Humid,mfh,urb,121260,WEU
+2020,C-WEU-FRA,Zone_7A Very cold Humid,sfh,urb,32175,WEU
+2020,C-WEU-GRC,Zone_3A Warm Humid,mfh,rur,354535,WEU
+2020,C-WEU-GRC,Zone_3A Warm Humid,mfh,urb,535886,WEU
+2020,C-WEU-GRC,Zone_3A Warm Humid,sfh,rur,424655,WEU
+2020,C-WEU-GRC,Zone_3A Warm Humid,sfh,urb,272845,WEU
+2020,C-WEU-GRC,Zone_4A Mixed Humid,mfh,rur,88215,WEU
+2020,C-WEU-GRC,Zone_4A Mixed Humid,mfh,urb,232439,WEU
+2020,C-WEU-GRC,Zone_4A Mixed Humid,sfh,rur,144335,WEU
+2020,C-WEU-GRC,Zone_4A Mixed Humid,sfh,urb,161133,WEU
+2020,C-WEU-GRC,Zone_4C Mixed Marine,mfh,urb,7278,WEU
+2020,C-WEU-GRC,Zone_4C Mixed Marine,sfh,urb,7576,WEU
+2020,C-WEU-GRC,Zone_5A Cool Humid,mfh,rur,4231,WEU
+2020,C-WEU-GRC,Zone_5A Cool Humid,mfh,urb,5122,WEU
+2020,C-WEU-GRC,Zone_5A Cool Humid,sfh,rur,6072,WEU
+2020,C-WEU-GRC,Zone_5A Cool Humid,sfh,urb,4363,WEU
+2020,C-WEU-GRC,Zone_5C Cool Marine,mfh,urb,16119,WEU
+2020,C-WEU-GRC,Zone_5C Cool Marine,sfh,urb,12453,WEU
+2020,C-WEU-IRL,Zone_4A Mixed Humid,mfh,rur,7203,WEU
+2020,C-WEU-IRL,Zone_4A Mixed Humid,sfh,rur,41993,WEU
+2020,C-WEU-IRL,Zone_5A Cool Humid,mfh,rur,23643,WEU
+2020,C-WEU-IRL,Zone_5A Cool Humid,mfh,urb,26534,WEU
+2020,C-WEU-IRL,Zone_5A Cool Humid,sfh,rur,132098,WEU
+2020,C-WEU-IRL,Zone_5A Cool Humid,sfh,urb,44122,WEU
+2020,C-WEU-ITA,Zone_3A Warm Humid,mfh,rur,397029,WEU
+2020,C-WEU-ITA,Zone_3A Warm Humid,mfh,urb,3095047,WEU
+2020,C-WEU-ITA,Zone_3A Warm Humid,sfh,rur,183329,WEU
+2020,C-WEU-ITA,Zone_3A Warm Humid,sfh,urb,921095,WEU
+2020,C-WEU-ITA,Zone_4A Mixed Humid,mfh,rur,340871,WEU
+2020,C-WEU-ITA,Zone_4A Mixed Humid,mfh,urb,2050940,WEU
+2020,C-WEU-ITA,Zone_4A Mixed Humid,sfh,rur,149315,WEU
+2020,C-WEU-ITA,Zone_4A Mixed Humid,sfh,urb,474494,WEU
+2020,C-WEU-ITA,Zone_4C Mixed Marine,mfh,rur,21178,WEU
+2020,C-WEU-ITA,Zone_4C Mixed Marine,mfh,urb,631663,WEU
+2020,C-WEU-ITA,Zone_4C Mixed Marine,sfh,rur,11087,WEU
+2020,C-WEU-ITA,Zone_4C Mixed Marine,sfh,urb,114584,WEU
+2020,C-WEU-ITA,Zone_5A Cool Humid,mfh,urb,417198,WEU
+2020,C-WEU-ITA,Zone_5A Cool Humid,sfh,urb,109420,WEU
+2020,C-WEU-ITA,Zone_5C Cool Marine,mfh,urb,81959,WEU
+2020,C-WEU-ITA,Zone_5C Cool Marine,sfh,urb,36323,WEU
+2020,C-WEU-ITA,Zone_6A Cold Humid,mfh,urb,63728,WEU
+2020,C-WEU-ITA,Zone_6A Cold Humid,sfh,urb,12220,WEU
+2020,C-WEU-ITA,Zone_7A Very cold Humid,mfh,rur,68741,WEU
+2020,C-WEU-ITA,Zone_7A Very cold Humid,mfh,urb,307583,WEU
+2020,C-WEU-ITA,Zone_7A Very cold Humid,sfh,rur,17215,WEU
+2020,C-WEU-ITA,Zone_7A Very cold Humid,sfh,urb,76753,WEU
+2020,C-WEU-LUX,Zone_5A Cool Humid,mfh,urb,15101,WEU
+2020,C-WEU-LUX,Zone_5A Cool Humid,sfh,urb,236,WEU
+2020,C-WEU-MLT,Zone_3A Warm Humid,mfh,urb,0,WEU
+2020,C-WEU-MLT,Zone_3A Warm Humid,sfh,urb,0,WEU
+2020,C-WEU-NLD,Zone_4A Mixed Humid,mfh,rur,1100,WEU
+2020,C-WEU-NLD,Zone_4A Mixed Humid,mfh,urb,147468,WEU
+2020,C-WEU-NLD,Zone_4A Mixed Humid,sfh,rur,4647,WEU
+2020,C-WEU-NLD,Zone_4A Mixed Humid,sfh,urb,97505,WEU
+2020,C-WEU-NLD,Zone_5A Cool Humid,mfh,urb,29505,WEU
+2020,C-WEU-NLD,Zone_5A Cool Humid,sfh,urb,42356,WEU
+2020,C-WEU-PRT,Zone_3A Warm Humid,mfh,rur,142019,WEU
+2020,C-WEU-PRT,Zone_3A Warm Humid,mfh,urb,340950,WEU
+2020,C-WEU-PRT,Zone_3A Warm Humid,sfh,rur,478394,WEU
+2020,C-WEU-PRT,Zone_3A Warm Humid,sfh,urb,162610,WEU
+2020,C-WEU-PRT,Zone_3C Warm Marine,mfh,rur,26393,WEU
+2020,C-WEU-PRT,Zone_3C Warm Marine,mfh,urb,133047,WEU
+2020,C-WEU-PRT,Zone_3C Warm Marine,sfh,rur,109203,WEU
+2020,C-WEU-PRT,Zone_3C Warm Marine,sfh,urb,195635,WEU
+2020,C-WEU-PRT,Zone_4A Mixed Humid,mfh,rur,7997,WEU
+2020,C-WEU-PRT,Zone_4A Mixed Humid,sfh,rur,33686,WEU
+2020,C-WEU-PRT,Zone_4C Mixed Marine,mfh,rur,13089,WEU
+2020,C-WEU-PRT,Zone_4C Mixed Marine,mfh,urb,31937,WEU
+2020,C-WEU-PRT,Zone_4C Mixed Marine,sfh,rur,89680,WEU
+2020,C-WEU-PRT,Zone_4C Mixed Marine,sfh,urb,63456,WEU
+2020,C-WEU-SWE,Zone_5A Cool Humid,mfh,rur,1643,WEU
+2020,C-WEU-SWE,Zone_5A Cool Humid,mfh,urb,38819,WEU
+2020,C-WEU-SWE,Zone_5A Cool Humid,sfh,rur,13710,WEU
+2020,C-WEU-SWE,Zone_5A Cool Humid,sfh,urb,89243,WEU
+2020,C-WEU-SWE,Zone_6A Cold Humid,mfh,rur,6999,WEU
+2020,C-WEU-SWE,Zone_6A Cold Humid,mfh,urb,166549,WEU
+2020,C-WEU-SWE,Zone_6A Cold Humid,sfh,rur,36358,WEU
+2020,C-WEU-SWE,Zone_6A Cold Humid,sfh,urb,340862,WEU
+2020,C-WEU-SWE,Zone_7A Very cold Humid,mfh,rur,14020,WEU
+2020,C-WEU-SWE,Zone_7A Very cold Humid,mfh,urb,24467,WEU
+2020,C-WEU-SWE,Zone_7A Very cold Humid,sfh,rur,100328,WEU
+2020,C-WEU-SWE,Zone_7A Very cold Humid,sfh,urb,106596,WEU
+2020,C-WEU-SWE,Zone_8A Subarctic/arctic Humid,mfh,urb,9735,WEU
+2020,C-WEU-SWE,Zone_8A Subarctic/arctic Humid,sfh,urb,33301,WEU

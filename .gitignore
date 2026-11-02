@@ -27,3 +27,6 @@ user_settings.py
 
 # log files
 *.log
+
+message_ix_buildings/sturm/output/
+message_ix_buildings/sturm/Outdated/output_outdated/

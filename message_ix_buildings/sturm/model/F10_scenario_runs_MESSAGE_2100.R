@@ -19,6 +19,7 @@ run_scenario <- function(run,
                          input_mode, 
                          mod_arch,
                          mod_new, mod_ren,
+                         mod_vacant, #V:
                          report_type, report_var){
   
   print(paste("Start scenario run: ", run, "_", sector))
@@ -133,6 +134,7 @@ run_scenario <- function(run,
     lst_stock_init <- fun_stock_init_fut(sector,
                                          run,
                                          mod_arch,
+                                         mod_vacant, #V:
                                          yrs,
                                          d$geo_data, geo_levels, geo_level,
                                          d$bld_cases_eneff, d$bld_cases_fuel,
@@ -145,6 +147,9 @@ run_scenario <- function(run,
                                          d$ct_eneff, d$ct_fuel_comb,
                                          d$stock_arch_base,
                                          d$shr_mat, d$shr_arch, d$shr_fuel_heat_base, d$shr_distr_heat,
+                                         stock_vacant_base = if (mod_vacant == "vacant") d$stock_vacant_base else NULL,
+                                         shr_vacant_base_arch = if (mod_vacant == "vacant") d$shr_vacant_base_arch else NULL,
+                                         shr_vacant_base_period = if (mod_vacant == "vacant") d$shr_vacant_base_period else NULL,
                                          d$en_int_heat, d$en_int_cool,
                                          d$days_cool,
                                          d$eff_cool, d$eff_heat,
@@ -158,19 +163,17 @@ run_scenario <- function(run,
                                          d$shr_need_heat,
                                          price_en,
                                          report_var
-                                         )
+    )
     
     
-    # Extract dataframes from list
+    # Extract dataframes from initialization list
+    report = lst_stock_init$report
     stock_aggr = lst_stock_init$stock_aggr
     bld_det_age_i = lst_stock_init$bld_det_age_i
-    #bld_eneff_age = lst_stock_init$bld_eneff_age
-    #bld_det = lst_stock_init$bld_det
     
-    report = lst_stock_init$report
-    # if ("vintage" %in% report){bld_eneff_age = lst_stock_init$bld_eneff_age} # Not needed - already within the DF report
-    # if ("energy" %in% report){en_stock = lst_stock_init$en_stock}
-    # if ("material" %in% report){mat_stock = lst_stock_init$mat_stock}
+    if (mod_vacant == "vacant") {
+      stock_vacant_i = lst_stock_init$stock_vacant_i
+    }
     
     rm(lst_stock_init)
     
@@ -289,6 +292,7 @@ run_scenario <- function(run,
       # Stock turnover
       lst_stock_i <- fun_stock_dyn(sector,
                                    mod_arch,
+                                   mod_vacant, #V:
                                    yrs,i,
                                    run, #ssp_r, # removed ssp dimension
                                    geo_level, geo_level_aggr,geo_levels,
@@ -298,6 +302,8 @@ run_scenario <- function(run,
                                    stock_aggr, bld_det_age_i, #bld_det, 
                                    #bld_eneff_age,
                                    d$prob_dem,
+                                   stock_vacant_i = if (mod_vacant == "vacant") stock_vacant_i else NULL, # V:
+                                   rate_vacant_occ = if (mod_vacant == "vacant") d$rate_vacant_occ else NULL, # V:
                                    #rate_ren_low, rate_ren_high, #ren_rate, 
                                    d$rate_switch_fuel_heat,
                                    #ms_new, ms_ren,
@@ -323,6 +329,7 @@ run_scenario <- function(run,
       #stock_eneff.df = lst_stock_i$stock_eneff.df
       stock_aggr = lst_stock_i$stock_aggr
       bld_det_age_i = lst_stock_i$bld_det_age_i
+      if (mod_vacant == "vacant") {stock_vacant_i = lst_stock_i$stock_vacant_i} # V:
       #bld_det = lst_stock_i$bld_det
       #bld_eneff_age = lst_stock_i$bld_eneff_age
       #ms_new = lst_stock_i$ms_new
@@ -344,18 +351,22 @@ run_scenario <- function(run,
     lst_stock_init <- fun_stock_init_fut(sector,
                                          run,
                                          mod_arch,
+                                         mod_vacant, #V:
                                          yrs,
                                          d$geo_data, geo_levels, geo_level,
                                          d$bld_cases_eneff, d$bld_cases_fuel,
                                          d$pop,
                                          d$pop_urt,
                                          d$pop_clim,
-                                         hh_size=NULL, #hh_size, # used for residential
+                                         hh_size = NULL, # used for residential
                                          d$floor_cap, # used for commercial
                                          d$ct_inc_cl,
                                          d$ct_eneff, d$ct_fuel_comb,
                                          d$stock_arch_base,
                                          d$shr_mat, d$shr_arch, d$shr_fuel_heat_base,d$shr_distr_heat,
+                                         stock_vacant_base = if (mod_vacant == "vacant") d$stock_vacant_base else NULL,
+                                         shr_vacant_base_arch = if (mod_vacant == "vacant") d$shr_vacant_base_arch else NULL,
+                                         shr_vacant_base_period = if (mod_vacant == "vacant") d$shr_vacant_base_period else NULL,
                                          d$en_int_heat, d$en_int_cool,
                                          d$days_cool,
                                          d$eff_cool, d$eff_heat,
@@ -372,14 +383,15 @@ run_scenario <- function(run,
     )
     
     
-    # Extract dataframes from list
+    # Extract dataframes from initialization list
+    report = lst_stock_init$report
     stock_aggr = lst_stock_init$stock_aggr
     bld_det_age_i = lst_stock_init$bld_det_age_i
-    report = lst_stock_init$report
-    #bld_det = lst_stock_init$bld_det
-    #bld_eneff_age = lst_stock_init$bld_eneff_age
-    #en_stock = lst_stock_init$en_stock
-    #mat_stock = lst_stock_init$mat_stock
+    
+    if (mod_vacant == "vacant") {
+      stock_vacant_i = lst_stock_init$stock_vacant_i
+    }
+    
     rm(lst_stock_init)
     
     # Loop over timesteps
@@ -449,6 +461,7 @@ run_scenario <- function(run,
       # Stock turnover
       lst_stock_i <- fun_stock_dyn(sector,
                                    mod_arch, # mod_arch = "new", mod_arch = "stock"
+                                   mod_vacant, #V:
                                    yrs,i,
                                    run, #ssp_r,
                                    geo_level, geo_level_aggr,geo_levels,
@@ -459,6 +472,8 @@ run_scenario <- function(run,
                                    stock_aggr, bld_det_age_i, #bld_det, 
                                    #bld_eneff_age, # keep track of age
                                    d$prob_dem,
+                                   stock_vacant_i = if (mod_vacant == "vacant") stock_vacant_i else NULL,
+                                   rate_vacant_occ = if (mod_vacant == "vacant") d$rate_vacant_occ else NULL,
                                    #rate_ren_low, rate_ren_high, #ren_rate,
                                    d$rate_switch_fuel_heat,
                                    #ms_new, ms_ren,
@@ -478,15 +493,13 @@ run_scenario <- function(run,
       
       # Extract dataframes from list
       report = lst_stock_i$report
-      #en_stock = lst_stock_i$en_stock
-      #mat_stock = lst_stock_i$mat_stock
-      #stock_eneff.df = lst_stock_i$stock_eneff.df
       stock_aggr = lst_stock_i$stock_aggr
       bld_det_age_i = lst_stock_i$bld_det_age_i
-      #bld_det = lst_stock_i$bld_det
-      #bld_eneff_age = lst_stock_i$bld_eneff_age
-      #ms_new = lst_stock_i$ms_new
-      #ms_ren = lst_stock_i$ms_ren
+      
+      if (mod_vacant == "vacant") {
+        stock_vacant_i = lst_stock_i$stock_vacant_i
+      }
+      
       rm(lst_stock_i)
       
     }
@@ -499,7 +512,7 @@ run_scenario <- function(run,
   if ("MESSAGE" %in% report_type) {output <- fun_report_MESSAGE(sector, report_var, report, d$geo_data, geo_level, geo_level_report)}
 
   ## STURM basic report (results written as csv)
-  if ("STURM" %in% report_type) {fun_report_basic(report, report_var, d$geo_data, geo_level, geo_level_report, sector, run, path_out)}
+  if ("STURM" %in% report_type) {fun_report_basic(report, report_var, mod_vacant, d$geo_data, geo_level, geo_level_report, sector, run, path_out)}
     
   ## Report results - IRP template (results written as csv)
   if ("IRP" %in% report_type) {fun_report_IRP(report, report_var, d$geo_data, geo_level, geo_level_report, sector, run, yrs, path_out)}

@@ -1,0 +1,17 @@
+# Ignore R data files to ensure sensitive data is not committed and to maintain reproducibility from scripts
+*.RData
+
+# Ignore R history files to avoid personal command history cluttering the repository
+.Rhistory
+
+# Ignore changes in model outputs while keeping an empty output folder
+output_csv/*
+!output_csv/.gitkeep
+output_xlsx/*
+!output_xlsx/.gitkeep
+
+# Ignore pre-processes of input
+input_pre/
+
+# Ignore visualization files
+visualization/

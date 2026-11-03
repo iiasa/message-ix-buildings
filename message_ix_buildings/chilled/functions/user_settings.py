@@ -1,7 +1,7 @@
 DICT_USER_SETTINGS = {
     "ALE": {
         "chunk_size": 30,
-        "sys_path": "C:\\Users\\mastrucc\\Documents\\cc_ene_dem",
+        "project_path": "C:\\Users\\mastrucc\\Documents\\cc_ene_dem",
         "dle_path": "C:\\Users\\mastrucc.IIASA2003\\IIASA\\DLE - Climate impacts and space conditioning\\Data\\input_data\\",
         "isimip_bias_adj_path": "P:\\watxene\\ISIMIP\\ISIMIP3b\\InputData\\climate_updated\\bias-adjusted\\",
         "isimip_ewembi_path": "P:\\watxene\\ISIMIP\\ISIMIP2a_hist\\input\\EWEMBI\\",
@@ -10,7 +10,7 @@ DICT_USER_SETTINGS = {
     },
     "ED": {
         "chunk_size": 360,
-        "sys_path": "C:\\github\\cc_ene_dem",
+        "project_path": "C:\\github\\cc_ene_dem",
         "dle_path": "C:\\Users\\byers\\IIASA\\DLE - Climate impacts and space conditioning\\Data\\input_data",
         "isimip_bias_adj_path": "P:\\watxene\\ISIMIP\\ISIMIP3b\\InputData\\climate_updated\\bias-adjusted\\",
         "isimip_ewembi_path": "P:\\watxene\\ISIMIP\\ISIMIP2a_hist\\input\\EWEMBI\\",
@@ -19,7 +19,7 @@ DICT_USER_SETTINGS = {
     },
     "MEAS": {
         "chunk_size": 125,
-        "sys_path": "/Users/meas/iiasagit/cc_ene_dem",
+        "project_path": "/Users/meas/iiasagit/cc_ene_dem",
         "dle_path": "/Users/meas/Library/CloudStorage/OneDrive-SharedLibraries-IIASA/DLE - Analysis/Climate impacts and space conditioning/Data",
         "isimip_bias_adj_path": "/Volumes/mengm.pdrv/watxene/ISIMIP/ISIMIP3b/InputData/climate_updated/bias-adjusted",
         "isimip_ewembi_path": "/Volumes/mengm.pdrv/watxene/ISIMIP/ISIMIP2a_hist/input/EWEMBI",
@@ -28,7 +28,7 @@ DICT_USER_SETTINGS = {
     },
     "MEAS_EBRO": {
         "chunk_size": 360,
-        "sys_path": "H:\\MyDocuments\\repos\\cc_ene_dem",
+        "project_path": "H:\\MyDocuments\\repos\\cc_ene_dem",
         "dle_path": "D:\\mengm\\IIASA\\DLE - Data",
         "isimip_bias_adj_path": "P:\\watxene\\ISIMIP\\ISIMIP3b\\InputData\\climate_updated\\bias-adjusted",
         "isimip_ewembi_path": "P:\\watxene\\ISIMIP\\ISIMIP2a_hist\\input\\EWEMBI",
@@ -38,8 +38,7 @@ DICT_USER_SETTINGS = {
     "QZW": {
         "chunk_size": 360,
         "project_path": "./", 
-        "dle_path": "/hdrive/all_users/wangq/Chilled_daily/message-ix-buildings/message_ix_buildings/data/dle", #following run_main home folder
-        #"isimip_bias_adj_path": "/pdrive/projects/watxene/ISIMIP/ISIMIP3b/InputData/climate_updated/bias-adjusted",
+        "dle_path": "/hdrive/all_users/wangq/Chilled_daily/message-ix-buildings/message_ix_buildings/data/dle",
         "isimip_bias_adj_path": "/pdrive/projects/watxene/ISIMIP/ISIMIP3b/SecondaryInputData/climate/bias-adjusted",
         "isimip_ewembi_path": "/pdrive/projects/watxene/ISIMIP/ISIMIP3b/InputData/climate_updated/bias-adjusted/historical",
         "message_region_map_file": "/pdrive/projects/ene.model3/data/powerplants/MESSAGE data/MESSAGEix_country_region_map.xlsx",

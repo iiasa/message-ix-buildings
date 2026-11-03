@@ -9,6 +9,7 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 
+from message_ix_buildings.chilled.util.base import get_paths
 from message_ix_buildings.chilled.util.config import Config
 
 
@@ -35,11 +36,12 @@ def create_message_raster(config: "Config"):
         ISO attributes in a dataframe
 
     """
-    input_path = os.path.join(config.dle_path)
+    input_path = get_paths(config, "dle_path")
+    message_region_file = get_paths(config, "message_region_map_file")
 
     if config.node == "R11":
         msgregions = pd.read_excel(
-            config.message_region_file,
+            message_region_file,
             sheet_name="regional definition",
         )
 

@@ -4,8 +4,6 @@ from typing import Literal
 
 import numpy as np
 
-from message_ix_buildings.chilled.functions.user_settings import DICT_USER_SETTINGS
-
 
 @dataclass
 class Config:
@@ -20,6 +18,7 @@ class Config:
     #:
     #: This is used to name the output files and directories.
     vstr: str = "ALPS2023"
+    vstr2 = "v19"
 
     #: Select the climate model.
     #:
@@ -39,7 +38,7 @@ class Config:
     #: Set what data to use for the RCP scenario.
     #: If rcp is "baseline", then use "ssp126" data.
     #: Otherwise, use the data corresponding to the RCP scenario selected.
-    rcpdata = "ssp126" if rcp == "baseline" else rcp
+    # rcpdata = "ssp126" if rcp == "baseline" else rcp
 
     #: Select the version of the country data and floor surface.
     vstrcntry = "v4"  # version string for country data and floor surface
@@ -48,25 +47,31 @@ class Config:
     #:
     #: 1 = run entire parametric analysis
     #: 0 = run only ref case
-    paranalysis_mode = 1  # 1 = run entire parametric analysis; 0 = run only ref case
+    paranalysis_mode: Literal[0, 1] = (
+        1  # 1 = run entire parametric analysis; 0 = run only ref case
+    )
 
     #: Select whether to run simple (standard) degree days calculation.
     #:
     #: 1 = run simple (standard) degree days calculation
     #: 0 = don't run
-    runsdd = 0  # 1= run simple (standard) degree days calculation; 0 = don't run
+    runsdd: Literal[0, 1] = (
+        0  # 1= run simple (standard) degree days calculation; 0 = don't run
+    )
 
     #: Select whether to run testing mode.
     #:
     #: 1 = selects only two years for testing
     #: 0 = select all years (full calculation)
-    testing_mode = 0
+    testing_mode: Literal[0, 1] = 0
 
     #: Select whether to fix population to SSP2.
-    popfix = True  # If True, fix to SSP2, else.... (see script 4/5)
+    popfix: Literal[True, False] = (
+        True  # If True, fix to SSP2, else.... (see script 4/5)
+    )
 
     #: Select construction setting.
-    constr_setting = 0
+    constr_setting: Literal[0, 1] = 0
 
     #: Select floor setting. One of:
     #:
@@ -94,13 +99,13 @@ class Config:
     #:
     #: 1 = calculate
     #: 0 = skip
-    cool = 1
+    cool: Literal[0, 1] = 1
 
     #: Select whether to run heating calculations.
     #:
     #: 1 = calculate
     #: 0 = skip
-    heat = 0
+    heat: Literal[0, 1] = 1
 
     #: Select solar gain calculation. One of:
     #:
@@ -128,45 +133,9 @@ class Config:
     #: TODO: In the future, support "R12".
     node: Literal["R11"] = "R11"
 
-    #: Paths settings by user
-    project_path: str = str(DICT_USER_SETTINGS[user]["project_path"])
-    dle_path: str = str(DICT_USER_SETTINGS[user]["dle_path"])
-    message_region_file: str = str(DICT_USER_SETTINGS[user]["message_region_map_file"])
-    isimip_bias_adj_path: str = str(DICT_USER_SETTINGS[user]["isimip_bias_adj_path"])
-    isimip_ewemib_path: str = str(DICT_USER_SETTINGS[user]["isimip_ewembi_path"])
-    chunk_size = DICT_USER_SETTINGS[user]["chunk_size"]
-
     #: NetCDF settings
     netcdf4_format = "NETCDF4_CLASSIC"
     comp = dict(zlib=True, complevel=5)  # Compression between 0 and 9 (highest)
-
-    #: Climate years dictionary settings.
-    if rcp == "baseline":
-        yeardic = {
-            "2015": ("2015", "2020"),
-            "2020": ("2015", "2020"),
-            "2030": ("2015", "2020"),
-            "2040": ("2015", "2020"),
-            "2050": ("2015", "2020"),
-            "2060": ("2015", "2020"),
-            "2070": ("2015", "2020"),
-            "2080": ("2015", "2020"),
-            "2090": ("2015", "2020"),
-            "2100": ("2015", "2020"),
-        }
-    else:
-        yeardic = {
-            "2015": ("2015", "2020"),
-            "2020": ("2015", "2025"),
-            "2030": ("2015", "2045"),
-            "2040": ("2025", "2055"),
-            "2050": ("2035", "2065"),
-            "2060": ("2045", "2075"),
-            "2070": ("2055", "2085"),
-            "2080": ("2065", "2095"),
-            "2090": ("2080", "2100"),
-            "2100": ("2095", "2100"),
-        }
 
     #: Fixed values for buildings settings.
     bal_temps = [18.3, 21.1, 26]  # [21.1] #  For simple cooling degree days

@@ -8,22 +8,29 @@ from itertools import product
 
 import numpy as np
 import xarray as xr
-from functions.variable_dicts import VARS_ARCHETYPES  # type: ignore
-from preprocess.message_raster import create_message_raster  # type: ignore
 
-from message_ix_buildings.chilled.util.config import Config  # type: ignore
-from message_ix_buildings.chilled.util.util import (
+from message_ix_buildings.chilled.functions.variable_dicts import (
+    VARS_ARCHETYPES,  # type: ignore
+)
+from message_ix_buildings.chilled.preprocess.message_raster import (
+    create_message_raster,  # type: ignore
+)
+from message_ix_buildings.chilled.util.base import (
     get_archs,
-    get_logger,
+    get_paths,
     read_arch_inputs_df,
     read_arch_reg_df,
 )
+from message_ix_buildings.chilled.util.common import get_logger
+from message_ix_buildings.chilled.util.config import Config  # type: ignore
 
 log = get_logger(__name__)
 
 
 def create_archetypes(config: "Config"):
-    out_path = os.path.join(config.project_path, "out", "version")
+    project_path = get_paths(config, "project_path")
+
+    out_path = os.path.join(project_path, "out", "version")
     archetype_path = os.path.join(out_path, config.vstr, "rasters")
 
     # if archetypes folder does not exist, create it
@@ -49,7 +56,7 @@ def create_archetypes(config: "Config"):
     )
 
     for arch in vers_archs:
-        arch_reg = read_arch_reg_df(config, arch)
+        arch_reg = read_arch_reg_df(config).query("arch == @arch")
 
         # Create map of archetypes based on MESSAGE regions raster
         arch_map = xr.Dataset(
@@ -101,7 +108,9 @@ def create_archetypes(config: "Config"):
 
 
 def create_archetype_variables(config: "Config"):
-    out_path = os.path.join(config.project_path, "out", "version")
+    project_path = get_paths(config, "project_path")
+
+    out_path = os.path.join(project_path, "out", "version")
     archetype_path = os.path.join(out_path, config.vstr, "rasters")
 
     # get archs
@@ -115,7 +124,7 @@ def create_archetype_variables(config: "Config"):
         )
 
         # read in input files
-        arch_inputs = read_arch_inputs_df(config, arch)
+        arch_inputs = read_arch_inputs_df(config).query("arch == @arch")
 
         # read in relevant archetype raster
         map = xr.open_dataset(

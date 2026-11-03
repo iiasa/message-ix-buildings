@@ -2,11 +2,13 @@ import os
 
 import pandas as pd
 
+from message_ix_buildings.chilled.util.base import get_paths
+from message_ix_buildings.chilled.util.common import get_logger
 from message_ix_buildings.chilled.util.config import Config
-from message_ix_buildings.chilled.util.util import get_logger
 
 log = get_logger(__name__)
-cfg = Config()
+cfg = Config(user="MEAS")
+dle_path = get_paths(cfg, "dle_path")
 
 
 def get_sturm_data(input_path, input_version_name):
@@ -196,6 +198,14 @@ def postprocess_electricity_demand(input_path, input_version_name):
     )
 
     # Save files
+
+    df_chilled.to_csv(
+        os.path.join(version_output_path, "chilled_postprocessed.csv"),
+        index=False,
+    )
+
+    log.info("Saved: " + os.path.join(version_output_path, "chilled_postprocessed.csv"))
+
     df_sturm.to_csv(
         os.path.join(version_output_path, "sturm_building_stock_inputs.csv"),
         index=False,
@@ -254,4 +264,4 @@ def postprocess_electricity_demand(input_path, input_version_name):
     )
 
 
-postprocess_electricity_demand(cfg.dle_path, cfg.vstr)
+postprocess_electricity_demand(dle_path, cfg.vstr2 + "_" + cfg.vstr)

@@ -1,0 +1,4 @@
+# Shared STURM scenario list (WEU / single-region)
+# Written by message_ix_models.model.buildings.sturm_single_region
+scenarios:
+- SSP2

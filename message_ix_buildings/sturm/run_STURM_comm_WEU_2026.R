@@ -22,14 +22,35 @@ if (nzchar(script_path)) {
 source("./model/F10_scenario_runs_MESSAGE_2100.R")
 
 
+# MESSAGE linking outputs (comm_sturm_<scenario>.csv)
+dir_message_linking <- file.path(
+  getwd(),
+  "message_linking"
+)
+
+dir.create(
+  dir_message_linking,
+  recursive = TRUE,
+  showWarnings = FALSE
+)
+
+# Shared scenario list loader (message_linking/config.yaml)
+source(
+  file.path(
+    dir_message_linking,
+    "load_scenario_config.R"
+  )
+)
+
+
 # ------------------------------------------------------------
 # 1. User settings
 # ------------------------------------------------------------
 
-# Run SSP2 for MESSAGEix WEU, including Türkiye
-scenarios <- "SSP2"
+# Scenarios from message_linking/config.yaml (SSP2 for WEU)
+scenarios <- load_scenarios()
 
-
+# MESSAGEix WEU, including Türkiye
 custom_region_bld <- c(
   "C-WEU-AUT", "C-WEU-BEL", "C-WEU-CHE", "C-WEU-CYP",
   "C-WEU-DEU", "C-WEU-DNK", "C-WEU-ESP", "C-WEU-FIN",
@@ -288,6 +309,20 @@ for (s in scenarios) {
       )
     )
   }
+
+  # Full result for MESSAGE linking / demand write
+  linking_file <- file.path(
+    dir_message_linking,
+    paste0("comm_sturm_", s, ".csv")
+  )
+
+  write.csv(
+    sturm_result,
+    linking_file,
+    row.names = FALSE
+  )
+
+  cat("MESSAGE linking file written to:\n", linking_file, "\n", sep = "")
   
   cat("Finished ", s, ".\n", sep = "")
 }
